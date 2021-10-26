@@ -17,7 +17,7 @@ The hardware for this version has been redesigned from the ground up, however fr
 And these are some more technical changes which may be useful to know if you're planning to modify the module:
 
 * The buttons have hardware debouncing to allow users to change out capacitor values for reduced accidental 'double click'
-* A 10 pin Eurorack shrouded power header is now used to prevent accidental reverse powering the module
+* A 10 pin Eurorack shrouded power header is now used to prevent accidental reverse powering of the module
 * The 5V supply for the Pico is now regulated down from the +12V supply, so no 5V rail is required from your Eurorack power supply
-* The power supply is now diode protected to prevent back-flow of voltage when the module is connected via USB
+* The power supply is now diode protected to prevent back-powering your rack when the module is connected via USB
 * All jacks are protected from overvoltage input (previously the Pico GPIO pin was directly exposed to any input, potentially leading to damage)
