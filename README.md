@@ -21,3 +21,7 @@ And these are some more technical changes which may be useful to know if you're 
 * The 5V supply for the Pico is now regulated down from the +12V supply, so no 5V rail is required from your Eurorack power supply
 * The power supply is now diode protected to prevent back-powering your rack when the module is connected via USB
 * All jacks are protected from overvoltage input (previously the Pico GPIO pin was directly exposed to any input, potentially leading to damage)
+
+
+This module, and any documentation included in this repository, is entirely open-source, so anyone is welcome to design their own versions of the idea, or modify my designs.
+The only thing I would ask is that you refrain from using the brand name 'Allen Synthesis' on your DIY builds if they have modified my files in any way, just to prevent any confusion if they end up being re-sold or distributed.
