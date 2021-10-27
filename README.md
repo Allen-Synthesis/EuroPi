@@ -1,11 +1,15 @@
-# EuroPi V2
-Resources for the EuroPi Version 2
+# EuroPi
 
-This second version of the EuroPi project completely overhauls the hardware, adding improvements that make the module able to complete a plethora of additional functions.
+The EuroPi is a fully user reprogrammable module based on the Raspberry Pi Pico, which allows users to process inputs and controls to produce outputs based on code written in Python. The entire project is open-source.
+
+
+This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The (deprecated) repository for this module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
 
 ![Imgur](https://i.imgur.com/wHL7558.png)
 
-The hardware for this version has been redesigned from the ground up, however from a user standpoint specific improvements on the previous specification can are as follows:
+## New Features
+
+### Obvious Improvements
 
 * Outputs are now capable of providing 0-10V (previously 0-3.3V)
 * 6 outputs, all capable of either digital or CV output (previously 4 digital and 4 analogue)
@@ -14,7 +18,7 @@ The hardware for this version has been redesigned from the ground up, however fr
 * One digital (clock, trigger, gate) input is now available (previously no digital input)
 * A 128x32 OLED display has been added to allow for further menu control and usability when changing patches often
 
-And these are some more technical changes which may be useful to know if you're planning to modify the module:
+### More Technical Changes
 
 * The buttons have hardware debouncing to allow users to change out capacitor values for reduced accidental 'double click'
 * A 10 pin Eurorack shrouded power header is now used to prevent accidental reverse powering of the module
@@ -23,7 +27,11 @@ And these are some more technical changes which may be useful to know if you're 
 * All jacks are protected from overvoltage input (previously the Pico GPIO pin was directly exposed to any input, potentially leading to damage)
 
 
+### License
+
 This module, and any documentation included in this repository, is entirely open-source, so anyone is welcome to design their own versions of the idea, or modify my designs.
 The only thing I would ask is that you refrain from using the brand name 'Allen Synthesis' on your DIY builds if they have modified my files in any way, just to prevent any confusion if they end up being re-sold or distributed.
+ 
+### Disclaimer
  
 Recreate any of the files found in this repository at your own risk; I will attempt to solve any issues that you might have with my designs, but I can't guarantee that there are not minor bugs in any of the documents, both hardware and software.
