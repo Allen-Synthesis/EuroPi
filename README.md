@@ -25,3 +25,5 @@ And these are some more technical changes which may be useful to know if you're 
 
 This module, and any documentation included in this repository, is entirely open-source, so anyone is welcome to design their own versions of the idea, or modify my designs.
 The only thing I would ask is that you refrain from using the brand name 'Allen Synthesis' on your DIY builds if they have modified my files in any way, just to prevent any confusion if they end up being re-sold or distributed.
+ 
+Recreate any of the files found in this repository at your own risk; I will attempt to solve any issues that you might have with my designs, but I can't guarantee that there are not minor bugs in any of the documents, both hardware and software.
