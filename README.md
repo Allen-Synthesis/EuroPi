@@ -29,7 +29,7 @@ This repository relates to the EuroPi module, however some users may be expectin
 
 ### License
 
-This module, and any documentation included in this repository, is entirely open-source, so anyone is welcome to design their own versions of the idea, or modify my designs.
+This module, and any documentation included in this repository, is entirely open-source under the GNU General Public License 3.0, so anyone is welcome to design their own versions of the idea, or modify my designs.
 The only thing I would ask is that you refrain from using the brand name 'Allen Synthesis' on your DIY builds if they have modified my files in any way, just to prevent any confusion if they end up being re-sold or distributed.
  
 ### Disclaimer
