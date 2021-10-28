@@ -5,6 +5,8 @@ The EuroPi is a fully user reprogrammable module based on the Raspberry Pi Pico,
 
 This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The (deprecated) repository for this module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
 
+You can find more about this (including a project diary) and other projects of mine on [my website](https://www.allensynthesis.co.uk)
+
 ![Imgur](https://i.imgur.com/wHL7558.png)
 
 ## New Features
