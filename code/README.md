@@ -20,8 +20,8 @@ Will set the CV output 3 to a voltage of 4.5V.
 ## Analogue Input
 
 The analogue input allows you to 'read' CV from anywhere between 0 and 12V.  
-Other than 'read_raw', the functions below require that the module has been calibrated (a calibration_data.txt file has been generated within the lib folder).  
-If you have not calibrated your module but wish to use these functions, you can download a sample 'calibrations.txt' file from this folder and place it within a folder on your Pico named 'lib' manually.  
+Other than 'read_raw', the functions below require that the module has been calibrated (a calibration.txt file has been generated within the lib folder).  
+If you have not calibrated your module but wish to use these functions, you can download a sample 'calibration.txt' file from this folder and place it within a folder on your Pico named 'lib' manually.  
 This work-around will allow access to the functions without error, but it won't give you the accuracy that the actual calibration would achieve and your voltages likely wouldn't be usable for anything critical such as 1V/Oct.
 
 | Method        | Usage       | Parameter(s)       |
