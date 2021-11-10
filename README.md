@@ -3,7 +3,7 @@
 The EuroPi is a fully user reprogrammable module based on the Raspberry Pi Pico, which allows users to process inputs and controls to produce outputs based on code written in Python. The entire project is open-source.
 
 
-This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The (deprecated) repository for this module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
+This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The repository for this (now deprecated) module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
 
 You can find more about this (including a project diary) and other projects of mine on [my website](https://www.allensynthesis.co.uk)
 
