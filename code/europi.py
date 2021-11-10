@@ -11,16 +11,29 @@ button2 = Pin(5, Pin.IN)
 
 digital_input = Pin(22, Pin.IN)
 
+
+
+from time import sleep
+
+#ain = ADC(Pin(26))
+
+
+
+
 class output:
     def __init__(self, pin):
         self.output = PWM(Pin(pin))
+        self.output.freq(1000000)
         self.pin = pin
         self.current_duty = 0
         self.gain_error, self.voltage_multiplier = get_output_calibration_data()
         
+    def clamp(self, value):
+        return max(min(value, 65534), 0)
+        
     def duty_raw(self, cycle):
         cycle = int(cycle)
-        self.output.duty_u16(cycle)
+        self.output.duty_u16(self.clamp(cycle))
         self.current_duty = cycle
         
     def duty(self, cycle):
@@ -125,4 +138,5 @@ k2 = knob(28)
 
 if __name__ == '__main__':
     None
+        
     
