@@ -12,14 +12,6 @@ button2 = Pin(5, Pin.IN)
 digital_input = Pin(22, Pin.IN)
 
 
-
-from time import sleep
-
-#ain = ADC(Pin(26))
-
-
-
-
 class output:
     def __init__(self, pin):
         self.output = PWM(Pin(pin))
@@ -132,8 +124,6 @@ for cv in cvs:
     
 k1 = knob(27)
 k2 = knob(28)
-
-
 
 
 if __name__ == '__main__':
