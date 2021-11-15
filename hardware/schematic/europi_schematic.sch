@@ -94,34 +94,10 @@ Wire Wire Line
 	13250 2600 13250 2750
 Connection ~ 13250 2750
 Wire Wire Line
-	13250 2950 13250 2750
-$Comp
-L power:Earth #PWR?
-U 1 1 61920802
-P 13250 2950
-F 0 "#PWR?" H 13250 2700 50  0001 C CNN
-F 1 "Earth" H 13250 2800 50  0001 C CNN
-F 2 "" H 13250 2950 50  0001 C CNN
-F 3 "~" H 13250 2950 50  0001 C CNN
-	1    13250 2950
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
 	13250 2750 14050 2750
 Connection ~ 13850 1500
 Wire Wire Line
 	12200 1400 12450 1400
-$Comp
-L text:TEXT Reference?
-U 1 1 61927F40
-P 12200 1400
-F 0 "Reference?" H 12200 1250 50  0001 C CNN
-F 1 "GP16" V 12215 1715 50  0000 R CNN
-F 2 "" H 12200 1400 50  0001 C CNN
-F 3 "" H 12200 1400 50  0001 C CNN
-	1    12200 1400
-	0    -1   -1   0   
-$EndComp
 $Comp
 L Amplifier_Operational:TL074 O?
 U 1 1 6195B34D
@@ -204,33 +180,11 @@ Wire Wire Line
 Connection ~ 5800 2750
 Wire Wire Line
 	5800 2950 5800 2750
-$Comp
-L power:Earth #PWR?
-U 1 1 6195B5A0
-P 5800 2950
-F 0 "#PWR?" H 5800 2700 50  0001 C CNN
-F 1 "Earth" H 5800 2800 50  0001 C CNN
-F 2 "" H 5800 2950 50  0001 C CNN
-F 3 "~" H 5800 2950 50  0001 C CNN
-	1    5800 2950
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5800 2750 6600 2750
 Connection ~ 6400 1500
 Wire Wire Line
 	4750 1400 5000 1400
-$Comp
-L text:TEXT Reference?
-U 1 1 6195B5B9
-P 4750 1400
-F 0 "Reference?" H 4750 1250 50  0001 C CNN
-F 1 "GP21" V 4765 1715 50  0000 R CNN
-F 2 "" H 4750 1400 50  0001 C CNN
-F 3 "" H 4750 1400 50  0001 C CNN
-	1    4750 1400
-	0    -1   -1   0   
-$EndComp
 $Comp
 L Amplifier_Operational:TL074 O?
 U 1 1 6196F06A
@@ -313,33 +267,9 @@ Wire Wire Line
 Connection ~ 9500 2750
 Wire Wire Line
 	9500 2950 9500 2750
-$Comp
-L power:Earth #PWR?
-U 1 1 6196F39B
-P 9500 2950
-F 0 "#PWR?" H 9500 2700 50  0001 C CNN
-F 1 "Earth" H 9500 2800 50  0001 C CNN
-F 2 "" H 9500 2950 50  0001 C CNN
-F 3 "~" H 9500 2950 50  0001 C CNN
-	1    9500 2950
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	9500 2750 10300 2750
 Connection ~ 10100 1500
-Wire Wire Line
-	8450 1400 8700 1400
-$Comp
-L text:TEXT Reference?
-U 1 1 6196F3B4
-P 8450 1400
-F 0 "Reference?" H 8450 1250 50  0001 C CNN
-F 1 "GP20" V 8465 1715 50  0000 R CNN
-F 2 "" H 8450 1400 50  0001 C CNN
-F 3 "" H 8450 1400 50  0001 C CNN
-	1    8450 1400
-	0    -1   -1   0   
-$EndComp
 $Comp
 L Amplifier_Operational:TL074 O?
 U 1 1 619BEF3F
@@ -422,35 +352,11 @@ Wire Wire Line
 Connection ~ 13250 4950
 Wire Wire Line
 	13250 5150 13250 4950
-$Comp
-L power:Earth #PWR?
-U 1 1 619BF270
-P 13250 5150
-F 0 "#PWR?" H 13250 4900 50  0001 C CNN
-F 1 "Earth" H 13250 5000 50  0001 C CNN
-F 2 "" H 13250 5150 50  0001 C CNN
-F 3 "~" H 13250 5150 50  0001 C CNN
-	1    13250 5150
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	13250 4950 14050 4950
 Wire Wire Line
 	14600 3800 14600 4950
 Connection ~ 13850 3700
-Wire Wire Line
-	12200 3600 12450 3600
-$Comp
-L text:TEXT Reference?
-U 1 1 619BF289
-P 12200 3600
-F 0 "Reference?" H 12200 3450 50  0001 C CNN
-F 1 "GP19" V 12215 3915 50  0000 R CNN
-F 2 "" H 12200 3600 50  0001 C CNN
-F 3 "" H 12200 3600 50  0001 C CNN
-	1    12200 3600
-	0    -1   -1   0   
-$EndComp
 $Comp
 L Amplifier_Operational:TL074 O?
 U 1 1 619BF293
@@ -533,33 +439,11 @@ Wire Wire Line
 Connection ~ 5800 4950
 Wire Wire Line
 	5800 5150 5800 4950
-$Comp
-L power:Earth #PWR?
-U 1 1 619BF2D4
-P 5800 5150
-F 0 "#PWR?" H 5800 4900 50  0001 C CNN
-F 1 "Earth" H 5800 5000 50  0001 C CNN
-F 2 "" H 5800 5150 50  0001 C CNN
-F 3 "~" H 5800 5150 50  0001 C CNN
-	1    5800 5150
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5800 4950 6600 4950
 Connection ~ 6400 3700
 Wire Wire Line
 	4750 3600 5000 3600
-$Comp
-L text:TEXT Reference?
-U 1 1 619BF2ED
-P 4750 3600
-F 0 "Reference?" H 4750 3450 50  0001 C CNN
-F 1 "GP17" V 4765 3915 50  0000 R CNN
-F 2 "" H 4750 3600 50  0001 C CNN
-F 3 "" H 4750 3600 50  0001 C CNN
-	1    4750 3600
-	0    -1   -1   0   
-$EndComp
 $Comp
 L Amplifier_Operational:TL074 O?
 U 1 1 619BF2F7
@@ -642,33 +526,11 @@ Wire Wire Line
 Connection ~ 9500 4950
 Wire Wire Line
 	9500 5150 9500 4950
-$Comp
-L power:Earth #PWR?
-U 1 1 619BF338
-P 9500 5150
-F 0 "#PWR?" H 9500 4900 50  0001 C CNN
-F 1 "Earth" H 9500 5000 50  0001 C CNN
-F 2 "" H 9500 5150 50  0001 C CNN
-F 3 "~" H 9500 5150 50  0001 C CNN
-	1    9500 5150
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	9500 4950 10300 4950
 Connection ~ 10100 3700
 Wire Wire Line
 	8450 3600 8700 3600
-$Comp
-L text:TEXT Reference?
-U 1 1 619BF351
-P 8450 3600
-F 0 "Reference?" H 8450 3450 50  0001 C CNN
-F 1 "GP18" V 8465 3915 50  0000 R CNN
-F 2 "" H 8450 3600 50  0001 C CNN
-F 3 "" H 8450 3600 50  0001 C CNN
-	1    8450 3600
-	0    -1   -1   0   
-$EndComp
 $Comp
 L Device:LED LED1
 U 1 1 619D319F
@@ -1039,17 +901,6 @@ F 3 "" H 2700 3200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Regulator_Linear:L7805 U?
-U 1 1 61AF64C8
-P 2050 3300
-F 0 "U?" H 2050 3542 50  0001 C CNN
-F 1 "L7805" H 2050 3451 50  0000 C CNN
-F 2 "" H 2075 3150 50  0001 L CIN
-F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf" H 2050 3250 50  0001 C CNN
-	1    2050 3300
-	1    0    0    -1  
-$EndComp
-$Comp
 L text:TEXT Reference?
 U 1 1 61AF6BDF
 P 1400 3200
@@ -1069,19 +920,6 @@ Wire Wire Line
 Wire Wire Line
 	1400 3300 1750 3300
 $Comp
-L power:Earth #PWR?
-U 1 1 61B2DAD7
-P 2050 3750
-F 0 "#PWR?" H 2050 3500 50  0001 C CNN
-F 1 "Earth" H 2050 3600 50  0001 C CNN
-F 2 "" H 2050 3750 50  0001 C CNN
-F 3 "~" H 2050 3750 50  0001 C CNN
-	1    2050 3750
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2050 3750 2050 3700
-$Comp
 L Device:C C2
 U 1 1 61B38A4E
 P 2500 3550
@@ -1099,7 +937,6 @@ Wire Wire Line
 	2500 3300 2350 3300
 Wire Wire Line
 	2500 3700 2050 3700
-Connection ~ 2050 3700
 Wire Wire Line
 	2050 3700 2050 3600
 $Comp
@@ -1130,17 +967,6 @@ Connection ~ 1800 1750
 Connection ~ 1650 1650
 Wire Wire Line
 	1650 1650 1650 1750
-$Comp
-L power:Earth #PWR?
-U 1 1 61B92EC6
-P 1550 1950
-F 0 "#PWR?" H 1550 1700 50  0001 C CNN
-F 1 "Earth" H 1550 1800 50  0001 C CNN
-F 2 "" H 1550 1950 50  0001 C CNN
-F 3 "~" H 1550 1950 50  0001 C CNN
-	1    1550 1950
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	1550 1650 1550 1950
 Wire Wire Line
@@ -1168,17 +994,6 @@ Wire Wire Line
 Wire Wire Line
 	2600 1450 2300 1450
 Connection ~ 2300 1450
-$Comp
-L text:TEXT Reference?
-U 1 1 61BD0114
-P 2600 1950
-F 0 "Reference?" H 2600 1800 50  0001 C CNN
-F 1 "-12V" H 2688 1987 50  0000 L CNN
-F 2 "" H 2600 1950 50  0001 C CNN
-F 3 "" H 2600 1950 50  0001 C CNN
-	1    2600 1950
-	-1   0    0    1   
-$EndComp
 Wire Wire Line
 	2600 1950 2600 1850
 Wire Wire Line
@@ -1208,32 +1023,8 @@ F 3 "" H 1350 4700 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	1350 4700 1350 4800
-$Comp
-L text:TEXT Reference?
-U 1 1 6193C777
-P 1350 5600
-F 0 "Reference?" H 1350 5450 50  0001 C CNN
-F 1 "-12V" H 1438 5637 50  0000 L CNN
-F 2 "" H 1350 5600 50  0001 C CNN
-F 3 "" H 1350 5600 50  0001 C CNN
-	1    1350 5600
-	-1   0    0    1   
-$EndComp
 Wire Wire Line
 	1900 4800 1350 4800
-$Comp
-L power:Earth #PWR?
-U 1 1 61961B8E
-P 1350 5150
-F 0 "#PWR?" H 1350 4900 50  0001 C CNN
-F 1 "Earth" H 1350 5000 50  0001 C CNN
-F 2 "" H 1350 5150 50  0001 C CNN
-F 3 "~" H 1350 5150 50  0001 C CNN
-	1    1350 5150
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1350 5150 1900 5150
 Wire Wire Line
 	1900 5150 1900 5100
 $Comp
@@ -1413,29 +1204,7 @@ Wire Wire Line
 	14100 6900 14050 6900
 Wire Wire Line
 	14650 7550 14650 7350
-$Comp
-L power:Earth #PWR?
-U 1 1 61B3B626
-P 14650 7550
-F 0 "#PWR?" H 14650 7300 50  0001 C CNN
-F 1 "Earth" H 14650 7400 50  0001 C CNN
-F 2 "" H 14650 7550 50  0001 C CNN
-F 3 "~" H 14650 7550 50  0001 C CNN
-	1    14650 7550
-	1    0    0    -1  
-$EndComp
 Connection ~ 14650 7350
-$Comp
-L text:TEXT Reference?
-U 1 1 61B46844
-P 15200 6550
-F 0 "Reference?" H 15200 6400 50  0001 C CNN
-F 1 "GP22" V 15215 6865 50  0000 R CNN
-F 2 "" H 15200 6550 50  0001 C CNN
-F 3 "" H 15200 6550 50  0001 C CNN
-	1    15200 6550
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	15200 6550 14650 6550
 Connection ~ 14650 6550
@@ -1468,7 +1237,6 @@ Wire Wire Line
 	13450 7000 13450 7550
 Wire Wire Line
 	13450 7550 14650 7550
-Connection ~ 14650 7550
 $Comp
 L Amplifier_Operational:AD8001AN O?
 U 1 1 61BB2560
@@ -1498,38 +1266,23 @@ Wire Wire Line
 $Comp
 L Device:R R21
 U 1 1 61BFA069
-P 9500 6350
-F 0 "R21" H 9570 6396 50  0000 L CNN
-F 1 "22K" H 9570 6305 50  0000 L CNN
-F 2 "" V 9430 6350 50  0001 C CNN
-F 3 "~" H 9500 6350 50  0001 C CNN
-	1    9500 6350
+P 9500 6150
+F 0 "R21" H 9570 6196 50  0000 L CNN
+F 1 "22K" H 9570 6105 50  0000 L CNN
+F 2 "" V 9430 6150 50  0001 C CNN
+F 3 "~" H 9500 6150 50  0001 C CNN
+	1    9500 6150
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	9350 6350 9100 6350
-Wire Wire Line
-	9100 6350 9100 6900
+	9350 6150 9100 6150
 Connection ~ 9100 6900
 Wire Wire Line
 	9100 6900 9200 6900
 Wire Wire Line
-	9650 6350 9950 6350
-Wire Wire Line
-	9950 6350 9950 7000
+	9650 6150 9950 6150
 Wire Wire Line
 	9950 7000 9800 7000
-$Comp
-L power:Earth #PWR?
-U 1 1 61C1BEAB
-P 8850 7350
-F 0 "#PWR?" H 8850 7100 50  0001 C CNN
-F 1 "Earth" H 8850 7200 50  0001 C CNN
-F 2 "" H 8850 7350 50  0001 C CNN
-F 3 "~" H 8850 7350 50  0001 C CNN
-	1    8850 7350
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8850 7350 8850 7100
 $Comp
@@ -1551,40 +1304,23 @@ Connection ~ 9950 7000
 Wire Wire Line
 	10250 7450 10250 7200
 $Comp
-L power:Earth #PWR?
-U 1 1 61C83CF0
-P 10250 7450
-F 0 "#PWR?" H 10250 7200 50  0001 C CNN
-F 1 "Earth" H 10250 7300 50  0001 C CNN
-F 2 "" H 10250 7450 50  0001 C CNN
-F 3 "~" H 10250 7450 50  0001 C CNN
-	1    10250 7450
-	1    0    0    -1  
-$EndComp
-$Comp
 L Device:R R23
 U 1 1 61CA99CB
-P 10900 6350
-F 0 "R23" H 10970 6396 50  0000 L CNN
-F 1 "22K" H 10970 6305 50  0000 L CNN
-F 2 "" V 10830 6350 50  0001 C CNN
-F 3 "~" H 10900 6350 50  0001 C CNN
-	1    10900 6350
+P 10900 6150
+F 0 "R23" H 10970 6196 50  0000 L CNN
+F 1 "22K" H 10970 6105 50  0000 L CNN
+F 2 "" V 10830 6150 50  0001 C CNN
+F 3 "~" H 10900 6150 50  0001 C CNN
+	1    10900 6150
 	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	10450 7000 10450 6350
 Connection ~ 10450 7000
 Wire Wire Line
 	10450 7000 10400 7000
 Wire Wire Line
 	11200 7100 11300 7100
 Wire Wire Line
-	11300 7100 11300 6350
-Wire Wire Line
-	11300 6350 11050 6350
-Wire Wire Line
-	10450 6350 10750 6350
+	11300 6150 11050 6150
 $Comp
 L Amplifier_Operational:AD8001AN O?
 U 1 1 61C46EBD
@@ -1595,17 +1331,6 @@ F 2 "" H 10850 7200 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/tl071.pdf" H 10950 7300 50  0001 C CNN
 	1    10900 7100
 	1    0    0    1   
-$EndComp
-$Comp
-L power:Earth #PWR?
-U 1 1 61D1572A
-P 10800 6800
-F 0 "#PWR?" H 10800 6550 50  0001 C CNN
-F 1 "Earth" H 10800 6650 50  0001 C CNN
-F 2 "" H 10800 6800 50  0001 C CNN
-F 3 "~" H 10800 6800 50  0001 C CNN
-	1    10800 6800
-	-1   0    0    1   
 $EndComp
 $Comp
 L text:TEXT Reference?
@@ -1628,28 +1353,6 @@ F 2 "" H 9400 7300 50  0001 C CNN
 F 3 "" H 9400 7300 50  0001 C CNN
 	1    9400 7300
 	-1   0    0    1   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 61D3F5CA
-P 9400 6700
-F 0 "Reference?" H 9400 6550 50  0001 C CNN
-F 1 "-12V" H 9488 6737 50  0000 L CNN
-F 2 "" H 9400 6700 50  0001 C CNN
-F 3 "" H 9400 6700 50  0001 C CNN
-	1    9400 6700
-	1    0    0    -1  
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 61D75434
-P 11450 7100
-F 0 "Reference?" H 11450 6950 50  0001 C CNN
-F 1 "GP26" V 11465 7415 50  0000 R CNN
-F 2 "" H 11450 7100 50  0001 C CNN
-F 3 "" H 11450 7100 50  0001 C CNN
-	1    11450 7100
-	0    1    1    0   
 $EndComp
 Wire Wire Line
 	11450 7100 11300 7100
@@ -1694,17 +1397,6 @@ F 2 "" H 4550 6700 50  0001 C CNN
 F 3 "~" H 4550 6700 50  0001 C CNN
 	1    4550 6500
 	0    -1   -1   0   
-$EndComp
-$Comp
-L power:Earth #PWR?
-U 1 1 61F3BAD2
-P 4550 7650
-F 0 "#PWR?" H 4550 7400 50  0001 C CNN
-F 1 "Earth" H 4550 7500 50  0001 C CNN
-F 2 "" H 4550 7650 50  0001 C CNN
-F 3 "~" H 4550 7650 50  0001 C CNN
-	1    4550 7650
-	1    0    0    -1  
 $EndComp
 $Comp
 L Device:R R25
@@ -1833,28 +1525,6 @@ F 3 "~" H 13250 8800 50  0001 C CNN
 	1    13250 8800
 	1    0    0    -1  
 $EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 6229F035
-P 6100 6300
-F 0 "Reference?" H 6100 6150 50  0001 C CNN
-F 1 "GP4" V 6115 6615 50  0000 R CNN
-F 2 "" H 6100 6300 50  0001 C CNN
-F 3 "" H 6100 6300 50  0001 C CNN
-	1    6100 6300
-	0    1    1    0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 622FE767
-P 6100 7200
-F 0 "Reference?" H 6100 7050 50  0001 C CNN
-F 1 "GP5" V 6115 7515 50  0000 R CNN
-F 2 "" H 6100 7200 50  0001 C CNN
-F 3 "" H 6100 7200 50  0001 C CNN
-	1    6100 7200
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	5300 7200 6100 7200
 Wire Wire Line
@@ -1874,34 +1544,12 @@ F 3 "" H 5750 5900 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5750 5900 5750 6000
-$Comp
-L power:Earth #PWR?
-U 1 1 623B60A3
-P 4550 6750
-F 0 "#PWR?" H 4550 6500 50  0001 C CNN
-F 1 "Earth" H 4550 6600 50  0001 C CNN
-F 2 "" H 4550 6750 50  0001 C CNN
-F 3 "~" H 4550 6750 50  0001 C CNN
-	1    4550 6750
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	4550 7650 4550 7600
 Connection ~ 4550 7600
 Wire Wire Line
 	4550 6750 4550 6700
 Connection ~ 4550 6700
-$Comp
-L power:Earth #PWR?
-U 1 1 6241FF4B
-P 13250 9100
-F 0 "#PWR?" H 13250 8850 50  0001 C CNN
-F 1 "Earth" H 13250 8950 50  0001 C CNN
-F 2 "" H 13250 9100 50  0001 C CNN
-F 3 "~" H 13250 9100 50  0001 C CNN
-	1    13250 9100
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	13250 9100 13250 8950
 $Comp
@@ -1917,17 +1565,6 @@ F 3 "" H 13250 8500 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	13250 8500 13250 8650
-$Comp
-L text:TEXT Reference?
-U 1 1 6245F409
-P 13550 8800
-F 0 "Reference?" H 13550 8650 50  0001 C CNN
-F 1 "GP27" V 13565 9115 50  0000 R CNN
-F 2 "" H 13550 8800 50  0001 C CNN
-F 3 "" H 13550 8800 50  0001 C CNN
-	1    13550 8800
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	13550 8800 13400 8800
 $Comp
@@ -1939,17 +1576,6 @@ F 1 "KNOB 2" H 14330 8755 50  0000 R CNN
 F 2 "" H 14400 8800 50  0001 C CNN
 F 3 "~" H 14400 8800 50  0001 C CNN
 	1    14400 8800
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:Earth #PWR?
-U 1 1 6247F470
-P 14400 9100
-F 0 "#PWR?" H 14400 8850 50  0001 C CNN
-F 1 "Earth" H 14400 8950 50  0001 C CNN
-F 2 "" H 14400 9100 50  0001 C CNN
-F 3 "~" H 14400 9100 50  0001 C CNN
-	1    14400 9100
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -1967,17 +1593,6 @@ F 3 "" H 14400 8500 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	14400 8500 14400 8650
-$Comp
-L text:TEXT Reference?
-U 1 1 6247F486
-P 14700 8800
-F 0 "Reference?" H 14700 8650 50  0001 C CNN
-F 1 "GP28" V 14715 9115 50  0000 R CNN
-F 2 "" H 14700 8800 50  0001 C CNN
-F 3 "" H 14700 8800 50  0001 C CNN
-	1    14700 8800
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	14700 8800 14550 8800
 Text Notes 12250 5850 0    50   ~ 0
@@ -2002,28 +1617,6 @@ Wire Wire Line
 	8850 7100 9200 7100
 $Comp
 L text:TEXT Reference?
-U 1 1 625D534E
-P 1450 6450
-F 0 "Reference?" H 1450 6300 50  0001 C CNN
-F 1 "OLED VCC" V 1465 6946 50  0000 R CNN
-F 2 "" H 1450 6450 50  0001 C CNN
-F 3 "" H 1450 6450 50  0001 C CNN
-	1    1450 6450
-	0    -1   -1   0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 625E8362
-P 1450 6700
-F 0 "Reference?" H 1450 6550 50  0001 C CNN
-F 1 "OLED GND" V 1465 7196 50  0000 R CNN
-F 2 "" H 1450 6700 50  0001 C CNN
-F 3 "" H 1450 6700 50  0001 C CNN
-	1    1450 6700
-	0    -1   -1   0   
-$EndComp
-$Comp
-L text:TEXT Reference?
 U 1 1 625F8FA1
 P 1850 6350
 F 0 "Reference?" H 1850 6200 50  0001 C CNN
@@ -2037,17 +1630,6 @@ Wire Wire Line
 	1850 6350 1850 6450
 Wire Wire Line
 	1850 6450 1450 6450
-$Comp
-L power:Earth #PWR?
-U 1 1 6262C805
-P 1850 6850
-F 0 "#PWR?" H 1850 6600 50  0001 C CNN
-F 1 "Earth" H 1850 6700 50  0001 C CNN
-F 2 "" H 1850 6850 50  0001 C CNN
-F 3 "~" H 1850 6850 50  0001 C CNN
-	1    1850 6850
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	1850 6700 1450 6700
 Wire Wire Line
@@ -2072,17 +1654,6 @@ Wire Wire Line
 	1850 9250 1050 9250
 Wire Wire Line
 	1050 8750 1050 9250
-$Comp
-L power:Earth #PWR?
-U 1 1 62722AF0
-P 1050 10750
-F 0 "#PWR?" H 1050 10500 50  0001 C CNN
-F 1 "Earth" H 1050 10600 50  0001 C CNN
-F 2 "" H 1050 10750 50  0001 C CNN
-F 3 "~" H 1050 10750 50  0001 C CNN
-	1    1050 10750
-	1    0    0    -1  
-$EndComp
 Connection ~ 1850 8750
 Wire Wire Line
 	1850 8750 1050 8750
@@ -2137,28 +1708,6 @@ Wire Wire Line
 	3900 8650 3650 8650
 Wire Wire Line
 	4400 8950 3100 8950
-$Comp
-L text:TEXT Reference?
-U 1 1 6252B9C7
-P 1450 7200
-F 0 "Reference?" H 1450 7050 50  0001 C CNN
-F 1 "OLED SDA" V 1465 7696 50  0000 R CNN
-F 2 "" H 1450 7200 50  0001 C CNN
-F 3 "" H 1450 7200 50  0001 C CNN
-	1    1450 7200
-	0    -1   -1   0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 6254E0BF
-P 1450 7450
-F 0 "Reference?" H 1450 7300 50  0001 C CNN
-F 1 "OLED SCL" V 1465 7946 50  0000 R CNN
-F 2 "" H 1450 7450 50  0001 C CNN
-F 3 "" H 1450 7450 50  0001 C CNN
-	1    1450 7450
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	4400 8850 4400 8950
 $Comp
@@ -2182,28 +1731,6 @@ Wire Notes Line
 	800  11100 800  8050
 Text Notes 850  8200 0    50   ~ 0
 Raspberry Pi Pico
-$Comp
-L text:TEXT Reference?
-U 1 1 6283DDBE
-P 1800 7450
-F 0 "Reference?" H 1800 7300 50  0001 C CNN
-F 1 "GP1" V 1815 7710 50  0000 R CNN
-F 2 "" H 1800 7450 50  0001 C CNN
-F 3 "" H 1800 7450 50  0001 C CNN
-	1    1800 7450
-	0    1    1    0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 62852ED1
-P 1800 7200
-F 0 "Reference?" H 1800 7050 50  0001 C CNN
-F 1 "GP0" V 1815 7460 50  0000 R CNN
-F 2 "" H 1800 7200 50  0001 C CNN
-F 3 "" H 1800 7200 50  0001 C CNN
-	1    1800 7200
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	1800 7200 1450 7200
 Wire Wire Line
@@ -2222,110 +1749,8 @@ Wire Notes Line
 	800  6100 2250 6100
 Wire Notes Line
 	2250 7600 800  7600
-$Comp
-L text:TEXT Reference?
-U 1 1 629E30EF
-P 3100 6450
-F 0 "Reference?" H 3100 6300 50  0001 C CNN
-F 1 "I2C VCC" V 3115 6946 50  0000 R CNN
-F 2 "" H 3100 6450 50  0001 C CNN
-F 3 "" H 3100 6450 50  0001 C CNN
-	1    3100 6450
-	0    -1   -1   0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 629E3D83
-P 3100 6700
-F 0 "Reference?" H 3100 6550 50  0001 C CNN
-F 1 "I2C GND" V 3115 7196 50  0000 R CNN
-F 2 "" H 3100 6700 50  0001 C CNN
-F 3 "" H 3100 6700 50  0001 C CNN
-	1    3100 6700
-	0    -1   -1   0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 629E3D8D
-P 3500 6350
-F 0 "Reference?" H 3500 6200 50  0001 C CNN
-F 1 "+3.3V" H 3588 6387 50  0000 L CNN
-F 2 "" H 3500 6350 50  0001 C CNN
-F 3 "" H 3500 6350 50  0001 C CNN
-	1    3500 6350
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	3500 6350 3500 6450
-Wire Wire Line
-	3500 6450 3100 6450
-$Comp
-L power:Earth #PWR?
-U 1 1 629E3D99
-P 3500 6850
-F 0 "#PWR?" H 3500 6600 50  0001 C CNN
-F 1 "Earth" H 3500 6700 50  0001 C CNN
-F 2 "" H 3500 6850 50  0001 C CNN
-F 3 "~" H 3500 6850 50  0001 C CNN
-	1    3500 6850
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	3500 6700 3100 6700
-Wire Wire Line
-	3500 6850 3500 6700
-$Comp
-L text:TEXT Reference?
-U 1 1 629E3DA5
-P 3100 7200
-F 0 "Reference?" H 3100 7050 50  0001 C CNN
-F 1 "I2C SDA" V 3115 7696 50  0000 R CNN
-F 2 "" H 3100 7200 50  0001 C CNN
-F 3 "" H 3100 7200 50  0001 C CNN
-	1    3100 7200
-	0    -1   -1   0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 629E3DAF
-P 3100 7450
-F 0 "Reference?" H 3100 7300 50  0001 C CNN
-F 1 "I2C SCL" V 3115 7946 50  0000 R CNN
-F 2 "" H 3100 7450 50  0001 C CNN
-F 3 "" H 3100 7450 50  0001 C CNN
-	1    3100 7450
-	0    -1   -1   0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 629E3DB9
-P 3450 7450
-F 0 "Reference?" H 3450 7300 50  0001 C CNN
-F 1 "GP3" V 3465 7710 50  0000 R CNN
-F 2 "" H 3450 7450 50  0001 C CNN
-F 3 "" H 3450 7450 50  0001 C CNN
-	1    3450 7450
-	0    1    1    0   
-$EndComp
-$Comp
-L text:TEXT Reference?
-U 1 1 629E3DC3
-P 3450 7200
-F 0 "Reference?" H 3450 7050 50  0001 C CNN
-F 1 "GP2" V 3465 7460 50  0000 R CNN
-F 2 "" H 3450 7200 50  0001 C CNN
-F 3 "" H 3450 7200 50  0001 C CNN
-	1    3450 7200
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	3450 7200 3100 7200
-Wire Wire Line
-	3100 7450 3450 7450
 Wire Notes Line
 	2450 7600 2450 6100
-Text Notes 2500 6250 0    50   ~ 0
-I2C Connector
 Wire Notes Line
 	3900 6100 3900 7600
 Wire Notes Line
@@ -2344,4 +1769,362 @@ Wire Notes Line
 	800  4350 3900 4350
 Wire Notes Line
 	800  5900 3900 5900
+Text GLabel 4750 1400 0    50   Input ~ 0
+GP21
+Text GLabel 8450 1400 0    50   Input ~ 0
+GP20
+Wire Wire Line
+	8450 1400 8700 1400
+Text GLabel 12200 1400 0    50   Input ~ 0
+GP16
+Wire Wire Line
+	12200 3600 12450 3600
+Text GLabel 12200 3600 0    50   Input ~ 0
+GP19
+Text GLabel 8450 3600 0    50   Input ~ 0
+GP18
+Text GLabel 4750 3600 0    50   Input ~ 0
+GP17
+Text GLabel 6100 7200 2    50   Input ~ 0
+GP5
+Text GLabel 6100 6300 2    50   Input ~ 0
+GP4
+Text GLabel 11450 7100 2    50   Input ~ 0
+GP26
+Text GLabel 15200 6550 2    50   Input ~ 0
+GP22
+Text GLabel 13550 8800 2    50   Input ~ 0
+GP27
+Text GLabel 14700 8800 2    50   Input ~ 0
+GP28
+Text GLabel 1450 6450 0    50   Input ~ 0
+OLED_VCC
+Text GLabel 1450 6700 0    50   Input ~ 0
+OLED_GND
+Text GLabel 1450 7200 0    50   Input ~ 0
+OLED_SDA
+Text GLabel 1450 7450 0    50   Input ~ 0
+OLED_SCL
+Text GLabel 1800 7450 2    50   Input ~ 0
+GP1
+Text GLabel 1800 7200 2    50   Input ~ 0
+GP0
+$Comp
+L text:TEXT Reference?
+U 1 1 61D1FFD1
+P 3500 6350
+F 0 "Reference?" H 3500 6200 50  0001 C CNN
+F 1 "+3.3V" H 3588 6387 50  0000 L CNN
+F 2 "" H 3500 6350 50  0001 C CNN
+F 3 "" H 3500 6350 50  0001 C CNN
+	1    3500 6350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3500 6350 3500 6450
+Wire Wire Line
+	3500 6450 3100 6450
+Wire Wire Line
+	3500 6700 3100 6700
+Wire Wire Line
+	3500 6850 3500 6700
+Wire Wire Line
+	3450 7200 3100 7200
+Wire Wire Line
+	3100 7450 3450 7450
+Text GLabel 3100 6450 0    50   Input ~ 0
+I2C_VCC
+Text GLabel 3100 6700 0    50   Input ~ 0
+I2C_GND
+Text GLabel 3100 7200 0    50   Input ~ 0
+I2C_SDA
+Text GLabel 3100 7450 0    50   Input ~ 0
+I2C_SCL
+Text GLabel 3450 7450 2    50   Input ~ 0
+GP1
+Text GLabel 3450 7200 2    50   Input ~ 0
+GP0
+Text Notes 2500 6250 0    50   ~ 0
+I2C Connector\n
+$Comp
+L power:-12V #PWR?
+U 1 1 6194657C
+P 2600 1950
+F 0 "#PWR?" H 2600 2050 50  0001 C CNN
+F 1 "-12V" H 2615 2123 50  0000 C CNN
+F 2 "" H 2600 1950 50  0001 C CNN
+F 3 "" H 2600 1950 50  0001 C CNN
+	1    2600 1950
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:-12V #PWR?
+U 1 1 6196F6A6
+P 1350 5600
+F 0 "#PWR?" H 1350 5700 50  0001 C CNN
+F 1 "-12V" H 1365 5773 50  0000 C CNN
+F 2 "" H 1350 5600 50  0001 C CNN
+F 3 "" H 1350 5600 50  0001 C CNN
+	1    1350 5600
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:-12V #PWR?
+U 1 1 619ABFEF
+P 9400 6700
+F 0 "#PWR?" H 9400 6800 50  0001 C CNN
+F 1 "-12V" V 9415 6828 50  0000 L CNN
+F 2 "" H 9400 6700 50  0001 C CNN
+F 3 "" H 9400 6700 50  0001 C CNN
+	1    9400 6700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9100 6150 9100 6900
+Wire Wire Line
+	9950 6150 9950 7000
+Wire Wire Line
+	10450 6150 10450 7000
+Wire Wire Line
+	10450 6150 10750 6150
+Wire Wire Line
+	11300 6150 11300 7100
+$Comp
+L power:GND #PWR?
+U 1 1 61AC9160
+P 1550 1950
+F 0 "#PWR?" H 1550 1700 50  0001 C CNN
+F 1 "GND" H 1555 1777 50  0000 C CNN
+F 2 "" H 1550 1950 50  0001 C CNN
+F 3 "" H 1550 1950 50  0001 C CNN
+	1    1550 1950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61B692B9
+P 2050 3750
+F 0 "#PWR?" H 2050 3500 50  0001 C CNN
+F 1 "GND" H 2055 3577 50  0000 C CNN
+F 2 "" H 2050 3750 50  0001 C CNN
+F 3 "" H 2050 3750 50  0001 C CNN
+	1    2050 3750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Regulator_Linear:L7805 U?
+U 1 1 61AF64C8
+P 2050 3300
+F 0 "U?" H 2050 3542 50  0001 C CNN
+F 1 "L7805" H 2050 3451 50  0000 C CNN
+F 2 "" H 2075 3150 50  0001 L CIN
+F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf" H 2050 3250 50  0001 C CNN
+	1    2050 3300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2050 3750 2050 3700
+Connection ~ 2050 3700
+$Comp
+L power:GND #PWR?
+U 1 1 61BE4C53
+P 1300 5150
+F 0 "#PWR?" H 1300 4900 50  0001 C CNN
+F 1 "GND" H 1305 4977 50  0000 C CNN
+F 2 "" H 1300 5150 50  0001 C CNN
+F 3 "" H 1300 5150 50  0001 C CNN
+	1    1300 5150
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1300 5150 1900 5150
+$Comp
+L power:GND #PWR?
+U 1 1 61C0D9EC
+P 1850 6850
+F 0 "#PWR?" H 1850 6600 50  0001 C CNN
+F 1 "GND" H 1855 6677 50  0000 C CNN
+F 2 "" H 1850 6850 50  0001 C CNN
+F 3 "" H 1850 6850 50  0001 C CNN
+	1    1850 6850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61C5CFFC
+P 3500 6850
+F 0 "#PWR?" H 3500 6600 50  0001 C CNN
+F 1 "GND" H 3505 6677 50  0000 C CNN
+F 2 "" H 3500 6850 50  0001 C CNN
+F 3 "" H 3500 6850 50  0001 C CNN
+	1    3500 6850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61C99F89
+P 1050 10750
+F 0 "#PWR?" H 1050 10500 50  0001 C CNN
+F 1 "GND" H 1055 10577 50  0000 C CNN
+F 2 "" H 1050 10750 50  0001 C CNN
+F 3 "" H 1050 10750 50  0001 C CNN
+	1    1050 10750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61CC281E
+P 4550 7650
+F 0 "#PWR?" H 4550 7400 50  0001 C CNN
+F 1 "GND" H 4555 7477 50  0000 C CNN
+F 2 "" H 4550 7650 50  0001 C CNN
+F 3 "" H 4550 7650 50  0001 C CNN
+	1    4550 7650
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61CEA14A
+P 4550 6750
+F 0 "#PWR?" H 4550 6500 50  0001 C CNN
+F 1 "GND" H 4555 6577 50  0000 C CNN
+F 2 "" H 4550 6750 50  0001 C CNN
+F 3 "" H 4550 6750 50  0001 C CNN
+	1    4550 6750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61D25600
+P 5800 5150
+F 0 "#PWR?" H 5800 4900 50  0001 C CNN
+F 1 "GND" H 5805 4977 50  0000 C CNN
+F 2 "" H 5800 5150 50  0001 C CNN
+F 3 "" H 5800 5150 50  0001 C CNN
+	1    5800 5150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61D4CE8F
+P 5800 2950
+F 0 "#PWR?" H 5800 2700 50  0001 C CNN
+F 1 "GND" H 5805 2777 50  0000 C CNN
+F 2 "" H 5800 2950 50  0001 C CNN
+F 3 "" H 5800 2950 50  0001 C CNN
+	1    5800 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61D752BC
+P 9500 2950
+F 0 "#PWR?" H 9500 2700 50  0001 C CNN
+F 1 "GND" H 9505 2777 50  0000 C CNN
+F 2 "" H 9500 2950 50  0001 C CNN
+F 3 "" H 9500 2950 50  0001 C CNN
+	1    9500 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61D9CA17
+P 9500 5150
+F 0 "#PWR?" H 9500 4900 50  0001 C CNN
+F 1 "GND" H 9505 4977 50  0000 C CNN
+F 2 "" H 9500 5150 50  0001 C CNN
+F 3 "" H 9500 5150 50  0001 C CNN
+	1    9500 5150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61DC40A7
+P 13250 5150
+F 0 "#PWR?" H 13250 4900 50  0001 C CNN
+F 1 "GND" H 13255 4977 50  0000 C CNN
+F 2 "" H 13250 5150 50  0001 C CNN
+F 3 "" H 13250 5150 50  0001 C CNN
+	1    13250 5150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13250 2950 13250 2750
+$Comp
+L power:GND #PWR?
+U 1 1 61DFFF36
+P 13250 2950
+F 0 "#PWR?" H 13250 2700 50  0001 C CNN
+F 1 "GND" H 13255 2777 50  0000 C CNN
+F 2 "" H 13250 2950 50  0001 C CNN
+F 3 "" H 13250 2950 50  0001 C CNN
+	1    13250 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61E28714
+P 8850 7350
+F 0 "#PWR?" H 8850 7100 50  0001 C CNN
+F 1 "GND" H 8855 7177 50  0000 C CNN
+F 2 "" H 8850 7350 50  0001 C CNN
+F 3 "" H 8850 7350 50  0001 C CNN
+	1    8850 7350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61E4FCA9
+P 10250 7450
+F 0 "#PWR?" H 10250 7200 50  0001 C CNN
+F 1 "GND" H 10255 7277 50  0000 C CNN
+F 2 "" H 10250 7450 50  0001 C CNN
+F 3 "" H 10250 7450 50  0001 C CNN
+	1    10250 7450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61E7733D
+P 10800 6800
+F 0 "#PWR?" H 10800 6550 50  0001 C CNN
+F 1 "GND" H 10805 6627 50  0000 C CNN
+F 2 "" H 10800 6800 50  0001 C CNN
+F 3 "" H 10800 6800 50  0001 C CNN
+	1    10800 6800
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61E9F62C
+P 14650 7550
+F 0 "#PWR?" H 14650 7300 50  0001 C CNN
+F 1 "GND" H 14655 7377 50  0000 C CNN
+F 2 "" H 14650 7550 50  0001 C CNN
+F 3 "" H 14650 7550 50  0001 C CNN
+	1    14650 7550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61EC8806
+P 13250 9100
+F 0 "#PWR?" H 13250 8850 50  0001 C CNN
+F 1 "GND" H 13255 8927 50  0000 C CNN
+F 2 "" H 13250 9100 50  0001 C CNN
+F 3 "" H 13250 9100 50  0001 C CNN
+	1    13250 9100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61EDC429
+P 14400 9100
+F 0 "#PWR?" H 14400 8850 50  0001 C CNN
+F 1 "GND" H 14405 8927 50  0000 C CNN
+F 2 "" H 14400 9100 50  0001 C CNN
+F 3 "" H 14400 9100 50  0001 C CNN
+	1    14400 9100
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
