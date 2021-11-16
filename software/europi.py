@@ -42,7 +42,7 @@ class output:
         
 
 def get_output_calibration_data():
-    with open('lib/calibration_data.txt', 'r') as data:
+    with open('lib/calibration.txt', 'r') as data:
         data = data.readlines()
         OUTPUT_GAIN_ERROR = float(data[3].replace('\n',''))
         OUTPUT_VOLTAGE_MULTIPLIER = float(data[4].replace('\n',''))
@@ -50,7 +50,7 @@ def get_output_calibration_data():
 
 
 def get_input_calibration_data():
-    with open('lib/calibration_data.txt', 'r') as data:
+    with open('lib/calibration.txt', 'r') as data:
         data = data.readlines()
         INPUT_GAIN_ERROR = float(data[0].replace('\n',''))
         INPUT_OFFSET_ERROR = float(data[1].replace('\n',''))
@@ -130,3 +130,4 @@ if __name__ == '__main__':
     None
         
     
+
