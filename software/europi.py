@@ -1,5 +1,6 @@
 from machine import Pin, PWM, ADC, I2C
 from ssd1306 import SSD1306_I2C
+from time import sleep
 
 
 oled = SSD1306_I2C(128, 32, I2C(0, sda=Pin(0), scl=Pin(1), freq=400000))
@@ -18,7 +19,7 @@ class output:
         self.output.freq(1000000)
         self.pin = pin
         self.current_duty = 0
-        self.gain_error, self.voltage_multiplier = get_output_calibration_data()
+        self.output_multiplier = get_output_calibration_data()
         
     def clamp(self, value):
         return max(min(value, 65534), 0)
@@ -29,10 +30,10 @@ class output:
         self.current_duty = cycle
         
     def duty(self, cycle):
-        self.duty_raw(cycle * self.gain_error)
+        self.duty_raw(cycle)
         
     def voltage(self, voltage):
-        self.duty(voltage * self.voltage_multiplier)
+        self.duty(voltage * self.output_multiplier)
         
     def on(self):
         self.voltage(5)
@@ -44,18 +45,16 @@ class output:
 def get_output_calibration_data():
     with open('lib/calibration.txt', 'r') as data:
         data = data.readlines()
-        OUTPUT_GAIN_ERROR = float(data[3].replace('\n',''))
-        OUTPUT_VOLTAGE_MULTIPLIER = float(data[4].replace('\n',''))
-    return OUTPUT_GAIN_ERROR, OUTPUT_VOLTAGE_MULTIPLIER
+        OUTPUT_MULTIPLIER = float(data[2].replace('\n',''))
+    return OUTPUT_MULTIPLIER
 
 
 def get_input_calibration_data():
     with open('lib/calibration.txt', 'r') as data:
         data = data.readlines()
-        INPUT_GAIN_ERROR = float(data[0].replace('\n',''))
-        INPUT_OFFSET_ERROR = float(data[1].replace('\n',''))
-        INPUT_VOLTAGE_MULTIPLIER = float(data[2].replace('\n',''))
-        return INPUT_GAIN_ERROR, INPUT_OFFSET_ERROR, INPUT_VOLTAGE_MULTIPLIER
+        INPUT_MULTIPLIER = float(data[0].replace('\n',''))
+        INPUT_OFFSET = float(data[1].replace('\n',''))
+        return INPUT_MULTIPLIER, INPUT_OFFSET
 
 
 def sample_adc(adc, samples=256):
@@ -67,16 +66,16 @@ def sample_adc(adc, samples=256):
 class analogue_input:
     def __init__(self, pin):
         self.input = ADC(Pin(pin))
-        self.gain_error, self.offset_error, self.voltage_multiplier = get_input_calibration_data()
+        self.input_multiplier, self.input_offset = get_input_calibration_data()
     
     def read_raw(self, samples=256):
         return sample_adc(self.input, samples)
     
     def read_duty(self):
-        return ((self.read_raw() + self.offset_error) * self.gain_error)
+        return self.read_raw()
     
     def read_voltage(self):
-        return self.read_duty() / self.voltage_multiplier
+        return (self.read_duty() * self.input_multiplier) + self.input_offset
 
 
 class knob:
@@ -126,8 +125,66 @@ k1 = knob(27)
 k2 = knob(28)
 
 
-if __name__ == '__main__':
-    None
-        
-    
+#General use functions
+def centre_text(text):
+    oled.fill(0)
+    lines = text.split('\n')[0:3]
+    x = len(lines)
+    heights = [int((-5*x)+15),int((-5*x)+25),int((-10*x)+50)] #This is a disgusting line, just trust me it works
+    for line in lines:
+        oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
 
+
+
+if __name__ == '__main__':
+    def wait_for_range(low, high):
+        while ain.read_raw() < low or ain.read_raw() > high:
+            sleep(0.05)
+            
+    def wait_and_show(low, high):
+        wait_for_range(low, high)
+        centre_text('Calibrating...')
+        oled.show()
+        sleep(2)
+            
+    LOW_VOLTAGE = 1 #Change these values if you have easier access to alternative accurate voltage sources
+    HIGH_VOLTAGE = 10 #Make sure you still use as wide a range as you can and keep it within the 0-10V range
+    
+    low_threshold_low = (270*LOW_VOLTAGE)-150
+    low_threshold_high = (270*LOW_VOLTAGE)+150
+    high_threshold_low = (270*HIGH_VOLTAGE)-150
+    high_threshold_high = (270*HIGH_VOLTAGE)+150
+    
+    centre_text('Welcome\nto the\ncalibrator')
+    oled.show()
+    sleep(3)
+    if ain.read_raw() > 100:
+        centre_text('Please unplug\nall patch\ncables')
+        oled.show()
+    wait_for_range(0, 100)
+    centre_text('Plug 1V into\nanalogue input')
+    oled.show()
+    wait_and_show(low_threshold_low, low_threshold_high)
+    low_reading = ain.read_raw(4096)
+    centre_text('Now plug 10V\ninto analogue\ninput')
+    oled.show()
+    wait_and_show(high_threshold_low, high_threshold_high)
+    high_reading = ain.read_raw(4096)
+    
+    input_multiplier = (HIGH_VOLTAGE - LOW_VOLTAGE) / (high_reading - low_reading)
+    input_offset = HIGH_VOLTAGE - (input_multiplier * high_reading)
+    
+    centre_text('Please unplug\nall patch\ncables')
+    oled.show()
+    wait_for_range(0, 100)
+    centre_text('Plug output 1\ninto analogue\ninput')
+    oled.show()
+    cv1.duty_raw(65534)
+    wait_and_show(high_threshold_low, high_threshold_high)
+    output_multiplier = 65534 / ((ain.read_raw(4096) * input_multiplier) + input_offset)
+
+    with open('lib/calibration.txt', 'w') as file:
+        file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
+
+    centre_text('Calibration\ncomplete!')
+    oled.show()
