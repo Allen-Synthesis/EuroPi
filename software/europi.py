@@ -12,10 +12,7 @@ oled = SSD1306_I2C(128, 32, I2C(0, sda=Pin(0), scl=Pin(1), freq=400000))
 oled.fill(0)
 oled.show()
 
-button1 = Pin(4, Pin.IN)
-button2 = Pin(5, Pin.IN)
 
-din = Pin(22, Pin.IN)
 
 
 class output:
@@ -116,22 +113,22 @@ def clamp(value, low, high):
     return max(min(value, high), low)
 
 
+button1 = Pin(4, Pin.IN)
+button2 = Pin(5, Pin.IN)
+k1 = knob(27)
+k2 = knob(28)
+din = Pin(22, Pin.IN)
 ain = analogue_input(26)
-
 cv1 = output(21)
 cv2 = output(20)
 cv3 = output(16)
 cv4 = output(17)
 cv5 = output(18)
 cv6 = output(19)
-
 cvs = [cv1, cv1, cv3, cv4, cv5, cv6]
-
-for cv in cvs:
+for cv in cvs: #When imported, all outputs are turned off. This is because otherwise the op-amps may be left 'floating' and output unpredictable voltages
     cv.duty(0)
     
-k1 = knob(27)
-k2 = knob(28)
 
 
 
