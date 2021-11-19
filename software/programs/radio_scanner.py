@@ -16,13 +16,13 @@ def button_1_handler(pin):
     button1.irq(handler=button_1_handler)
 button1.irq(trigger=Pin.IRQ_FALLING, handler=button_1_handler)
 
-def digital_input_handler(pin): 
-    digital_input.irq(handler=None)
+def din_handler(pin): 
+    din.irq(handler=None)
     
     rotate_cvs()
     
-    digital_input.irq(handler=digital_input_handler)
-digital_input.irq(trigger=Pin.IRQ_FALLING, handler=digital_input_handler)
+    din.irq(handler=din_handler)
+din.irq(trigger=Pin.IRQ_FALLING, handler=din_handler)
 
 
 def button_2_handler(pin): 
@@ -109,12 +109,12 @@ while True:
     if knob_mapping != 1:
         x = k1.read_position(4096)
     else:
-        x = ain.read_raw() + k1.read_position(4096)
+        x = ain.read_duty() + k1.read_position(4096)
         
     if knob_mapping != 2:
         y = k2.read_position(4096)
     else:
-        y = ain.read_raw() + k2.read_position(4096)
+        y = ain.read_duty() + k2.read_position(4096)
     
     do_step(x, y)
     
