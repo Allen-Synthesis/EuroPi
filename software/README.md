@@ -15,17 +15,14 @@ This work-around will allow access to the functions without error, but it won't 
 ## Calibration.txt
 | Line | Meaning |
 | ------------- | ----------- |
-|1|ADC gain error
-|2|ADC offset error
-|3|ADC voltage multiplier
-|4|Output gain error
-|5|Output voltage multiplier
+|1|ADC voltage multiplier
+|2|ADC offset (in volts)
+|3|Output voltage multiplier
 
 ## Outputs
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
-|duty_raw|Sets the output based on a fixed duty cycle|duty_cycle
-|duty|Sets the output based on a fixed duty cycle, offset and gain adjusted to be accurate|duty_cycle
+|duty|Sets the output based on a fixed duty cycle|duty
 |voltage|Sets the output to a fixed voltage|voltage
 |on|Sets the output to 5V|n/a
 |off|Sets the output to 0V|n/a
