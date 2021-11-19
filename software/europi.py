@@ -26,12 +26,9 @@ class output:
         self.current_duty = 0
         self.output_multiplier = get_output_calibration_data()
         
-    def clamp(self, value):
-        return max(min(value, 65534), 0)
-        
     def duty(self, cycle):
         cycle = int(cycle)
-        self.output.duty_u16(self.clamp(cycle))
+        self.output.duty_u16(clamp(cycle, 0, 65534))
         self.current_duty = cycle
         
     def voltage(self, voltage):
@@ -71,10 +68,10 @@ class analogue_input:
         self.input_multiplier, self.input_offset = get_input_calibration_data()
 
     def read_duty(self, samples=256):
-        return sample_adc(self.input, samples)
+        return clamp(sample_adc(self.input, samples), 0, 65535)
     
     def read_voltage(self):
-        return (self.read_duty() * self.input_multiplier) + self.input_offset
+        return clamp((self.read_duty() * self.input_multiplier) + self.input_offset, 0, 12)
 
 
 class knob:
@@ -106,6 +103,19 @@ def button_2_handler(pin):
 button2.irq(trigger=Pin.IRQ_FALLING, handler=button_2_handler)
 
 
+#General use functions
+def centre_text(text):
+    oled.fill(0)
+    lines = text.split('\n')[0:3]
+    x = len(lines)
+    heights = [int((-5*x)+15),int((-5*x)+25),int((-10*x)+50)] #This is a disgusting line, just trust me it works
+    for line in lines:
+        oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
+
+def clamp(value, low, high):
+    return max(min(value, high), low)
+
+
 ain = analogue_input(26)
 
 cv1 = output(21)
@@ -124,22 +134,16 @@ k1 = knob(27)
 k2 = knob(28)
 
 
-#General use functions
-def centre_text(text):
-    oled.fill(0)
-    lines = text.split('\n')[0:3]
-    x = len(lines)
-    heights = [int((-5*x)+15),int((-5*x)+25),int((-10*x)+50)] #This is a disgusting line, just trust me it works
-    for line in lines:
-        oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
-
-
 
 #Calibration program. Run this program to calibrate the module
 if __name__ == '__main__':
     def wait_for_range(low, high):
         while ain.read_duty() < low or ain.read_duty() > high:
             sleep(0.05)
+            
+    def centre_and_show(text):
+        centre_text(text)
+        oled.show()
             
     def wait_and_show(low, high):
         wait_for_range(low, high)
@@ -155,36 +159,31 @@ if __name__ == '__main__':
     high_threshold_low = (270*HIGH_VOLTAGE)-150
     high_threshold_high = (270*HIGH_VOLTAGE)+150
     
-    centre_text('Welcome\nto the\ncalibrator')
-    oled.show()
+    samples = 8192
+    
+    centre_and_show('Welcome\nto the\ncalibrator')
     sleep(3)
     if ain.read_duty() > 100:
-        centre_text('Please unplug\nall patch\ncables')
-        oled.show()
+        centre_and_show('Please unplug\nall patch\ncables')
     wait_for_range(0, 100)
-    centre_text('Plug 1V into\nanalogue input')
-    oled.show()
+    centre_and_show('Plug 1V into\nanalogue input')
     wait_and_show(low_threshold_low, low_threshold_high)
-    low_reading = ain.read_duty(4096)
-    centre_text('Now plug 10V\ninto analogue\ninput')
-    oled.show()
+    low_reading = ain.read_duty(samples)
+    centre_and_show('Now plug 10V\ninto analogue\ninput')
     wait_and_show(high_threshold_low, high_threshold_high)
-    high_reading = ain.read_duty(4096)
+    high_reading = ain.read_duty(samples)
     
     input_multiplier = (HIGH_VOLTAGE - LOW_VOLTAGE) / (high_reading - low_reading)
     input_offset = HIGH_VOLTAGE - (input_multiplier * high_reading)
     
-    centre_text('Please unplug\nall patch\ncables')
-    oled.show()
+    centre_and_show('Please unplug\nall patch\ncables')
     wait_for_range(0, 100)
-    centre_text('Plug output 1\ninto analogue\ninput')
-    oled.show()
+    centre_and_show('Plug output 1\ninto analogue\ninput')
     cv1.duty(65534)
     wait_and_show(high_threshold_low, high_threshold_high)
-    output_multiplier = 65534 / ((ain.read_duty(4096) * input_multiplier) + input_offset)
+    output_multiplier = 65534 / ((ain.read_duty(samples) * input_multiplier) + input_offset)
 
     with open('lib/calibration.txt', 'w') as file:
         file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
 
-    centre_text('Calibration\ncomplete!')
-    oled.show()
+    centre_and_show('Calibration\ncomplete!')
