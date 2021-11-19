@@ -13,6 +13,42 @@ oled.fill(0)
 oled.show()
 
 
+        
+        
+#General use functions
+def centre_text(text):
+    oled.fill(0)
+    lines = text.split('\n')[0:3]
+    x = len(lines)
+    heights = [int((-5*x)+15),int((-5*x)+25),int((-10*x)+50)] #This is a disgusting line, just trust me it works
+    for line in lines:
+        oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
+
+def clamp(value, low, high):
+    return max(min(value, high), low)
+        
+def get_output_calibration_data():
+    with open('lib/calibration.txt', 'r') as data:
+        data = data.readlines()
+        OUTPUT_MULTIPLIER = float(data[2].replace('\n',''))
+    return OUTPUT_MULTIPLIER
+
+def get_input_calibration_data():
+    with open('lib/calibration.txt', 'r') as data:
+        data = data.readlines()
+        INPUT_MULTIPLIER = float(data[0].replace('\n',''))
+        INPUT_OFFSET = float(data[1].replace('\n',''))
+        return INPUT_MULTIPLIER, INPUT_OFFSET
+
+def sample_adc(adc, samples=256):
+    values = []
+    for sample in range(samples):
+        values.append(adc.read_u16() / 16)
+    return round(sum(values) / len(values))
+
+
+
+
 class output:
     def __init__(self, pin):
         self.output = PWM(Pin(pin))
@@ -34,28 +70,6 @@ class output:
     
     def off(self):
         self.duty(0)
-        
-
-def get_output_calibration_data():
-    with open('lib/calibration.txt', 'r') as data:
-        data = data.readlines()
-        OUTPUT_MULTIPLIER = float(data[2].replace('\n',''))
-    return OUTPUT_MULTIPLIER
-
-
-def get_input_calibration_data():
-    with open('lib/calibration.txt', 'r') as data:
-        data = data.readlines()
-        INPUT_MULTIPLIER = float(data[0].replace('\n',''))
-        INPUT_OFFSET = float(data[1].replace('\n',''))
-        return INPUT_MULTIPLIER, INPUT_OFFSET
-
-
-def sample_adc(adc, samples=256):
-    values = []
-    for sample in range(samples):
-        values.append(adc.read_u16() / 16)
-    return round(sum(values) / len(values))
 
 class analogue_input:
     def __init__(self, pin):
@@ -67,7 +81,6 @@ class analogue_input:
     
     def read_voltage(self):
         return clamp((self.read_duty() * self.input_multiplier) + self.input_offset, 0, 12)
-
 
 class knob:
     def __init__(self, pin):
@@ -115,21 +128,6 @@ def button_2_handler(pin):
     #function
     button2.irq(handler=button_2_handler)
 button2.irq(trigger=Pin.IRQ_FALLING, handler=button_2_handler)
-
-
-
-
-#General use functions
-def centre_text(text):
-    oled.fill(0)
-    lines = text.split('\n')[0:3]
-    x = len(lines)
-    heights = [int((-5*x)+15),int((-5*x)+25),int((-10*x)+50)] #This is a disgusting line, just trust me it works
-    for line in lines:
-        oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
-
-def clamp(value, low, high):
-    return max(min(value, high), low)
     
 
 
