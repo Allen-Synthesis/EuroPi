@@ -13,14 +13,14 @@ oled.fill(0)
 oled.show()
 
 
-        
+
         
 #General use functions
 def centre_text(text):
     oled.fill(0)
     lines = text.split('\n')[0:3]
-    x = len(lines)
-    heights = [int((-5*x)+15),int((-5*x)+25),int((-10*x)+50)] #This is a disgusting line, just trust me it works
+    center_line_height = int((-5 * len(lines)) + 25)
+    heights = [center_line_height - 10, center_line_height, 2 * center_line_height]
     for line in lines:
         oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
 
