@@ -13,8 +13,6 @@ oled.fill(0)
 oled.show()
 
 
-
-
 class output:
     def __init__(self, pin):
         self.output = PWM(Pin(pin))
@@ -79,38 +77,6 @@ class knob:
         return round(steps - ((sample_adc(self.input, samples) / 4096) * steps))
 
 
-def din_handler(pin): 
-    din.irq(handler=None)
-    #function
-    din.irq(handler=din_handler)
-din.irq(trigger=Pin.IRQ_FALLING, handler=din_handler)
-
-
-def button_1_handler(pin): 
-    button1.irq(handler=None)
-    #function
-    button1.irq(handler=button_1_handler)
-button1.irq(trigger=Pin.IRQ_FALLING, handler=button_1_handler)
-
-
-def button_2_handler(pin): 
-    button2.irq(handler=None)
-    #function
-    button2.irq(handler=button_2_handler)
-button2.irq(trigger=Pin.IRQ_FALLING, handler=button_2_handler)
-
-
-#General use functions
-def centre_text(text):
-    oled.fill(0)
-    lines = text.split('\n')[0:3]
-    x = len(lines)
-    heights = [int((-5*x)+15),int((-5*x)+25),int((-10*x)+50)] #This is a disgusting line, just trust me it works
-    for line in lines:
-        oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
-
-def clamp(value, low, high):
-    return max(min(value, high), low)
 
 
 button1 = Pin(4, Pin.IN)
@@ -128,6 +94,42 @@ cv6 = output(19)
 cvs = [cv1, cv1, cv3, cv4, cv5, cv6]
 for cv in cvs: #When imported, all outputs are turned off. This is because otherwise the op-amps may be left 'floating' and output unpredictable voltages
     cv.duty(0)
+
+
+
+
+def din_handler(pin): 
+    din.irq(handler=None)
+    #function
+    din.irq(handler=din_handler)
+din.irq(trigger=Pin.IRQ_FALLING, handler=din_handler)
+
+def button_1_handler(pin): 
+    button1.irq(handler=None)
+    #function
+    button1.irq(handler=button_1_handler)
+button1.irq(trigger=Pin.IRQ_FALLING, handler=button_1_handler)
+
+def button_2_handler(pin): 
+    button2.irq(handler=None)
+    #function
+    button2.irq(handler=button_2_handler)
+button2.irq(trigger=Pin.IRQ_FALLING, handler=button_2_handler)
+
+
+
+
+#General use functions
+def centre_text(text):
+    oled.fill(0)
+    lines = text.split('\n')[0:3]
+    x = len(lines)
+    heights = [int((-5*x)+15),int((-5*x)+25),int((-10*x)+50)] #This is a disgusting line, just trust me it works
+    for line in lines:
+        oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
+
+def clamp(value, low, high):
+    return max(min(value, high), low)
     
 
 
