@@ -1,7 +1,7 @@
 ---
 name: Question
 about: Ask any question about the project, or request more documentation or files
-title: "[Question]"
+title: "[Question / Request]"
 labels: question
 assignees: ''
 
