@@ -31,6 +31,10 @@ You can find more about this (including a project diary) and other projects of m
 Please see the README.md files in the hardware and software folders for more specific information about each, including hardware specifications and how to use the *europi.py* library.
 
 
+### Issues
+If you find any bugs, either in the software, the hardware, or the documentation, please create an Issue on this repository by copy and pasting the [Issue Template](https://github.com/Allen-Synthesis/EuroPi/blob/main/.github/ISSUE_TEMPLATE/bug-report---hardware-issue.md) into a new Issue.
+
+
 ### License
 
 This module, and any documentation included in this repository, is entirely "free" software and hardware, under the Creative Commons Share-Alike 4.0.  
