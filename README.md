@@ -32,7 +32,9 @@ Please see the README.md files in the hardware and software folders for more spe
 
 
 ### Issues
-If you find any bugs, either in the software, the hardware, or the documentation, please create an Issue on this repository by copy and pasting the [Issue Template](https://github.com/Allen-Synthesis/EuroPi/blob/main/.github/ISSUE_TEMPLATE/bug-report---hardware-issue.md) into a new Issue.
+If you find any bugs, either in the software, the hardware, or the documentation, please create an Issue by clicking the 'Issue' tab along the top.  
+Please feel free to create any issue you see fit, I'll either attempt to fix it or explain it.  
+There is also an Issue Template for questions, so if you wish to ask anything about the project, or request more documentation or files, that is the way to do it.
 
 
 ### License
