@@ -7,7 +7,10 @@ It should be imported into any custom program by using 'from europi import \*' t
 Inputs and outputs are used as objects, which each have methods to allow them to be used.  
 These methods are used by using the name of the object, for example 'cv3' followed by a '.' and then the method name, and finally a pair of brackets containing any parameters that the method requires.  
   
-For example: cv3.voltage(4.5)  
+For example: 
+```
+cv3.voltage(4.5)  
+```
 Will set the CV output 3 to a voltage of 4.5V.  
 
 ## Outputs
