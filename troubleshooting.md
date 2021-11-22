@@ -17,8 +17,8 @@ This means that your device is either not connected, or not being detected.
 #### Steps to fix
 1. Make sure the USB cable is connected firmly to both the Pico and your computer
 2. Make sure your USB cable is capable of data transfer rather than just power
-3. Re-flash the firmware using 'raspberry-pi-pico-firmware.uf2' by following the process set out in the [programming instructions](https://allensynthesis.co.uk/europi/europi-programming.html)
-4. Re-flash the firmware using the 'flash_nuke.uf2', and then re-flash it again using 'raspberry-pi-pico-firmware.uf2'
+3. Re-flash the firmware using 'firmware.uf2' by following the process set out in the [programming instructions](https://allensynthesis.co.uk/europi/europi-programming.html)
+4. Re-flash the firmware using the 'flash_nuke.uf2', and then re-flash it again using 'firmware.uf2'
 
 
 ## OSError: [Errno 5] EIO
