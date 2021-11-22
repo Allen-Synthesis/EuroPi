@@ -1,15 +1,13 @@
 ---
-name: Standard Issue
-about: Report any issue with hardware, software, or documentation
+name: Bug Report
+about: Report any issue with software
 title: "[Bug Report]"
 labels: bug
 assignees: ''
 
 ---
 
-# Bug Report / Hardware Issue (delete as appropriate)
-
-*Change the labels and title according to the content of the issue (delete this text)*
+# Bug Report
 
 **Describe the bug**  
 A clear and concise description of what the bug is.
