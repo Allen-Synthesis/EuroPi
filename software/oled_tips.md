@@ -2,7 +2,10 @@
 
 The OLED (Organic Light-Emitting Diode) used in the EuroPi is a 128x32px 0.91" display, which uses the SSD1306 driver controller.  
 The I²C protocol is used to communicate with the display, and the *micropython-ssd1306* module is used to provide this ability to communicate using useful commands.  
-The display is stored as a Python object, named *oled*, and you use methods to perform a function, such as *oled.fill(0)*.  
+The display is stored as a Python object, named *oled*, and you use methods to perform a function, such as:
+```
+oled.fill(0)
+```
 The pixels are indexed with (0, 0) at the top left, and (127, 31) at the bottom right.
 
 ## Available Methods
@@ -29,7 +32,14 @@ The reason this isn't automatic is because the actual .show() method is quite CP
 ## Extra Functions from europi.py
 
 There are also some functions provided in the EuroPi library, which are designed to make certain common uses of the OLED easier.  
-These are not methods of the OLED, but functions, so you simply run them as *function(parameter)* as opposed to *oled.method(parameter)*.
+These are not methods of the OLED, but functions, so you simply run them as 
+```
+function(parameter)
+```
+as opposed to 
+```
+oled.method(parameter)
+```
 
 | Function | Parameters | Function |
 | ------ | ---------- | -------- |
