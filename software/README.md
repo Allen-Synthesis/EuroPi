@@ -17,7 +17,7 @@ When the program has finished, you will have calibrated inputs and outputs, allo
   
 The program automatically generates a file named *calibration.txt* which is stored in the *lib* folder, and which contains the values used by the program each time *europi.py* is imported, so make sure you don't delete or modify it.  
   
-If you have not calibrated your module but wish to use methods such as *ain.read_voltage()*, you can download a sample *calibration.txt* file from this folder and place it within a folder on your Pico named *lib* manually.  
+If you have not calibrated your module but wish to use methods such as *ain.read_voltage()*, you just need to run the program once, and then stop it after about 5 seconds and a *calibration.txt* file will be generated with default values.
 This work-around will allow access to the functions without error, but it won't give you the accuracy that the actual calibration would achieve and your voltages likely wouldn't be usable for anything critical such as 1V/Oct.
 
 ### Calibration.txt
@@ -45,6 +45,8 @@ So that there is no chance of not having the full range, the chosen resistor val
 The analogue input allows you to 'read' CV from anywhere between 0 and 12V.  
   
 It is protected for the entire Eurorack range, so don't worry about plugging in a bipolar source, it will simply be clipped to 0-12V.  
+  
+The functions all take an optional parameter of samples, which will oversample the ADC and then take an average, which will take more time per reading, but will give you a statistically more accurate result. The default is 256, which I've found to be the sweet spot of performance vs accuracy, but if you want to process at the maximum speed you can use as little as 1, and the processor won't bog down until you get way up into the thousands if you wan't incredibly accurate (but quite slow) readings.
 
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
@@ -57,17 +59,4 @@ It is protected for the entire Eurorack range, so don't worry about plugging in 
 The OLED Display works by collecting all the applied commands and only updates the physical display when oled.show() is called.  
 This allows you to perform more complicated graphics without slowing your program, or to perform the calculations for other functions, but only update the display every few steps to prevent lag.
 
-| Method        | Usage       | Parameter(s)       |
-| ------------- | ----------- | ----------- |
-|text|Writes text to the display|string, x coordinate, y coordinate
-|line|Draws a line between two coordinates in either black (0) or white (1)|x1, y1, x2, y2, colour
-|fill|Fills the display either black (0) or white (1)|colour
-|show|Updates changes to the physical display|n/a|
-|invert|Inverts the display based on an invert value of 0 or 1|invert
-|contrast|Sets the display contrast from 0 to 255|contrast
-
-I have also created some extra functions which I find useful for common display functions.
-
-| Function        | Usage       | Parameter(s)       |
-| ------------- | ----------- | ----------- |
-|centre_text|Clear display and write centred text|one string of lines separated by '\n'
+More explanations and tips about the the display can be found in the [oled_tips](https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md) file
