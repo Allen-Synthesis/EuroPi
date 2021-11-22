@@ -2,7 +2,7 @@
 name: Hardware Issue
 about: Report any issue with hardware
 title: "[Hardware Issue]"
-labels: hardware
+labels: bug
 assignees: ''
 
 ---
