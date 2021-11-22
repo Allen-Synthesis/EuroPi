@@ -40,7 +40,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 2. Copy its entire contents by selecting all and pressing Ctrl-C.
 3. Open Thonny back up and press Ctrl-N to create a new file.
 4. Paste the europi.py contents into the new file, and press Ctrl-Shift-S to save as.
-5. Choose Raspberry Pi Pico
+5. Choose Raspberry Pi Pico.
 
 ![Save to Pico](https://i.imgur.com/BTn7kAz.jpg)
 
