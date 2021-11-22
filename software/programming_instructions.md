@@ -13,24 +13,24 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 1. Download the [firmware.uf2](https://github.com/Allen-Synthesis/EuroPi/raw/main/software/firmware/firmware.uf2) file from this repository.
 2. Holding down the white button on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
 3. Open your file manager and drag and drop the downloaded firmware.uf2 onto the new drive named 'RPI-RP2'.
-4. The Pico will automatically eject once the process is completed
+4. The Pico will automatically eject once the process is completed.
 
 ### Installing the OLED library
 1. Disconnect the Pico from the USB cable.
 2. Reconnect, this time without holding down the button on the back.
 3. Open up Thonny if not already open, and go to the bottom right where you can select the interpreter.
-4. Click to select interpreter and choose 'MicroPython (Raspberry Pi Pico)'
+4. Click to select interpreter and choose 'MicroPython (Raspberry Pi Pico)'.
 
 ![Interpreter Select](https://i.imgur.com/XeRem1w.jpg)
 
 5. Click Tools -> Manage Packages to open the package manager.
 6. Type 'ssd1306' into the search box and click search.
-7. Click the result named 'micropython-ssd1306'
+7. Click the result named 'micropython-ssd1306'.
 
 ![ssd1306 library](https://i.imgur.com/7t2mWHh.jpg)
 
-8. Click 'Install'
-9. You will see that a folder has been created inside the Pico named 'lib', which contains the new file 'ssd1306.py'
+8. Click 'Install'.
+9. You will see that a folder has been created inside the Pico named 'lib', which contains the new file 'ssd1306.py'.
 
 ![ssd1306 inside lib](https://i.imgur.com/jkmeaFM.jpg)
 
