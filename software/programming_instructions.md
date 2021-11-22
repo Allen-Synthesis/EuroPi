@@ -57,6 +57,13 @@ If you wish to calibrate the module yourself, you will need access to two fixed 
   
 As soon as you run the program, a 'calibration.txt' file will be generated, which will allow you to use the module, but they are only default values and will not allow high accuracy input or output.  
   
+#### Calibration.txt
+| Line | Meaning |
+| ------------- | ----------- |
+|1|ADC voltage multiplier
+|2|ADC offset (in volts)
+|3|Output voltage multiplier
+  
 If you don't need high accuracy, you can finish at this point and begin programming (skip to the next section).
 If however you'd like your module to be able to accurately read and output specific voltages, then get ready your voltage source(s).  
 A benchtop power supply is ideal for this, but you could potentially use another Eurorack module if the voltage is accurate enough.  
