@@ -34,8 +34,13 @@ def get_output_calibration_data():
     return OUTPUT_MULTIPLIER
 
 def get_input_calibration_data():
-    with open('lib/calibration.txt', 'r') as data:
-        data = data.readlines()
+    with open('lib/calibration.txt', 'a+') as file:
+        data = file.readlines()
+        
+        if len(data) == 0:
+            file.write(str(0.003646677)+'\n'+str(-0.05753613)+'\n'+str(6347.393))
+            data = file.readlines()
+        
         INPUT_MULTIPLIER = float(data[0].replace('\n',''))
         INPUT_OFFSET = float(data[1].replace('\n',''))
         return INPUT_MULTIPLIER, INPUT_OFFSET
