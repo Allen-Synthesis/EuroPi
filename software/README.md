@@ -8,25 +8,6 @@ These methods are used by using the name of the object, for example 'cv3' follow
 For example: cv3.voltage(4.5)  
 Will set the CV output 3 to a voltage of 4.5V.  
 
-## Calibration
-The module uses the *europi.py* library file as a calibration program if run directly rather than imported. Simple connect the module to Eurorack power (this is required for the op-amps to be powered for output amplification), then connect the module to your computer via USB, and open the *europi.py* file inside the *lib* folder.  
-Now, just run the program and follow the instructions on-screen. You will need access to two accurate reference voltages.  
-By default these are 1 and 10 volts, but if you have easier access to two other values (not exceeding the range 0-10V), you can change the values of *LOW_VOLTAGE* and *HIGH_VOLTAGE* variables before you run the program. For best results make sure the values are fairly far apart, hence the choice of 1 and 10V by default.  
-  
-When the program has finished, you will have calibrated inputs and outputs, allowing you to make proper use of methods such as *ain.read_voltage()* and *cv1.voltage(x)*. This calibration only uses output 1 to calibrate the output levels, which means in theory the resistor tolerances for the other outputs could cause a slight error in amplification factor for those. For this reason, it is recommended to use output 1 as the 1V/Oct output of any program you might use, or else re-write the calibration program to calibrate each output independently (or just be happy with very slightly skewed 1V/Oct outputs from other outputs).  
-  
-The program automatically generates a file named *calibration.txt* which is stored in the *lib* folder, and which contains the values used by the program each time *europi.py* is imported, so make sure you don't delete or modify it.  
-  
-If you have not calibrated your module but wish to use methods such as *ain.read_voltage()*, you just need to run the program once, and then stop it after about 5 seconds and a *calibration.txt* file will be generated with default values.
-This work-around will allow access to the functions without error, but it won't give you the accuracy that the actual calibration would achieve and your voltages likely wouldn't be usable for anything critical such as 1V/Oct.
-
-### Calibration.txt
-| Line | Meaning |
-| ------------- | ----------- |
-|1|ADC voltage multiplier
-|2|ADC offset (in volts)
-|3|Output voltage multiplier
-
 ## Outputs
 
 The outputs are capable of providing 0-10V, which can be achieved using either the *duty()* or *voltage()* methods.  
