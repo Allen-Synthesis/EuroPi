@@ -20,3 +20,4 @@
 ## OLED
 - SSD1306 0.91"
 - 128 x 32 pixels
+- I2C Protocol
