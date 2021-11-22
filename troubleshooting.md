@@ -1,7 +1,8 @@
 # Troubleshooting the EuroPi module
 
 This document should help you fix any problems you might be having with the hardware or software of the module.  
-If you have any other issues that aren't covered in this document, please create an Issue on this GitHub repository using the template.
+If you have any other issues that aren't covered in this document, please create an Issue on this GitHub repository using the template.  
+You can search through this file for the error message you are getting or just press Ctrl-F and paste the message.
 
 ## Couldn't find the device automatically
 
@@ -38,3 +39,15 @@ This means that the Pico cannot detect the OLED display.
 1. Make sure that the solder joints between the OLED board and the PCB are secure and free of dirt
 2. If you have a multimeter, test the continuity of each pin with the appropriate pin on the Pico according to [the pinout](https://github.com/Allen-Synthesis/EuroPi/raw/main/hardware/europi_pinout.pdf)
 3. Make sure your PCB standoffs are screwed on tightly; if the two board slip apart by any more than a millimetre or two then the connection will not be made
+
+
+## Backend terminated or disconnected
+
+```diff
+- Backend terminated or disconnected. Use 'Stop/Restart' to restart.
+```
+
+The module has become disconnected from your computer.
+#### Steps to fix
+1. Try pressing Stop/Restart
+2. Follow the steps to fix for 'OS Error: [Errno 5 EIO'
