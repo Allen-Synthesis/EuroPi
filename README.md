@@ -34,7 +34,7 @@ Please see the README.md files in the hardware and software folders for more spe
 ### Issues
 If you find any bugs, either in the software, the hardware, or the documentation, please create an Issue by clicking the 'Issue' tab along the top.  
 Please feel free to create any issue you see fit, I'll either attempt to fix it or explain it.  
-There is also an Issue Template for questions, so if you wish to ask anything about the project, or request more documentation or files, that is the way to do it.
+There are Issue templates available, so please choose whichever is most relevant, depending on if your Issue is a hardware or software bug, if it's a documentation error or suggestion, if it's a question about the project as a whole, or a suggestion about the project as a whole.
 
 
 ### License
