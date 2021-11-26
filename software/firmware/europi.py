@@ -59,7 +59,7 @@ class oled_display(SSD1306_I2C):
         center_line_height = int((-5 * len(lines)) + 25)
         heights = [center_line_height - 10, center_line_height, 2 * center_line_height]
         for line in lines:
-            oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
+            self.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
 
 
 
