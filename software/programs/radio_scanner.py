@@ -76,7 +76,7 @@ def do_step(x, y):
     cvx = value_to_cv(x)
     cvy = value_to_cv(y)
     
-    oled.fill(0)
+    oled.clear()
     oled.vline(oledx, 0, 32, 1)
     oled.hline(0, oledy, 128, 1)
     
