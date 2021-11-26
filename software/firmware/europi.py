@@ -1,29 +1,15 @@
 from machine import Pin, PWM, ADC, I2C
 from ssd1306 import SSD1306_I2C
 from time import sleep
+from sys import exit
 
 
 #Rory Allen 19/11/2021 CC BY-SA 4.0
 #Import this library into your own programs using 'from europi import *'
 #You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
 
-
-oled = SSD1306_I2C(128, 32, I2C(0, sda=Pin(0), scl=Pin(1), freq=400000))
-oled.fill(0)
-oled.show()
-
-
-
         
 #General use functions
-def centre_text(text):
-    oled.fill(0)
-    lines = text.split('\n')[0:3]
-    center_line_height = int((-5 * len(lines)) + 25)
-    heights = [center_line_height - 10, center_line_height, 2 * center_line_height]
-    for line in lines:
-        oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
-
 def clamp(value, low, high):
     return max(min(value, high), low)
         
@@ -50,6 +36,30 @@ def sample_adc(adc, samples=256):
     for sample in range(samples):
         values.append(adc.read_u16() / 16)
     return round(sum(values) / len(values))
+
+
+
+
+class oled_display(SSD1306_I2C):
+    def __init__(self, sda, scl, channel=0, freq=400000):
+        self.i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
+        
+        if len(self.i2c.scan()) == 0:
+            print("\033[1;31;00mEuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
+            exit()
+            
+        super().__init__(128, 32, self.i2c)
+    
+    def clear(self):
+        self.fill(0)
+    
+    def centre_text(self, text):
+        self.clear()
+        lines = text.split('\n')[0:3]
+        center_line_height = int((-5 * len(lines)) + 25)
+        heights = [center_line_height - 10, center_line_height, 2 * center_line_height]
+        for line in lines:
+            oled.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1)
 
 
 
@@ -97,6 +107,7 @@ class knob:
 
 
 
+oled = oled_display(0, 1)
 button1 = Pin(4, Pin.IN)
 button2 = Pin(5, Pin.IN)
 k1 = knob(27)
@@ -144,12 +155,12 @@ if __name__ == '__main__':
             sleep(0.05)
             
     def centre_and_show(text):
-        centre_text(text)
+        oled.centre_text(text)
         oled.show()
             
     def wait_and_show(low, high):
         wait_for_range(low, high)
-        centre_text('Calibrating...')
+        oled.centre_text('Calibrating...')
         oled.show()
         sleep(2)
             
