@@ -21,17 +21,11 @@ This means that your device is either not connected, or not being detected.
 4. Re-flash the firmware using the 'flash_nuke.uf2', and then re-flash it again using 'firmware.uf2'
 
 
-## OSError: [Errno 5] EIO
+## EuroPi Hardware Error
 
 ```diff
-- Traceback (most recent call last):
-- File "<stdin>", line 1, in <module>
-- File "/lib/europi.py", line 11, in <module>
-- File "/lib/ssd1306.py", line 110, in __init__
-- File "/lib/ssd1306.py", line 36, in __init__
-- File "/lib/ssd1306.py", line 71, in init_display
-- File "/lib/ssd1306.py", line 115, in write_cmd
-- OSError: [Errno 5] EIO
+- EuroPi Hardware Error:
+- Make sure the OLED display is connected correctly
 ```
 
 This means that the Pico cannot detect the OLED display.
@@ -50,4 +44,4 @@ This means that the Pico cannot detect the OLED display.
 The module has become disconnected from your computer.
 #### Steps to fix
 1. Try pressing Stop/Restart
-2. Follow the steps to fix for 'OS Error: [Errno 5 EIO'
+2. Follow the steps to fix for 'EuroPi Hardware Error'
