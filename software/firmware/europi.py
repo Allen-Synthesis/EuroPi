@@ -55,7 +55,10 @@ class oled_display(SSD1306_I2C):
     
     def centre_text(self, text):
         self.clear()
-        lines = text.split('\n')[0:3]
+        lines = text.split('\n')
+        if len(lines) > 3:
+            print("\033[1;31;00mEuroPi Software Error:\nOLED cannot print more than 3 lines of text")
+            return
         center_line_height = int((-5 * len(lines)) + 25)
         heights = [center_line_height - 10, center_line_height, 2 * center_line_height]
         for line in lines:
