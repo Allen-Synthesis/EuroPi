@@ -55,7 +55,11 @@ class oled_display(SSD1306_I2C):
     
     def centre_text(self, text):
         self.clear()
-        lines = text.split('\n')
+        try:
+            lines = text.split('\n')
+        except:
+            print("\033[1;31;00mEuroPi Software Error:\ncentre.text() only accepts string")
+            return
         if len(lines) > 3:
             print("\033[1;31;00mEuroPi Software Error:\nOLED cannot print more than 3 lines of text")
             return
@@ -88,6 +92,12 @@ class output:
     
     def off(self):
         self.duty(0)
+    
+    def toggle(self):
+        if self.current_duty > 500:
+            self.off()
+        else:
+            self.on()
 
 class analogue_input:
     def __init__(self, pin):
@@ -97,8 +107,8 @@ class analogue_input:
     def read_duty(self, samples=256):
         return clamp(sample_adc(self.input, samples), 0, 65535)
     
-    def read_voltage(self):
-        return clamp((self.read_duty() * self.input_multiplier) + self.input_offset, 0, 12)
+    def read_voltage(self, samples=256):
+        return clamp((self.read_duty(samples) * self.input_multiplier) + self.input_offset, 0, 12)
 
 class knob:
     def __init__(self, pin):
