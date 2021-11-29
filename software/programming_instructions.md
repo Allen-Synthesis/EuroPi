@@ -10,7 +10,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
 ### Installing the firmware
-1. Download the [firmware.uf2](https://github.com/Allen-Synthesis/EuroPi/raw/main/software/firmware/firmware.uf2) file from this repository.
+1. Download the [firmware.uf2](/software/firmware/firmware.uf2) file from this repository.
 2. Holding down the white button on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
 3. Open your file manager and drag and drop the downloaded firmware.uf2 onto the new drive named 'RPI-RP2'.
 4. The Pico will automatically eject once the process is completed.
@@ -36,7 +36,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
 ### Installing the europi library
 
-1. Open the [europi.py](https://github.com/Allen-Synthesis/EuroPi/blob/main/software/firmware/europi.py) file from this repository.
+1. Open the [europi.py](/software/firmware/europi.py) file from this repository.
 2. Copy its entire contents by selecting all and pressing Ctrl-C.
 3. Open Thonny back up and press Ctrl-N to create a new file.
 4. Paste the europi.py contents into the new file, and press Ctrl-Shift-S to save as.
@@ -86,4 +86,4 @@ Now import the entire europi library by simply adding the line 'from europi impo
 
 ![From europi import](https://i.imgur.com/UK3nJcV.jpg)
 
-Now you have access to the inputs and outputs using easy methods, which you can read about more in the [README.md](https://github.com/Allen-Synthesis/EuroPi/blob/main/software/README.md) of the software folder.
+Now you have access to the inputs and outputs using easy methods, which you can read about more in the [README.md](/software/README.md) of the software folder.

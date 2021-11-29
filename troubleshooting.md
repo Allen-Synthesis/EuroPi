@@ -17,7 +17,7 @@ This means that your device is either not connected, or not being detected.
 #### Steps to fix
 1. Make sure the USB cable is connected firmly to both the Pico and your computer
 2. Make sure your USB cable is capable of data transfer rather than just power
-3. Re-flash the firmware using 'firmware.uf2' by following the process set out in the [programming instructions](https://allensynthesis.co.uk/europi/europi-programming.html)
+3. Re-flash the firmware using 'firmware.uf2' by following the process set out in the [programming instructions](/software/programming_instructions.md)
 4. Re-flash the firmware using the 'flash_nuke.uf2', and then re-flash it again using 'firmware.uf2'
 
 
@@ -31,7 +31,7 @@ This means that your device is either not connected, or not being detected.
 This means that the Pico cannot detect the OLED display.
 #### Steps to fix
 1. Make sure that the solder joints between the OLED board and the PCB are secure and free of dirt
-2. If you have a multimeter, test the continuity of each pin with the appropriate pin on the Pico according to [the pinout](https://github.com/Allen-Synthesis/EuroPi/raw/main/hardware/europi_pinout.pdf)
+2. If you have a multimeter, test the continuity of each pin with the appropriate pin on the Pico according to [the pinout](hardware/europi_pinout.pdf)
 3. Make sure your PCB standoffs are screwed on tightly; if the two board slip apart by any more than a millimetre or two then the connection will not be made
 
 

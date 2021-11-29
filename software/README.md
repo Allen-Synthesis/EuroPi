@@ -1,7 +1,7 @@
 # EuroPi Library
 
-Before using any of this library, follow the instructions in [programming_instructions.md](https://github.com/Allen-Synthesis/EuroPi/blob/main/software/programming_instructions.md) to set up your module.  
-  
+Before using any of this library, follow the instructions in [programming_instructions.md](/software/programming_instructions.md) to set up your module.  
+
 The EuroPi library is a single file named *europi.py*.  
 It should be imported into any custom program by using 'from europi import \*' to give you full access to the functions within, which are outlined below.  
 Inputs and outputs are used as objects, which each have methods to allow them to be used.  
@@ -45,4 +45,4 @@ The functions all take an optional parameter of samples, which will oversample t
 The OLED Display works by collecting all the applied commands and only updates the physical display when oled.show() is called.  
 This allows you to perform more complicated graphics without slowing your program, or to perform the calculations for other functions, but only update the display every few steps to prevent lag.
 
-More explanations and tips about the the display can be found in the [oled_tips](https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md) file
+More explanations and tips about the the display can be found in the [oled_tips](/software/oled_tips.md) file
