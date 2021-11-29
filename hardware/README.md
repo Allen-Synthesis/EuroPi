@@ -1,5 +1,8 @@
 # Hardware Specifications
 
+### Note:
+The PCB files have been temporarily removed to prevent people from creating their own before the files have been tested. I do not want to risk anyone creating something based on unfinished designs. Rest assured once they have been tested, the files will be available in this folder.
+
 ## Outputs
 - 1k Output Impedance
 - RC filter smoothed PWM
