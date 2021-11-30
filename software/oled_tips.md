@@ -36,7 +36,7 @@ These can be accessed the same way as the predefined methods listed above, and y
 
 | Method | Parameters | Function |
 | ------ | ---------- | -------- |
-|centre_text|string|Takes a string of up to 3 lines separated by '\n', and displays them centered vertically and horizontally|
+|centre_text|string|Takes a string of up to 3 lines separated by '\n', and displays them centred vertically and horizontally|
 
 ### centre_text example
 Python Program             |  OLED Result
