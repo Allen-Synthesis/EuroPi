@@ -11,7 +11,7 @@ If you have bought only a Panel + PCB kit, you will need to also buy all of the 
 
 ## Assembly Preparation
 
-Before you begin assembly, I reccommend first grouping your components into these categories, either in little bags or just on the top of your work surface.  
+Before you begin assembly, I recommend first grouping your components into these categories, either in little bags or just on the top of your work surface.  
 You have likely already checked your Bill of Materials, but I would still suggest double checking that you have the specified number of each component in each category to prevent any disappointment half-way through the build.
 
 #### Boards
