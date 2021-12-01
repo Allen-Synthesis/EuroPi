@@ -68,8 +68,7 @@ You have likely already checked your Bill of Materials, but I would still sugges
 The basic process of the assembly is simply soldering all of the components for each category listed above in order (with some exceptions), with certain tests along the way if you want to be safe.  
 
 ### Power Supply Soldering
-
-This section only relates to the Pico PCB
+This section only relates to the Pico PCB so you can put the Jack PCB to the side for a bit.
 
 #### Solder the Eurorack power connector
 
@@ -79,7 +78,7 @@ This section only relates to the Pico PCB
 
 
 ### (Optional) Multimeter Tests
-Use your multimeter set to continuity mode for these tests
+Use your multimeter set to continuity mode for these tests.
 
 #### Check the continuity of +12V to the middle left pin of the TL074-2 PCB footprint
 
@@ -171,7 +170,7 @@ Don't ask my why there is still not a standard for I²C pin layout in the year 2
 #### Solder the OLED configuration header
 
 #### Place the 4 shunts/jumpers over the pins in the direction shown on the PCB for your display
-For TPH, the shunts should all be vertical, and for CPC they should all be horizontal
+For TPH, the shunts should all be vertical, and for CPC they should all be horizontal.
 
 
 ### Solder the OLED Display in place
@@ -184,7 +183,7 @@ If your display is TPH, you can either solder pins and do it the same way as the
 #### Solder the pins
 As described above, the process will be slightly different if your pins end up being flush or protruding, but you should solder one pin first and then make sure the display is parallel in both axis; parallel to the PCB, and parallel to edge of the module.
   
-Once the display is parallel, carefully solder the remaining pins, and then remove whatever method you used to hold the display in palce.
+Once the display is parallel, carefully solder the remaining pins, and then remove whatever method you used to hold the display in place.
 
 
 ### Solder the remaining front panel components
