@@ -84,9 +84,9 @@ Use your multimeter set to continuity mode for these tests.
 
 #### Check the continuity of -12V to the middle right pin of the TL074-2 PCB footprint
 
-#### Check the continuity of Gnd to the left/bottom pin of the C12 PCB footprint
+#### Check the continuity of Ground to the left/bottom pin of the C12 PCB footprint
 
-#### Check that there is no continuity between +12V and -12V, between +12V and Gnd, and between -12V and Gnd
+#### Check that there is no continuity between +12V and -12V, between +12V and Ground, and between -12V and Ground
 
 If there is continuity on any checks where there shouldn't be, or there isn't on checks where there should, then make sure your solder joints are good and that there is no dirt or stray solder bridging any connections.
 
@@ -99,7 +99,7 @@ If all is groovy, continue with the assembly. Otherwise, double check all your s
 
 ### (Optional) Multimeter Tests
 
-#### While plugged in and turned on, measure the voltage from Gnd to the pin second from the top on the right of the Pico footprint pins
+#### While plugged in and turned on, measure the voltage from Ground to the pin second from the top on the right of the Pico footprint pins
 This voltage should be very close to 5V (within as much as half a volt is fine and usable, but a bigger error than that does indicate a problem with the regulator or your soldering). If it isn't, make sure you have the correct voltage regulator (7805), and that all your solder joints are solid.
 
 
