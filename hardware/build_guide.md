@@ -210,7 +210,7 @@ Don't over-tighten so hard that you damage the PCB, but you also don't want this
 
 
 ### Perform a final smoke test
-If this test fails, try to see where the smoke is coming from and replace any components that appear damaged. Do all the continuitiy checks again before switching on the power a second time.
+If this test fails, try to see where the smoke is coming from and replace any components that appear damaged. Do all the continuity checks again before switching on the power a second time.
 
 #### If you have any issues with the build process or programming that are not covered in the [troubleshooting guide](/troubleshooting.md) then please drop us an email at [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.com)
 
