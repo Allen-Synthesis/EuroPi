@@ -151,7 +151,9 @@ The capacitors are also on both PCBs, so keep them both on hand.
 
 #### Solder the the male 8 Way 2 Row headers to the Pico PCB
   
-#### Solder the 20 Way 1 Row headers to the Pico PCB
+#### Solder the 20 Way 1 Row female headers to the Pico PCB
+
+#### Solder the 20 Way 1 Row male headers to the Raspberry Pi Pico (If not pre-soldered)
   
 #### Solder the female 8 Way 2 Row headers to the Jack PCB
 
