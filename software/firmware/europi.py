@@ -1,6 +1,6 @@
 from machine import Pin, PWM, ADC, I2C
 from ssd1306 import SSD1306_I2C
-from time import sleep
+from time import sleep, ticks_ms
 from sys import exit
 
 
@@ -40,7 +40,7 @@ def sample_adc(adc, samples=256):
 
 
 
-class oled_display(SSD1306_I2C):
+class Display(SSD1306_I2C):
     def __init__(self, sda, scl, channel=0, freq=400000):
         self.i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         
@@ -71,13 +71,16 @@ class oled_display(SSD1306_I2C):
 
 
 
-class output:
+class Output:
     def __init__(self, pin):
         self.output = PWM(Pin(pin))
         self.output.freq(1000000)
         self.pin = pin
         self.current_duty = 0
         self.output_multiplier = get_output_calibration_data()
+        
+    def current_voltage(self):
+        return self.current_duty / self.output_multiplier
         
     def duty(self, cycle):
         cycle = int(cycle)
@@ -99,7 +102,10 @@ class output:
         else:
             self.on()
 
-class analogue_input:
+
+
+
+class AnalogueInput:
     def __init__(self, pin):
         self.input = ADC(Pin(pin))
         self.input_multiplier, self.input_offset = get_input_calibration_data()
@@ -120,44 +126,59 @@ class knob:
 
 
 
-oled = oled_display(0, 1)
-button1 = Pin(4, Pin.IN)
-button2 = Pin(5, Pin.IN)
+class DigitalInput: #This class handles any digital input, so is used for both the actual digital input and both buttons
+    def __init__(self, pin, debounce_delay=100):
+        self.pin = Pin(pin, Pin.IN)
+        self.debounce_delay = debounce_delay  #Minimum time passed before a new trigger is allowed
+        self.last_pressed = 0
+        self.debounce_done = True
+    
+    def value(self):
+        return self.pin.value()
+
+    def _debounce_check(self):
+        if (ticks_ms() - self.last_pressed) > self.debounce_delay:
+            self.debounce_done = True
+
+    def handler(self, func):
+        def bounce(func):
+            def wrap_bounce(*args, **kwargs):
+                self._debounce_check()
+                if self.debounce_done:
+                    self.last_pressed = ticks_ms()
+                    self.debounce_done = False
+                    func() #Performs the actual function of the input
+            return wrap_bounce
+        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce(func))
+        
+    def reset_handler(self):
+        self.pin.irq(trigger=Pin.IRQ_FALLING)
+
+
+
+
+oled = Display(0,1)
+
 k1 = knob(27)
 k2 = knob(28)
+
+b1 = DigitalInput(4)
+b2 = DigitalInput(5)
+
 din = Pin(22, Pin.IN)
-ain = analogue_input(26)
-cv1 = output(21)
-cv2 = output(20)
-cv3 = output(16)
-cv4 = output(17)
-cv5 = output(18)
-cv6 = output(19)
+ain = AnalogueInput(26)
+
+cv1 = Output(21)
+cv2 = Output(20)
+cv3 = Output(16)
+cv4 = Output(17)
+cv5 = Output(18)
+cv6 = Output(19)
+
 cvs = [cv1, cv1, cv3, cv4, cv5, cv6]
 for cv in cvs: #When imported, all outputs are turned off. This is because otherwise the op-amps may be left 'floating' and output unpredictable voltages
     cv.duty(0)
 
-
-
-
-def din_handler(pin): 
-    din.irq(handler=None)
-    #function
-    din.irq(handler=din_handler)
-din.irq(trigger=Pin.IRQ_FALLING, handler=din_handler)
-
-def button_1_handler(pin): 
-    button1.irq(handler=None)
-    #function
-    button1.irq(handler=button_1_handler)
-button1.irq(trigger=Pin.IRQ_FALLING, handler=button_1_handler)
-
-def button_2_handler(pin): 
-    button2.irq(handler=None)
-    #function
-    button2.irq(handler=button_2_handler)
-button2.irq(trigger=Pin.IRQ_FALLING, handler=button_2_handler)
-    
 
 
 
@@ -213,3 +234,4 @@ if __name__ == '__main__':
         file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
 
     centre_and_show('Calibration\ncomplete!')
+
