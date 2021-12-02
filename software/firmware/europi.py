@@ -165,7 +165,7 @@ k2 = knob(28)
 b1 = DigitalInput(4)
 b2 = DigitalInput(5)
 
-din = Pin(22, Pin.IN, 0)
+din = DigitalInput(22, 0)
 ain = AnalogueInput(26)
 
 cv1 = Output(21)
