@@ -130,7 +130,7 @@ class Knob: #Class used to read the knob positions
         
     def read_position(self, steps=100, samples=256): #Reads the position either based on an integer or a list
         if isinstance(steps, int):
-            round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
+            return round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
         else:
             print("\033[1;31;00mPlease only use integer type with the read_position method")
             exit() 
