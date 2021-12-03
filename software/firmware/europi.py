@@ -122,12 +122,18 @@ class AnalogueInput:
     def read_voltage(self, samples=256):
         return clamp((self.read_duty(samples) * self.input_multiplier) + self.input_offset, 0, 12)
 
-class knob:
+
+
+
+class Knob:
     def __init__(self, pin):
         self.input = ADC(Pin(pin))
         
     def read_position(self, steps=100, samples=256):
-        return round(steps - ((sample_adc(self.input, samples) / 4096) * steps))
+        if isinstance(steps, list):
+            return steps[self.read_position(len(steps)-1)]
+        else:
+            return round(steps - ((sample_adc(self.input, samples) / 4096) * steps))
 
 
 
@@ -157,8 +163,8 @@ class DigitalInput: #This class handles any digital input, so is used for both t
 
 oled = Display(0,1)
 
-k1 = knob(27)
-k2 = knob(28)
+k1 = Knob(27)
+k2 = Knob(28)
 
 b1 = DigitalInput(4)
 b2 = DigitalInput(5)
