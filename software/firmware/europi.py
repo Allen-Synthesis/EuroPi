@@ -154,7 +154,7 @@ class DigitalInput: #Class to handle any digital input, so is used for both the 
         return 1 - self.pin.value() #Both the digital input and buttons are normally high, and 'pulled' low when on, so this is flipped to be more intuitive (1 when on, 0 when off)
 
     def handler(self, func): #Allows the function that is run when triggered to be changed
-        def bounce_wrapper(*args):
+        def bounce_wrapper(pin):
             if (ticks_ms() - self.last_pressed) > self.debounce_delay: #As long as the debounce time has been reached
                 self.last_pressed = ticks_ms() #Reset the debounce counter to the current time
                 func() #Run the chosen function
