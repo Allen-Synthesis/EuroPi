@@ -141,7 +141,7 @@ class DigitalInput: #Class to handle any digital input, so is used for both the 
     def __init__(self, pin, debounce_delay=100):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay  #Minimum time passed before a new trigger is allowed
-        self.last_pressed = 0 #Time since last triggered, also used for debouncing
+        self.last_pressed = ticks_ms() #Time since last triggered, also used for debouncing
     
     def value(self): #Return the current value of the input
         return 1 - self.pin.value() #Both the digital input and buttons are normally high, and 'pulled' low when on, so this is flipped to be more intuitive (1 when on, 0 when off)
