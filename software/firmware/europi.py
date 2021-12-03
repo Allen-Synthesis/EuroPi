@@ -131,24 +131,16 @@ class DigitalInput: #This class handles any digital input, so is used for both t
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay  #Minimum time passed before a new trigger is allowed
         self.last_pressed = 0
-        self.debounce_done = True
     
     def value(self):
         return self.pin.value()
 
-    def _debounce_check(self):
-        if (ticks_ms() - self.last_pressed) > self.debounce_delay:
-            self.debounce_done = True
-
     def handler(self, func):
-        def bounce(func):
-            def wrap_bounce(*args, **kwargs):
-                self._debounce_check()
-                if self.debounce_done:
-                    self.last_pressed = ticks_ms()
-                    self.debounce_done = False
-                    func() #Performs the actual function of the input
-            return wrap_bounce
+        def bounce(*args):
+            if (ticks_ms() - self.last_pressed) > self.debounce_delay:
+                self.last_pressed = ticks_ms()
+                func()
+            return bounce
         self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce(func))
         
     def reset_handler(self):
@@ -175,11 +167,16 @@ cv4 = Output(17)
 cv5 = Output(18)
 cv6 = Output(19)
 
-cvs = [cv1, cv1, cv3, cv4, cv5, cv6]
+cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 for cv in cvs: #When imported, all outputs are turned off. This is because otherwise the op-amps may be left 'floating' and output unpredictable voltages
     cv.duty(0)
 
 
+def poo():
+    cv1.toggle()
+din.handler(poo)
+while True:
+    sleep(0.1)
 
 
 #Calibration program. Run this program to calibrate the module
