@@ -172,11 +172,6 @@ for cv in cvs: #When imported, all outputs are turned off. This is because other
     cv.duty(0)
 
 
-def poo():
-    cv1.toggle()
-din.handler(poo)
-while True:
-    sleep(0.1)
 
 
 #Calibration program. Run this program to calibrate the module
