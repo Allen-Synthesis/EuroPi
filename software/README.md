@@ -40,6 +40,21 @@ The functions all take an optional parameter of samples, which will oversample t
 |read_duty|Reads the raw ADC value and then applies offset and gain error values to increase accuracy|samples (default 256)
 |read_voltage|Reads the ADC value as a voltage|samples (default 256)
 
+## Digital Input and Buttons
+
+It may seem a little strange to see the digital input and buttons grouped together, but if you think about it, all the button is doing is create an internal digital input when you press it. For this reason, the method for handling the event that should happen when either a button is pressed or a digital input detected is the same.  
+  
+A class is used named 'DigitalInput' in the europi.py library, which handles both the debounce (only used for buttons) and the handler (what happens when a press/input is detected).  
+  
+| Method        | Usage       | Parameter(s)       |
+| ------------- | ----------- | ----------- |
+|value|Reads the current value of the input|n/a
+|handler|Assign a new function to be used as the handler|function
+
+It should be noted that the value will be 0 when the input is 'high', and 1 when 'low'. This is simply a hardware technicality, but will not affect the use of the handler, only the .value() mathod.  
+  
+To use the handler method, you simply define whatever you want to happen when a button or the digital input is triggered, and then use x.handler(new_function). Do not include the brackets for the function, and replace the 'x' in the example with the name of your input, either b1, b2, or din.
+
 ## OLED Display
 
 The OLED Display works by collecting all the applied commands and only updates the physical display when oled.show() is called.  
