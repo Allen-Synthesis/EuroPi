@@ -25,6 +25,8 @@ So that there is no chance of not having the full range, the chosen resistor val
 |voltage|Sets the output to a fixed voltage|voltage
 |on|Sets the output to 5V|n/a
 |off|Sets the output to 0V|n/a
+|toggle|'Flip' the output between 0V or 5V depending on current state|n/a
+|value|Sets the output to 0V or 5V based on a binary input|0 or 1
 
 ## Analogue Input
 
@@ -60,3 +62,11 @@ The OLED Display works by collecting all the applied commands and only updates t
 This allows you to perform more complicated graphics without slowing your program, or to perform the calculations for other functions, but only update the display every few steps to prevent lag.
 
 More explanations and tips about the the display can be found in the [oled_tips](/software/oled_tips.md) file
+
+## Knobs
+The knobs are used almost exclusively by a single method named read_position().  
+The read_position method accepts an integer value, and will return a integer in the range 0-int based on the knob position.  
+However, you can also pass a list in place of the integer, in which case it will return whichever item of the list is 'chosen' by the current knob position.  
+  
+The integer or list is optional, and if you don't pass a parameter then 100 is used by default to give a 0-100 output based on knob position.
+There is also the optional parameter of samples, the same as the analogue input uses (the knob positions are 'read' via an analogue to digital converter), with a default value of 256, but you can use higher or lower depending on if you value speed or accuracy more. If you really want to avoid 'noise' in the output, AKA values changing despite the physical knob position staying still, then I'd suggest using higher samples (and probably a smaller number to divide the position by).
