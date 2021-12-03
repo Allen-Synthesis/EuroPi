@@ -36,7 +36,6 @@ The functions all take an optional parameter of samples, which will oversample t
 
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
-|read_raw|Reads the raw ADC value (averaged from number of samples)|samples (default 256)
 |read_duty|Reads the raw ADC value and then applies offset and gain error values to increase accuracy|samples (default 256)
 |read_voltage|Reads the ADC value as a voltage|samples (default 256)
 
