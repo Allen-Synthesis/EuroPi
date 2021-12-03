@@ -101,6 +101,12 @@ class Output:
             self.off()
         else:
             self.on()
+        
+    def value(self, value):
+        if value == 1:
+            self.on()
+        else:
+            self.off()
 
 
 
