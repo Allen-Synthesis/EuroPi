@@ -133,7 +133,7 @@ class DigitalInput: #This class handles any digital input, so is used for both t
         self.last_pressed = 0
     
     def value(self):
-        return self.pin.value()
+        return 1 - self.pin.value()
 
     def handler(self, func):
         def bounce(*args):
@@ -226,4 +226,5 @@ if __name__ == '__main__':
         file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
 
     centre_and_show('Calibration\ncomplete!')
+
 
