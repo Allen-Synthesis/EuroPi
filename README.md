@@ -9,19 +9,20 @@ You can find more about this (including a project diary) and other projects of m
 
 ![Imgur](https://i.imgur.com/wHL7558.png)
 
-## New Features
+## Capabilities
 
-### Obvious Improvements
+* 6 0-10V Control Voltage outputs, each with indicator LED
+* 2 Knobs with 12 bit resolution
+* 2 Push Buttons
+* 1 0-12V Control Voltage input with 12 bit resolution
+* 1 Digital input for external clocking or gate sources
+* 128x32 OLED Display
+* I²C expansion header on the rear for extra sensors or outputs
 
-* Outputs are now capable of providing 0-10V (previously 0-3.3V)
-* 6 outputs, all capable of either digital or CV output (previously 4 digital and 4 analogue)
-* All outputs have an indicator LED for easy visualisation of outputs (previously only LEDs on the digital outputs)
-* One analogue (CV) input is now available, which can 'read' 0-12V (previously no CV input)
-* One digital (clock, trigger, gate) input is now available (previously no digital input)
-* A 128x32 OLED display has been added to allow for further menu control and usability when changing patches often
+### Improvements on the Prototype version
 
-### More Technical Changes
-
+* All outputs are the full Eurorack unipolar range of 0-10V
+* Two inputs, previously no way to accept input from other modules
 * The buttons have hardware debouncing to allow users to change out capacitor values for reduced accidental 'double click'
 * A 10 pin Eurorack shrouded power header is now used to prevent accidental reverse powering of the module
 * The 5V supply for the Pico is now regulated down from the +12V supply, so no 5V rail is required from your Eurorack power supply
