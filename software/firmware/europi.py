@@ -129,12 +129,19 @@ class Knob: #Class used to read the knob positions
         self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
         
     def read_position(self, steps=100, samples=256): #Reads the position either based on an integer or a list
-        if isinstance(steps, list):
-            return steps[self.read_position(len(steps)-1)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
+        if isinstance(steps, int):
+            round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
         else:
-            return round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
+            print("\033[1;31;00mPlease only use integer type with the read_position method")
+            exit() 
 
-
+    def choice(self, values, samples=256):
+        if isinstance(steps, list):
+            return steps[self.read_position(len(steps)-1,samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
+        else:
+            print("\033[1;31;00mPlease only use list type with the choice method")
+            exit()
+    
 
 
 class DigitalInput: #Class to handle any digital input, so is used for both the actual digital input and both buttons
@@ -147,12 +154,11 @@ class DigitalInput: #Class to handle any digital input, so is used for both the 
         return 1 - self.pin.value() #Both the digital input and buttons are normally high, and 'pulled' low when on, so this is flipped to be more intuitive (1 when on, 0 when off)
 
     def handler(self, func): #Allows the function that is run when triggered to be changed
-        def bounce(*args):
+        def bounce_wrapper(*args):
             if (ticks_ms() - self.last_pressed) > self.debounce_delay: #As long as the debounce time has been reached
                 self.last_pressed = ticks_ms() #Reset the debounce counter to the current time
                 func() #Run the chosen function
-            return bounce
-        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce(func))
+        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce_wrapper) 
         
     def reset_handler(self):
         self.pin.irq(trigger=Pin.IRQ_FALLING)
