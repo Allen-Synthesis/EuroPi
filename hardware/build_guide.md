@@ -30,13 +30,15 @@ You have likely already checked your Bill of Materials, but I would still sugges
 
 #### Resistors
 - x20 1k
-- z3 10k
-- z3 22k
+- x3 10k
+- x3 22k
 - x8 100k
 - x6 220k
  
 #### Capacitors
-- x1 100nF
+- x1 1nF
+- x1 1uF
+- x6 100nF
 - x6 4.7uF
 - x2 10uF
  
@@ -124,13 +126,11 @@ The capacitors are also on both PCBs, so keep them both on hand.
   
 #### Then the single 1uF capacitor (C2)
   
-#### Then the 100nuF capacitors (C3 - C8)
+#### Then the 100nF capacitors (C3 - C8)
   
 #### Then the 4.7uF capacitors (C9 - C14)
   
 #### Then the 10uF capacitors (C15 - C16)
-  
-#### Then the 10uF capacitors (C9 - C10)
   
   
 ### Solder the extra through hole components
