@@ -36,7 +36,6 @@ You have likely already checked your Bill of Materials, but I would still sugges
 - x6 220k
  
 #### Capacitors
-- x1 1nF
 - x1 1uF
 - x6 100nF
 - x6 4.7uF
