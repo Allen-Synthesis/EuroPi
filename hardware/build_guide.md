@@ -121,8 +121,6 @@ The resistors are on both the Pico PCB and the Jack PCB, so get these both ready
 ### Solder the capacitors
 The capacitors are also on both PCBs, so keep them both on hand.
   
-#### First solder the single 1nF capacitor (C1)
-  
 #### Then the single 1uF capacitor (C2)
   
 #### Then the 100nF capacitors (C3 - C8)
