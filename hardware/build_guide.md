@@ -26,7 +26,7 @@ You have likely already checked your Bill of Materials, but I would still sugges
 - x1 Eurorack Power Connector
 - x1 Eurorack 16 to 10 pin Power Cable
 - x1 7805 Linear Voltage Regulator
-- x1 Schottky Diode
+- x3 Schottky Diode
 
 #### Resistors
 - x20 1k
@@ -75,7 +75,7 @@ This section only relates to the Pico PCB so you can put the Jack PCB to the sid
 
 #### Solder the 7805 Linear Voltage Regulator
 
-#### Solder in D2 (Schottky Diode)
+#### Solder in the Schottky Diodes (D2 - D4)
 
 
 ### (Optional) Multimeter Tests
@@ -89,7 +89,7 @@ Use your multimeter set to continuity mode for these tests.
 
 #### Check that there is no continuity between +12V and -12V, between +12V and Ground, and between -12V and Ground
 
-If there is continuity on any checks where there shouldn't be, or there isn't on checks where there should, then make sure your solder joints are good and that there is no dirt or stray solder bridging any connections.
+If there is continuity on any checks where there shouldn't be, or there isn't on checks where there should, then make sure your solder joints are good and that there is no dirt or stray solder bridging any connections. Also make sure that your diodes and power cable are all the correct orientation.
 
 ### Smoke Test
 
