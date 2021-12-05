@@ -128,20 +128,17 @@ class Knob: #Class used to read the knob positions
     def __init__(self, pin):
         self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
         
-    def read_position(self, steps=100, samples=256): #Reads the position either based on an integer or a list
-        if isinstance(steps, int):
-            return round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
-        else:
+    def read_position(self, steps=100, samples=256): #Returns an int in the range of steps based on knob position.
+        if not isinstance(steps, int):
             print("\033[1;31;00mPlease only use integer type with the read_position method")
-            exit() 
+            exit()
+        return round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
 
-    def choice(self, values, samples=256):
-        if isinstance(steps, list):
-            return steps[self.read_position(len(steps)-1,samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
-        else:
+    def choice(self, values, samples=256): #Returns a choice from a list of values based on the knob position.
+        if not isinstance(values, list):
             print("\033[1;31;00mPlease only use list type with the choice method")
             exit()
-    
+        return values[self.read_position(len(values)-1, samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
 
 
 class DigitalInput: #Class to handle any digital input, so is used for both the actual digital input and both buttons
@@ -244,5 +241,3 @@ if __name__ == '__main__':
         file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
 
     centre_and_show('Calibration\ncomplete!')
-
-
