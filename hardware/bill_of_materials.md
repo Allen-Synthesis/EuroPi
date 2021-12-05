@@ -1,35 +1,30 @@
 # Bill of Materials
 
-| Component                     | Quantity | CPC Number / Suggested Supplier      |
-|-------------------------------|----------|-------------------------|
-| 4x2 2.54mm Header (Male)      | 1        | M20-9980445                                                                                                                                                                                                                                                                              |
-| 4x2 2.54mm Header (Female)    | 2        | 2214S-08SG-85                                                                                                                                                                                                                                                                            |
-| 4x1 2.54mm Header (Male)      | 1        | 2211S-04G                                                                                                                                                                                                                                                                                |
-| Eurorack Power Header         | 1        | N2510-6002RB                                                                                                                                                                                                                                                                             |
-| TL074 Operational Amplifier   | 2        | TL074ACN                                                                                                                                                                                                                                                                                 |
-| 14 Pin IC Socket              | 1        | SPC15526                                                                                                                                                                                                                                                                                 |
-| MCP6002 Operational Amplifier | 1        | MCP6002-I/P                                                                                                                                                                                                                                                                              |
-| 8 Pin IC Socket               | 1        | SPC15494                                                                                                                                                                                                                                                                                 |
-| 3mm LED (Red)                 | 6        | L-424HDT                                                                                                                                                                                                                                                                                 |
-| 1k Resistor                   | 20       | MF25 1K                                                                                                                                                                                                                                                                                  |
-| 22k Resistor                  | 3        | MF25 22K                                                                                                                                                                                                                                                                                 |
-| 10k Resistor                  | 3        | MCF 0.25W 10K                                                                                                                                                                                                                                                                            |
-| 100k Resistor                 | 8        | MCMF006FF1003A50                                                                                                                                                                                                                                                                         |
-| 220k Resistor                 | 6        | MF25 220K                                                                                                                                                                                                                                                                                |
-| 100nF Capacitor               | 1        | MCRR50104X7RK0050                                                                                                                                                                                                                                                                        |
-| 4.7uF Capacitor               | 6        | ECA1HAM4R7X                                                                                                                                                                                                                                                                              |
-| 10uF Capacitor                | 2        | EEUEB1J100S                                                                                                                                                                                                                                                                              |
-| Schottky Diode                | 2        | 1N5817+                                                                                                                                                                                                                                                                                 |
-| 10k Potentiometer             | 2        | RK09K11310KB                                                                                                                                                                                                                                                                             |
-| Knob                          | 2        | SW03057                                                                                                                                                                                                                                                                                  |
-| NPN Transistor                | 1        | 2N3904                                                                                                                                                                                                                                                                                |
-| 7805 Voltage Regulator        | 1        | L7805ABV                                                                                                                                                                                                                                                                                 |
-| Push Button                   | 2        | https://www.thonk.co.uk/shop/radio-music-switch/                                                                                                                                                                                                                                         |
-| Thonkiconn                    | 8        | https://www.thonk.co.uk/shop/thonkiconn/                                                                                                                                                                                                                                                 |
-| Banana Nut (Black)            | 2        | https://www.thonk.co.uk/shop/bananuts/                                                                                                                                                                                                                                                   |
-| Banana Nut (Red)              | 4        | https://www.thonk.co.uk/shop/bananuts/                                                                                                                                                                                                                                                   |
-| OLED Display                  | 1        | https://tinyurl.com/allensynthesis |
-| Raspberry Pi Pico             | 1        | https://thepihut.com/pages/search-results?q=pico&page_num=3                                                                                                                                                                                                                              |
-| Pico PCB                      | 1        | Allen Synthesis                                                                                                                                                                                                                                                                          |
-| Jack PCB                      | 1        | Allen Synthesis                                                                                                                                                                                                                                                                          |
-| Front Panel                   | 1        | Allen Synthesis                                                                                                                                                                                                                                                                          |
+In addition to the Front Panel, Jack PCB, and Pico PCB (bought from Allen Synthesis or a third-party supplier), you will need the following components to complete your build.
+
+| Component | Value | Description | Suggested Supplier
+|-|-|-|-|
+| R1 - R20 | 1k | 1 Kiloohm Resistor |                  
+| R21 - R23 | 22k | 22 Kiloohm Resistor |
+| R24 - R26 | 10k | 10 Kiloohm Resistor |
+| R27 - R34 | 100k | 100 Kiloohm Resistor |
+| R35 - R40 | 220k | 220 Kiloohm Resistor |
+| C1 - C2 | 1uF | 1 Microfarad Capacitor |
+| C3 - C8 | 100nF | 1 Nanofarad Capacitor |
+| C9 - C14 | 4.7uF | 4.7 Microfarad Capacitor |
+| C15 - C16 | 10uF | 10 Microfarad Capacitor |
+| D1 - D4 | 1N5817 | Schottky Diode |
+| LED1 - LED6 | L-424HDT | 3mm LED |
+| VR1 - VR2 | 50k | 50 Kiloohm Linear Rotary Potentiometer |
+| SW1 - SW2 | D6R00 F1 LFS | C&K Tactile Switch (Non-Illuminated) |
+| OLED1 | 0.91" SSD1306 | I2C OLED Display |
+| J1 - J6 | PJ398SM | Thonkiconn 3.5mm Mono Jack |
+| CONN1 - CONN4 | 8 Way 2 Row 2.54mm | PCB Connection Header (Male + Female) |
+| CONN5 | 3 Way 1 Row 2.54mm | I2C Header (Male) |
+| CONN6 | 10 Way 2 Row 2.54mm | Eurorack Power Header (Shrouded) |
+| TL074-1 - TL074-2 | TL074 DIP | Quad Operational Amplifier (+ Socket) |
+| MCP6002 | MCP6002 DIP | Dual Operational Amplifier (+ Socket) |
+| Q1 | 2N3904 | PNP Transistor |
+| 7805 | L7805ABV | 5V Linear Voltage Regulator |
+| | | Eurorack Power Cable
+| | | Micro USB Cable (Capable of Data Transfer)
