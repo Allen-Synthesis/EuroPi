@@ -64,9 +64,16 @@ This allows you to perform more complicated graphics without slowing your progra
 More explanations and tips about the the display can be found in the [oled_tips](/software/oled_tips.md) file
 
 ## Knobs
-The knobs are used almost exclusively by a single method named read_position().  
-The read_position method accepts an integer value, and will return a integer in the range 0-int based on the knob position.  
-However, you can also pass a list in place of the integer, in which case it will return whichever item of the list is 'chosen' by the current knob position.  
+The knobs are used almost exclusively by methods which use the current position in different ways.
+
+| Method        | Usage       | Parameter(s)       |
+| ------------- | ----------- | ----------- |
+|read_position|Returns the position as a value between zero and provided integer|integer
+|choice|Returns a value from the provided list depending on the current position|list
+
+Read_position has a default value of 100, meaning if you simply use kx.read_position() you will return a percent style value from 0-100.  
   
-The integer or list is optional, and if you don't pass a parameter then 100 is used by default to give a 0-100 output based on knob position.
-There is also the optional parameter of samples, the same as the analogue input uses (the knob positions are 'read' via an analogue to digital converter), with a default value of 256, but you can use higher or lower depending on if you value speed or accuracy more. If you really want to avoid 'noise' in the output, AKA values changing despite the physical knob position staying still, then I'd suggest using higher samples (and probably a smaller number to divide the position by).
+There is also the optional parameter of samples (which must come after the normal parameter), the same as the analogue input uses (the knob positions are 'read' via an analogue to digital converter). It has a default value of 256, but you can use higher or lower depending on if you value speed or accuracy more.  
+If you really want to avoid 'noise' which would present as a flickering value despite the knob being still, then I'd suggest using higher samples (and probably a smaller number to divide the position by).
+  
+The ADCs used to read the knob position are only 12 bit, which means that any read_position value above 4096 (2^12) will not actually be any finer resolution, but will instead just go up in steps. For example using 8192 would only return values which go up in steps of 2.
