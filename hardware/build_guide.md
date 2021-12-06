@@ -37,8 +37,7 @@ You have likely already checked your Bill of Materials, but I would still sugges
  
 #### Capacitors
 - x1 1uF
-- x6 100nF
-- x6 4.7uF
+- x12 100nF
 - x2 10uF
  
 #### Front Panel Components
@@ -123,9 +122,7 @@ The capacitors are also on both PCBs, so keep them both on hand.
   
 #### Then the single 1uF capacitor (C2)
   
-#### Then the 100nF capacitors (C3 - C8)
-  
-#### Then the 4.7uF capacitors (C9 - C14)
+#### Then the 100nF capacitors (C3 - C14)
   
 #### Then the 10uF capacitors (C15 - C16)
   
