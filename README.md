@@ -44,7 +44,7 @@ This module, and any documentation included in this repository, is entirely "fre
   
 Software: Apache 2.0
 Hardware CERN OHL-S v2
-Documentation: CC0
+Documentation: CC0 1.0
   
 Anyone is welcome to design their own versions of the idea, or modify my designs.
 The only thing I would ask is that you refrain from using the brand name 'Allen Synthesis' on your DIY builds if they have modified my files in any way, just to prevent any confusion if they end up being re-sold or distributed. This is in line with section 8.2 of the CERN license. You may use the brand name if you have simply copied the files from this repository to replicate without modification.
