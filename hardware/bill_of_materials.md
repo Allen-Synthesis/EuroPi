@@ -26,5 +26,6 @@ You will also need one 3.5mm cable (normal Eurorack patch cable) to perform the 
 | MCP6002 | MCP6002 DIP | Dual Operational Amplifier (+ Socket) | [Op-Amp](https://cpc.farnell.com/microchip/mcp6002-i-p/ic-op-amp-1-8v-1mhz-dual-pdip8/dp/SC17118?st=mcp6002), [Socket](https://cpc.farnell.com/multicomp/spc15494/dip-socket-8pos-2row-2-54mm-th/dp/SC15358?st=ic%20socket)
 | Q1 | 2N3904 | PNP Transistor | [CPC](https://cpc.farnell.com/multicomp-pro/2n3904/transistor-npn-to-92/dp/SC15978?st=bjt%20transistor%20npn)
 | 7805 | L7805ABV | 5V Linear Voltage Regulator | [CPC](https://www.thonk.co.uk/shop/1900h-t18/)
+| | 11mm | M2.5 PCB Standoff + 2 Screws | [Standoff](https://cpc.farnell.com/ettinger/05-02-113/spacer-hex-m2-5-11mm-length-brass/dp/PC01763?st=11mm%20standoff), [Screws](https://cpc.farnell.com/unbranded/pp2m5-6/screw-pan-pozi-m2-5-x-6mm-100pk/dp/FN02140?st=m2.5%20screw)
 | | | Eurorack Power Cable | [Thonk](https://www.thonk.co.uk/shop/eurorack-power-cables/)
 | | | Micro USB Cable (Capable of Data Transfer) | [CPC](https://cpc.farnell.com/pro-signal/psg91562/lead-usb-a-male-micro-b-male-black/dp/CS32732), [The Pi Hut](https://thepihut.com/products/usb-to-micro-usb-cable-0-5m)
