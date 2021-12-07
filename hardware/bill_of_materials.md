@@ -1,7 +1,9 @@
 # Bill of Materials
 
 In addition to the Front Panel, Jack PCB, and Pico PCB (bought from Allen Synthesis or a third-party supplier), you will need the following components to complete your build.
-You will also need one 3.5mm cable (normal Eurorack patch cable) to perform the calibration process.
+You will also need one 3.5mm cable (normal Eurorack patch cable) to perform the calibration process.  
+  
+Please note that a few of these are multi-packs of components, and there may well be cheaper alternatives if you are doing a single build, so as long as the specification is the same you can get any of these components from any supplier most accessible to you.
 
 | Component | Quantity | Value | Description | Suggested Supplier
 |-|-|-|-|-|
