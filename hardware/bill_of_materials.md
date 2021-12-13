@@ -32,3 +32,9 @@ Please note that a few of these are multi-packs of components, and there may wel
 | | 2 | T18 Shaft | Knobs | [Thonk](https://www.thonk.co.uk/shop/1900h-t18/)
 | | 1 | 10 - 16 Pin | Eurorack Power Cable | [Thonk](https://www.thonk.co.uk/shop/eurorack-power-cables/)
 | | 1 | | Micro USB Cable (Capable of Data Transfer) | [CPC](https://cpc.farnell.com/pro-signal/psg91562/lead-usb-a-male-micro-b-male-black/dp/CS32732), [The Pi Hut](https://thepihut.com/products/usb-to-micro-usb-cable-0-5m)
+
+
+#### Note about OLED
+The OLED has two suppliers listed, each with different pin configurations. The module supports either of these two configurations (the most common), but no others, so make sure that the one you buy, wherever you source it, has one of these two configurations.
+
+![OLED Pin Configurations](https://user-images.githubusercontent.com/79809962/145800121-2c88d73b-b4d2-4196-baa1-8628dc327467.png)
