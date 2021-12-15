@@ -26,7 +26,7 @@ Please note that a few of these are multi-packs of components, and there may wel
 | CONN6 | 1 | 10 Way 2 Row 2.54mm | Eurorack Power Header (Shrouded) | [CPC](https://cpc.farnell.com/3m/n2510-6002rb/2-54mm-header-straight-10-way/dp/CN20355?st=2.54mm%20header)
 | TL074-1 - TL074-2 | 2 | TL074 DIP | Quad Operational Amplifier (+ Socket) | [Op-Amp](https://cpc.farnell.com/texas-instruments/tl074acn/ic-op-amp-quad-jfet-dip14/dp/SC16602?st=tl074), [Socket](https://cpc.farnell.com/unbranded/mc-2227-14-03-f1/socket-ic-dil-0-3-tube-34-14way/dp/SC08125?st=ic%20socket,%20dil,%200.3)
 | MCP6002 | 1 | MCP6002 DIP | Dual Operational Amplifier (+ Socket) | [Op-Amp](https://cpc.farnell.com/microchip/mcp6002-i-p/ic-op-amp-1-8v-1mhz-dual-pdip8/dp/SC17118?st=mcp6002), [Socket](https://cpc.farnell.com/multicomp/spc15494/dip-socket-8pos-2row-2-54mm-th/dp/SC15358?st=ic%20socket)
-| Q1 | 1 | 2N3904 | PNP Transistor | [CPC](https://cpc.farnell.com/multicomp-pro/2n3904/transistor-npn-to-92/dp/SC15978?st=bjt%20transistor%20npn)
+| Q1 | 1 | 2N3904 | NPN Transistor | [CPC](https://cpc.farnell.com/multicomp-pro/2n3904/transistor-npn-to-92/dp/SC15978?st=bjt%20transistor%20npn)
 | 7805 | 1 | L7805ABV | 5V Linear Voltage Regulator | [CPC](https://cpc.farnell.com/stmicroelectronics/l7805abv/ic-v-reg-5v/dp/SC10586)
 | | 1 | 11mm | M2.5 PCB Standoff + 2 Screws | [Standoff](https://cpc.farnell.com/ettinger/05-02-113/spacer-hex-m2-5-11mm-length-brass/dp/PC01763?st=11mm%20standoff), [Screws](https://cpc.farnell.com/unbranded/pp2m5-6/screw-pan-pozi-m2-5-x-6mm-100pk/dp/FN02140?st=m2.5%20screw)
 | | 2 | T18 Shaft | Knobs | [Thonk](https://www.thonk.co.uk/shop/1900h-t18/)
