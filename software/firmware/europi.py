@@ -4,26 +4,15 @@ from time import sleep, ticks_ms
 from sys import exit
 
 
-#Copyright 2021 Rory Allen
-
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
-
-#http://www.apache.org/licenses/LICENSE-2.0
-
-#Unless required by applicable law or agreed to in writing, software
-#distributed under the License is distributed on an "AS IS" BASIS,
-#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#See the License for the specific language governing permissions and
-#limitations under the License. 
-
-
-
-
+#Rory Allen 19/11/2021 CC BY-SA 4.0
 #Import this library into your own programs using 'from europi import *'
 #You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
 
+
+OLED_WIDTH = 128
+OLED_HEIGHT = 32
+
+        
 #General use functions
 def clamp(value, low, high): #Returns a value that is no lower than 'low' and no higher than 'high'
     return max(min(value, high), low)
@@ -55,8 +44,10 @@ def sample_adc(adc, samples=256): #Over-samples the ADC and returns the average.
 
 
 class Display(SSD1306_I2C): #Class used to write to the OLED display
-    def __init__(self, sda, scl, channel=0, freq=400000): #Takes the pin used for SDA, pin used for SCL, and then default values used for channel and i2c frequency
+    def __init__(self, sda, scl, width, height, channel=0, freq=400000): #Takes the pin used for SDA, pin used for SCL, and then default values used for channel and i2c frequency
         self.i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
+        self.width = width
+        self.height = height
         
         if len(self.i2c.scan()) == 0: #If no i2c devices are detected on the given channel
             print("\033[1;31;00mEuroPi Hardware Error:\nMake sure the OLED display is connected correctly") #Display a useful error message
@@ -74,13 +65,17 @@ class Display(SSD1306_I2C): #Class used to write to the OLED display
         except:
             print("\033[1;31;00mEuroPi Software Error:\ncentre.text() only accepts string") #Display a useful error message
             return
-        if len(lines) > 3: #If too many lines are passed (display is only capable of 3 lines)
-            print("\033[1;31;00mEuroPi Software Error:\nOLED cannot print more than 3 lines of text") #Display a useful error message
+        maximum_lines = (self.height / 9) // 1 #Lines are 9 pixels tall, and the //1 means it will calculate only the whole number of available lines
+        if len(lines) > maximum_lines:
+            print("\033[1;31;00mEuroPi Software Error:\nDisplay is not big enough for that many lines") #Display a useful error message
             return
-        center_line_height = int((-5 * len(lines)) + 25) #Calculations to convert the number of lines into the pixel height of the middle line
-        heights = [center_line_height - 10, center_line_height, 2 * center_line_height] #Calculations to convert the line numbers into pixel heights for each line
-        for line in lines:
-            self.text(str(line), int(64 - (((len(line) * 5) + ((len(line) - 1) * 2)) / 2)), heights[lines.index(line)], 1) #Write each line to the display at the given height
+        else:
+            padding_top = (self.height - (len(lines) * 9)) / 2
+            for index in range(len(lines)):
+                content = lines[index]
+                padding_left = int((self.width - (len(content) * 7)) / 2)
+                self.text(content, padding_left-1, int((index * 9) + padding_top)-1)
+            oled.show()
 
 
 
@@ -143,17 +138,20 @@ class Knob: #Class used to read the knob positions
     def __init__(self, pin):
         self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
         
-    def read_position(self, steps=100, samples=256): #Returns an int in the range of steps based on knob position.
-        if not isinstance(steps, int):
+    def read_position(self, steps=100, samples=256): #Reads the position either based on an integer or a list
+        if isinstance(steps, int):
+            return round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
+        else:
             print("\033[1;31;00mPlease only use integer type with the read_position method")
-            exit()
-        return round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
+            exit() 
 
-    def choice(self, values, samples=256): #Returns a choice from a list of values based on the knob position.
-        if not isinstance(values, list):
+    def choice(self, values, samples=256):
+        if isinstance(steps, list):
+            return steps[self.read_position(len(steps)-1,samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
+        else:
             print("\033[1;31;00mPlease only use list type with the choice method")
             exit()
-        return values[self.read_position(len(values)-1, samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
+    
 
 
 class DigitalInput: #Class to handle any digital input, so is used for both the actual digital input and both buttons
@@ -179,7 +177,7 @@ class DigitalInput: #Class to handle any digital input, so is used for both the 
 
 
 #Define all the I/O using the appropriate class and with the pins used
-oled = Display(0,1)
+oled = Display(0,1,OLED_WIDTH,OLED_HEIGHT)
 
 k1 = Knob(27)
 k2 = Knob(28)
@@ -203,16 +201,11 @@ for cv in cvs: #When imported, all outputs are turned off. This is because other
 
 
 
-
 #Calibration program. Run this program to calibrate the module
 if __name__ == '__main__':
     def wait_for_range(low, high):
         while ain.read_duty() < low or ain.read_duty() > high:
             sleep(0.05)
-            
-    def centre_and_show(text):
-        oled.centre_text(text)
-        oled.show()
             
     def wait_and_show(low, high):
         wait_for_range(low, high)
@@ -230,24 +223,24 @@ if __name__ == '__main__':
     
     samples = 8192
     
-    centre_and_show('Welcome\nto the\ncalibrator')
+    oled.centre_text('Welcome\nto the\ncalibrator')
     sleep(3)
     if ain.read_duty() > 100:
-        centre_and_show('Please unplug\nall patch\ncables')
+        oled.centre_text('Please unplug\nall patch\ncables')
     wait_for_range(0, 100)
-    centre_and_show('Plug 1V into\nanalogue input')
+    oled.centre_text('Plug 1V into\nanalogue input')
     wait_and_show(low_threshold_low, low_threshold_high)
     low_reading = ain.read_duty(samples)
-    centre_and_show('Now plug 10V\ninto analogue\ninput')
+    oled.centre_text('Now plug 10V\ninto analogue\ninput')
     wait_and_show(high_threshold_low, high_threshold_high)
     high_reading = ain.read_duty(samples)
     
     input_multiplier = (HIGH_VOLTAGE - LOW_VOLTAGE) / (high_reading - low_reading)
     input_offset = HIGH_VOLTAGE - (input_multiplier * high_reading)
     
-    centre_and_show('Please unplug\nall patch\ncables')
+    oled.centre_text('Please unplug\nall patch\ncables')
     wait_for_range(0, 100)
-    centre_and_show('Plug output 1\ninto analogue\ninput')
+    oled.centre_text('Plug output 1\ninto analogue\ninput')
     cv1.duty(65534)
     wait_and_show(high_threshold_low, high_threshold_high)
     output_multiplier = 65534 / ((ain.read_duty(samples) * input_multiplier) + input_offset)
@@ -255,4 +248,5 @@ if __name__ == '__main__':
     with open('lib/calibration.txt', 'w') as file:
         file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
 
-    centre_and_show('Calibration\ncomplete!')
+    oled.centre_text('Calibration\ncomplete!')
+
