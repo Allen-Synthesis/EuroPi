@@ -1734,9 +1734,9 @@ OLED_SDA
 Text GLabel 1450 7450 0    50   Input ~ 0
 OLED_SCL
 Text GLabel 1800 7450 2    50   Input ~ 0
-GP1
+GP3
 Text GLabel 1800 7200 2    50   Input ~ 0
-GP0
+GP2
 $Comp
 L text:TEXT Reference?
 U 1 1 61D1FFD1
