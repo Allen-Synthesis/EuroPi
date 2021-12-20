@@ -42,8 +42,8 @@ There are Issue templates available, so please choose whichever is most relevant
 
 This module, and any documentation included in this repository, is entirely "free" software and hardware, under difference licenses depending on the software, hardware, and documentation itself.
   
-Software: Apache 2.0
-Hardware CERN OHL-S v2
+Software: Apache 2.0  
+Hardware CERN OHL-S v2  
 Documentation: CC0 1.0
   
 Anyone is welcome to design their own versions of the idea, or modify my designs.
