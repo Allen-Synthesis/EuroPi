@@ -21,7 +21,7 @@ You can find more about this (including a project diary) and other projects of m
 
 ### Improvements on the Prototype version
 
-* All outputs are the full Eurorack unipolar range of 0-10V
+* All outputs are the full Eurorack unipolar range of 0-10V, previously only 0-3.3V
 * Two inputs, previously no way to accept input from other modules
 * The buttons have hardware debouncing to allow users to change out capacitor values for reduced accidental 'double click'
 * A 10 pin Eurorack shrouded power header is now used to prevent accidental reverse powering of the module
