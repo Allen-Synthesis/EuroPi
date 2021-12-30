@@ -11,7 +11,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
 ### Installing the firmware
 1. Download the [firmware.uf2](/software/firmware/firmware.uf2) file from this repository.
-2. Holding down the white button on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
+2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
 3. Open your file manager and drag and drop the downloaded firmware.uf2 onto the new drive named 'RPI-RP2'.
 4. The Pico will automatically eject once the process is completed.
 
