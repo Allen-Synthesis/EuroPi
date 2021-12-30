@@ -122,7 +122,7 @@ The resistors are on both the Pico PCB and the Jack PCB, so get these both ready
 ### Solder the capacitors
 The capacitors are also on both PCBs, so keep them both on hand.
   
-#### Then the single 1uF capacitor (C2)
+#### Start with the 1uF capacitors (C1 - C2)
   
 #### Then the 100nF capacitors (C3 - C14)
   
@@ -131,7 +131,7 @@ The capacitors are also on both PCBs, so keep them both on hand.
   
 ### Solder the extra through hole components
 
-#### Solder the last Schottky Diode (D1) 
+#### Solder the remaining Schottky Diode (D1) 
   
 #### Solder the NPN Transistor (Q1)
   
