@@ -162,6 +162,8 @@ TPH: VCC, GND, SDA, SCL
 CPC: SDA, SCL, VCC, GND
   
 Don't ask my why there is still not a standard for I²C pin layout in the year 2021, but here we are, and here is how to tell the module which layout you are using:
+  
+This next stage is technically optional; if you know you have got the right display and won't be changing it, you can just make the 4 connections using solder or snipped off resistor legs rather than using a header and jumpers.  
 
 #### Solder the OLED configuration header
 
