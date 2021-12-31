@@ -139,7 +139,7 @@ The capacitors are also on both PCBs, so keep them both on hand.
   
 #### Solder the 8 Pin IC Socket
 
-#### Pop the TL074 and MCP6002 Op-Amps into their respective sockets
+#### Don't put the ICs into their sockets yet, as the heating of the board can damage them
   
   
 ### Solder the headers
@@ -188,11 +188,11 @@ Once the display is parallel, carefully solder the remaining pins, and then remo
 
 #### Solder the Thonkiconn jacks
 
-#### Solder the LEDs
+#### Solder the LEDs, making sure to orient the shorter leg with the white stripe on the PCB.
 
 #### Solder the Push Buttons with the flat side lined up with the PCB footprint
 
-#### Solder the potentiometers
+#### Solder the potentiometers. You do not need to solder the 'lugs' on either side, only the three small pins in a line.
 
 
 ### Finish off the assembly
@@ -204,7 +204,9 @@ Once the display is parallel, carefully solder the remaining pins, and then remo
 #### Screw the into the PCB standoff through the Pico PCB to hold the two PCBs together firmly
 Don't over-tighten so hard that you damage the PCB, but you also don't want this to rattle loose so make sure it is secure.
 
-#### Finally, push the Pico into its slot
+#### Push the Pico into its slot
+
+#### Finally, pop the TL074 and MCP6002 Op-Amps into their respective sockets
 
 
 ### Perform a final smoke test
