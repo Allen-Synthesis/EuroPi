@@ -10,9 +10,9 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
 ### Installing the firmware
-1. Download the [firmware.uf2](/software/firmware/firmware.uf2) file from this repository.
+1. Download the [most recent .uf2](https://micropython.org/download/rp2-pico/) firmware from the MicroPython website.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
-3. Open your file manager and drag and drop the downloaded firmware.uf2 onto the new drive named 'RPI-RP2'.
+3. Open your file manager and drag and drop the downloaded .uf2 onto the new drive named 'RPI-RP2'.
 4. The Pico will automatically eject once the process is completed.
 
 ### Installing the OLED library
