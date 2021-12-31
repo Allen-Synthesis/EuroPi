@@ -27,8 +27,9 @@ def get_input_calibration_data(): #Retrieves the calibration data for the input
     with open('lib/calibration.txt', 'a+') as file: #Open the text file in 'all+' mode which means it will create a file if one isn't present
         data = file.readlines() #Create a list containing the lines read from the file
         if len(data) == 0: #If the file is empty
-            file.write(str(0.003646677)+'\n'+str(-0.05753613)+'\n'+str(6347.393)) #Populate the file with default values
-            data = file.readlines() #Re-read the file now it contains the default values
+            default_values = ['0.003646677', '-0.05753613', '6347.393']
+            file.write(default_values[0]+'\n'+default_values[1]+'\n'+default_values[2]) #Populate the file with default values
+            data = default_values #Re-read the file now it contains the default values
         
         INPUT_MULTIPLIER = float(data[0].replace('\n','')) #The first line is the input multiplier
         INPUT_OFFSET = float(data[1].replace('\n','')) #The second line is the input offset
@@ -73,7 +74,7 @@ class Display(SSD1306_I2C): #Class used to write to the OLED display
             padding_top = (self.height - (len(lines) * 9)) / 2
             for index in range(len(lines)):
                 content = lines[index]
-                padding_left = int((self.width - (len(content) * 7)) / 2)
+                padding_left = int((self.width - ((len(content)+1) * 7)) / 2)
                 self.text(content, padding_left-1, int((index * 9) + padding_top)-1)
             oled.show()
 
@@ -200,7 +201,6 @@ for cv in cvs: #When imported, all outputs are turned off. This is because other
     cv.duty(0)
 
 
-
 #Calibration program. Run this program to calibrate the module
 if __name__ == '__main__':
     def wait_for_range(low, high):
@@ -249,4 +249,5 @@ if __name__ == '__main__':
         file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
 
     oled.centre_text('Calibration\ncomplete!')
+
 
