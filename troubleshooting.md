@@ -33,6 +33,7 @@ This means that the Pico cannot detect the OLED display.
 1. Make sure that the solder joints between the OLED board and the PCB are secure and free of dirt
 2. If you have a multimeter, test the continuity of each pin with the appropriate pin on the Pico according to [the pinout](hardware/europi_pinout.pdf)
 3. Make sure your PCB standoffs are screwed on tightly; if the two board slip apart by any more than a millimetre or two then the connection will not be made
+4. Make sure your OLED matches one of the two compatible pin configurations as outlined in the [build guide](https://github.com/roryjamesallen/EuroPi/blob/main/hardware/build_guide.md#oled-configuration)
 
 
 ## Backend terminated or disconnected
