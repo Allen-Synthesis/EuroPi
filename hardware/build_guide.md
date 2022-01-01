@@ -57,7 +57,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 ### Medium Capacitors
 
-#### Solder the 1uF capacitors to the front (CC1, C2), taking care of the polarity
+#### Solder the 1uF capacitors to the front (C1, C2), taking care of the polarity
 
 
 ### Headers
