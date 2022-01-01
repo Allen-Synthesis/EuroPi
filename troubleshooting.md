@@ -2,7 +2,13 @@
 
 This document should help you fix any problems you might be having with the hardware or software of the module.  
 If you have any other issues that aren't covered in this document, please create an Issue on this GitHub repository using the template.  
-You can search through this file for the error message you are getting or just press Ctrl-F and paste the message.
+You can search through this file for the error message you are getting or just press Ctrl-F and paste the first line of the message given in Thonny.
+
+## No inputs or outputs are working
+
+#### Steps to fix
+1. Make sure your module is connected to both USB for programming and rack power for ±12V supply
+2. Make sure the Pico and Jack PCBs are firmly pressed together, and held by the standoff
 
 ## Couldn't find the device automatically
 
@@ -17,8 +23,8 @@ This means that your device is either not connected, or not being detected.
 #### Steps to fix
 1. Make sure the USB cable is connected firmly to both the Pico and your computer
 2. Make sure your USB cable is capable of data transfer rather than just power
-3. Re-flash the firmware using 'firmware.uf2' by following the process set out in the [programming instructions](/software/programming_instructions.md)
-4. Re-flash the firmware using the 'flash_nuke.uf2', and then re-flash it again using 'firmware.uf2'
+3. Re-flash the firmware by following the process set out in the [programming instructions](/software/programming_instructions.md)
+4. Re-flash the firmware using the 'flash_nuke.uf2', and then re-flash it again using the most recent firmware
 
 
 ## EuroPi Hardware Error
