@@ -113,6 +113,12 @@ Don't ask my why there is still not a standard for I²C pin layout in the year 2
   
 This next stage is technically optional; if you know you have got the right display and won't be changing it, you can just make the 4 connections using solder or snipped off resistor legs rather than using a header and jumpers.  
 
+#### Solder the OLED Configuration Header to the back (only if choosing to use this method rather than bridging with solder or resistor legs)
+
+#### Place jumpers/shunts over the pins so that the connections are made according to the diagram on the PCB, either all 4 vertical or all 4 horizontal.
+
+#### If using solder instead, then make the 4 connections according to the diagram without soldering on the header.
+
 
 ### Front Panel Components
 
