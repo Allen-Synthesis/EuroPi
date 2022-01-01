@@ -52,7 +52,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 ### Transistor
 
-#### Solder the NPN transistor to the back (Q1)
+#### Solder the NPN transistor to the back (Q1), lining up the flat edge with the line on the PCB
 
 
 ### Medium Capacitors
