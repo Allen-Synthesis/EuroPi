@@ -12,6 +12,9 @@ from sys import exit
 OLED_WIDTH = 128
 OLED_HEIGHT = 32
 
+MAX_UINT16 = 65535
+MAX_UINT12 = 4096
+
         
 #General use functions
 def clamp(value, low, high): #Returns a value that is no lower than 'low' and no higher than 'high'
@@ -139,20 +142,18 @@ class Knob: #Class used to read the knob positions
     def __init__(self, pin):
         self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
         
-    def read_position(self, steps=100, samples=256): #Reads the position either based on an integer or a list
-        if isinstance(steps, int):
-            return round(steps - ((sample_adc(self.input, samples) / 4096) * steps)) #If an integer is used, return a value from 0-integer based on the knob position
-        else:
-            print("\033[1;31;00mPlease only use integer type with the read_position method")
-            exit() 
+    def percent(self, samples=256):
+        return 1 - (sample_adc(self.input, samples) / MAX_UINT12) #Provide the knob's relative percent value between 0 and 1.
+    
+    def read_position(self, steps=100, samples=256): #Returns an int in the range of steps based on knob position.
+        if not isinstance(steps, int):
+            raise Exception("Please only use integer type with the read_position method")
+        return round(self.percent() * steps) #If an integer is used, return a value from 0-integer based on the knob position
 
     def choice(self, values, samples=256):
-        if isinstance(steps, list):
-            return steps[self.read_position(len(steps)-1,samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
-        else:
-            print("\033[1;31;00mPlease only use list type with the choice method")
-            exit()
-    
+        if not isinstance(values, list):
+            raise Exception("Please only use list type with the choice method")
+        return values[self.read_position(len(values) - 1, samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
 
 
 class DigitalInput: #Class to handle any digital input, so is used for both the actual digital input and both buttons
