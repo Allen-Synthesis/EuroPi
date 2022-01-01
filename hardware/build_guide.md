@@ -9,7 +9,6 @@ This build is entirely through-hole (not even any pre-soldered SMD components!) 
 - Soldering Iron + Solder
 - Wire Snips / Scissors
 - Multimeter (Very nice to have but non-essential)
-- Two unique voltage sources within the range 0-10V (Only necessary if you wish to calibrate the module for increased accuracy)
 
 
 ## Pico PCB
