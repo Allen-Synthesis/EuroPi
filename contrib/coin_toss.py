@@ -2,7 +2,6 @@ from europi import *
 from random import random
 from utime import sleep_ms, ticks_ms
 
-DEBUG = True
 MAX_BPM = 280
 MIN_BPM = 20
 
@@ -17,7 +16,12 @@ class CoinToss:
     def __init__(self):
         self.gate_mode = True
         self.internal_clock = True
-        
+        self._prev_clock = 0
+
+        @b1.handler
+        def toggle_clock():
+            self.internal_clock = not self.internal_clock
+
         @b2.handler
         def toggle_gate():
             self.gate_mode = not self.gate_mode
@@ -25,7 +29,7 @@ class CoinToss:
 
     def tempo(self):
         """Read the current tempo set by k1 within set range."""
-        return round((k1.percent() * (MAX_BPM - MIN_BPM)) + MIN_BPM, 1)
+        return round((k1.percent() * (MAX_BPM - MIN_BPM)) + MIN_BPM)
 
     def get_next_deadline(self):
         """Get the deadline for next clock tick whole note."""
@@ -42,33 +46,49 @@ class CoinToss:
                     return
         else:  # External clock
             # Loop until digital in goes high (clock pulse received).
-            # FIXME: this will get stuck in an infinite loop when no signal present.
-            while din.value(): pass
-            return
+            while not self.internal_clock:
+                if din.value() != self._prev_clock:
+                    self._prev_clock = 1 if self._prev_clock == 0 else 0
+                    if self._prev_clock == 0:
+                        return
 
-    def toss(self, a, b):
+    def toss(self, a, b, shape):
         coin = random()
-        threshold = k2.percent()
+        # Sum the knob2 and analogue input values to determine threshold.
+        self.threshold = clamp(k2.percent() + (ain.read_voltage() / 12), 0, 0.999)
         if self.gate_mode:
-            a.value(coin > threshold)
-            b.value(coin < threshold)
+            a.value(coin > self.threshold)
+            b.value(coin < self.threshold)
         else:
-            trigger(a if coin > threshold else b)
-        return coin
+            trigger(a if coin > self.threshold else b)
+
+        # Draw a coin shape for coin toss
+        oled.text(shape, 5, int(coin * OLED_HEIGHT), 1)
 
     def main(self):
         # Start the main loop.
+        counter = 0
         while True:
-            coin1 = self.toss(cv1, cv3)
-            self.debug(coin1)
+            # Scroll and clear new screen area.
+            oled.scroll(10, 0)
+            oled.fill_rect(0, 0, 10, OLED_HEIGHT, 0)
+
+            self.toss(cv1, cv3, "o")
+            if counter % 4 == 0:
+                self.toss(cv4, cv6, "x")
+
+            # Draw threshold line
+            oled.hline(0, int(self.threshold * OLED_HEIGHT), 10, 1)
+            oled.show()
+
+            counter += 1
             self.wait()
-    
-    def debug(self, c1):
-        if DEBUG:
-            print(f"COIN1: {c1:>.2f}  THRESH: {k2.percent():>.2f}")
 
 
 if __name__ == '__main__':
     [o.off() for o in cvs]
+    oled.clear()
+    oled.show()
+
     coin_toss = CoinToss()
     coin_toss.main()
