@@ -4,6 +4,8 @@ This document will go through the assembly of the EuroPi module.
 If you have bought only a Panel + PCB kit, you will need to also buy all of the components found in the [bill of materials](/hardware/bill_of_materials.md).  
   
 This build is entirely through-hole (not even any pre-soldered SMD components!) so don't worry if you're fairly new to DIY, these instructions should be all you need to make your module.
+
+![all](https://user-images.githubusercontent.com/79809962/147939467-3058b557-65f3-4fd9-b449-96247841ba47.jpg)
   
 ## Required tools
 - Soldering Iron + Solder
