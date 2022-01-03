@@ -1,3 +1,27 @@
+"""
+Coin Toss
+author: awonak
+date: 2022-01-03
+
+Two pairs of clocked probability gates.
+
+Knob 1 adjusts the master clock speed of gate change probability. Knob 2 moves
+the probability thresholed between A and B with a 50% chance at noon. Output 
+column 1 (cv1 and cv4) run at 1x speed and output column2 (cv2 and cv4) run at
+4x speed for interesting rhythmic patterns. Push button 1 to toggle between
+internal and external clock source. Push button 2 to toggle between gate and
+trigger mode.
+
+knob_1: internal clock speed
+knob_2: probability threshold
+button_1: toggle internal / external clock source
+button_2: toggle gate/trigger mode
+cv1 / cv4: Coin 1 gate on when voltage above threshold
+cv2 / cv5: Coin 2 gate on when voltage below threshold
+cv3: Coin 1 clock
+cv6: Coin 2 clock
+
+"""
 from europi import *
 from random import random
 from utime import sleep_ms, ticks_ms
@@ -62,7 +86,7 @@ class CoinToss:
 
     def toss(self, a, b, draw=True):
         """If random value is below trigger a, otherwise trigger b.
-        
+
         If draw is true, then display visualization of the coin toss.
         """
         coin = random()

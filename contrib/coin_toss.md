@@ -2,17 +2,18 @@
 
 author: awonak
 
-version: 1.0
+date: 2022-02-03
 
 Two pairs of clocked probability gates.
 
 Knob 1 adjusts the master clock speed of gate change probability. Knob 2 moves
-the probability thresholed between A and B with a 50% chance at noon. Digital
-Out 1 and 2 run at 1x speed and Digital 3 and 4 run at 4x speed for
-interesting rhythmic patterns. Push button 1 to toggle turbo mode which brings
-the clock speed into audio rate.
+the probability thresholed between A and B with a 50% chance at noon. Output 
+column 1 (cv1 and cv4) run at 1x speed and output column2 (cv2 and cv4) run at
+4x speed for interesting rhythmic patterns. Push button 1 to toggle between
+internal and external clock source. Push button 2 to toggle between gate and
+trigger mode.
 
-    knob_1: master clock speed, rate of voltage change
+    knob_1: internal clock speed
     knob_2: probability threshold
     button_1: toggle internal / external clock source
     button_2: toggle gate/trigger mode
@@ -21,7 +22,8 @@ the clock speed into audio rate.
     cv3: Coin 1 clock
     cv6: Coin 2 clock
 
-I like to use Visual Studio Code as my IDE and `rshell` to copy and run my scripts.
+For developing, I like to use Visual Studio Code as my IDE and `rshell` to copy
+and run my scripts.
 
 From the root dir of the repo, enter rshell:
 
