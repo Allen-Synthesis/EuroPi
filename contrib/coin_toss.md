@@ -14,9 +14,17 @@ the clock speed into audio rate.
 
     knob_1: master clock speed, rate of voltage change
     knob_2: probability threshold
-    button_1: toggle speed normal/turbo
+    button_1: toggle internal / external clock source
     button_2: toggle gate/trigger mode
-    digital_1: Coin 1 gate on when voltage above threshold
-    digital_2: Coin 2 gate on when voltage below threshold
-    digital_3: Coin 2 gate on when voltage above threshold
-    digital_4: Coin 2 gate on when voltage below threshold
+    cv1 / cv4: Coin 1 gate on when voltage above threshold
+    cv2 / cv5: Coin 2 gate on when voltage below threshold
+    cv3: Coin 1 clock
+    cv6: Coin 2 clock
+
+I like to use Visual Studio Code as my IDE and `rshell` to copy and run my scripts.
+
+From the root dir of the repo, enter rshell:
+
+    $ rshell
+    > cp contrib/coin_toss.py
+    > repl pyboard ~ from  main import * ~ c=CoinToss() ~ c.main()
