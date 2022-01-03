@@ -5,18 +5,21 @@ If you have bought only a Panel + PCB kit, you will need to also buy all of the 
   
 This build is entirely through-hole (not even any pre-soldered SMD components!) so don't worry if you're fairly new to DIY, these instructions should be all you need to make your module.
 
-![all](https://user-images.githubusercontent.com/79809962/147939467-3058b557-65f3-4fd9-b449-96247841ba47.jpg)
+![1 all](https://user-images.githubusercontent.com/79809962/147943816-3ac2098c-14cf-4fac-8896-1ba1f2c7397f.jpg)
   
 ## Required tools
 - Soldering Iron + Solder
 - Wire Snips / Scissors
 - Multimeter (Very nice to have but non-essential)
 
+![2 tools](https://user-images.githubusercontent.com/79809962/147944628-6954b9f4-4f29-4064-8ad4-35a578848826.jpg)
 
 ## Pico PCB
 
 The 'Pico PCB' is the PCB with the outline of the Pico on it.  
 The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it, and the 'back' is the side with the transistor outline on it.
+
+![3 pico pcb](https://user-images.githubusercontent.com/79809962/147948407-332b55ce-0bd1-4802-a53d-90605ffd847d.jpg)
 
 ### Resistors
 
@@ -88,6 +91,8 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 The 'Jack PCB' is the remaining board, with the outlines for the front panel components.  
 The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines, and the 'back' is the side with the OLED configuration diagram.
+
+![4 jack pcb](https://user-images.githubusercontent.com/79809962/147948436-46ee467c-e596-4a22-b678-862eba103882.jpg)
 
 ### Resistors
 
