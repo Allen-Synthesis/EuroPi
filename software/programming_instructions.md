@@ -66,7 +66,7 @@ As soon as you run the program, a 'calibration.txt' file will be generated, whic
   
 If you don't need high accuracy, you can finish at this point and begin programming (skip to the next section).
 If however you'd like your module to be able to accurately read and output specific voltages, then get ready your voltage source(s).  
-A benchtop power supply is ideal for this, but you could potentially use another Eurorack module if the voltage is accurate enough (it's reccommended to use a multimeter to make sure the voltage you input to the program variables is accurate to the real world voltage you provide.  
+A benchtop power supply is ideal for this, but you could potentially use another Eurorack module if the voltage is accurate enough (it's reccommended to use a multimeter to make sure the voltage you input to the program variables is accurate).  
 
 1. If the voltages you plan to use are any different to 1V and 10V, open the europi.py file and change the values of LOW_VOLTAGE and HIGH_VOLTAGE to whichever you are using. As long as they are between 0-10V and are far enough apart from each other, the process will work.
 
