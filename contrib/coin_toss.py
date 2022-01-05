@@ -94,7 +94,7 @@ class CoinToss:
         """
         coin = random()
         # Sum the knob2 and analogue input values to determine threshold.
-        self.threshold = clamp(k2.percent() + (ain.read_voltage() / 12), 0, 1)
+        self.threshold = clamp(k2.percent() + ain.percent(), 0, 1)
         if self.gate_mode:
             a.value(coin < self.threshold)
             b.value(coin > self.threshold)
