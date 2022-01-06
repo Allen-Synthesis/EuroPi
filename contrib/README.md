@@ -10,7 +10,7 @@ Please include:
 
 ### File Naming
 Please use all lowercase and separate words with underscores for your program names.
-e.g. the files associated with a program for a Sample and Hold funciton would look as follows:  
+e.g. the files associated with a program for a Sample and Hold function would look as follows:  
   
 **sample_and_hold.py  
 sample_and_hold.md**
