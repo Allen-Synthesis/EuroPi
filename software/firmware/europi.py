@@ -1,7 +1,6 @@
 from machine import Pin, PWM, ADC, I2C
 from ssd1306 import SSD1306_I2C
 from time import sleep, ticks_ms
-from sys import exit
 
 
 #Rory Allen 19/11/2021 CC BY-SA 4.0
@@ -15,7 +14,7 @@ OLED_HEIGHT = 32
 MAX_UINT16 = 65535
 MAX_UINT12 = 4096
 
-        
+
 #General use functions
 def clamp(value, low, high): #Returns a value that is no lower than 'low' and no higher than 'high'
     return max(min(value, high), low)
@@ -54,9 +53,8 @@ class Display(SSD1306_I2C): #Class used to write to the OLED display
         self.height = height
         
         if len(self.i2c.scan()) == 0: #If no i2c devices are detected on the given channel
-            print("\033[1;31;00mEuroPi Hardware Error:\nMake sure the OLED display is connected correctly") #Display a useful error message
-            exit() #End the program
-            
+            raise Exception("EuroPi Hardware Error:\nMake sure the OLED display is connected correctly") #Display a useful error message
+
         super().__init__(128, 32, self.i2c)
     
     def clear(self): #Removes all filled pixels from the display
@@ -67,12 +65,10 @@ class Display(SSD1306_I2C): #Class used to write to the OLED display
         try: #Try in case the value sent is anything that cannot be .split()
             lines = text.split('\n')
         except:
-            print("\033[1;31;00mEuroPi Software Error:\ncentre.text() only accepts string") #Display a useful error message
-            return
+            raise Exception("EuroPi Software Error:\ncentre.text() only accepts string") #Display a useful error message
         maximum_lines = (self.height / 9) // 1 #Lines are 9 pixels tall, and the //1 means it will calculate only the whole number of available lines
         if len(lines) > maximum_lines:
-            print("\033[1;31;00mEuroPi Software Error:\nDisplay is not big enough for that many lines") #Display a useful error message
-            return
+            raise Exception("EuroPi Software Error:\nDisplay is not big enough for that many lines") #Display a useful error message
         else:
             padding_top = (self.height - (len(lines) * 9)) / 2
             for index in range(len(lines)):
@@ -129,12 +125,9 @@ class AnalogueInput: #Class used to read the analogue input
         self.input = ADC(Pin(pin))
         self.input_multiplier, self.input_offset = get_input_calibration_data() #Retreives the calibration data from the calibration.txt file
 
-    def percent(self, samples=256):  # Reads the voltage as a float value between 0.0 and 1.0
-        return self.read_voltage(samples) / 12
-
     def read_duty(self, samples=256): #Reads the un-corrected duty cycle of the ADC
-        return clamp(sample_adc(self.input, samples), 0, 65535)
-    
+        return clamp(sample_adc(self.input, samples), 0, MAX_UINT16)
+
     def read_voltage(self, samples=256): #Reads the voltage read by the ADC, corrected to convert both duty to voltage, and also correct the offset
         return clamp((self.read_duty(samples) * self.input_multiplier) + self.input_offset, 0, 12)
 
@@ -144,14 +137,22 @@ class AnalogueInput: #Class used to read the analogue input
 class Knob: #Class used to read the knob positions
     def __init__(self, pin):
         self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
-        
-    def percent(self, samples=256):
+
+    def unit_interval(self, samples=256):
         return 1 - (sample_adc(self.input, samples) / MAX_UINT12) #Provide the knob's position as a float value between 0.0 and 1.0
-    
-    def read_position(self, steps=100, samples=256): #Returns an int in the range of steps based on knob position.
+
+    def read_position(self, steps=100, decimal_places=0, samples=256): #Returns an int in the range of steps based on knob position.
         if not isinstance(steps, int):
-            raise Exception("Please only use integer type with the read_position method")
-        return round(self.percent() * steps) #If an integer is used, return a value from 0-integer based on the knob position
+            raise Exception("Please only use integer type for steps and decimal_places with the read_position method")
+        unrounded = self.unit_interval() * steps #Get the unrounded value by multiplying the float 0-1 (unit_interval) by steps
+        if decimal_places == "False": #If the number is not to be rounded
+            return unrounded
+        else:
+            rounded = round(unrounded, decimal_places) #Round the number to the decimal places provided
+            if decimal_places == 0: #The round() method does not remove the decimal, so if decimal_places is 0, turn to an integer
+                return int(rounded)
+            else:
+                return rounded #Otherwise return as a rounded float
 
     def choice(self, values, samples=256):
         if not isinstance(values, list):
@@ -253,5 +254,3 @@ if __name__ == '__main__':
         file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
 
     oled.centre_text('Calibration\ncomplete!')
-
-
