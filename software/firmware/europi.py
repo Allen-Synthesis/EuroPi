@@ -125,9 +125,6 @@ class AnalogueInput: #Class used to read the analogue input
         self.input = ADC(Pin(pin))
         self.input_multiplier, self.input_offset = get_input_calibration_data() #Retreives the calibration data from the calibration.txt file
 
-    def percent(self, samples=256): #Reads the voltage as a float value between 0.0 and 1.0
-        return self.read_voltage(samples) / 12
-
     def read_duty(self, samples=256): #Reads the un-corrected duty cycle of the ADC
         return clamp(sample_adc(self.input, samples), 0, MAX_UINT16)
 
@@ -140,9 +137,6 @@ class AnalogueInput: #Class used to read the analogue input
 class Knob: #Class used to read the knob positions
     def __init__(self, pin):
         self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
-
-    def percent(self, samples=256):
-        return 1 - (sample_adc(self.input, samples) / MAX_UINT12) #Provide the knob's position as a float value between 0.0 and 1.0
 
     def read_position(self, steps=100, samples=256): #Returns an int in the range of steps based on knob position.
         if not isinstance(steps, int):
