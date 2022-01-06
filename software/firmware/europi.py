@@ -138,10 +138,21 @@ class Knob: #Class used to read the knob positions
     def __init__(self, pin):
         self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
 
-    def read_position(self, steps=100, samples=256): #Returns an int in the range of steps based on knob position.
+    def unit_interval(self, samples=256):
+        return 1 - (sample_adc(self.input, samples) / MAX_UINT12) #Provide the knob's position as a float value between 0.0 and 1.0
+
+    def read_position(self, steps=100, decimal_places=0, samples=256): #Returns an int in the range of steps based on knob position.
         if not isinstance(steps, int):
-            raise Exception("Please only use integer type with the read_position method")
-        return round(self.percent() * steps) #If an integer is used, return a value from 0-integer based on the knob position
+            raise Exception("Please only use integer type for steps and decimal_places with the read_position method")
+        unrounded = self.unit_interval() * steps #Get the unrounded value by multiplying the float 0-1 (unit_interval) by steps
+        if decimal_places == "False": #If the number is not to be rounded
+            return unrounded
+        else:
+            rounded = round(unrounded, decimal_places) #Round the number to the decimal places provided
+            if decimal_places == 0: #The round() method does not remove the decimal, so if decimal_places is 0, turn to an integer
+                return int(rounded)
+            else:
+                return rounded #Otherwise return as a rounded float
 
     def choice(self, values, samples=256):
         if not isinstance(values, list):
