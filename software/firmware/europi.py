@@ -14,6 +14,7 @@ OLED_HEIGHT = 32
 MAX_UINT16 = 65535
 MAX_UINT12 = 4096
 
+
 #General use functions
 def clamp(value, low, high): #Returns a value that is no lower than 'low' and no higher than 'high'
     return max(min(value, high), low)
