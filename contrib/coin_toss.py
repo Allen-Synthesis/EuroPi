@@ -61,7 +61,7 @@ class CoinToss:
 
     def tempo(self):
         """Read the current tempo set by k1 within set range."""
-        return round((k1.percent() * (MAX_BPM - MIN_BPM)) + MIN_BPM)
+        return round(k1.read_position(MAX_BPM - MIN_BPM) + MIN_BPM)
 
     def get_next_deadline(self):
         """Get the deadline for next clock tick whole note."""
@@ -94,7 +94,7 @@ class CoinToss:
         """
         coin = random()
         # Sum the knob2 and analogue input values to determine threshold.
-        self.threshold = clamp(k2.percent() + ain.percent(), 0, 1)
+        self.threshold = clamp(k2.read_position()/100 + ain.read_voltage()/12, 0, 1)
         if self.gate_mode:
             a.value(coin < self.threshold)
             b.value(coin > self.threshold)

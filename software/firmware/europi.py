@@ -11,7 +11,7 @@ from time import sleep, ticks_ms
 OLED_WIDTH = 128
 OLED_HEIGHT = 32
 
-MAX_UINT16 = 65536
+MAX_UINT16 = 65535
 MAX_UINT12 = 4096
 
 #General use functions
@@ -123,9 +123,6 @@ class AnalogueInput: #Class used to read the analogue input
     def __init__(self, pin):
         self.input = ADC(Pin(pin))
         self.input_multiplier, self.input_offset = get_input_calibration_data() #Retreives the calibration data from the calibration.txt file
-
-    def percent(self, samples=256):  # Reads the voltage as a float value between 0.0 and 1.0
-        return self.read_voltage(samples) / 12
 
     def read_duty(self, samples=256): #Reads the un-corrected duty cycle of the ADC
         return clamp(sample_adc(self.input, samples), 0, MAX_UINT16)

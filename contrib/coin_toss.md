@@ -2,7 +2,7 @@
 
 author: awonak
 
-date: 2022-02-03
+date: 2022-01-03
 
 Two pairs of clocked probability gates.
 
