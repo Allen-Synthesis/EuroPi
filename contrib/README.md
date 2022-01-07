@@ -5,7 +5,7 @@ To do this, you'll need to fork this repository to your own page, upload your pr
   
 ### Submission Format
 Please include:
-- Your name (or username) and the date you uploaded the program as a comment at the top of the file
+- Your name (or username) and the date you uploaded the program (dd/mm/yy) as a comment at the top of the file
 - Either a description as a comment at the top of the code itself, or as a file with the exact same name as the program but with the '.md' suffix.
 
 ### File Naming
