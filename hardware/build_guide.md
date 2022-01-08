@@ -14,6 +14,11 @@ This build is entirely through-hole (not even any pre-soldered SMD components!) 
 
 ![2 tools](https://user-images.githubusercontent.com/79809962/147944628-6954b9f4-4f29-4064-8ad4-35a578848826.jpg)
 
+## Preparation
+
+#### If not already soldered, solder the headers to the Pico so that they are on the opposite side to the black integrated chips. It may help to push it into a breadboard to make sure the headers are straight
+
+
 ## Pico PCB
 
 The 'Pico PCB' is the PCB with the outline of the Pico on it.  
@@ -160,9 +165,9 @@ If your display is TPH, you can either solder pins and do it the same way as the
 #### Screw the second screw into the PCB standoff through front of the Pico PCB to hold the two PCBs together firmly
 Don't over-tighten so hard that you damage the PCB, but you also don't want this to rattle loose so make sure it is secure.
 
-#### If not already soldered, solder the headers to the Pico so that they are on the opposite side to the black integrated chips
-
 #### Push the Pico into its slot on the Pico PCB
+
+#### If not done already, peel the protective film off the OLED display
 
 #### Finally, pop the TL074 and MCP6002 Op-Amps into their respective sockets
 
