@@ -23,7 +23,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 ### Resistors
 
-#### Solder the 1k resistors to the front (R1, R2, R3, R4)
+#### Solder the 1k resistors to the front (R1, R2, R3, R4, R5, R6)
 
 #### Solder the 22k resistors to the front (R21, R22, R23)
 
