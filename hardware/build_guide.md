@@ -3,7 +3,9 @@
 This document will go through the assembly of the EuroPi module.  
 If you have bought only a Panel + PCB kit, you will need to also buy all of the components found in the [bill of materials](/hardware/bill_of_materials.md).  
   
-This build is entirely through-hole (not even any pre-soldered SMD components!) so don't worry if you're fairly new to DIY, these instructions should be all you need to make your module.
+This build is entirely through-hole (not even any pre-soldered SMD components!) so don't worry if you're fairly new to DIY, these instructions should be all you need to make your module.  
+  
+This guide should explain every step in enough detail, but there are some things left out for simplicity's sake, such as the fact that after each step any long legs will need to be snipped using your wire snips or scissors. This is only necessary for components with long legs, so resistors, capacitors, and LEDs. You don't need to snip anything off any of the headers, the 7805, the jacks, potentiometers, or IC sockets.
 
 ![1 all](https://user-images.githubusercontent.com/79809962/147943816-3ac2098c-14cf-4fac-8896-1ba1f2c7397f.jpg)
   
@@ -67,7 +69,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 ### Medium Capacitors
 
-#### Solder the 1uF capacitors to the front (C1, C2), taking care of the polarity
+#### Solder the 1uF capacitors to the front (C1, C2), taking care of the polarity. The white stripe on the capacitor lines up with the stripe on the PCB
 
 
 ### Headers
@@ -83,7 +85,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 ### Large Capacitors
 
-#### Solder the 10uF capacitors to the front (C15, C16), taking care of the polarity
+#### Solder the 10uF capacitors to the front (C15, C16), taking care of the polarity. The white stripe on the capacitor lines up with the stripe on the PCB
 
 
 ### 7805
@@ -106,7 +108,7 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 
 ### Small Capacitors
 
-#### Solder the 100nF capacitors to the back (C8, C9). If your board has a polarity marking, ignore it.
+#### Solder the 100nF capacitors to the back (C8, C9). If your board has a polarity marking, ignore it unless you are deliberately using larger polarised capacitors than the BOM calls for, in which case make sure they line up with the PCB marking
 
 
 ### Headers
