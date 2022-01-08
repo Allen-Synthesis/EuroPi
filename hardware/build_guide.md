@@ -283,19 +283,10 @@ Also pop on the knobs.
 ### (Optional) Multimeter Tests
 Use your multimeter set to continuity mode for these tests.
 
-#### Check the continuity of +12V to the middle left pin of the TL074-2 op-amp
-![_DSC2392](https://user-images.githubusercontent.com/79809962/148646804-7e379f17-86ba-4a05-929e-65a1c641d5cb.jpg)
-
-
-#### Check the continuity of -12V to the middle right pin of the TL074-2 op-amp
-![_DSC2393](https://user-images.githubusercontent.com/79809962/148646807-880bbf25-ee96-4451-b59b-320fbd056d0d.jpg)
-
-
 #### Check that there is no continuity between +12V and -12V, between +12V and Ground, and between -12V and Ground on the power header
 ![_DSC2395](https://user-images.githubusercontent.com/79809962/148646810-db50ddd0-6111-429a-9aa6-ef6c4c8132ca.jpg)
 
-
-If there is continuity on any checks where there shouldn't be, or there isn't on checks where there should, then make sure your solder joints are good and that there is no dirt or stray solder bridging any connections. Also make sure that your diodes and power cable are all the correct orientation.
+If there is continuity on any checks where there shouldn't be then make sure your solder joints are good and that there is no dirt or stray solder bridging any connections. Also make sure that your diodes and power cable are all the correct orientation.
 
 ### Smoke Test
 
