@@ -169,9 +169,11 @@ Don't over-tighten so hard that you damage the PCB, but you also don't want this
 
 #### If not done already, peel the protective film off the OLED display
 
-#### Screw all of the nuts on to hold the components to the front panel
+#### Screw all of the nuts on to hold the components to the front panel. 
+If your potentiometer came with nuts, use them, otherwise just screw on the jacks.
+Also pop on the knobs.
 
-#### Finally, pop the TL074 and MCP6002 Op-Amps into their respective sockets
+#### Finally, pop the TL074 and MCP6002 Op-Amps into their respective sockets, making sure the notch in the IC matches the notch on the socket
 
 
 ### (Optional) Multimeter Tests
