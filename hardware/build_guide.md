@@ -153,7 +153,7 @@ If your display is TPH, you can either solder pins and do it the same way as the
 
 #### Place an elastic band or hair bobble around the PCB and panel to hold them together
 
-#### Solder all the components from the back
+#### Solder all the components from the back. For the potentiometers, only solder the large lugs on the sides if yours are trimmer type potentiometers. Do not solder the lugs if the potentiometers came with nuts.
 
 
 ## Finish off the assembly
@@ -168,6 +168,8 @@ Don't over-tighten so hard that you damage the PCB, but you also don't want this
 #### Push the Pico into its slot on the Pico PCB
 
 #### If not done already, peel the protective film off the OLED display
+
+#### Screw all of the nuts on to hold the components to the front panel
 
 #### Finally, pop the TL074 and MCP6002 Op-Amps into their respective sockets
 
