@@ -212,7 +212,7 @@ This next stage is technically optional; if you know you have got the right disp
 
 
 #### Solder the OLED Display to the front
-This is quite an awkward operation as the distance the headers need to occupy is not standard to the lengths that 2.54mm headers come in. If you are using a CPC display, your headers are probably pre-soldered, in which case you need to press the display down onto the configuration header you previously soldered, and use something like an elastic band to hold it in place.  
+This is quite an awkward operation as the distance the headers need to occupy is not standard to the lengths that 2.54mm headers come in. If you are using a CPC display, your headers are probably pre-soldered, in which case you need to prop the display up somehow while you solder one pin, then go on to solder the rest once you're sure it's straight.
   
 If your display is CPC, the pins will be flush with the PCB if it's at the correct height, which is difficult but possible to solder.  
   
