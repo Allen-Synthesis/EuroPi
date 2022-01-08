@@ -11,13 +11,17 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
 ### Installing the firmware
 1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website.
-4. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
-5. Open your file manager and drag and drop the downloaded .uf2 onto the new drive named 'RPI-RP2'.
-6. The Pico will automatically eject once the process is completed.
+2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
+![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
+
+3. Open your file manager and drag and drop the downloaded .uf2 onto the new drive named 'RPI-RP2'.
+4. The Pico will automatically eject once the process is completed.
 
 ### Installing the OLED library
 1. Disconnect the Pico from the USB cable.
 2. Reconnect, this time without holding down the button on the back.
+![_DSC2401](https://user-images.githubusercontent.com/79809962/148647207-b43a2e44-0ca2-48d0-b13c-b5d091b44ae1.jpg)
+
 3. Open up Thonny if not already open, and go to the bottom right where you can select the interpreter.
 4. Click to select interpreter and choose 'MicroPython (Raspberry Pi Pico)'.
 
