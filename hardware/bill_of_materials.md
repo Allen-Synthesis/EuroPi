@@ -29,7 +29,7 @@ Please note that a few of these are multi-packs of components, and there may wel
 | Q1 | 1 | 2N3904 | NPN Transistor | [CPC](https://cpc.farnell.com/multicomp-pro/2n3904/transistor-npn-to-92/dp/SC15978?st=bjt%20transistor%20npn)
 | 7805 | 1 | L7805ABV | 5V Linear Voltage Regulator | [CPC](https://cpc.farnell.com/stmicroelectronics/l7805abv/ic-v-reg-5v/dp/SC10586)
 | | 1 | 11mm | M2.5 PCB Standoff + 2 Screws | [Standoff](https://cpc.farnell.com/ettinger/05-02-113/spacer-hex-m2-5-11mm-length-brass/dp/PC01763?st=11mm%20standoff), [Screws](https://cpc.farnell.com/unbranded/pp2m5-6/screw-pan-pozi-m2-5-x-6mm-100pk/dp/FN02140?st=m2.5%20screw)
-| | 2 | T18 Shaft | Knobs | [Thonk](https://www.thonk.co.uk/shop/1900h-t18/)
+| | 2 | T18 Shaft | Knobs | [Thonk](https://www.thonk.co.uk/shop/1900h-t18/) NOTE: If you buy D-Shaft potentiometers, the knobs must be 'Reverse-D-Shaft' type.
 | | 1 | 10 - 16 Pin | Eurorack Power Cable | [Thonk](https://www.thonk.co.uk/shop/eurorack-power-cables/)
 | | 1 | | Micro USB Cable (Capable of Data Transfer) | [CPC](https://cpc.farnell.com/pro-signal/psg91562/lead-usb-a-male-micro-b-male-black/dp/CS32732), [The Pi Hut](https://thepihut.com/products/usb-to-micro-usb-cable-0-5m)
 | | 1 | | Raspberry Pi Pico | [The Pi Hut](https://thepihut.com/products/raspberry-pi-pico?variant=37979757412547&currency=GBP&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic&gclid=CjwKCAiA-9uNBhBTEiwAN3IlNPLIc-LC7fTdZg4ktGarWbSkNSZztfqEVRuHbieqW2CoN0KWLjs_WRoClvUQAvD_BwE), [CPC](https://cpc.farnell.com/raspberry-pi/raspberry-pi-pico/raspberry-pi-pico-rp2040-mcu-board/dp/SC17106)
