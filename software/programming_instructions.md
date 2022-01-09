@@ -59,6 +59,8 @@ The europi.py program is made to be imported as a library, but you are also able
   
 If you wish to calibrate the module yourself, you will need access to two fixed voltage sources, ideally 1V and 10V.  
   
+**NOTE: For calibration, the module *must* be connected to both USB for programming *and* rack power for ±12V.**
+  
 As soon as you run the program, a 'calibration.txt' file will be generated, which will allow you to use the module, but they are only default values and will not allow high accuracy input or output.  
   
 #### Calibration.txt
