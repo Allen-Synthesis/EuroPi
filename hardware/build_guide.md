@@ -32,7 +32,9 @@ There are two options for some of the build, one of which makes the module more 
 The 'Pico PCB' is the PCB with the outline of the Pico on it.  
 The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it, and the 'back' is the side with the transistor outline on it.
 
-![3 pico pcb](https://user-images.githubusercontent.com/79809962/147948407-332b55ce-0bd1-4802-a53d-90605ffd847d.jpg)
+|Front|Back|
+|-----|----|
+|![DSC2404](https://user-images.githubusercontent.com/79809962/148678993-6827be45-b70a-4fd9-9905-f2933294647a.jpg)|![DSC2405](https://user-images.githubusercontent.com/79809962/148679010-572c4134-9486-4192-8155-193a9f78333f.jpg)|
 
 ### Resistors
 
@@ -162,7 +164,11 @@ If you do not mind your module being a little thicker (approximately 40mm), simp
 The 'Jack PCB' is the remaining board, with the outlines for the front panel components.  
 The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines, and the 'back' is the side with the OLED configuration diagram.
 
-![4 jack pcb](https://user-images.githubusercontent.com/79809962/147948436-46ee467c-e596-4a22-b678-862eba103882.jpg)
+|Front|Back|
+|-----|----|
+|![DSC2406](https://user-images.githubusercontent.com/79809962/148679028-98e41fce-fe47-40d5-b833-9d615c923592.jpg)|![DSC2407](https://user-images.githubusercontent.com/79809962/148679039-b93381e4-b30d-47a6-935f-a1ab66642e18.jpg)|
+
+
 
 ### Resistors
 
