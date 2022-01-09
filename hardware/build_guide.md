@@ -36,6 +36,28 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 |-----|----|
 |![DSC2404](https://user-images.githubusercontent.com/79809962/148678993-6827be45-b70a-4fd9-9905-f2933294647a.jpg)|![DSC2405](https://user-images.githubusercontent.com/79809962/148679010-572c4134-9486-4192-8155-193a9f78333f.jpg)|
 
+#### Required Components for Pico PCB
+|Component|Quantity|
+|---------|--------|
+|1k Resistor|6|
+|22k Resistor|3|
+|100k Resistor|8|
+|220k Resistor|6|
+|10k Resistor|3|
+|Schottky Diode|4|
+|100nF Capacitor|10|
+|14 Pin IC Socket|2|
+|8 Pin IC Socket|1|
+|NPN Transistor|1|
+|1uF Capacitor|2|
+|4x2 Female Header|2|
+|Shrouded Power Header|1|
+|4x1 Male Header|1|
+|20x1 Female Pico Header|2|
+|10uF Capacitor|2|
+
+---
+
 ### Resistors
 
 #### Solder the 1k resistors to the front (R1, R2, R3, R4, R5, R6)
@@ -63,6 +85,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 #### Solder the 100k resistor to the back (R27)
 ![_DSC2342](https://user-images.githubusercontent.com/79809962/148646458-ad031bd1-d5ca-4719-a0f1-947e0d4e2e0a.jpg)
 
+---
 
 ### Diodes
 
@@ -73,14 +96,14 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 #### Solder the Schottky diode to the back (D1), taking care of the polarity
 ![_DSC2344](https://user-images.githubusercontent.com/79809962/148646468-ba371a92-ff31-4736-8c7c-fb2ca1f17adc.jpg)
 
-
+---
 
 ### Small Capacitors
 
 #### Solder the 100nF capacitors to the front (C3, C4, C5, C6, C9, C10, C11, C12, C13, C14)
 ![_DSC2345](https://user-images.githubusercontent.com/79809962/148646472-d1251dea-80df-4390-86ca-999f373e6b00.jpg)
 
-
+---
 
 ### IC Sockets
 
@@ -91,21 +114,21 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 #### Solder the 8 pin IC socket to the front (MCP6002), lining up the notch with the white square on the PCB
 ![_DSC2347](https://user-images.githubusercontent.com/79809962/148646483-da9f3b0f-4aea-424e-823c-ac6e7a78453a.jpg)
 
-
+---
 
 ### Transistor
 
 #### Solder the NPN transistor to the back (Q1), lining up the flat edge with the line on the PCB
 ![_DSC2348](https://user-images.githubusercontent.com/79809962/148646486-14f6309a-ea8c-4bee-8c94-d4c7b921d6af.jpg)
 
-
+---
 
 ### Medium Capacitors
 
 #### Solder the 1uF capacitors to the front (C1, C2), taking care of the polarity. The white stripe on the capacitor lines up with the stripe on the PCB
 ![_DSC2349](https://user-images.githubusercontent.com/79809962/148646495-35dfc9f5-1854-453d-9198-1f60a5cc18f1.jpg)
 
-
+---
 
 ### Headers
 
@@ -122,7 +145,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 
 #### Push the female Pico headers onto the Pico itself
-DO NOT DO THIS STEP IF YOU ARE DOING THE SKIFF FRIENDLY BUILD
+DO NOT DO THIS STEP IF YOU ARE DOING THE SKIFF FRIENDLY BUILD  
 ![_DSC2355](https://user-images.githubusercontent.com/79809962/148646518-ea8e78d0-0eac-4c52-a066-faef7229b62f.jpg)
 
 
@@ -139,25 +162,26 @@ DO NOT DO THIS STEP IF YOU ARE DOING THE SKIFF FRIENDLY BUILD
 ![_DSC2359](https://user-images.githubusercontent.com/79809962/148646560-23bce840-6db8-463b-95fb-cd9e1df0993c.jpg)
 
 
-
+---
 
 ### Large Capacitors
 
 #### Solder the 10uF capacitors to the front (C15, C16), taking care of the polarity. The white stripe on the capacitor lines up with the stripe on the PCB
 ![_DSC2360](https://user-images.githubusercontent.com/79809962/148646579-7bc26aa0-817f-4a3e-bb92-e03fa232a60a.jpg)
 
+---
 
 ### 7805
 
 #### Solder the 7805 power regulator to the front, with the metal side in line with the white stripe on the PCB
-*Skiff friendly tip: If you would like your module to be skiff friendly, then you need to now solder the Pico directly to the board, and ignore the stage where you solder female headers. Before you solder the 7805, bend its legs directly next to the black plastic 'body' at 90 degrees. Be very careful that the metal back of the 7805 does not touch any pins of the Pico or the top of the USB port. You may want to stick some masking tape between them to make sure of this.
+*Skiff friendly only: If you would like your module to be skiff friendly, then you need to now solder the Pico directly to the board, and ignore the stage where you solder female headers. Before you solder the 7805, bend its legs directly next to the black plastic 'body' at 90 degrees. Be very careful that the metal back of the 7805 does not touch any pins of the Pico or the top of the USB port. You may want to stick some masking tape between them to make sure of this.  
 ![_DSC2402](https://user-images.githubusercontent.com/79809962/148678569-55f028d2-d57a-4ba8-bdff-6e99f8569e60.jpg)
 ![_DSC2403](https://user-images.githubusercontent.com/79809962/148678570-3b66b5c4-cfad-41c3-9fe8-33fa532c0f89.jpg)*
   
-If you do not mind your module being a little thicker (approximately 40mm), simply solder the 7805 as normal, pushed as far into the holes as the legs will allow.
+If you are not following the skiff friendly build, simply push the 7805 as far into the holes as it will go (up to the flattened sections on the legs), and solder.
 ![_DSC2361](https://user-images.githubusercontent.com/79809962/148646604-5add0541-0e27-4e8b-b558-8c35df24b997.jpg)
 
-
+---
 
 ## Jack PCB
 
@@ -168,19 +192,21 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 |-----|----|
 |![DSC2406](https://user-images.githubusercontent.com/79809962/148679028-98e41fce-fe47-40d5-b833-9d615c923592.jpg)|![DSC2407](https://user-images.githubusercontent.com/79809962/148679039-b93381e4-b30d-47a6-935f-a1ab66642e18.jpg)|
 
-
+---
 
 ### Resistors
 
 #### Solder the 1k resistors to the back (R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20)
 ![_DSC2362](https://user-images.githubusercontent.com/79809962/148646613-c9404b94-883f-4991-a0bb-5fea3bde99bc.jpg)
 
+---
 
 ### Small Capacitors
 
 #### Solder the 100nF capacitors to the back (C8, C9). If your board has a polarity marking, ignore it unless you are deliberately using larger polarised capacitors than the BOM calls for, in which case make sure they line up with the PCB marking
 ![_DSC2363](https://user-images.githubusercontent.com/79809962/148646621-f21b893c-dd15-405c-a6d9-2fb33511e9b1.jpg)
 
+---
 
 ### Headers
 
@@ -199,7 +225,7 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 #### Pull the two PCBs apart carefully to reveal the perfectly aligned male headers on the Jack PCB
 ![_DSC2367](https://user-images.githubusercontent.com/79809962/148646661-d65a2f9f-1f91-484d-80ef-8ee319715e32.jpg)
 
-
+---
 
 #### OLED Configuration
 There are two pin configurations that the OLED used in this build commonly comes in, which are labelled on the board 'THT' (The Pi Hut), and 'CPC' (CPC, AliExpress, most other suppliers).  
@@ -220,6 +246,7 @@ This next stage is technically optional; if you know you have got the right disp
 #### If using solder instead, then make the 4 connections according to the diagram without soldering on the header. I used resistor legs to make the bridge easier
 ![_DSC2369](https://user-images.githubusercontent.com/79809962/148646676-cb258c6a-b9c8-4b82-b92c-1d658d9913b4.jpg)
 
+---
 
 ### Front Panel Components
 
@@ -260,7 +287,7 @@ If your display is TPH, you can either solder pins and do it the same way as the
 #### Solder all the components from the back. For the potentiometers, only solder the large lugs on the sides if yours are trimmer type potentiometers. Do not solder the lugs if the potentiometers came with nuts.
 ![_DSC2381](https://user-images.githubusercontent.com/79809962/148646777-39ab2a58-f383-4861-91d3-d843b07f3ccf.jpg)
 
-
+---
 
 ## Finish off the assembly
 
@@ -294,7 +321,7 @@ Also pop on the knobs.
 #### Finally, pop the TL074 and MCP6002 Op-Amps into their respective sockets, making sure the notch in the IC matches the notch on the socket
 ![_DSC2391](https://user-images.githubusercontent.com/79809962/148646800-d8514481-a453-4ed8-a9d0-edd9f09f9432.jpg)
 
-
+---
 
 ### (Optional) Multimeter Tests
 Use your multimeter set to continuity mode for these tests.
@@ -303,6 +330,8 @@ Use your multimeter set to continuity mode for these tests.
 ![_DSC2395](https://user-images.githubusercontent.com/79809962/148646810-db50ddd0-6111-429a-9aa6-ef6c4c8132ca.jpg)
 
 If there is continuity on any checks where there shouldn't be then make sure your solder joints are good and that there is no dirt or stray solder bridging any connections. Also make sure that your diodes and power cable are all the correct orientation.
+
+---
 
 ### Smoke Test
 
@@ -313,7 +342,7 @@ Make sure the cable is connected so that the 'key' on the cable slots into the n
 Turn on your power supply and check for any smoke or discolouration of the PCB around the power connector, and immediately unplug if either occur.  
 If all is groovy, the congratulations, you've finished building your EuroPi!
 
-
+---
 
 ## Admire your handiwork!
 
