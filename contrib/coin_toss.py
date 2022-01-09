@@ -28,12 +28,28 @@ cv6: Coin 2 clock
 from europi import *
 from random import random
 from utime import sleep_ms, ticks_ms
+import machine
+
 
 MAX_BPM = 280
 MIN_BPM = 20
 
 # Constant values for display
 FRAME_WIDTH = int(OLED_WIDTH / 8)
+
+# Number of sequential reads for smoothing analog read values
+SAMPLES = 256
+
+# Overclock the Pico
+#machine.freq(250000000)
+machine.freq(125000000)
+
+
+## Override oled with a noop
+class Noop(object):
+    def noop(*args, **kw): pass
+    def __getattr__(self, _): return self.noop
+#oled = Noop()
 
 
 def trigger(output, delay=10):
@@ -47,6 +63,7 @@ class CoinToss:
         self.gate_mode = True
         self.internal_clock = True
         self._prev_clock = 0
+        self._deadline = 0
 
         @b1.handler
         def toggle_clock():
@@ -61,7 +78,7 @@ class CoinToss:
 
     def tempo(self):
         """Read the current tempo set by k1 within set range."""
-        return round(k1.read_position(MAX_BPM - MIN_BPM) + MIN_BPM)
+        return round(k1.read_position(MAX_BPM - MIN_BPM, SAMPLES) + MIN_BPM)
 
     def get_next_deadline(self):
         """Get the deadline for next clock tick whole note."""
@@ -72,9 +89,9 @@ class CoinToss:
     def wait(self):
         """Pause script execution waiting for next quarter note in the clock cycle."""
         if self.internal_clock:
-            deadline = self.get_next_deadline()
             while True:
-                if ticks_ms() > deadline:
+                if ticks_ms() > self._deadline:
+                    self._deadline = self.get_next_deadline()
                     return
         else:  # External clock
             # Loop until digital in goes high (clock pulse received).
@@ -94,7 +111,7 @@ class CoinToss:
         """
         coin = random()
         # Sum the knob2 and analogue input values to determine threshold.
-        self.threshold = clamp(k2.read_position()/100 + ain.read_voltage()/12, 0, 1)
+        self.threshold = clamp(k2.read_position(SAMPLES)/100 + ain.read_voltage(SAMPLES)/12, 0, 1)
         if self.gate_mode:
             a.value(coin < self.threshold)
             b.value(coin > self.threshold)
