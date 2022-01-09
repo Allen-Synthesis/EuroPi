@@ -70,6 +70,7 @@ The knobs are used almost exclusively by methods which use the current position 
 | ------------- | ----------- | ----------- |
 |read_position|Returns the position as a value between zero and provided integer|integer
 |choice|Returns a value from the provided list depending on the current position|list
+|unit_interval|Returns the position from 0 to 1|float
 
 Read_position has a default value of 100, meaning if you simply use kx.read_position() you will return a percent style value from 0-100.  
   
