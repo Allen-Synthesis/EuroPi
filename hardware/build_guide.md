@@ -237,14 +237,12 @@ CPC: SDA, SCL, VCC, GND
   
 Don't ask my why there is still not a standard for I²C pin layout in the year 2021, but here we are, and here is how to tell the module which layout you are using:
   
-This next stage is technically optional; if you know you have got the right display and won't be changing it, you can just make the 4 connections using solder or snipped off resistor legs rather than using a header and jumpers.  
+#### Snip some resistor legs and bend them over the end of something small and round, such as needle-nose pliers
+![_DSC2410](https://user-images.githubusercontent.com/79809962/148679661-a7d45646-1bf8-4c26-bbe6-112b9564b67d.jpg)
 
-#### Solder the OLED Configuration Header to the back (only if choosing to use this method rather than bridging with solder or resistor legs)
+#### Push the snipped legs into the holes on the PCB according to the diagram and which OLED you have, and then solder either from the top or the bottom
+![_DSC2411](https://user-images.githubusercontent.com/79809962/148679680-a0af5587-3b4e-4cbe-b6a3-b62f499322e1.jpg)
 
-#### Place jumpers/shunts over the pins so that the connections are made according to the diagram on the PCB, either all 4 vertical or all 4 horizontal.
-
-#### If using solder instead, then make the 4 connections according to the diagram without soldering on the header. I used resistor legs to make the bridge easier
-![_DSC2369](https://user-images.githubusercontent.com/79809962/148646676-cb258c6a-b9c8-4b82-b92c-1d658d9913b4.jpg)
 
 ---
 
