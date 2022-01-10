@@ -146,7 +146,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 #### Push the female Pico headers onto the Pico itself
   
-[Skiff Friendly Option]()
+[Skiff Friendly Option](https://github.com/Allen-Synthesis/EuroPi/blob/main/hardware/skiff_friendly_instructions.md#step-1)
   
 
 ![_DSC2355](https://user-images.githubusercontent.com/79809962/148646518-ea8e78d0-0eac-4c52-a066-faef7229b62f.jpg)
@@ -176,7 +176,7 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 ### 7805
 
-[Skiff Friendly Option]()
+[Skiff Friendly Option](https://github.com/Allen-Synthesis/EuroPi/blob/main/hardware/skiff_friendly_instructions.md#step-2)
 
 #### Solder the 7805 power regulator to the front, with the metal side in line with the white stripe on the PCB
   
