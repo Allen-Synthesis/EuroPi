@@ -143,12 +143,11 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 #### Solder the I²C header to the front
 ![_DSC2352](https://user-images.githubusercontent.com/79809962/148646508-d44a06fb-7a40-4acd-96ce-360de89eb10a.jpg)
 
-
-#### Push the female Pico headers onto the Pico itself
+  
   
 [Skiff Friendly Option](https://github.com/Allen-Synthesis/EuroPi/blob/main/hardware/skiff_friendly_instructions.md#step-1)
-  
 
+#### Push the female Pico headers onto the Pico itself  
 ![_DSC2355](https://user-images.githubusercontent.com/79809962/148646518-ea8e78d0-0eac-4c52-a066-faef7229b62f.jpg)
 
 
