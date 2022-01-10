@@ -9,7 +9,7 @@ This build is entirely through-hole (not even any pre-soldered SMD components!) 
 This guide should explain every step in enough detail, but there are some things left out for simplicity's sake, such as the fact that after each step any long legs will need to be snipped using your wire snips or scissors. This is only necessary for components with long legs, so resistors, capacitors, and LEDs. You don't need to snip anything off any of the headers, the 7805, the jacks, potentiometers, or IC sockets.  
  
 #### Skiff Friendly Build 
-There are two options for some of the build, one of which makes the module more skiff friendly (around 33mm as opposed to 40mm). These changes are explained in the guide, but the basic concept is that you solder the Pico directly to the PCB rather than using female headers, and then the 7805 power regulator is bent 90 degrees over the top of it. This does mean you can't remove the Pico in case it is somehow damaged, but it will result in a thinner module (and damage to the Pico is very unlikely).
+There are two options for some of the build, one of which makes the module more skiff friendly (37mm deep as opposed to 45mm). If you wish to make the thinner version, simply click the links that say [Skiff Friendly Option](), and follow the instructions to guide you back into the normal build at the right points. Simply ignore these links if you don't mind the module being slightly deeper.
 
 ![1 all](https://user-images.githubusercontent.com/79809962/147943816-3ac2098c-14cf-4fac-8896-1ba1f2c7397f.jpg)
   
