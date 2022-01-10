@@ -1,33 +1,6 @@
-"""
-Coin Toss
-author: awonak
-date: 2022-01-03
-
-Two pairs of clocked probability gates.
-
-Knob 1 adjusts the master clock speed of gate change probability. Knob 2 moves
-the probability thresholed between A and B with a 50% chance at noon. Output 
-column 1 (cv1 and cv4) run at 1x speed and output column2 (cv2 and cv5) run at
-4x speed for interesting rhythmic patterns. Push button 1 to toggle between
-internal and external clock source. Push button 2 to toggle between gate and
-trigger mode. Analogue input is summed with the threshold knob value to allow
-external threshold control.
-
-digital in: External clock (when in external clock mode)
-analogue in: Threshold control (summed with threshold knob)
-knob 1: internal clock speed
-knob 2: probability threshold
-button 1: toggle internal / external clock source
-button 2: toggle gate/trigger mode
-cv1/cv4: Coin 1 gate output pair when voltage above/below threshold
-cv2/cv5: Coin 2 gate output pair when voltage above/below threshold
-cv3: Coin 1 clock
-cv6: Coin 2 clock
-
-"""
 from europi import *
 from random import random
-from utime import sleep_ms, ticks_ms
+from time import sleep_ms, ticks_ms, ticks_add, ticks_diff
 import machine
 
 
@@ -43,7 +16,7 @@ SAMPLES = 32
 
 # Overclock the Pico for improved performance.
 machine.freq(250000000)
-#machine.freq(125000000)  # Default clock speed.
+# machine.freq(125000000)  # Default clock speed.
 
 
 class CoinToss:
@@ -51,6 +24,7 @@ class CoinToss:
         self.gate_mode = True
         self.internal_clock = True
         self._prev_clock = 0
+        self._tempo = 0
         self._deadline = 0
 
         @b1.handler
@@ -72,13 +46,13 @@ class CoinToss:
         """Get the deadline for next clock tick whole note."""
         # The duration of a quarter note in ms for the current tempo.
         wait_ms = int(((60 / self.tempo()) / 4) * 1000)
-        return ticks_ms() + wait_ms
+        return ticks_add(ticks_ms(), wait_ms)
 
     def wait(self):
         """Pause script execution waiting for next quarter note in the clock cycle."""
         if self.internal_clock:
             while True:
-                if ticks_ms() >= self._deadline:
+                if ticks_diff(self._deadline, ticks_ms()) <= 0:
                     self._deadline = self.get_next_deadline()
                     return
         else:  # External clock
@@ -128,10 +102,10 @@ class CoinToss:
             oled.scroll(FRAME_WIDTH, 0)
             oled.fill_rect(0, 0, FRAME_WIDTH, OLED_HEIGHT, 0)
 
-            self.toss(cv1, cv4)
+            self.toss(cv1, cv2)
             cv3.on()  # First column clock trigger
             if counter % 4 == 0:
-                self.toss(cv2, cv5, False)
+                self.toss(cv4, cv5, False)
                 cv6.on()  # Second column clock trigger (1/4x speed)
             
             sleep_ms(10)
