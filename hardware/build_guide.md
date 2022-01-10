@@ -145,7 +145,10 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 
 
 #### Push the female Pico headers onto the Pico itself
-DO NOT DO THIS STEP IF YOU ARE DOING THE SKIFF FRIENDLY BUILD  
+  
+[Skiff Friendly Option]()
+  
+
 ![_DSC2355](https://user-images.githubusercontent.com/79809962/148646518-ea8e78d0-0eac-4c52-a066-faef7229b62f.jpg)
 
 
@@ -173,12 +176,10 @@ DO NOT DO THIS STEP IF YOU ARE DOING THE SKIFF FRIENDLY BUILD
 
 ### 7805
 
+[Skiff Friendly Option]()
+
 #### Solder the 7805 power regulator to the front, with the metal side in line with the white stripe on the PCB
-*Skiff friendly only: If you would like your module to be skiff friendly, then you need to now solder the Pico directly to the board, and ignore the stage where you solder female headers. Before you solder the 7805, bend its legs directly next to the black plastic 'body' at 90 degrees. Be very careful that the metal back of the 7805 does not touch any pins of the Pico or the top of the USB port. You may want to stick some masking tape between them to make sure of this.  
-![_DSC2402](https://user-images.githubusercontent.com/79809962/148678569-55f028d2-d57a-4ba8-bdff-6e99f8569e60.jpg)
-![_DSC2403](https://user-images.githubusercontent.com/79809962/148678570-3b66b5c4-cfad-41c3-9fe8-33fa532c0f89.jpg)*
   
-If you are not following the skiff friendly build, simply push the 7805 as far into the holes as it will go (up to the flattened sections on the legs), and solder.
 ![_DSC2361](https://user-images.githubusercontent.com/79809962/148646604-5add0541-0e27-4e8b-b558-8c35df24b997.jpg)
 
 ---
