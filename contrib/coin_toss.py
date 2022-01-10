@@ -78,7 +78,7 @@ class CoinToss:
         """Pause script execution waiting for next quarter note in the clock cycle."""
         if self.internal_clock:
             while True:
-                if ticks_ms() > self._deadline:
+                if ticks_ms() >= self._deadline:
                     self._deadline = self.get_next_deadline()
                     return
         else:  # External clock
