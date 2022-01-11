@@ -219,7 +219,7 @@ if __name__ == '__main__':
     high_threshold_low = (270*HIGH_VOLTAGE)-150
     high_threshold_high = (270*HIGH_VOLTAGE)+150
     
-    samples = 8192
+    samples = 2048
     
     oled.centre_text('Welcome\nto the\ncalibrator')
     sleep(3)
