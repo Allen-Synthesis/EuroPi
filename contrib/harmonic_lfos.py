@@ -13,6 +13,14 @@ def reset():
 din.handler(reset)
 b1.handler(reset)
 
+def change_mode():
+    global MODE
+    MODE += 1
+    
+    if MODE == 3:
+        MODE = 0
+b2.handler(change_mode)
+
 def get_delay_increment_value_random_chance():
     random_chance = k2.read_position(100,1)
     delay = (0.1 - (k1.read_position(100)/1000)) + (ain.read_voltage(1)/100)
@@ -22,6 +30,7 @@ def change_harmonic():
     global HARMONICS
     HARMONICS[randint(0,5)] = randint(1,13)
 
+MODE = 1
 degree = 0
 delay, increment_value, random_chance = get_delay_increment_value_random_chance()
 pixel_x = OLED_WIDTH-1
@@ -34,7 +43,13 @@ while True:
     
     oled.vline(pixel_x,0,OLED_HEIGHT,0)
     for cv, multiplier in zip(cvs, HARMONICS):
-        volts = ((0-(cos(rad*(1/multiplier)))+1))*(MAX_VOLTAGE/2)
+        if MODE == 0: #Sin
+            volts = ((0-(cos(rad*(1/multiplier)))+1))*(MAX_VOLTAGE/2)
+        elif MODE == 1: #Saw
+            volts = ((degree%(360*multiplier))/(360*multiplier))*MAX_VOLTAGE
+        elif MODE == 2: #Square
+            volts = MAX_VOLTAGE * (int(((degree%(360*multiplier))/(360*multiplier))*MAX_VOLTAGE) < (MAX_VOLTAGE/2))
+            
         cv.voltage(volts)
         if cv != cv1:
             oled.pixel(pixel_x,pixel_y-int(volts*(pixel_y/10)),1)
