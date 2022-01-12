@@ -1,4 +1,4 @@
-# Coin Toss
+# Harmonically Related LFOs
 
 author: rory allen
 
