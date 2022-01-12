@@ -30,7 +30,7 @@ def change_harmonic():
     global HARMONICS
     HARMONICS[randint(0,5)] = randint(1,13)
 
-MODE = 1
+MODE = 0
 degree = 0
 delay, increment_value, random_chance = get_delay_increment_value_random_chance()
 pixel_x = OLED_WIDTH-1
