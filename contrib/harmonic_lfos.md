@@ -6,7 +6,7 @@ date: 12/01/22
 
 Six harmonically related sine wave LFOs
 
-The only control is Knob 1, which controls the rate of the LFOs
+The only control is Knob 1, which controls the rate of the LFOs. The CV input is added to this value, so you can get some wacky results by using another LFO as the CV input.
 
 There is a list named ```HARMONICS```, by editing which you can change the relationships of the LFOs.
 You could change them to all be evenly divisible, for example [1,2,4,8,16,32], or to be very 'unrelated', for example [1.24, 5.27, 9.46, 13.45, 17.23, 23.54].
