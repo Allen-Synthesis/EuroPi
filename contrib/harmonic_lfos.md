@@ -6,9 +6,10 @@ date: 12/01/22
 
 Six harmonically related sine wave LFOs
 
-Knob 1 controls the rate of the LFOs. The CV input is added to this value, so you can get some wacky results by using another LFO as the CV input.
-Knob 2 controls the random chance, from 0-100%, of a single LFO 'mutating' to be a new random division of the master clock, between 1 and 13. A mutation can happen once per step maximum.
-Button 1 and the digital input both allow the LFOs to all be reset simultaneously
+Knob 1 controls the rate of the LFOs. The CV input is added to this value, so you can get some wacky results by using another LFO as the CV input.  
+Knob 2 controls the random chance, from 0-100%, of a single LFO 'mutating' to be a new random division of the master clock, between 1 and 13. A mutation can happen once per step maximum.  
+Button 1 and the digital input both allow the LFOs to all be reset simultaneously  
+Button 2 changes the LFO mode, from sine to saw to square
 
 There is a list named ```HARMONICS```, by editing which you can change the relationships of the LFOs.
 You could change them to all be evenly divisible, for example [1,2,4,8,16,32], or to be very 'unrelated', for example [1.24, 5.27, 9.46, 13.45, 17.23, 23.54].
