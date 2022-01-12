@@ -1,5 +1,6 @@
 from europi import *
 from math import cos, radians
+from random import randint
 
 
 MAX_VOLTAGE = 10
@@ -12,16 +13,26 @@ def reset():
 din.handler(reset)
 b1.handler(reset)
 
-def get_delay_increment_value():
+def get_delay_increment_value_random_chance():
+    random_chance = k2.read_position(100,1)
     delay = (0.1 - (k1.read_position(100)/1000)) + (ain.read_voltage(1)/100)
-    return delay, round((((1/delay)-10)/1)+1)
+    return delay, round((((1/delay)-10)/1)+1), random_chance
+
+def change_harmonic():
+    global HARMONICS
+    HARMONICS[randint(0,5)] = randint(1,13)
+    print('ooer')
 
 degree = 0
-delay, increment_value = get_delay_increment_value()
+delay, increment_value, random_chance = get_delay_increment_value_random_chance()
 pixel_x = OLED_WIDTH-1
 pixel_y = OLED_HEIGHT-1
 while True:
     rad = radians(degree)
+    
+    if randint(0,100) < random_chance:
+        change_harmonic()
+    
     oled.vline(pixel_x,0,OLED_HEIGHT,0)
     for cv, multiplier in zip(cvs, HARMONICS):
         volts = ((0-(cos(rad*(1/multiplier)))+1))*(MAX_VOLTAGE/2)
@@ -34,7 +45,7 @@ while True:
     oled.scroll(-1,0)
     
     if round(degree, -1) % 10 == 0:
-        delay, increment_value = get_delay_increment_value()
+        delay, increment_value, random_chance = get_delay_increment_value_random_chance()
         oled.show()
 
 
