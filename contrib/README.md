@@ -14,3 +14,6 @@ e.g. the files associated with a program for a Sample and Hold function would lo
   
 **sample_and_hold.py  
 sample_and_hold.md**
+
+### If you are unsure
+Take a look at other submitted programs to see how to format yours if you are unsure, and feel free to send me any questions at either [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk)
