@@ -6,7 +6,7 @@ To do this, you'll need to fork this repository to your own page, upload your pr
 ### Submission Format
 Please include:
 - Your name (or username) and the date you uploaded the program (dd/mm/yy) as a comment at the top of the file
-- Either a description as a comment at the top of the code itself, or as a file with the exact same name as the program but with the '.md' suffix.
+- Either a description as a comment at the top of the code itself if the program is very simple/obvious, or as a file with the exact same name as the program but with the '.md' suffix. It's much preferred to always have an 'md' file rather than a comment, as it's a much nicer way to view the program's function and a place for you to explain how the inputs and outputs are used.
 
 ### File Naming
 Please use all lowercase and separate words with underscores for your program names.
