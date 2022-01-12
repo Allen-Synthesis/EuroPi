@@ -17,7 +17,7 @@ Six harmonically related sine wave LFOs
 
 #### Editing/understanding the program
 There is a list named ```HARMONICS```, by editing which you can change the relationships of the LFOs.
-You could change them to all be evenly divisible, for example [1,2,4,8,16,32], or to be very 'unrelated', for example [1.24, 5.27, 9.46, 13.45, 17.23, 23.54].
+You could change them to all be evenly divisible, for example ```[1, 2, 4, 8, 16, 32]```, or to be very 'unrelated', for example ```[1.24, 5.27, 9.46, 13.45, 17.23, 23.54]```.
 The last example would only come back into sync after 2,472,424,774,707 cycles, which is approximately 78400 years at one second per cycle.
 The default example uses all prime numbers (except 1 if you want to be technical), and will only sync up around 15,015 cycles.
 
