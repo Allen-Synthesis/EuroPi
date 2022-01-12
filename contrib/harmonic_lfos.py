@@ -1,8 +1,8 @@
 from europi import *
-from math import sin, radians
+from math import cos, radians
 
 
-MAX_VOLTAGE = 5
+MAX_VOLTAGE = 10
 HARMONICS = [1, 3, 5, 7, 11, 13]
 
 
@@ -18,14 +18,23 @@ def get_delay_increment_value():
 
 degree = 0
 delay, increment_value = get_delay_increment_value()
+pixel_x = OLED_WIDTH-1
+pixel_y = OLED_HEIGHT-1
 while True:
     rad = radians(degree)
+    oled.vline(pixel_x,0,OLED_HEIGHT,0)
     for cv, multiplier in zip(cvs, HARMONICS):
-        cv.voltage(((sin(rad*(1/multiplier)))+1)*(MAX_VOLTAGE/2))
+        volts = ((0-(cos(rad*(1/multiplier)))+1))*(MAX_VOLTAGE/2)
+        cv.voltage(volts)
+        if cv != cv1:
+            oled.pixel(pixel_x,pixel_y-int(volts*(pixel_y/10)),1)
     
     degree += increment_value
     sleep(delay)
+    oled.scroll(-1,0)
     
     if round(degree, -1) % 10 == 0:
         delay, increment_value = get_delay_increment_value()
+        oled.show()
+
 
