@@ -43,11 +43,18 @@ DEFAULT_SAMPLES = 32
 CHAR_WIDTH = 8
 CHAR_HEIGHT = 8
 
-# Helper functions.
 
+# Helper functions.
 
 def clamp(value, low, high):
     return max(min(value, high), low)
+
+
+def reset_state():
+    """Return device to initial state with all components off and handlers reset."""
+    oled.clear()
+    [cv.off() for cv in cvs]
+    [d.reset_handler() for d in (b1, b2, din)]
 
 
 class AnalogueReader:
@@ -73,14 +80,14 @@ class AnalogueReader:
         """Return the percentage of the component's current relative range."""
         return self._sample_adc(samples) / MAX_UINT16
 
-    def read_position(self, steps=100, samples=None):
+    def range(self, steps=100, samples=None):
         """Return a value from steps chosen by the current voltages relative position."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
         return int(self.percent(samples) * steps)
 
     def choice(self, values, samples=None):
-        """Return a value from a range chosen by the knob position."""
+        """Return a value from a list chosen by the knob position."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
         return values[int(self.percent(samples) * (len(values) - 1))]
@@ -244,7 +251,7 @@ cv3 = Output(16)
 cv4 = Output(17)
 cv5 = Output(18)
 cv6 = Output(19)
-
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
-for cv in cvs:
-    cv.off()
+
+# Reset the module state upon import.
+reset_state()
