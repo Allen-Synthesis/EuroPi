@@ -1,13 +1,12 @@
 """
 Rory Allen 19/11/2021 CC BY-SA 4.0
 
-You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
+You can then use the inputs, outputs, knobs, and buttons as objects, and makeuse of the general purpose functions
 
 Import this library into your own programs using 'from europi import *'
 You can use this library by importing individual comonents:
 
 """
-from time import sleep_ms
 from time import ticks_ms
 
 from machine import ADC
@@ -17,10 +16,13 @@ from machine import Pin
 
 from ssd1306 import SSD1306_I2C
 
-from calibration import INPUT_MULTIPLIER
-from calibration import OUTPUT_MULTIPLIER
-from calibration import INPUT_OFFSET
+try:
+    from calibration import CALIBRATION_VALUES
+except ImportError:
+    raise Exception("Please run calibration script.")
 
+# TODO: update calibrate.py to provide output calibration value.
+OUTPUT_MULTIPLIER = 6347.393
 
 # OLED component display dimensions.
 OLED_WIDTH = 128
@@ -35,10 +37,13 @@ MAX_UINT12 = 4096
 # Analogue voltage read range.
 MIN_VOLTAGE = 0
 MAX_VOLTAGE = 12
+DEFAULT_SAMPLES = 32
 
-# Default font is 8x8 pixel monospaced font
+# Default font is 8x8 pixel monospaced font.
 CHAR_WIDTH = 8
 CHAR_HEIGHT = 8
+
+# Helper functions.
 
 
 def clamp(value, low, high):
@@ -46,12 +51,12 @@ def clamp(value, low, high):
 
 
 class AnalogueReader:
-    def __init__(self, pin, samples=32):
+    def __init__(self, pin, samples=DEFAULT_SAMPLES):
         self.pin = ADC(Pin(pin))
-        self._samples = samples
+        self.set_samples(samples)
 
     def _sample_adc(self, samples=None):
-        # Over-samples the ADC and returns the average. Default 256 samples.
+        # Over-samples the ADC and returns the average.
         values = []
         for _ in range(samples or self._samples):
             values.append(self.pin.read_u16())
@@ -64,34 +69,43 @@ class AnalogueReader:
                 f"set_samples expects an int value, got: {samples}")
         self._samples = samples
 
-    def value(self, samples=None):
-        """Current voltage as a 16 bit int."""
-        return self._sample_adc(samples)
-
     def percent(self, samples=None):
-        """Current voltage as a relative percentage of the component's range."""
-        return self.value(samples) / MAX_UINT16
+        """Return the percentage of the component's current relative range."""
+        return self._sample_adc(samples) / MAX_UINT16
 
-    def range(self, steps, samples=None):
+    def read_position(self, steps=100, samples=None):
         """Return a value from steps chosen by the current voltages relative position."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
         return int(self.percent(samples) * steps)
 
-    def choice(self, values):
+    def choice(self, values, samples=None):
         """Return a value from a range chosen by the knob position."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
-        return values[int(self.percent() * (len(values) - 1))]
+        return values[int(self.percent(samples) * (len(values) - 1))]
 
 
 class AnalogueInput(AnalogueReader):
     def __init__(self, pin):
         super().__init__(pin)
+        self._gradients = []
+        for index, value in enumerate(CALIBRATION_VALUES[:-1]):
+            self._gradients.append(1 / (CALIBRATION_VALUES[index+1] - value))
+        self._gradients.append(self._gradients[-1])
+
+    def percent(self, samples=None):
+        """Current voltage as a relative percentage of the component's range."""
+        # Determine the percent value from the max calibration value.
+        reading = self._sample_adc(samples)
+        max_value = max(reading, CALIBRATION_VALUES[-1])
+        return reading / max_value
 
     def read_voltage(self, samples=None):
-        """Read the analogue input voltage within the range of 0 to 12 volts."""
-        cv = (self.value(samples) * INPUT_MULTIPLIER) + INPUT_OFFSET
+        reading = self._sample_adc(samples)
+        index = int(self.percent(samples) * (len(CALIBRATION_VALUES) - 1))
+        cv = index + (self._gradients[index] *
+                      (reading - CALIBRATION_VALUES[index]))
         return clamp(cv, MIN_VOLTAGE, MAX_VOLTAGE)
 
 
@@ -100,8 +114,9 @@ class Knob(AnalogueReader):
         super().__init__(pin)
 
     def percent(self, samples=None):
+        """Return the knob's position as relative percentage."""
         # Reverse range to provide increasing range.
-        return 1 - self.value(samples)
+        return 1 - (self._sample_adc(samples) / MAX_UINT16)
 
 
 class DigitalReader:
@@ -111,16 +126,20 @@ class DigitalReader:
         self.last_pressed = 0
 
     def value(self):
+        """The current binary value, HIGH (1) or LOW (0)."""
         # Both the digital input and buttons are normally high, and 'pulled'
         # low when on, so this is flipped to be more intuitive (1 when on, 0
         # when off)
         return 1 - self.pin.value()
 
     def handler(self, func):
+        """Define the callback func to call when rising edge detected."""
         def bounce_wrapper(pin):
             if (ticks_ms() - self.last_pressed) > self.debounce_delay:
                 self.last_pressed = ticks_ms()
                 func()
+        # Both the digital input and buttons are normally high, and 'pulled'
+        # low when on, so here we use IRQ_FALLING to detect rising edge.
         self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce_wrapper)
 
     def reset_handler(self):
@@ -190,16 +209,20 @@ class Output:
         if voltage is None:
             return self._duty / OUTPUT_MULTIPLIER
         if 0 > voltage or voltage > 10:
-            raise ValueError(f"voltage expects a value between 0 and 10, got: {voltage}")
+            raise ValueError(
+                f"voltage expects a value between 0 and 10, got: {voltage}")
         self._set_duty(voltage * OUTPUT_MULTIPLIER)
 
     def on(self):
+        """Set the voltage HIGH at 5 volts."""
         self.voltage(5)
 
     def off(self):
+        """Set the voltage LOW at 0 volts."""
         self._set_duty(0)
 
     def toggle(self):
+        """Invert the Output's current state."""
         if self._duty > 500:
             self.off()
         else:
