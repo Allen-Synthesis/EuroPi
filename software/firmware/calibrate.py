@@ -20,7 +20,7 @@ chosen_process = ''
 print("""
 There are two options for running the calibration process, 1 and 2
 
-1. Low accuracy (Only requires 5V)
+1. Low accuracy (Only requires 10V)
 2. High accuracy (Requires adjustable voltage source)
 
 Please type your chosen calibration process to choose it""")
@@ -34,7 +34,7 @@ chosen_process = int(chosen_process)
 readings = []
 if chosen_process == 1:
     readings.append(wait_for_voltage(0))
-    readings.append(wait_for_voltage(5))
+    readings.append(wait_for_voltage(10))
 else:
     for voltage in range(11):
         readings.append(wait_for_voltage(voltage))
