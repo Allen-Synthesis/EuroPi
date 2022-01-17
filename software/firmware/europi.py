@@ -94,8 +94,10 @@ class AnalogueReader:
 
 
 class AnalogueInput(AnalogueReader):
-    def __init__(self, pin):
+    def __init__(self, pin, max_voltage=MAX_VOLTAGE, min_voltage=MIN_VOLTAGE):
         super().__init__(pin)
+        self.MAX_VOLTAGE = max_voltage
+        self.MIN_VOLTAGE = min_voltage
         self._gradients = []
         for index, value in enumerate(CALIBRATION_VALUES[:-1]):
             self._gradients.append(1 / (CALIBRATION_VALUES[index+1] - value))
@@ -113,7 +115,7 @@ class AnalogueInput(AnalogueReader):
         index = int(self.percent(samples) * (len(CALIBRATION_VALUES) - 1))
         cv = index + (self._gradients[index] *
                       (reading - CALIBRATION_VALUES[index]))
-        return clamp(cv, MIN_VOLTAGE, MAX_VOLTAGE)
+        return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
 class Knob(AnalogueReader):
