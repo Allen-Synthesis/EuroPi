@@ -90,7 +90,7 @@ class AnalogueReader:
         """Return a value from a list chosen by the knob position."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
-        return values[int(self.percent(samples) * (len(values) - 1))]
+        return values[int(self.percent(samples) * len(values))]
 
 
 class AnalogueInput(AnalogueReader):
