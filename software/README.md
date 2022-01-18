@@ -13,21 +13,6 @@ cv3.voltage(4.5)
 ```
 Will set the CV output 3 to a voltage of 4.5V.  
 
-## Outputs
-
-The outputs are capable of providing 0-10V, which can be achieved using either the *duty()* or *voltage()* methods.  
-  
-So that there is no chance of not having the full range, the chosen resistor values actually give you a range of about 0-10.5V, which is why calibration is important if you want to be able to output precise voltages.
-
-| Method        | Usage       | Parameter(s)       |
-| ------------- | ----------- | ----------- |
-|duty|Sets the output based on a fixed duty cycle|duty
-|voltage|Sets the output to a fixed voltage|voltage
-|on|Sets the output to 5V|n/a
-|off|Sets the output to 0V|n/a
-|toggle|'Flip' the output between 0V or 5V depending on current state|n/a
-|value|Sets the output to 0V or 5V based on a binary input|0 or 1
-
 ## Analogue Input
 
 The analogue input allows you to 'read' CV from anywhere between 0 and 12V.  
@@ -38,8 +23,29 @@ The functions all take an optional parameter of samples, which will oversample t
 
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
-|read_duty|Reads the raw ADC value and then applies offset and gain error values to increase accuracy|samples (default 256)
-|read_voltage|Reads the ADC value as a voltage|samples (default 256)
+|read_voltage|Reads the ADC value as a voltage|samples (default 32)|
+|percent|Return the percentage of the component's current relative range.|
+|choice|Return a value from a list chosen by the knob position|list
+|read_position|Return a value from steps chosen by the current voltages relative position.|steps
+|set_samples|Override the default number of sample reads with the given value.|samples
+
+## Knobs
+The knobs are used almost exclusively by methods which use the current position in different ways.
+
+| Method        | Usage       | Parameter(s)       |
+| ------------- | ----------- | ----------- |
+|percent|Return the knob's current position as a percentage value from 0 to 1.|
+|choice|Return a value from a list chosen by the knob position|list
+|read_position|Return a value from steps chosen by the current voltages relative position.|steps
+|set_samples|Override the default number of sample reads with the given value.|samples
+
+
+Read_position has a default value of 100, meaning if you simply use kx.read_position() you will return a percent style value from 0-100.  
+  
+There is also the optional parameter of samples (which must come after the normal parameter), the same as the analogue input uses (the knob positions are 'read' via an analogue to digital converter). It has a default value of 32, but you can use higher or lower depending on if you value speed or accuracy more.
+If you really want to avoid 'noise' which would present as a flickering value despite the knob being still, then I'd suggest using higher samples (and probably a smaller number to divide the position by).
+  
+The ADCs used to read the knob position are only 12 bit, which means that any read_position value above 4096 (2^12) will not actually be any finer resolution, but will instead just go up in steps. For example using 8192 would only return values which go up in steps of 2.
 
 ## Digital Input and Buttons
 
@@ -63,18 +69,17 @@ This allows you to perform more complicated graphics without slowing your progra
 
 More explanations and tips about the the display can be found in the [oled_tips](/software/oled_tips.md) file
 
-## Knobs
-The knobs are used almost exclusively by methods which use the current position in different ways.
+
+## Outputs
+
+The outputs are capable of providing 0-10V, which can be achieved using the *voltage()* method 
+  
+So that there is no chance of not having the full range, the chosen resistor values actually give you a range of about 0-10.5V, which is why calibration is important if you want to be able to output precise voltages.
 
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
-|read_position|Returns the position as a value between zero and provided integer|integer
-|choice|Returns a value from the provided list depending on the current position|list
-|unit_interval|Returns the position from 0 to 1|float
-
-Read_position has a default value of 100, meaning if you simply use kx.read_position() you will return a percent style value from 0-100.  
-  
-There is also the optional parameter of samples (which must come after the normal parameter), the same as the analogue input uses (the knob positions are 'read' via an analogue to digital converter). It has a default value of 256, but you can use higher or lower depending on if you value speed or accuracy more.  
-If you really want to avoid 'noise' which would present as a flickering value despite the knob being still, then I'd suggest using higher samples (and probably a smaller number to divide the position by).
-  
-The ADCs used to read the knob position are only 12 bit, which means that any read_position value above 4096 (2^12) will not actually be any finer resolution, but will instead just go up in steps. For example using 8192 would only return values which go up in steps of 2.
+|voltage|Sets the output to a fixed voltage|voltage
+|on|Sets the output to 5V|n/a
+|off|Sets the output to 0V|n/a
+|toggle|'Flip' the output between 0V or 5V depending on current state|n/a
+|value|Sets the output to 0V or 5V based on a binary input|0 or 1
