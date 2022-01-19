@@ -86,10 +86,13 @@ class AnalogueReader:
         """Return a value from steps chosen by the current voltages relative position."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
+        percent = self.percent(samples)
+        if percent == 1.0:
+            return steps
         return int(self.percent(samples) * steps)
 
     def choice(self, values, samples=None):
-        """Return a value from a list chosen by the knob position."""
+        """Return a value from a list chosen by the relative knob position."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
         percent = self.percent(samples)
@@ -131,6 +134,10 @@ class Knob(AnalogueReader):
         """Return the knob's position as relative percentage."""
         # Reverse range to provide increasing range.
         return 1 - (self._sample_adc(samples) / MAX_UINT16)
+    
+    def read_position(self, steps=100, samples=None):
+        """Returns the position as a value between zero and provided integer."""
+        return self.range(steps, samples)
 
 
 class DigitalReader:
@@ -241,6 +248,13 @@ class Output:
             self.off()
         else:
             self.on()
+    
+    def value(self, value):
+        """Sets the output to 0V or 5V based on a binary input, 0 or 1."""
+        if value == 1:
+            self.on()
+        else:
+            self.off()
 
 
 # Define all the I/O using the appropriate class and with the pins used
