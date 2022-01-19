@@ -19,9 +19,10 @@ from ssd1306 import SSD1306_I2C
 try:
     from calibration import CALIBRATION_VALUES
 except ImportError:
+    #TODO: provide default vales instead of throwing an error.
     raise Exception("Please run calibration script.")
 
-# TODO: update calibrate.py to provide output calibration value.
+#TODO: update calibrate.py to provide output calibration value.
 OUTPUT_MULTIPLIER = 6347.393
 
 # OLED component display dimensions.
@@ -32,7 +33,6 @@ I2C_FREQUENCY = 400000
 
 # Standard max int consts.
 MAX_UINT16 = 65535
-MAX_UINT12 = 4096
 
 # Analogue voltage read range.
 MIN_VOLTAGE = 0
@@ -56,6 +56,8 @@ def reset_state():
     [cv.off() for cv in cvs]
     [d.reset_handler() for d in (b1, b2, din)]
 
+
+# Component classes.
 
 class AnalogueReader:
     def __init__(self, pin, samples=DEFAULT_SAMPLES):
@@ -90,7 +92,10 @@ class AnalogueReader:
         """Return a value from a list chosen by the knob position."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
-        return values[int(self.percent(samples) * len(values))]
+        percent = self.percent(samples)
+        if percent == 1.0:
+            return values[-1]
+        return values[int(percent * len(values))]
 
 
 class AnalogueInput(AnalogueReader):
@@ -161,7 +166,7 @@ class DigitalInput(DigitalReader):
 
 
 class Button(DigitalReader):
-    def __init__(self, pin, debounce_delay=500):
+    def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
 
 
