@@ -28,11 +28,14 @@ output_6: (display) on when editing seq 2
 
 from europi import *
 from time import sleep_ms, ticks_add, ticks_diff, ticks_ms
+import machine
 
+# Overclock the Pico for improved performance.
+machine.freq(250000000)
 
-# Lower read accuracy for performance
+# Configure EuroPi options to improve performance.
 k1.set_samples(32)
-k2.set_samples(32)
+k2.set_samples(128)
 b2.debounce_delay = 200
 oled.contrast(0)
 
@@ -40,7 +43,7 @@ MENU_DURATION = 1200
 
 VOLT_PER_OCT = 1 / 12
 
-notes = ["C", "C#", "D", "D#", "E" , "F", "F#", "G" , "G#", "A", "A#", "B"]
+NOTES = ["C", "C#", "D", "D#", "E" , "F", "F#", "G" , "G#", "A", "A#", "B"]
 
 
 class SubharmoniconSeq:
@@ -51,26 +54,26 @@ class SubharmoniconSeq:
     ]
     polys = [16, 2, 5, 9]
     seq_poly = [2, 1, 1, 1]
-    # TODO we need to make Sequence a class for easy conversions.
+    #TODO we need to make function for easy conversions.
 
     def __init__(self):
         self.seq = self.seqs[0]
         self.seq_index = [0, 0]
 
-        self.last_pressed = ticks_ms()
         self.page = 0
         self.index = 0
+        self._last_pressed = ticks_ms()
+        self._prev_k2 = 0
         cv3.on()
 
         self.tempo = 120
         self.counter = 0
 
-        self._prevk2 = 0
-
         @b1.handler
         def page_handler():
-            self.last_pressed = ticks_ms()
             self.page = (self.page + 1) % len(self.pages)
+            self._last_pressed = ticks_ms()
+            self._prev_k2 = None
 
             [o.off() for o in (cv3, cv6)]
             if self.page == 0:
@@ -82,62 +85,76 @@ class SubharmoniconSeq:
 
         @b2.handler
         def edit_parameter():
+            #TODO: add seq octave select for page 1 & 2
             if self.page == 2:
                 self.seq_poly[self.index] = (self.seq_poly[self.index] + 1) % 4
 
     def _pitch_cv(self, note):
-        return notes.index(note) * VOLT_PER_OCT
+        return NOTES.index(note) * VOLT_PER_OCT
 
     def show_menu_header(self):
-        if ticks_diff(ticks_ms(), self.last_pressed) < MENU_DURATION:
+        if ticks_diff(ticks_ms(), self._last_pressed) < MENU_DURATION:
             oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
             oled.text(f"{self.pages[self.page]}", 0, 0, 0)
 
     def edit_sequence(self):
+        # Display each sequence step.
         for step in range(len(self.seq)):
             padding_x = 7 + (int(OLED_WIDTH/4) * step)
             padding_y = 12
+            # If the current step is selected, edit with the parameter edit knob.
             if step == self.index:
-                choice = k2.choice(notes)
-                if choice != self._prevk2:
-                    self.seq[step] = choice
-                    self._prevk2 = choice
+                selected_note = k2.choice(NOTES)
+                if self._prev_k2 and self._prev_k2 != selected_note:
+                    self.seq[step] = selected_note
+                self._prev_k2 = selected_note
+            # Display the current step.
             oled.text(f"{self.seq[step]:<2}", padding_x, padding_y, 1)
 
-            # Display bar over current playing step.
+            # Display a bar over current playing step.
             if step == self.seq_index[0 if self.page == 0 else 1]:
                 x1 = (int(OLED_WIDTH/4) * step)
                 oled.fill_rect(x1, 0, 32, 6, 1)
 
     def edit_poly(self):
-        for choice in range(len(self.polys)):
-            padding_x = 7 + (int(OLED_WIDTH/4) * choice)
+        # Display each polyrhythm option.
+        for poly_index in range(len(self.polys)):
+            padding_x = 7 + (int(OLED_WIDTH/4) * poly_index)
             padding_y = 12
-            if choice == self.index:
+            # If the current polyrhythm is selected, edit with the parameter knob.
+            if poly_index == self.index:
                 poly = k2.range(16) + 1
-                if poly != self._prevk2:
-                    self.polys[choice] = poly
-                    self._prevk2 = poly
-            oled.text(f"{self.polys[choice]:>2}", padding_x, padding_y, 1)
+                if self._prev_k2 and self._prev_k2 != poly:
+                    self.polys[poly_index] = poly
+                self._prev_k2 = poly
+            # Display the current polyrhythm.
+            oled.text(f"{self.polys[poly_index]:>2}", padding_x, padding_y, 1)
 
-            # Display for seq 1 & 2 enablement.
-            status = f"{self.seq_poly[choice]:02b}"
+            # Display graphic for seq 1 & 2 enablement.
+            #TODO we need to make function for easy conversions.
+            status = f"{self.seq_poly[poly_index]:02b}"
             y1 = OLED_HEIGHT - 10
 
-            x1 = 4 + int(OLED_WIDTH/4) * choice
+            x1 = 4 + int(OLED_WIDTH/4) * poly_index
             (oled.fill_rect if int(status[1]) == 1 else oled.rect)(x1, y1, 6, 6, 1)
 
-            x1 = 12 + int(OLED_WIDTH/4) * choice
+            x1 = 12 + int(OLED_WIDTH/4) * poly_index
             (oled.fill_rect if int(status[0]) == 1 else oled.rect)(x1, y1, 6, 6, 1)
     
     def edit_tempo(self):
+        # Clear the selected parameter index box on this page.
         oled.fill(0)
-        self.tempo = k2.range(250) + 20
+        tempo = k2.range(250) + 20
+        if self._prev_k2 and self._prev_k2 != tempo:
+            self.tempo = tempo
+        self._prev_k2 = tempo
         oled.text(f"{self.tempo:>3}", 48, 12, 1)
 
     def play_notes(self):
+        # For each polyrhythm, check if each sequence is enabled and if the current beat should play.
         for i, poly in enumerate(self.polys):
             if self.counter % poly == 0:
+                #TODO we need to make function for easy conversions.
                 status = f"{self.seq_poly[i]:02b}"
                 if int(status[1]) == 1:
                     self.seq_index[0] = (self.seq_index[0] + 1) % 4
@@ -149,18 +166,15 @@ class SubharmoniconSeq:
                     cv5.on()
         sleep_ms(10)
         [c.off() for c in (cv2, cv5)]
-        # TOOD: draw graphic of seq current step
         self.counter = self.counter + 1
-
 
     def main(self):
         next = 0
         while True:
             oled.fill(0)
 
-            # Parameter edit index
+            # Parameter edit index & display selected box
             self.index = k1.range(4)
-
             left_x = int((OLED_WIDTH/4) * self.index)
             right_x = int(OLED_WIDTH/4)
             oled.rect(left_x, 0, right_x, OLED_HEIGHT, 1)
@@ -174,7 +188,7 @@ class SubharmoniconSeq:
             if self.page == 3:
                 self.edit_tempo()
 
-            # Play notes on the beat
+            # Play notes on the beat.
             if ticks_diff(ticks_ms(), next) > 0:
                 wait = int(((60 * 1000) / self.tempo) / 4)
                 next = ticks_add(ticks_ms(), wait)
