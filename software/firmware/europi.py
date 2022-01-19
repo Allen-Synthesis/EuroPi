@@ -226,10 +226,10 @@ if __name__ == '__main__':
     if ain.read_duty() > 100:
         oled.centre_text('Please unplug\nall patch\ncables')
     wait_for_range(0, 100)
-    oled.centre_text('Plug 1V into\nanalogue input')
+    oled.centre_text(f'Plug {LOW_VOLTAGE}V into\nanalogue input')
     wait_and_show(low_threshold_low, low_threshold_high)
     low_reading = ain.read_duty(samples)
-    oled.centre_text('Now plug 10V\ninto analogue\ninput')
+    oled.centre_text(f'Now plug {HIGH_VOLTAGE}V\ninto analogue\ninput')
     wait_and_show(high_threshold_low, high_threshold_high)
     high_reading = ain.read_duty(samples)
     
