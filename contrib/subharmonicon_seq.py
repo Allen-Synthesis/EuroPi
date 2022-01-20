@@ -25,8 +25,14 @@ output_5: trigger 2
 output_6: (display) on when editing seq 2
 
 """
-
-from europi import *
+try:
+    # Local development
+    from software.firmware.europi import OLED_WIDTH, OLED_HEIGHT, CHAR_HEIGHT
+    from software.firmware.europi import k1, k2, oled, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6
+    from software.firmware.europi import reset_state
+except ImportError:
+    # Device import path
+    from europi import *
 from time import sleep_ms, ticks_add, ticks_diff, ticks_ms
 import machine
 
@@ -35,15 +41,19 @@ machine.freq(250000000)
 
 # Configure EuroPi options to improve performance.
 k1.set_samples(32)
-k2.set_samples(128)
+k2.set_samples(32)
 b2.debounce_delay = 200
 oled.contrast(0)
 
+# Script Constants
 MENU_DURATION = 1200
 
 VOLT_PER_OCT = 1 / 12
 
-NOTES = ["C", "C#", "D", "D#", "E" , "F", "F#", "G" , "G#", "A", "A#", "B"]
+NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
+MAX_TEMPO = 250
+MIN_TEMPO = 20
 
 
 class SubharmoniconSeq:
@@ -54,7 +64,6 @@ class SubharmoniconSeq:
     ]
     polys = [16, 2, 5, 9]
     seq_poly = [2, 1, 1, 1]
-    #TODO we need to make function for easy conversions.
 
     def __init__(self):
         self.seq = self.seqs[0]
@@ -62,7 +71,6 @@ class SubharmoniconSeq:
 
         self.page = 0
         self.index = 0
-        self._last_pressed = ticks_ms()
         self._prev_k2 = 0
         cv3.on()
 
@@ -72,7 +80,6 @@ class SubharmoniconSeq:
         @b1.handler
         def page_handler():
             self.page = (self.page + 1) % len(self.pages)
-            self._last_pressed = ticks_ms()
             self._prev_k2 = None
 
             [o.off() for o in (cv3, cv6)]
@@ -85,15 +92,22 @@ class SubharmoniconSeq:
 
         @b2.handler
         def edit_parameter():
-            #TODO: add seq octave select for page 1 & 2
+            # TODO: add seq octave select for page 1 & 2
             if self.page == 2:
                 self.seq_poly[self.index] = (self.seq_poly[self.index] + 1) % 4
 
     def _pitch_cv(self, note):
         return NOTES.index(note) * VOLT_PER_OCT
 
+    def _trigger_seq(self, step):
+        # Convert poly sequence enablement into binary to determine which
+        # sequences are triggered on this step.
+        status = f"{self.seq_poly[step]:02b}"
+        # Reverse the binary string values to match display.
+        return bool(status[1]), bool(status[0])
+
     def show_menu_header(self):
-        if ticks_diff(ticks_ms(), self._last_pressed) < MENU_DURATION:
+        if ticks_diff(ticks_ms(), b1.last_pressed) < MENU_DURATION:
             oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
             oled.text(f"{self.pages[self.page]}", 0, 0, 0)
 
@@ -114,7 +128,8 @@ class SubharmoniconSeq:
             # Display a bar over current playing step.
             if step == self.seq_index[0 if self.page == 0 else 1]:
                 x1 = (int(OLED_WIDTH/4) * step)
-                oled.fill_rect(x1, 0, 32, 6, 1)
+                x2 = int(OLED_WIDTH/4)
+                oled.fill_rect(x1, 0, x2, 6, 1)
 
     def edit_poly(self):
         # Display each polyrhythm option.
@@ -131,20 +146,20 @@ class SubharmoniconSeq:
             oled.text(f"{self.polys[poly_index]:>2}", padding_x, padding_y, 1)
 
             # Display graphic for seq 1 & 2 enablement.
-            #TODO we need to make function for easy conversions.
-            status = f"{self.seq_poly[poly_index]:02b}"
+            seq1, seq2 = self._trigger_seq(poly_index)
             y1 = OLED_HEIGHT - 10
 
             x1 = 4 + int(OLED_WIDTH/4) * poly_index
-            (oled.fill_rect if int(status[1]) == 1 else oled.rect)(x1, y1, 6, 6, 1)
+            (oled.fill_rect if seq1 else oled.rect)(x1, y1, 6, 6, 1)
 
             x1 = 12 + int(OLED_WIDTH/4) * poly_index
-            (oled.fill_rect if int(status[0]) == 1 else oled.rect)(x1, y1, 6, 6, 1)
-    
+            (oled.fill_rect if seq2 else oled.rect)(x1, y1, 6, 6, 1)
+
     def edit_tempo(self):
         # Clear the selected parameter index box on this page.
         oled.fill(0)
-        tempo = k2.range(250) + 20
+        # Add high sample rate for accurate readings
+        tempo = k2.range(MAX_TEMPO, 256) + MIN_TEMPO
         if self._prev_k2 and self._prev_k2 != tempo:
             self.tempo = tempo
         self._prev_k2 = tempo
@@ -154,15 +169,16 @@ class SubharmoniconSeq:
         # For each polyrhythm, check if each sequence is enabled and if the current beat should play.
         for i, poly in enumerate(self.polys):
             if self.counter % poly == 0:
-                #TODO we need to make function for easy conversions.
-                status = f"{self.seq_poly[i]:02b}"
-                if int(status[1]) == 1:
+                seq1, seq2 = self._trigger_seq(i)
+                if seq1:
                     self.seq_index[0] = (self.seq_index[0] + 1) % 4
-                    cv1.voltage(self._pitch_cv(self.seqs[0][self.seq_index[0]]))
+                    cv1.voltage(self._pitch_cv(
+                        self.seqs[0][self.seq_index[0]]))
                     cv2.on()
-                if int(status[0]) == 1:
+                if seq2:
                     self.seq_index[1] = (self.seq_index[1] + 1) % 4
-                    cv4.voltage(self._pitch_cv(self.seqs[1][self.seq_index[1]]))
+                    cv4.voltage(self._pitch_cv(
+                        self.seqs[1][self.seq_index[1]]))
                     cv5.on()
         sleep_ms(10)
         [c.off() for c in (cv2, cv5)]
@@ -184,7 +200,7 @@ class SubharmoniconSeq:
 
             if self.page == 2:
                 self.edit_poly()
-            
+
             if self.page == 3:
                 self.edit_tempo()
 
@@ -198,11 +214,9 @@ class SubharmoniconSeq:
             oled.show()
 
 
-
 # Main script execution
 try:
     script = SubharmoniconSeq()
     script.main()
 finally:
-    pass
-    #reset_state()
+    reset_state()
