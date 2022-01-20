@@ -14,7 +14,7 @@ analog_in: unused
 knob_1: cycle between inputs
 knob_2: adjust value of current input
 
-button_1: cycle through editable parameters (seq1, seq1, poly, )
+button_1: cycle through editable parameters (seq1, seq1, poly, tempo)
 button_2: edit current parameter options
 
 output_1: pitch 1
@@ -158,7 +158,7 @@ class SubharmoniconSeq:
     def edit_tempo(self):
         # Clear the selected parameter index box on this page.
         oled.fill(0)
-        # Add high sample rate for accurate readings
+        # Add high sample rate for accurate tempo readings.
         tempo = k2.range(MAX_TEMPO, 256) + MIN_TEMPO
         if self._prev_k2 and self._prev_k2 != tempo:
             self.tempo = tempo
@@ -166,7 +166,8 @@ class SubharmoniconSeq:
         oled.text(f"{self.tempo:>3}", 48, 12, 1)
 
     def play_notes(self):
-        # For each polyrhythm, check if each sequence is enabled and if the current beat should play.
+        # For each polyrhythm, check if each sequence is enabled and if the
+        # current beat should play.
         for i, poly in enumerate(self.polys):
             if self.counter % poly == 0:
                 seq1, seq2 = self._trigger_seq(i)
