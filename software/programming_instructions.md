@@ -12,7 +12,8 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ### Installing the firmware
 1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
-![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
+
+    ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
 
 3. Open your file manager and drag and drop the downloaded .uf2 onto the new drive named 'RPI-RP2'.
 4. The Pico will automatically eject once the process is completed.
@@ -20,23 +21,24 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ### Installing the OLED library
 1. Disconnect the Pico from the USB cable.
 2. Reconnect, this time without holding down the button on the back.
-![_DSC2401](https://user-images.githubusercontent.com/79809962/148647207-b43a2e44-0ca2-48d0-b13c-b5d091b44ae1.jpg)
+
+    ![_DSC2401](https://user-images.githubusercontent.com/79809962/148647207-b43a2e44-0ca2-48d0-b13c-b5d091b44ae1.jpg)
 
 3. Open up Thonny if not already open, and go to the bottom right where you can select the interpreter.
 4. Click to select interpreter and choose 'MicroPython (Raspberry Pi Pico)'.
 
-![Interpreter Select](https://i.imgur.com/XeRem1w.jpg)
+    ![Interpreter Select](https://i.imgur.com/XeRem1w.jpg)
 
 5. Click Tools -> Manage Packages to open the package manager.
 6. Type 'ssd1306' into the search box and click search.
 7. Click the result named 'micropython-ssd1306'.
 
-![ssd1306 library](https://i.imgur.com/7t2mWHh.jpg)
+    ![ssd1306 library](https://i.imgur.com/7t2mWHh.jpg)
 
 8. Click 'Install'.
 9. You will see that a folder has been created inside the Pico named 'lib', which contains the new file 'ssd1306.py'.
 
-![ssd1306 inside lib](https://i.imgur.com/jkmeaFM.jpg)
+    ![ssd1306 inside lib](https://i.imgur.com/jkmeaFM.jpg)
 
 ### Installing the europi library
 
@@ -46,12 +48,12 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 4. Paste the europi.py contents into the new file, and press Ctrl-Shift-S to save as.
 5. Choose Raspberry Pi Pico.
 
-![Save to Pico](https://i.imgur.com/BTn7kAz.jpg)
+    ![Save to Pico](https://i.imgur.com/BTn7kAz.jpg)
 
 6. Navigate inside the 'lib' folder by double clicking it.
 7. Save the new file as 'europi.py', making sure to include the '.py' at the end.
 
-![Save europi.py](https://i.imgur.com/vK5Xgik.jpg)
+    ![Save europi.py](https://i.imgur.com/vK5Xgik.jpg)
 
 ### Calibration
 
@@ -76,7 +78,7 @@ A benchtop power supply is ideal for this, but you could potentially use another
 
 1. If the voltages you plan to use are any different to 1V and 10V, open the europi.py file and change the values of LOW_VOLTAGE and HIGH_VOLTAGE to whichever you are using. As long as they are between 0-10V and are far enough apart from each other, the process will work.
 
-![Changing voltage variables](https://i.imgur.com/3evVnIn.png)
+    ![Changing voltage variables](https://i.imgur.com/3evVnIn.png)
 
 2. Now make sure the module is connected to both your computer and to Eurorack power, and that the power is switched on.
 3. Then simply run the europi.py program and follow the instructions on the OLED display.
