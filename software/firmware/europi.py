@@ -1,10 +1,8 @@
 """
 Rory Allen 19/11/2021 CC BY-SA 4.0
 
-You can then use the inputs, outputs, knobs, and buttons as objects, and makeuse of the general purpose functions
-
 Import this library into your own programs using 'from europi import *'
-You can use this library by importing individual comonents:
+You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
 
 """
 from time import ticks_ms
