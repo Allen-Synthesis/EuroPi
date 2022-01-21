@@ -30,3 +30,4 @@ while True:
     oled.rect(0, 0, OLED_WIDTH, OLED_HEIGHT, 1)
     oled.show()
 
+    sleep(0.1)
