@@ -19,10 +19,10 @@ from ssd1306 import SSD1306_I2C
 try:
     from calibration import CALIBRATION_VALUES
 except ImportError:
-    #TODO: provide default vales instead of throwing an error.
+    # TODO: provide default vales instead of throwing an error.
     raise Exception("Please run calibration script.")
 
-#TODO: update calibrate.py to provide output calibration value.
+# TODO: update calibrate.py to provide output calibration value.
 OUTPUT_MULTIPLIER = 6347.393
 
 # OLED component display dimensions.
@@ -120,9 +120,13 @@ class AnalogueInput(AnalogueReader):
 
     def read_voltage(self, samples=None):
         reading = self._sample_adc(samples)
-        index = int(self.percent(samples) * (len(CALIBRATION_VALUES) - 1))
-        cv = index + (self._gradients[index] *
-                      (reading - CALIBRATION_VALUES[index]))
+        # low precision vs. high precision
+        if len(self._gradients) == 2:  
+            cv = 10 * (reading / CALIBRATION_VALUES[-1])
+        else:
+            index = int(self.percent(samples) * (len(CALIBRATION_VALUES) - 1))
+            cv = index + (self._gradients[index] *
+                          (reading - CALIBRATION_VALUES[index]))
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
@@ -134,7 +138,7 @@ class Knob(AnalogueReader):
         """Return the knob's position as relative percentage."""
         # Reverse range to provide increasing range.
         return 1 - (self._sample_adc(samples) / MAX_UINT16)
-    
+
     def read_position(self, steps=100, samples=None):
         """Returns the position as a value between zero and provided integer."""
         return self.range(steps, samples)
@@ -248,7 +252,7 @@ class Output:
             self.off()
         else:
             self.on()
-    
+
     def value(self, value):
         """Sets the output to 0V or 5V based on a binary input, 0 or 1."""
         if value == 1:
