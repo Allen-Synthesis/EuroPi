@@ -196,7 +196,12 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 
 ### Resistors
 
-#### Solder the 1k resistors to the back (R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20)
+#### Solder the 1k resistors to the back (R7, R8, R9, R10, R11, R12, R19, R20)
+![_DSC2362 5](https://user-images.githubusercontent.com/79809962/150558359-0099aee5-0d3a-49af-a78c-c10f4b6cd9de.jpg)
+
+---
+
+#### Solder the 5.1k resistors to the back (R13, R14, R15, R16, R17, R18)
 ![_DSC2362](https://user-images.githubusercontent.com/79809962/148646613-c9404b94-883f-4991-a0bb-5fea3bde99bc.jpg)
 
 ---
