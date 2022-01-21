@@ -22,8 +22,6 @@ except ImportError:
     # TODO: provide default vales instead of throwing an error.
     raise Exception("Please run calibration script.")
 
-# TODO: update calibrate.py to provide output calibration value.
-OUTPUT_MULTIPLIER = 6347.393
 
 # OLED component display dimensions.
 OLED_WIDTH = 128
@@ -121,7 +119,7 @@ class AnalogueInput(AnalogueReader):
     def read_voltage(self, samples=None):
         reading = self._sample_adc(samples)
         # low precision vs. high precision
-        if len(self._gradients) == 2:  
+        if len(self._gradients) == 2:
             cv = 10 * (reading / CALIBRATION_VALUES[-1])
         else:
             index = int(self.percent(samples) * (len(CALIBRATION_VALUES) - 1))
@@ -226,17 +224,17 @@ class Output:
 
     def _set_duty(self, cycle):
         cycle = int(cycle)
-        self.pin.duty_u16(clamp(cycle, 0, MAX_UINT16 - 1))
+        self.pin.duty_u16(clamp(cycle, 0, MAX_UINT16))
         self._duty = cycle
 
     def voltage(self, voltage=None):
         """Set the output voltage to the provided value within the range of 0 to 10."""
         if voltage is None:
-            return self._duty / OUTPUT_MULTIPLIER
+            return self._duty / MAX_UINT16
         if 0 > voltage or voltage > 10:
             raise ValueError(
                 f"voltage expects a value between 0 and 10, got: {voltage}")
-        self._set_duty(voltage * OUTPUT_MULTIPLIER)
+        self._set_duty(voltage * (MAX_UINT16 / 10))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
