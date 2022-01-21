@@ -12,7 +12,8 @@ MIN_BPM = 20
 FRAME_WIDTH = int(OLED_WIDTH / 8)
 
 # Number of sequential reads for smoothing analog read values.
-SAMPLES = 32
+k1.set_samples(32)
+k2.set_samples(32)
 
 # Overclock the Pico for improved performance.
 machine.freq(250000000)
@@ -40,7 +41,7 @@ class CoinToss:
 
     def tempo(self):
         """Read the current tempo set by k1 within set range."""
-        return round(k1.read_position(MAX_BPM - MIN_BPM, SAMPLES) + MIN_BPM)
+        return round(k1.read_position(MAX_BPM - MIN_BPM) + MIN_BPM)
 
     def get_next_deadline(self):
         """Get the deadline for next clock tick whole note."""
@@ -73,7 +74,7 @@ class CoinToss:
         """
         coin = random()
         # Sum the knob2 and analogue input values to determine threshold.
-        read_sum = k2.unit_interval(SAMPLES) + ain.read_voltage(SAMPLES)/12
+        read_sum = k2.percent() + ain.read_voltage()/12
         self.threshold = clamp(read_sum, 0, 1)
         if self.gate_mode:
             a.value(coin < self.threshold)
@@ -124,11 +125,7 @@ class CoinToss:
             self.wait()
 
 
-if __name__ == '__main__':
-    # Reset module display state.
-    [o.off() for o in cvs]
-    oled.clear()
-    oled.show()
-
-    coin_toss = CoinToss()
-    coin_toss.main()
+# Reset module display state.
+reset_state()
+coin_toss = CoinToss()
+coin_toss.main()
