@@ -3,12 +3,11 @@ Subharmonicon Sequencer
 author: awonak
 date: 2022-01-17
 
-
 EuroPi version of a Subharmonicon polyrhythmic sequencer.
 Partially inspired by m0wh: https://github.com/m0wh/subharmonicon-sequencer
+Demo video: https://youtu.be/vMAVqVQIpW0
 
-
-digital_in: external clock
+digital_in: unused
 analog_in: unused
 
 knob_1: cycle between inputs
@@ -104,7 +103,7 @@ class SubharmoniconSeq:
         # sequences are triggered on this step.
         status = f"{self.seq_poly[step]:02b}"
         # Reverse the binary string values to match display.
-        return bool(status[1]), bool(status[0])
+        return int(status[1]) == 1, int(status[0]) == 1
 
     def show_menu_header(self):
         if ticks_diff(ticks_ms(), b1.last_pressed) < MENU_DURATION:
@@ -147,6 +146,7 @@ class SubharmoniconSeq:
 
             # Display graphic for seq 1 & 2 enablement.
             seq1, seq2 = self._trigger_seq(poly_index)
+            print(f"{poly_index} {seq1=} {seq2=}")
             y1 = OLED_HEIGHT - 10
 
             x1 = 4 + int(OLED_WIDTH/4) * poly_index
