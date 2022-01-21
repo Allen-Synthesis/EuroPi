@@ -1,5 +1,5 @@
 """
-Rory Allen 19/11/2021 CC BY-SA 4.0
+Rory Allen 19/11/2021 Apache License Version 2.0
 
 Import this library into your own programs using 'from europi import *'
 You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
