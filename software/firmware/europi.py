@@ -1,249 +1,298 @@
-from machine import Pin, PWM, ADC, I2C
+"""
+Rory Allen 19/11/2021 CC BY-SA 4.0
+
+Import this library into your own programs using 'from europi import *'
+You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
+
+"""
+from time import ticks_ms
+
+from machine import ADC
+from machine import I2C
+from machine import PWM
+from machine import Pin
+
 from ssd1306 import SSD1306_I2C
-from time import sleep, ticks_ms
+
+try:
+    from calibration import CALIBRATION_VALUES
+except ImportError:
+    # Note: run calibrate.py to get a more precise calibration.
+    CALIBRATION_VALUES=[384, 44634]
 
 
-#Rory Allen 19/11/2021 CC BY-SA 4.0
-#Import this library into your own programs using 'from europi import *'
-#You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
-
-
+# OLED component display dimensions.
 OLED_WIDTH = 128
 OLED_HEIGHT = 32
+I2C_CHANNEL = 0
+I2C_FREQUENCY = 400000
 
+# Standard max int consts.
 MAX_UINT16 = 65535
-MAX_UINT12 = 4096
+
+# Analogue voltage read range.
+MIN_INPUT_VOLTAGE = 0
+MAX_INPUT_VOLTAGE = 12
+DEFAULT_SAMPLES = 32
+
+# Output voltage range
+MIN_OUTPUT_VOLTAGE = 0
+MAX_OUTPUT_VOLTAGE = 10
+
+# Default font is 8x8 pixel monospaced font.
+CHAR_WIDTH = 8
+CHAR_HEIGHT = 8
 
 
-#General use functions
-def clamp(value, low, high): #Returns a value that is no lower than 'low' and no higher than 'high'
+# Helper functions.
+
+def clamp(value, low, high):
+    """Returns a value that is no lower than 'low' and no higher than 'high'."""
     return max(min(value, high), low)
-        
-def get_output_calibration_data(): #Retrieves the calibration data for the output
-    with open('lib/calibration.txt', 'r') as data: #Open the text file in read mode
-        data = data.readlines() #Create a list containing the lines read from the file
-        OUTPUT_MULTIPLIER = float(data[2].replace('\n','')) #The third line is the output multiplier, convert to float as it is a string in the text file
-    return OUTPUT_MULTIPLIER
-
-def get_input_calibration_data(): #Retrieves the calibration data for the input
-    with open('lib/calibration.txt', 'a+') as file: #Open the text file in 'all+' mode which means it will create a file if one isn't present
-        data = file.readlines() #Create a list containing the lines read from the file
-        if len(data) == 0: #If the file is empty
-            default_values = ['0.003646677', '-0.05753613', '6347.393']
-            file.write(default_values[0]+'\n'+default_values[1]+'\n'+default_values[2]) #Populate the file with default values
-            data = default_values #Re-read the file now it contains the default values
-        
-        INPUT_MULTIPLIER = float(data[0].replace('\n','')) #The first line is the input multiplier
-        INPUT_OFFSET = float(data[1].replace('\n','')) #The second line is the input offset
-        return INPUT_MULTIPLIER, INPUT_OFFSET
-
-def sample_adc(adc, samples=256): #Over-samples the ADC and returns the average. Default 256 samples
-    values = [] #Empty list to begin with
-    for sample in range(samples): #Sample continuously for as many samples as specified
-        values.append(adc.read_u16() / 16) #Add the value to values list. /16 as u16 reads as a 16 bit number but the ADC is only 12 bit
-    return round(sum(values) / len(values)) #Return the average (mean) of the values list
 
 
+def reset_state():
+    """Return device to initial state with all components off and handlers reset."""
+    oled.clear()
+    [cv.off() for cv in cvs]
+    [d.reset_handler() for d in (b1, b2, din)]
 
 
-class Display(SSD1306_I2C): #Class used to write to the OLED display
-    def __init__(self, sda, scl, width, height, channel=0, freq=400000): #Takes the pin used for SDA, pin used for SCL, and then default values used for channel and i2c frequency
-        self.i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
+# Component classes.
+
+class AnalogueReader:
+    """A base class for common analogue read methods."""
+
+    def __init__(self, pin, samples=DEFAULT_SAMPLES):
+        self.pin = ADC(Pin(pin))
+        self.set_samples(samples)
+
+    def _sample_adc(self, samples=None):
+        # Over-samples the ADC and returns the average.
+        values = []
+        for _ in range(samples or self._samples):
+            values.append(self.pin.read_u16())
+        return round(sum(values) / len(values))
+
+    def set_samples(self, samples):
+        """Override the default number of sample reads with the given value."""
+        if not isinstance(samples, int):
+            raise ValueError(
+                f"set_samples expects an int value, got: {samples}")
+        self._samples = samples
+
+    def percent(self, samples=None):
+        """Return the percentage of the component's current relative range."""
+        return self._sample_adc(samples) / MAX_UINT16
+
+    def range(self, steps=100, samples=None):
+        """Return a value (upper bound excluded) chosen by the current voltages relative position."""
+        if not isinstance(steps, int):
+            raise ValueError(f"range expects an int value, got: {steps}")
+        percent = self.percent(samples)
+        if int(percent) == 1:
+            return steps -1
+        return int(percent * steps)
+
+    def choice(self, values, samples=None):
+        """Return a value from a list chosen by the relative knob position."""
+        if not isinstance(values, list):
+            raise ValueError(f"choice expects a list, got: {values}")
+        percent = self.percent(samples)
+        if percent == 1.0:
+            return values[-1]
+        return values[int(percent * len(values))]
+
+
+class AnalogueInput(AnalogueReader):
+    """A class for handling the reading of analogue control voltage."""
+
+    def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
+        super().__init__(pin)
+        self.MIN_VOLTAGE = min_voltage
+        self.MAX_VOLTAGE = max_voltage
+        self._gradients = []
+        for index, value in enumerate(CALIBRATION_VALUES[:-1]):
+            self._gradients.append(1 / (CALIBRATION_VALUES[index+1] - value))
+        self._gradients.append(self._gradients[-1])
+
+    def percent(self, samples=None):
+        """Current voltage as a relative percentage of the component's range."""
+        # Determine the percent value from the max calibration value.
+        reading = self._sample_adc(samples)
+        max_value = max(reading, CALIBRATION_VALUES[-1])
+        return reading / max_value
+
+    def read_voltage(self, samples=None):
+        reading = self._sample_adc(samples)
+        max_value = max(reading, CALIBRATION_VALUES[-1])
+        percent = reading / max_value
+        # low precision vs. high precision
+        if len(self._gradients) == 2:
+            cv = 10 * (reading / CALIBRATION_VALUES[-1])
+        else:
+            index = int(percent * (len(CALIBRATION_VALUES) - 1))
+            cv = index + (self._gradients[index] *
+                          (reading - CALIBRATION_VALUES[index]))
+        return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
+
+
+class Knob(AnalogueReader):
+    """A class for handling the reading of knob voltage and position."""
+
+    def __init__(self, pin):
+        super().__init__(pin)
+
+    def percent(self, samples=None):
+        """Return the knob's position as relative percentage."""
+        # Reverse range to provide increasing range.
+        return 1 - (self._sample_adc(samples) / MAX_UINT16)
+
+    def read_position(self, steps=100, samples=None):
+        """Returns the position as a value between zero and provided integer."""
+        return self.range(steps, samples)
+
+
+class DigitalReader:
+    """A base class for common digital inputs methods."""
+
+    def __init__(self, pin, debounce_delay=500):
+        self.pin = Pin(pin, Pin.IN)
+        self.debounce_delay = debounce_delay
+        self.last_pressed = 0
+
+    def value(self):
+        """The current binary value, HIGH (1) or LOW (0)."""
+        # Both the digital input and buttons are normally high, and 'pulled'
+        # low when on, so this is flipped to be more intuitive (1 when on, 0
+        # when off)
+        return 1 - self.pin.value()
+
+    def handler(self, func):
+        """Define the callback func to call when rising edge detected."""
+        def bounce_wrapper(pin):
+            if (ticks_ms() - self.last_pressed) > self.debounce_delay:
+                self.last_pressed = ticks_ms()
+                func()
+        # Both the digital input and buttons are normally high, and 'pulled'
+        # low when on, so here we use IRQ_FALLING to detect rising edge.
+        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce_wrapper)
+
+    def reset_handler(self):
+        self.pin.irq(trigger=Pin.IRQ_FALLING)
+
+
+class DigitalInput(DigitalReader):
+    """A class for handling reading of the digital input."""
+    def __init__(self, pin, debounce_delay=0):
+        super().__init__(pin, debounce_delay)
+
+
+class Button(DigitalReader):
+    """A class for handling push button behavior."""
+    def __init__(self, pin, debounce_delay=200):
+        super().__init__(pin, debounce_delay)
+
+
+class Display(SSD1306_I2C):
+    """A class for drawing graphics and text to the OLED."""
+    def __init__(self, sda, scl, width=OLED_WIDTH, height=OLED_HEIGHT, channel=I2C_CHANNEL, freq=I2C_FREQUENCY):
+        i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
         self.height = height
-        
-        if len(self.i2c.scan()) == 0: #If no i2c devices are detected on the given channel
-            raise Exception("EuroPi Hardware Error:\nMake sure the OLED display is connected correctly") #Display a useful error message
 
-        super().__init__(128, 32, self.i2c)
-    
-    def clear(self): #Removes all filled pixels from the display
+        if len(i2c.scan()) == 0:
+            raise Exception(
+                "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
+
+        super().__init__(self.width, self.height, i2c)
+
+    def clear(self):
+        """Clear the display upon call."""
         self.fill(0)
-    
-    def centre_text(self, text): #Writes up to 3 lines of text (separated by \n) centred both vertically and horizontally
-        self.clear() #Clears the display to prevent over-writing previously displayed information
-        try: #Try in case the value sent is anything that cannot be .split()
-            lines = text.split('\n')
-        except:
-            raise Exception("EuroPi Software Error:\ncentre.text() only accepts string") #Display a useful error message
-        maximum_lines = (self.height / 9) // 1 #Lines are 9 pixels tall, and the //1 means it will calculate only the whole number of available lines
+        self.show()
+
+    def centre_text(self, text):
+        """Split the provided text across 3 lines of display."""
+        self.fill(0)
+        # Default font is 8x8 pixel monospaced font which can be split to a
+        # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
+        # for readability.
+        lines = str(text).split('\n')
+        maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
-            raise Exception("EuroPi Software Error:\nDisplay is not big enough for that many lines") #Display a useful error message
-        else:
-            padding_top = (self.height - (len(lines) * 9)) / 2
-            for index in range(len(lines)):
-                content = lines[index]
-                padding_left = int((self.width - ((len(content)+1) * 7)) / 2)
-                self.text(content, padding_left-1, int((index * 9) + padding_top)-1)
-            oled.show()
+            raise Exception(
+                "Provided text exceeds available space on oled display.")
+
+        padding_top = (self.height - (len(lines) * 9)) / 2
+        for index, content in enumerate(lines):
+            x_offset = int((self.width - ((len(content) + 1) * 7)) / 2) - 1
+            y_offset = int((index * 9) + padding_top) - 1
+            self.text(content, x_offset, y_offset)
+        oled.show()
 
 
+class Output:
+    """A class for sending digital or analogue voltage to an output jack."""
+    def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
+        self.pin = PWM(Pin(pin))
+        # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
+        self.pin.freq(1_000_000)
+        self._duty = 0
+        self.MIN_VOLTAGE = min_voltage
+        self.MAX_VOLTAGE = max_voltage
 
-
-class Output: #Class used to control the CV outputs
-    def __init__(self, pin): #Takes only the GPIO pin being used for the output
-        self.output = PWM(Pin(pin))
-        self.output.freq(1000000) #This is specified as the default is too low to prevent audible PWM 'hum'
-        self.pin = pin
-        self.current_duty = 0
-        self.output_multiplier = get_output_calibration_data() #Uses the calibration data stored in calibration.txt to scale the duty into a voltage
-        
-    def current_voltage(self): #A method used to see what the current voltage of the output is
-        return self.current_duty / self.output_multiplier
-        
-    def duty(self, cycle): #A method to set the output based on a duty cycle of the PWM. Not very useful from a user perspective but required to be able to define voltage()
+    def _set_duty(self, cycle):
         cycle = int(cycle)
-        self.output.duty_u16(clamp(cycle, 0, 65534)) #Clamps the duty cycle to 0-65534. By default values over or under that range will cycle over to the next limit which is not very useful
-        self.current_duty = cycle
-        
-    def voltage(self, voltage): #Set the output voltage based on a float voltage
-        self.duty(voltage * self.output_multiplier)
-        
-    def on(self): #Set the output voltage to 5. Useful if using the output as a faux-digital output
+        self.pin.duty_u16(clamp(cycle, 0, MAX_UINT16))
+        self._duty = cycle
+
+    def voltage(self, voltage=None):
+        """Set the output voltage to the provided value within the range of 0 to 10."""
+        if voltage is None:
+            return self._duty / MAX_UINT16
+        voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
+        self._set_duty(voltage * (MAX_UINT16 / 10))
+
+    def on(self):
+        """Set the voltage HIGH at 5 volts."""
         self.voltage(5)
-    
-    def off(self): #Turns off the output (0V) 
-        self.duty(0)
-    
-    def toggle(self): #Toggles the output between 0V and 5V depending on the current voltage.
-        if self.current_duty > 500: #Arbitrary duty cycle to compare against, but some value is required otherwise toggle would only work when it begins at exactly 0V or 5V
+
+    def off(self):
+        """Set the voltage LOW at 0 volts."""
+        self._set_duty(0)
+
+    def toggle(self):
+        """Invert the Output's current state."""
+        if self._duty > 500:
             self.off()
         else:
             self.on()
-        
-    def value(self, value): #Sets the output to 0V or 5V depending on a binary input of 0 or 1. Useful if replicating the digital input for example
+
+    def value(self, value):
+        """Sets the output to 0V or 5V based on a binary input, 0 or 1."""
         if value == 1:
             self.on()
         else:
             self.off()
 
 
-
-
-class AnalogueInput: #Class used to read the analogue input
-    def __init__(self, pin):
-        self.input = ADC(Pin(pin))
-        self.input_multiplier, self.input_offset = get_input_calibration_data() #Retreives the calibration data from the calibration.txt file
-
-    def read_duty(self, samples=256): #Reads the un-corrected duty cycle of the ADC
-        return clamp(sample_adc(self.input, samples), 0, MAX_UINT16)
-
-    def read_voltage(self, samples=256): #Reads the voltage read by the ADC, corrected to convert both duty to voltage, and also correct the offset
-        return clamp((self.read_duty(samples) * self.input_multiplier) + self.input_offset, 0, 12)
-
-
-
-
-class Knob: #Class used to read the knob positions
-    def __init__(self, pin):
-        self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
-
-    def unit_interval(self, samples=256):
-        return 1 - (sample_adc(self.input, samples) / MAX_UINT12) #Provide the knob's position as a float value between 0.0 and 1.0
-
-    def read_position(self, steps=100, samples=256): #Returns an int in the range of steps based on knob position.
-        if not isinstance(steps, int):
-            raise Exception("Please only use integer type for steps and decimal_places with the read_position method")
-        else:
-            return int(self.unit_interval(samples) * steps) #Multiply the unit interval by the given steps and convert to integer
-
-    def choice(self, values, samples=256):
-        if not isinstance(values, list):
-            raise Exception("Please only use list type with the choice method")
-        return values[self.read_position(len(values) - 1, samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
-
-
-class DigitalInput: #Class to handle any digital input, so is used for both the actual digital input and both buttons
-    def __init__(self, pin, debounce_delay=100):
-        self.pin = Pin(pin, Pin.IN)
-        self.debounce_delay = debounce_delay  #Minimum time passed before a new trigger is allowed
-        self.last_pressed = ticks_ms() #Time since last triggered, also used for debouncing
-    
-    def value(self): #Return the current value of the input
-        return 1 - self.pin.value() #Both the digital input and buttons are normally high, and 'pulled' low when on, so this is flipped to be more intuitive (1 when on, 0 when off)
-
-    def handler(self, func): #Allows the function that is run when triggered to be changed
-        def bounce_wrapper(pin):
-            if (ticks_ms() - self.last_pressed) > self.debounce_delay: #As long as the debounce time has been reached
-                self.last_pressed = ticks_ms() #Reset the debounce counter to the current time
-                func() #Run the chosen function
-        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce_wrapper) 
-        
-    def reset_handler(self):
-        self.pin.irq(trigger=Pin.IRQ_FALLING)
-
-
-
-
-#Define all the I/O using the appropriate class and with the pins used
-oled = Display(0,1,OLED_WIDTH,OLED_HEIGHT)
-
+# Define all the I/O using the appropriate class and with the pins used
+din = DigitalInput(22)
+ain = AnalogueInput(26)
 k1 = Knob(27)
 k2 = Knob(28)
+b1 = Button(4)
+b2 = Button(5)
 
-b1 = DigitalInput(4)
-b2 = DigitalInput(5)
-
-din = DigitalInput(22, 0)
-ain = AnalogueInput(26)
-
+oled = Display(0, 1)
 cv1 = Output(21)
 cv2 = Output(20)
 cv3 = Output(16)
 cv4 = Output(17)
 cv5 = Output(18)
 cv6 = Output(19)
+cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
-cvs = [cv1, cv2, cv3, cv4, cv5, cv6] #A list containing all the outputs which is generally useful
-for cv in cvs: #When imported, all outputs are turned off. This is because otherwise the op-amps may be left 'floating' and output unpredictable voltages
-    cv.duty(0)
-
-
-#Calibration program. Run this program to calibrate the module
-if __name__ == '__main__':
-    def wait_for_range(low, high):
-        while ain.read_duty() < low or ain.read_duty() > high:
-            sleep(0.05)
-            
-    def wait_and_show(low, high):
-        wait_for_range(low, high)
-        oled.centre_text('Calibrating...')
-        oled.show()
-        sleep(2)
-            
-    LOW_VOLTAGE = 1 #Change these values if you have easier access to alternative accurate voltage sources
-    HIGH_VOLTAGE = 10 #Make sure you still use as wide a range as you can and keep it within the 0-10V range
-    
-    low_threshold_low = (270*LOW_VOLTAGE)-150
-    low_threshold_high = (270*LOW_VOLTAGE)+150
-    high_threshold_low = (270*HIGH_VOLTAGE)-150
-    high_threshold_high = (270*HIGH_VOLTAGE)+150
-    
-    samples = 2048
-    
-    oled.centre_text('Welcome\nto the\ncalibrator')
-    sleep(3)
-    if ain.read_duty() > 100:
-        oled.centre_text('Please unplug\nall patch\ncables')
-    wait_for_range(0, 100)
-    oled.centre_text(f'Plug {LOW_VOLTAGE}V into\nanalogue input')
-    wait_and_show(low_threshold_low, low_threshold_high)
-    low_reading = ain.read_duty(samples)
-    oled.centre_text(f'Now plug {HIGH_VOLTAGE}V\ninto analogue\ninput')
-    wait_and_show(high_threshold_low, high_threshold_high)
-    high_reading = ain.read_duty(samples)
-    
-    input_multiplier = (HIGH_VOLTAGE - LOW_VOLTAGE) / (high_reading - low_reading)
-    input_offset = HIGH_VOLTAGE - (input_multiplier * high_reading)
-    
-    oled.centre_text('Please unplug\nall patch\ncables')
-    wait_for_range(0, 100)
-    oled.centre_text('Plug output 1\ninto analogue\ninput')
-    cv1.duty(65534)
-    wait_and_show(high_threshold_low, high_threshold_high)
-    output_multiplier = 65534 / ((ain.read_duty(samples) * input_multiplier) + input_offset)
-
-    with open('lib/calibration.txt', 'w') as file:
-        file.write(str(input_multiplier) + '\n' + str(input_offset) + '\n' + str(output_multiplier))
-
-    oled.centre_text('Calibration\ncomplete!')
+# Reset the module state upon import.
+reset_state()

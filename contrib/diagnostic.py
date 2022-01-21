@@ -19,7 +19,7 @@ cv5.voltage(5)
 cv6.voltage(10)  # max
 
 while True:
-    oled.clear()
+    oled.fill(0)
 
     # display the input values
     oled.text(f"ain: {ain.read_voltage():5.2f}v", 2, 3, 1)

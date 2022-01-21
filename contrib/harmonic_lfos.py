@@ -1,7 +1,7 @@
 from europi import *
 from math import cos, radians
 from random import randint
-
+from time import sleep
 
 MAX_VOLTAGE = 10
 HARMONICS = [1, 3, 5, 7, 11, 13]
