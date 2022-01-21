@@ -1,10 +1,8 @@
 """
-Rory Allen 19/11/2021 CC BY-SA 4.0
-
-You can then use the inputs, outputs, knobs, and buttons as objects, and makeuse of the general purpose functions
+Rory Allen 19/11/2021 Apache License Version 2.0
 
 Import this library into your own programs using 'from europi import *'
-You can use this library by importing individual comonents:
+You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
 
 """
 from time import ticks_ms
@@ -19,10 +17,9 @@ from ssd1306 import SSD1306_I2C
 try:
     from calibration import CALIBRATION_VALUES
 except ImportError:
-    raise Exception("Please run calibration script.")
+    # Note: run calibrate.py to get a more precise calibration.
+    CALIBRATION_VALUES=[384, 44634]
 
-# TODO: update calibrate.py to provide output calibration value.
-OUTPUT_MULTIPLIER = 6347.393
 
 # OLED component display dimensions.
 OLED_WIDTH = 128
@@ -32,12 +29,15 @@ I2C_FREQUENCY = 400000
 
 # Standard max int consts.
 MAX_UINT16 = 65535
-MAX_UINT12 = 4096
 
 # Analogue voltage read range.
-MIN_VOLTAGE = 0
-MAX_VOLTAGE = 12
+MIN_INPUT_VOLTAGE = 0
+MAX_INPUT_VOLTAGE = 12
 DEFAULT_SAMPLES = 32
+
+# Output voltage range
+MIN_OUTPUT_VOLTAGE = 0
+MAX_OUTPUT_VOLTAGE = 10
 
 # Default font is 8x8 pixel monospaced font.
 CHAR_WIDTH = 8
@@ -47,6 +47,7 @@ CHAR_HEIGHT = 8
 # Helper functions.
 
 def clamp(value, low, high):
+    """Returns a value that is no lower than 'low' and no higher than 'high'."""
     return max(min(value, high), low)
 
 
@@ -57,7 +58,11 @@ def reset_state():
     [d.reset_handler() for d in (b1, b2, din)]
 
 
+# Component classes.
+
 class AnalogueReader:
+    """A base class for common analogue read methods."""
+
     def __init__(self, pin, samples=DEFAULT_SAMPLES):
         self.pin = ADC(Pin(pin))
         self.set_samples(samples)
@@ -81,23 +86,31 @@ class AnalogueReader:
         return self._sample_adc(samples) / MAX_UINT16
 
     def range(self, steps=100, samples=None):
-        """Return a value from steps chosen by the current voltages relative position."""
+        """Return a value (upper bound excluded) chosen by the current voltages relative position."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
-        return int(self.percent(samples) * steps)
+        percent = self.percent(samples)
+        if int(percent) == 1:
+            return steps -1
+        return int(percent * steps)
 
     def choice(self, values, samples=None):
-        """Return a value from a list chosen by the knob position."""
+        """Return a value from a list chosen by the relative knob position."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
-        return values[int(self.percent(samples) * len(values))]
+        percent = self.percent(samples)
+        if percent == 1.0:
+            return values[-1]
+        return values[int(percent * len(values))]
 
 
 class AnalogueInput(AnalogueReader):
-    def __init__(self, pin, max_voltage=MAX_VOLTAGE, min_voltage=MIN_VOLTAGE):
+    """A class for handling the reading of analogue control voltage."""
+
+    def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
         super().__init__(pin)
-        self.MAX_VOLTAGE = max_voltage
         self.MIN_VOLTAGE = min_voltage
+        self.MAX_VOLTAGE = max_voltage
         self._gradients = []
         for index, value in enumerate(CALIBRATION_VALUES[:-1]):
             self._gradients.append(1 / (CALIBRATION_VALUES[index+1] - value))
@@ -112,13 +125,21 @@ class AnalogueInput(AnalogueReader):
 
     def read_voltage(self, samples=None):
         reading = self._sample_adc(samples)
-        index = int(self.percent(samples) * (len(CALIBRATION_VALUES) - 1))
-        cv = index + (self._gradients[index] *
-                      (reading - CALIBRATION_VALUES[index]))
+        max_value = max(reading, CALIBRATION_VALUES[-1])
+        percent = reading / max_value
+        # low precision vs. high precision
+        if len(self._gradients) == 2:
+            cv = 10 * (reading / CALIBRATION_VALUES[-1])
+        else:
+            index = int(percent * (len(CALIBRATION_VALUES) - 1))
+            cv = index + (self._gradients[index] *
+                          (reading - CALIBRATION_VALUES[index]))
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
 class Knob(AnalogueReader):
+    """A class for handling the reading of knob voltage and position."""
+
     def __init__(self, pin):
         super().__init__(pin)
 
@@ -127,8 +148,14 @@ class Knob(AnalogueReader):
         # Reverse range to provide increasing range.
         return 1 - (self._sample_adc(samples) / MAX_UINT16)
 
+    def read_position(self, steps=100, samples=None):
+        """Returns the position as a value between zero and provided integer."""
+        return self.range(steps, samples)
+
 
 class DigitalReader:
+    """A base class for common digital inputs methods."""
+
     def __init__(self, pin, debounce_delay=500):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay
@@ -156,16 +183,19 @@ class DigitalReader:
 
 
 class DigitalInput(DigitalReader):
+    """A class for handling reading of the digital input."""
     def __init__(self, pin, debounce_delay=0):
         super().__init__(pin, debounce_delay)
 
 
 class Button(DigitalReader):
-    def __init__(self, pin, debounce_delay=500):
+    """A class for handling push button behavior."""
+    def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
 
 
 class Display(SSD1306_I2C):
+    """A class for drawing graphics and text to the OLED."""
     def __init__(self, sda, scl, width=OLED_WIDTH, height=OLED_HEIGHT, channel=I2C_CHANNEL, freq=I2C_FREQUENCY):
         i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
@@ -186,7 +216,8 @@ class Display(SSD1306_I2C):
         """Split the provided text across 3 lines of display."""
         self.fill(0)
         # Default font is 8x8 pixel monospaced font which can be split to a
-        # maximum of 4 lines on a 128x32 display.
+        # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
+        # for readability.
         lines = str(text).split('\n')
         maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
@@ -202,25 +233,26 @@ class Display(SSD1306_I2C):
 
 
 class Output:
-    def __init__(self, pin):
+    """A class for sending digital or analogue voltage to an output jack."""
+    def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
         self.pin = PWM(Pin(pin))
         # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
         self.pin.freq(1_000_000)
         self._duty = 0
+        self.MIN_VOLTAGE = min_voltage
+        self.MAX_VOLTAGE = max_voltage
 
     def _set_duty(self, cycle):
         cycle = int(cycle)
-        self.pin.duty_u16(clamp(cycle, 0, MAX_UINT16 - 1))
+        self.pin.duty_u16(clamp(cycle, 0, MAX_UINT16))
         self._duty = cycle
 
     def voltage(self, voltage=None):
         """Set the output voltage to the provided value within the range of 0 to 10."""
         if voltage is None:
-            return self._duty / OUTPUT_MULTIPLIER
-        if 0 > voltage or voltage > 10:
-            raise ValueError(
-                f"voltage expects a value between 0 and 10, got: {voltage}")
-        self._set_duty(voltage * OUTPUT_MULTIPLIER)
+            return self._duty / MAX_UINT16
+        voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
+        self._set_duty(voltage * (MAX_UINT16 / 10))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
@@ -236,6 +268,13 @@ class Output:
             self.off()
         else:
             self.on()
+
+    def value(self, value):
+        """Sets the output to 0V or 5V based on a binary input, 0 or 1."""
+        if value == 1:
+            self.on()
+        else:
+            self.off()
 
 
 # Define all the I/O using the appropriate class and with the pins used

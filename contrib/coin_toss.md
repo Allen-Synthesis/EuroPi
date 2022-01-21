@@ -4,6 +4,8 @@ author: awonak
 
 date: 03/01/22
 
+labels: Clock, Random, CV Generation
+
 Two pairs of clocked probability gates.
 
 Knob 1 adjusts the master clock speed of gate change probability. Knob 2 moves
