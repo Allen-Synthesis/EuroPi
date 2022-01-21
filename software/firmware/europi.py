@@ -16,28 +16,32 @@ MAX_UINT12 = 4096
 
 
 #General use functions
-def clamp(value, low, high): #Returns a value that is no lower than 'low' and no higher than 'high'
+def clamp(value, low, high):
+    """Returns a value that is no lower than 'low' and no higher than 'high'"""
     return max(min(value, high), low)
-        
-def get_output_calibration_data(): #Retrieves the calibration data for the output
+
+def get_output_calibration_data():
+    """Retrieves the calibration data for the output"""
     with open('lib/calibration.txt', 'r') as data: #Open the text file in read mode
         data = data.readlines() #Create a list containing the lines read from the file
         OUTPUT_MULTIPLIER = float(data[2].replace('\n','')) #The third line is the output multiplier, convert to float as it is a string in the text file
     return OUTPUT_MULTIPLIER
 
-def get_input_calibration_data(): #Retrieves the calibration data for the input
+def get_input_calibration_data():
+    """Retrieves the calibration data for the input"""
     with open('lib/calibration.txt', 'a+') as file: #Open the text file in 'all+' mode which means it will create a file if one isn't present
         data = file.readlines() #Create a list containing the lines read from the file
         if len(data) == 0: #If the file is empty
             default_values = ['0.003646677', '-0.05753613', '6347.393']
             file.write(default_values[0]+'\n'+default_values[1]+'\n'+default_values[2]) #Populate the file with default values
             data = default_values #Re-read the file now it contains the default values
-        
+
         INPUT_MULTIPLIER = float(data[0].replace('\n','')) #The first line is the input multiplier
         INPUT_OFFSET = float(data[1].replace('\n','')) #The second line is the input offset
         return INPUT_MULTIPLIER, INPUT_OFFSET
 
-def sample_adc(adc, samples=256): #Over-samples the ADC and returns the average. Default 256 samples
+def sample_adc(adc, samples=256):
+    """Over-samples the ADC and returns the average. Default 256 samples"""
     values = [] #Empty list to begin with
     for sample in range(samples): #Sample continuously for as many samples as specified
         values.append(adc.read_u16() / 16) #Add the value to values list. /16 as u16 reads as a 16 bit number but the ADC is only 12 bit
@@ -46,21 +50,25 @@ def sample_adc(adc, samples=256): #Over-samples the ADC and returns the average.
 
 
 
-class Display(SSD1306_I2C): #Class used to write to the OLED display
-    def __init__(self, sda, scl, width, height, channel=0, freq=400000): #Takes the pin used for SDA, pin used for SCL, and then default values used for channel and i2c frequency
+class Display(SSD1306_I2C):
+    """Class used to write to the OLED display"""
+    def __init__(self, sda, scl, width, height, channel=0, freq=400000):
+        """Takes the pin used for SDA, pin used for SCL, and then default values used for channel and i2c frequency"""
         self.i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
         self.height = height
-        
+
         if len(self.i2c.scan()) == 0: #If no i2c devices are detected on the given channel
             raise Exception("EuroPi Hardware Error:\nMake sure the OLED display is connected correctly") #Display a useful error message
 
         super().__init__(128, 32, self.i2c)
-    
-    def clear(self): #Removes all filled pixels from the display
+
+    def clear(self):
+        """Removes all filled pixels from the display"""
         self.fill(0)
-    
-    def centre_text(self, text): #Writes up to 3 lines of text (separated by \n) centred both vertically and horizontally
+
+    def centre_text(self, text):
+        """Writes up to 3 lines of text (separated by \n) centred both vertically and horizontally"""
         self.clear() #Clears the display to prevent over-writing previously displayed information
         try: #Try in case the value sent is anything that cannot be .split()
             lines = text.split('\n')
@@ -80,38 +88,47 @@ class Display(SSD1306_I2C): #Class used to write to the OLED display
 
 
 
-class Output: #Class used to control the CV outputs
-    def __init__(self, pin): #Takes only the GPIO pin being used for the output
+class Output:
+    """Class used to control the CV outputs"""
+    def __init__(self, pin):
+        """Takes only the GPIO pin being used for the output"""
         self.output = PWM(Pin(pin))
         self.output.freq(1000000) #This is specified as the default is too low to prevent audible PWM 'hum'
         self.pin = pin
         self.current_duty = 0
         self.output_multiplier = get_output_calibration_data() #Uses the calibration data stored in calibration.txt to scale the duty into a voltage
-        
-    def current_voltage(self): #A method used to see what the current voltage of the output is
+
+    def current_voltage(self):
+        """A method used to see what the current voltage of the output is"""
         return self.current_duty / self.output_multiplier
-        
-    def duty(self, cycle): #A method to set the output based on a duty cycle of the PWM. Not very useful from a user perspective but required to be able to define voltage()
+
+    def duty(self, cycle):
+        """A method to set the output based on a duty cycle of the PWM. Not very useful from a user perspective but required to be able to define voltage()"""
         cycle = int(cycle)
         self.output.duty_u16(clamp(cycle, 0, 65534)) #Clamps the duty cycle to 0-65534. By default values over or under that range will cycle over to the next limit which is not very useful
         self.current_duty = cycle
-        
-    def voltage(self, voltage): #Set the output voltage based on a float voltage
+
+    def voltage(self, voltage):
+        """Set the output voltage based on a float voltage"""
         self.duty(voltage * self.output_multiplier)
-        
-    def on(self): #Set the output voltage to 5. Useful if using the output as a faux-digital output
+
+    def on(self):
+        """Set the output voltage to 5. Useful if using the output as a faux-digital output"""
         self.voltage(5)
-    
-    def off(self): #Turns off the output (0V) 
+
+    def off(self):
+        """Turns off the output (0V)"""
         self.duty(0)
-    
-    def toggle(self): #Toggles the output between 0V and 5V depending on the current voltage.
+
+    def toggle(self):
+        """Toggles the output between 0V and 5V depending on the current voltage."""
         if self.current_duty > 500: #Arbitrary duty cycle to compare against, but some value is required otherwise toggle would only work when it begins at exactly 0V or 5V
             self.off()
         else:
             self.on()
-        
-    def value(self, value): #Sets the output to 0V or 5V depending on a binary input of 0 or 1. Useful if replicating the digital input for example
+
+    def value(self, value):
+        """Sets the output to 0V or 5V depending on a binary input of 0 or 1. Useful if replicating the digital input for example"""
         if value == 1:
             self.on()
         else:
@@ -120,28 +137,33 @@ class Output: #Class used to control the CV outputs
 
 
 
-class AnalogueInput: #Class used to read the analogue input
+class AnalogueInput:
+    """Class used to read the analogue input"""
     def __init__(self, pin):
         self.input = ADC(Pin(pin))
         self.input_multiplier, self.input_offset = get_input_calibration_data() #Retreives the calibration data from the calibration.txt file
 
-    def read_duty(self, samples=256): #Reads the un-corrected duty cycle of the ADC
+    def read_duty(self, samples=256):
+        """Reads the un-corrected duty cycle of the ADC"""
         return clamp(sample_adc(self.input, samples), 0, MAX_UINT16)
 
-    def read_voltage(self, samples=256): #Reads the voltage read by the ADC, corrected to convert both duty to voltage, and also correct the offset
+    def read_voltage(self, samples=256):
+        """Reads the voltage read by the ADC, corrected to convert both duty to voltage, and also correct the offset"""
         return clamp((self.read_duty(samples) * self.input_multiplier) + self.input_offset, 0, 12)
 
 
 
 
-class Knob: #Class used to read the knob positions
+class Knob:
+    """Class used to read the knob positions"""
     def __init__(self, pin):
         self.input = ADC(Pin(pin)) #The knobs are 'read' by analogue to digital converters
 
     def unit_interval(self, samples=256):
         return 1 - (sample_adc(self.input, samples) / MAX_UINT12) #Provide the knob's position as a float value between 0.0 and 1.0
 
-    def read_position(self, steps=100, samples=256): #Returns an int in the range of steps based on knob position.
+    def read_position(self, steps=100, samples=256):
+        """Returns an int in the range of steps based on knob position."""
         if not isinstance(steps, int):
             raise Exception("Please only use integer type for steps and decimal_places with the read_position method")
         else:
@@ -153,16 +175,19 @@ class Knob: #Class used to read the knob positions
         return values[self.read_position(len(values) - 1, samples)] #If a list is used, return the value in the list that is found at the position chosen by the knob position
 
 
-class DigitalInput: #Class to handle any digital input, so is used for both the actual digital input and both buttons
+class DigitalInput:
+    """Class to handle any digital input, so is used for both the actual digital input and both buttons"""
     def __init__(self, pin, debounce_delay=100):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay  #Minimum time passed before a new trigger is allowed
         self.last_pressed = ticks_ms() #Time since last triggered, also used for debouncing
-    
-    def value(self): #Return the current value of the input
+
+    def value(self):
+        """Return the current value of the input"""
         return 1 - self.pin.value() #Both the digital input and buttons are normally high, and 'pulled' low when on, so this is flipped to be more intuitive (1 when on, 0 when off)
 
-    def handler(self, func): #Allows the function that is run when triggered to be changed
+    def handler(self, func):
+        """Allows the function that is run when triggered to be changed"""
         def bounce_wrapper(pin):
             if (ticks_ms() - self.last_pressed) > self.debounce_delay: #As long as the debounce time has been reached
                 self.last_pressed = ticks_ms() #Reset the debounce counter to the current time
