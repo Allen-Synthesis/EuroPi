@@ -17,8 +17,8 @@ from ssd1306 import SSD1306_I2C
 try:
     from calibration import CALIBRATION_VALUES
 except ImportError:
-    # TODO: provide default vales instead of throwing an error.
-    raise Exception("Please run calibration script.")
+    # Note: run calibrate.py to get a more precise calibration.
+    CALIBRATION_VALUES=[384, 44634]
 
 
 # OLED component display dimensions.
@@ -86,13 +86,13 @@ class AnalogueReader:
         return self._sample_adc(samples) / MAX_UINT16
 
     def range(self, steps=100, samples=None):
-        """Return a value from steps chosen by the current voltages relative position."""
+        """Return a value (upper bound excluded) chosen by the current voltages relative position."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
         percent = self.percent(samples)
-        if percent == 1.0:
-            return steps
-        return int(self.percent(samples) * steps)
+        if int(percent) == 1:
+            return steps -1
+        return int(percent * steps)
 
     def choice(self, values, samples=None):
         """Return a value from a list chosen by the relative knob position."""
