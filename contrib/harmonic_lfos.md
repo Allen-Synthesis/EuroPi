@@ -4,6 +4,8 @@ author: rory allen
 
 date: 12/01/22
 
+labels: LFO, Random
+
 Six harmonically related sine wave LFOs
 
     digital in: Reset all LFOs
