@@ -265,7 +265,6 @@ class Output:
         
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
         for index, current_gradient in enumerate(self._gradients):
-            print(index, current_gradient)
             if (voltage // 1) >= index:
                 self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (current_gradient*(voltage%1)))
 
