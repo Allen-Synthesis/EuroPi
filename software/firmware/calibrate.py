@@ -44,7 +44,7 @@ else:
         
 with open(f'lib/calibration.py', 'w') as file:
     values = ", ".join(map(str, readings))
-    file.write(f"CALIBRATION_VALUES=[{values}]")
+    file.write(f"INPUT_CALIBRATION_VALUES=[{values}]")
 print(f'\n{readings}\n')
     
     
