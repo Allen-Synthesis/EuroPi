@@ -68,8 +68,8 @@ for voltage in range(1,11):
 print(f'\n{output_duties}')
 
 with open(f'lib/calibration.py', 'a+') as file:
-    values = ", ".join(map(str, readings))
-    file.write(f"OUTPUT_CALIBRATION_VALUES=[{output_duties}]")
+    values = ", ".join(map(str, output_duties))
+    file.write(f"\nOUTPUT_CALIBRATION_VALUES=[{values}]")
     
 print('\nCalibration Complete!')
 
