@@ -1,16 +1,14 @@
 from europi import *
-from time import sleep
-from random import randint
+from time import sleep_ms, ticks_diff, ticks_ms
+
+MENU_DURATION = 2000  # 2 seconds in ms
 
 
-def remap_knob(): 
+def remap_knob():
     global knob_mapping
     knob_mapping += 1
     if knob_mapping == 3:
         knob_mapping = 0
-        
-    global display_time
-    display_time = 0
 
 def rotate_cvs():
     global cv_mapping
@@ -18,16 +16,42 @@ def rotate_cvs():
     for cv in cv_mapping[1:]: #Append all but the first (in order)
         new_cv_mapping.append(cv)
     new_cv_mapping.append(cv_mapping[0]) #Append the first
-    
+
     cv_mapping = new_cv_mapping
 
 def value_to_cv(value):
-    return value * 16
+    return value * MAX_OUTPUT_VOLTAGE
 
 def x_to_oled(x):
-    return round(x * 0.0312)
+    return round(x * OLED_WIDTH)
+
 def y_to_oled(y):
-    return 31 - round(y * 0.0076)
+    return OLED_HEIGHT - round(y * OLED_HEIGHT)
+
+def do_step(x, y):
+    oledx = x_to_oled(x)
+    oledy = y_to_oled(y)
+
+    cvx = value_to_cv(x)
+    cvy = value_to_cv(y)
+
+    oled.fill(0)
+    oled.vline(oledx, 0, OLED_HEIGHT, 1)
+    oled.hline(0, oledy, OLED_WIDTH, 1)
+
+    cv_mapping[0].voltage(cvx)  # 0 to 10 (volts)
+    cv_mapping[1].voltage(cvy)
+    cv_mapping[2].voltage(abs(cvy - cvx))
+    cv_mapping[3].voltage(MAX_OUTPUT_VOLTAGE - cvx)
+    cv_mapping[4].voltage(MAX_OUTPUT_VOLTAGE - cvy)
+    cv_mapping[5].voltage(MAX_OUTPUT_VOLTAGE - abs(cvy - cvx))
+
+    sleep_ms(10)
+
+def display_mapping(new_map):
+    oled.fill_rect(0, 0, 64, 12, 1)
+    oled.text(knob_mapping_text[new_map], 0, 2, 0)
+
 
 cv_mapping = [cv1, cv2, cv3, cv4, cv5, cv6]
 knob_mapping = 0 #0 = not used, 1 = knob 1, 2 = knob 2
@@ -37,51 +61,20 @@ b1.handler(rotate_cvs)
 din.handler(rotate_cvs)
 b2.handler(remap_knob)
 
-def do_step(x, y):
-    oledx = x_to_oled(x)
-    oledy = y_to_oled(y)
-    
-    cvx = value_to_cv(x)
-    cvy = value_to_cv(y)
-    
-    oled.clear()
-    oled.vline(oledx, 0, 32, 1)
-    oled.hline(0, oledy, 128, 1)
-    
-    cv_mapping[0].duty(cvx) #0-65534
-    cv_mapping[1].duty(cvy) #0-65534
-    cv_mapping[2].duty(abs(cvy - cvx))
-    cv_mapping[3].duty(32767 - cvx)
-    cv_mapping[4].duty(32767 - cvy)
-    cv_mapping[5].duty(32767 - abs(cvy - cvx))
-    
-    sleep(0.01)
-    
-    global display_time
-    display_time += 0.01
-
-
-def display_mapping(new_map):
-    oled.fill_rect(0, 0, 64, 12, 1)
-    oled.text(knob_mapping_text[new_map], 0, 2, 0)
-    
-    
-    
-display_time = 9999
 while True:
 
     if knob_mapping != 1:
-        x = k1.read_position(4096)
+        x = k1.percent()
     else:
-        x = ain.read_duty() + k1.read_position(4096)
-        
+        x = clamp(ain.percent() + k1.percent(), 0, 1)
+
     if knob_mapping != 2:
-        y = k2.read_position(4096)
+        y = k2.percent()
     else:
-        y = ain.read_duty() + k2.read_position(4096)
-    
+        y = clamp(ain.percent() + k2.percent(), 0, 1)
+
     do_step(x, y)
-    
-    if display_time < 1:
+
+    if ticks_diff(ticks_ms(), b2.last_pressed) < MENU_DURATION:
         display_mapping(knob_mapping)
     oled.show()
