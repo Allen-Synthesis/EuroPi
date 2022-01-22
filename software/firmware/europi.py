@@ -113,7 +113,11 @@ class AnalogueInput(AnalogueReader):
         self.MAX_VOLTAGE = max_voltage
         self._gradients = []
         for index, value in enumerate(CALIBRATION_VALUES[:-1]):
-            self._gradients.append(1 / (CALIBRATION_VALUES[index+1] - value))
+            try:
+                self._gradients.append(1 / (CALIBRATION_VALUES[index+1] - value))
+            except ZeroDivisionError:
+                raise Exception(
+                    "The input calibration process did not complete properly. Please complete again with rack power turned on")
         self._gradients.append(self._gradients[-1])
 
     def percent(self, samples=None):
@@ -296,3 +300,4 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
+
