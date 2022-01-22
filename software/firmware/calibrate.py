@@ -54,7 +54,7 @@ ain = AnalogueInput(26)
 cv1 = PWM(Pin(21))
 
 input('\nPlease plug CV output 1 into the analogue input and then press Enter')
-output_duties = []
+output_duties = [0]
 duty = 0
 reading = 0
 for voltage in range(1,11):
