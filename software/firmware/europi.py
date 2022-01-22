@@ -19,6 +19,7 @@ try:
 except ImportError:
     # Note: run calibrate.py to get a more precise calibration.
     INPUT_CALIBRATION_VALUES=[384, 44634]
+    OUTPUT_CALIBRATION_VALUES = [0, 6300, 12575, 19150, 25375, 31625, 38150, 44225, 50525, 56950, 63475]
 
 
 # OLED component display dimensions.
@@ -246,7 +247,10 @@ class Output:
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
         
-        gradients = []
+        self._gradients = []
+        for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
+            self._gradients.append(1 / (OUTPUT_CALIBRATION_VALUES[index+1] - value))
+        self._gradients.append(self._gradients[-1])
         
 
     def _set_duty(self, cycle):
@@ -258,8 +262,12 @@ class Output:
         """Set the output voltage to the provided value within the range of 0 to 10."""
         if voltage is None:
             return self._duty / MAX_UINT16
+        
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
-        self._set_duty(voltage * (MAX_UINT16 / 10))
+        for index, current_gradient in enumerate(self._gradients):
+            print(index, current_gradient)
+            if (voltage // 1) >= index:
+                self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (current_gradient*(voltage%1)))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
