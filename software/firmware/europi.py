@@ -15,10 +15,10 @@ from machine import Pin
 from ssd1306 import SSD1306_I2C
 
 try:
-    from calibration import CALIBRATION_VALUES
+    from calibration import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
 except ImportError:
     # Note: run calibrate.py to get a more precise calibration.
-    CALIBRATION_VALUES=[384, 44634]
+    INPUT_CALIBRATION_VALUES=[384, 44634]
 
 
 # OLED component display dimensions.
@@ -112,9 +112,9 @@ class AnalogueInput(AnalogueReader):
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
         self._gradients = []
-        for index, value in enumerate(CALIBRATION_VALUES[:-1]):
+        for index, value in enumerate(INPUT_CALIBRATION_VALUES[:-1]):
             try:
-                self._gradients.append(1 / (CALIBRATION_VALUES[index+1] - value))
+                self._gradients.append(1 / (INPUT_CALIBRATION_VALUES[index+1] - value))
             except ZeroDivisionError:
                 raise Exception(
                     "The input calibration process did not complete properly. Please complete again with rack power turned on")
@@ -124,20 +124,20 @@ class AnalogueInput(AnalogueReader):
         """Current voltage as a relative percentage of the component's range."""
         # Determine the percent value from the max calibration value.
         reading = self._sample_adc(samples)
-        max_value = max(reading, CALIBRATION_VALUES[-1])
+        max_value = max(reading, INPUT_CALIBRATION_VALUES[-1])
         return reading / max_value
 
     def read_voltage(self, samples=None):
         reading = self._sample_adc(samples)
-        max_value = max(reading, CALIBRATION_VALUES[-1])
+        max_value = max(reading, INPUT_CALIBRATION_VALUES[-1])
         percent = reading / max_value
         # low precision vs. high precision
         if len(self._gradients) == 2:
-            cv = 10 * (reading / CALIBRATION_VALUES[-1])
+            cv = 10 * (reading / INPUT_CALIBRATION_VALUES[-1])
         else:
-            index = int(percent * (len(CALIBRATION_VALUES) - 1))
+            index = int(percent * (len(INPUT_CALIBRATION_VALUES) - 1))
             cv = index + (self._gradients[index] *
-                          (reading - CALIBRATION_VALUES[index]))
+                          (reading - INPUT_CALIBRATION_VALUES[index]))
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
@@ -245,6 +245,9 @@ class Output:
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
+        
+        gradients = []
+        
 
     def _set_duty(self, cycle):
         cycle = int(cycle)
@@ -300,4 +303,5 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
+
 
