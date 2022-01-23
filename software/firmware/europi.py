@@ -249,7 +249,7 @@ class Output:
         
         self._gradients = []
         for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
-            self._gradients.append(1 / (OUTPUT_CALIBRATION_VALUES[index+1] - value))
+            self._gradients.append(OUTPUT_CALIBRATION_VALUES[index+1] - value)
         self._gradients.append(self._gradients[-1])
         
 
@@ -310,5 +310,6 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
+
 
 
