@@ -92,6 +92,10 @@ for voltage in range(1,11):
     while abs(reading - voltage) > 0.005 and reading < voltage:
         cv1.duty_u16(duty)
         duty += 25
+        if duty > MAX_UINT16:
+            text_wait('Calibration\ncould not\ncomplete', 2)
+            text_wait('Double check\nresistor values\and soldering', 2)
+            break
         reading = round(ain.read_voltage(),2)
     output_duties.append(duty)
     oled.centre_text(f'Calibrating...\n{voltage}V')
