@@ -23,10 +23,10 @@ def value_to_cv(value):
     return value * MAX_OUTPUT_VOLTAGE
 
 def x_to_oled(x):
-    return round(x * OLED_WIDTH)
+    return round(x * (OLED_WIDTH - 1))
 
 def y_to_oled(y):
-    return OLED_HEIGHT - round(y * OLED_HEIGHT)
+    return (OLED_HEIGHT - 1) - round(y * (OLED_HEIGHT - 1))
 
 def do_step(x, y):
     oledx = x_to_oled(x)
