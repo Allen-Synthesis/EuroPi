@@ -2,7 +2,7 @@ from europi import AnalogueInput, MAX_UINT16
 from machine import Pin, PWM, freq
 
 # Overclock for faster calibration
-freq(250000000)
+freq(250_000_000)
 
 ain = AnalogueInput(26)
 cv1 = PWM(Pin(21))
