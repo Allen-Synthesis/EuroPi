@@ -1,0 +1,5 @@
+Sphinx==4.4.0
+sphinx_rtd_theme==1.0.0
+myst-parser==0.16.1
+
+pip-tools==6.4.0
