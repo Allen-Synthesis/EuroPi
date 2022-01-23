@@ -1,9 +1,10 @@
-from machine import Pin, ADC, PWM
-from time import sleep
+from europi import AnalogueInput, MAX_UINT16
+from machine import Pin, PWM, freq
 
-machine.freq(250000000)
+# Overclock for faster calibration
+freq(250_000_000)
 
-ain = ADC(Pin(26, Pin.IN, Pin.PULL_DOWN))
+ain = AnalogueInput(26)
 cv1 = PWM(Pin(21))
 
 
@@ -15,9 +16,11 @@ def wait_for_voltage(voltage):
     print('\n Calibrating...')
     readings = []
     for reading in range(256):
-        readings.append(ain.read_u16())
+        readings.append(ain.pin.read_u16())
     return round(sum(readings)/256)
 
+
+## Input Calibration 
 
 chosen_process = ''
 print("""
@@ -41,35 +44,35 @@ if chosen_process == 1:
 else:
     for voltage in range(11):
         readings.append(wait_for_voltage(voltage))
-        
+
 with open(f'lib/calibration.py', 'w') as file:
     values = ", ".join(map(str, readings))
     file.write(f"INPUT_CALIBRATION_VALUES=[{values}]")
 print(f'\n{readings}\n')
-    
-    
 
-from europi import AnalogueInput
-ain = AnalogueInput(26)
-cv1 = PWM(Pin(21))
 
-input('\nPlease plug CV output 1 into the analogue input and then press Enter')
+## Output Calibration
+
 output_duties = [0]
 duty = 0
 reading = 0
+step = 25
+input('\nPlease plug CV output 1 into the analogue input and then press Enter')
 for voltage in range(1,11):
     while abs(reading - voltage) > 0.005 and reading < voltage:
+        if duty > MAX_UINT16:
+            print(f'{output_duties}')
+            raise Exception(f"The module failed to output {voltage}v. Last voltage reading: {reading}v")
         cv1.duty_u16(duty)
-        duty += 25
-        reading = round(ain.read_voltage(),2)
+        duty += step
+        reading = round(ain.read_voltage(), 2)
     output_duties.append(duty)
     print(f'\n{voltage}V')
-        
+
 print(f'\n{output_duties}')
 
 with open(f'lib/calibration.py', 'a+') as file:
     values = ", ".join(map(str, output_duties))
     file.write(f"\nOUTPUT_CALIBRATION_VALUES=[{values}]")
-    
-print('\nCalibration Complete!')
 
+print('\nCalibration Complete!')
