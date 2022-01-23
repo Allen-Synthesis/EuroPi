@@ -56,36 +56,22 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
     ![Save europi.py](https://i.imgur.com/vK5Xgik.jpg)
 
 ### Calibration
-
-The europi.py program is made to be imported as a library, but you are also able to run it directly to calibrate the module.  
   
-If you wish to calibrate the module yourself, you will need access to two fixed voltage sources, ideally 1V and 10V.  
+If you wish to calibrate the module yourself, you will need access to fixed voltage sources, ideally up to 10V.
   
 **NOTE: For calibration, the module *must* be connected to both USB for programming *and* rack power for ±12V.**
-  
-As soon as you run the program, a 'calibration.txt' file will be generated, which will allow you to use the module, but they are only default values and will not allow high accuracy input or output.  
-  
-#### Calibration.txt
-| Line | Meaning |
-| ------------- | ----------- |
-|1|ADC voltage multiplier
-|2|ADC offset (in volts)
-|3|Output voltage multiplier
-  
+
 If you don't need high accuracy, you can finish at this point and begin programming (skip to the next section).
-If however you'd like your module to be able to accurately read and output specific voltages, then get ready your voltage source(s).  
-A benchtop power supply is ideal for this, but you could potentially use another Eurorack module if the voltage is accurate enough (it's reccommended to use a multimeter to make sure the voltage you input to the program variables is accurate).  
+If however you'd like your module to be able to accurately read and output specific voltages, then get ready your voltage source(s).
 
-1. If the voltages you plan to use are any different to 1V and 10V, open the europi.py file and change the values of LOW_VOLTAGE and HIGH_VOLTAGE to whichever you are using. As long as they are between 0-10V and are far enough apart from each other, the process will work.
+A benchtop power supply is ideal for this, but you could potentially use another Eurorack module if the voltage is accurate enough (it's reccommended to use a multimeter to make sure the voltage you input to the program variables is accurate).
 
-    ![Changing voltage variables](https://i.imgur.com/3evVnIn.png)
+1. Now make sure the module is connected to both your computer and to Eurorack power, and that the power is switched on.
+1. Either run [calibrate.py](/software/firmware/calibrate.py) from Thonny, or save it to the module as `main.py` in the root directory.
+1. Then simply run the program and follow the instructions in the terminal.
+1. If at any point you do something wrong, just stop the program and run it again to start again.
+1. Once the screen shows 'Calibration complete', you're all done! Now you can move on to programming
 
-2. Now make sure the module is connected to both your computer and to Eurorack power, and that the power is switched on.
-3. Then simply run the europi.py program and follow the instructions on the OLED display.
-4. If at any point you do something wrong, just stop the program and run it again to start again.
-5. Once the screen shows 'Calibration complete', you're all done! Now you can move on to programming
-
-  
 ## Programming
 
 To program the module, just create a new Python file, and then press Ctrl-Shift-S to save as to the Raspberry Pi Pico, and name it 'main.py'.  
