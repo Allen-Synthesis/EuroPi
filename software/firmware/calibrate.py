@@ -2,7 +2,8 @@ from machine import Pin, ADC, PWM, freq
 from time import sleep
 from europi import oled, b1, b2
 
-machine.freq(250000000)
+# Overclock for faster calibration
+freq(250_000_000)
 
 
 ain = ADC(Pin(26, Pin.IN, Pin.PULL_DOWN))
