@@ -1,4 +1,4 @@
-from machine import Pin, ADC, PWM
+from machine import Pin, ADC, PWM, freq
 from time import sleep
 from europi import oled, b1, b2
 
