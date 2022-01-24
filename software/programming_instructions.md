@@ -57,35 +57,23 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
 ### Calibration
 
-The europi.py program is made to be imported as a library, but you are also able to run it directly to calibrate the module.  
-  
-If you wish to calibrate the module yourself, you will need access to two fixed voltage sources, ideally 1V and 10V.  
-  
-**NOTE: For calibration, the module *must* be connected to both USB for programming *and* rack power for ±12V.**
-  
-As soon as you run the program, a 'calibration.txt' file will be generated, which will allow you to use the module, but they are only default values and will not allow high accuracy input or output.  
-  
-#### Calibration.txt
-| Line | Meaning |
-| ------------- | ----------- |
-|1|ADC voltage multiplier
-|2|ADC offset (in volts)
-|3|Output voltage multiplier
-  
-If you don't need high accuracy, you can finish at this point and begin programming (skip to the next section).
-If however you'd like your module to be able to accurately read and output specific voltages, then get ready your voltage source(s).  
-A benchtop power supply is ideal for this, but you could potentially use another Eurorack module if the voltage is accurate enough (it's reccommended to use a multimeter to make sure the voltage you input to the program variables is accurate).  
+To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
+If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
 
-1. If the voltages you plan to use are any different to 1V and 10V, open the europi.py file and change the values of LOW_VOLTAGE and HIGH_VOLTAGE to whichever you are using. As long as they are between 0-10V and are far enough apart from each other, the process will work.
+1. To begin, you need to copy the [calibration.py](/software/firmware/calibration.py) file from the firmware folder to your Pico using the same process as you did for europi.py.
+2. Save the file into the lib folder, next to europi.py, but instead of naming it 'calibration.py', name it 'main.py'. This is so that the module knows to run this program automatically when connected to power, without you needing to have USB connected. This is also the way you choose what program will run when you power on the module later on.
+3. Disconnect your module from USB, and connect it to your rack power supply, as if it were any other new module that you're plugging in.
+4. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).
+5. There are 2 options for calibration:
+  - Low Accuracy: Only a single 10V supply is required
+  - High Accuracy: A variable supply is required to produce voltages from 0-10V  
+  Press button 1 to choose Low Accuracy mode, or button 2 to choose High Accuracy mode.
+6. Connect your voltage source to the analogue input, and input each voltage displayed on the screen. To take a reading (once your voltage is connected), press button 1.
+7. Once all the required voltages have been input, you now need to disconnect the analogue input from your voltage source, and instead connect it to CV output 1.
+8. Once you have connected the analogue input to CV output 1, press button 1
+9. The calibration process is now complete! You now need to rename or delete the 'calibration.py' program, however DO NOT delete the new file created called 'calibrate.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
 
-    ![Changing voltage variables](https://i.imgur.com/3evVnIn.png)
 
-2. Now make sure the module is connected to both your computer and to Eurorack power, and that the power is switched on.
-3. Then simply run the europi.py program and follow the instructions on the OLED display.
-4. If at any point you do something wrong, just stop the program and run it again to start again.
-5. Once the screen shows 'Calibration complete', you're all done! Now you can move on to programming
-
-  
 ## Programming
 
 To program the module, just create a new Python file, and then press Ctrl-Shift-S to save as to the Raspberry Pi Pico, and name it 'main.py'.  
