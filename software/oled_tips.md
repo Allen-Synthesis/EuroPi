@@ -37,6 +37,7 @@ These can be accessed the same way as the predefined methods listed above, and y
 | Method | Parameters | Function |
 | ------ | ---------- | -------- |
 |centre_text|string|Takes a string of up to 3 lines separated by '\n', and displays them centred vertically and horizontally|
+|clear||Clear the display upon calling this method. If you just need to clear the display buffer, use `oled.fill(0)`.
 
 ### centre_text example
 Python Program             |  OLED Result
