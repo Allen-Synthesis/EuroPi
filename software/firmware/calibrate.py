@@ -47,7 +47,9 @@ def wait_for_b1(value):
 
 flash(8, 0.2)
 
-while usb.value() == 1:
+
+if usb.value() == 1:
+    text_wait('Please connect\nrack power only\nnot USB', 4)
     oled.centre_text('Please connect\nrack power only\nnot USB')
 
 text_wait('Welcome to the\ncalibration\nprocess', 3)
