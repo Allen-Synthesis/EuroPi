@@ -1,6 +1,6 @@
 from machine import Pin, ADC, PWM, freq
 from time import sleep
-from europi import oled, b1, b2
+from europi import oled, b1, b2, MAX_UINT16
 
 # Overclock for faster calibration
 freq(250_000_000)
