@@ -2,6 +2,7 @@ name: publish docs to github pages
 # taken from https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-static-site-generators-with-python
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
