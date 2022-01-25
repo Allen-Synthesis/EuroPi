@@ -15,14 +15,11 @@ from machine import Pin
 from ssd1306 import SSD1306_I2C
 
 try:
+    from calibration_values import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
     import micropython
     TEST_ENV = False # We're in micropython, so we can assume access to real hardware
 except ModuleNotFoundError:
     TEST_ENV = True # This var is set when we don't have any real hardware, for example in a test or doc generation setting
-
-
-try:
-    from calibration import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
 except ImportError:
     # Note: run calibrate.py to get a more precise calibration.
     INPUT_CALIBRATION_VALUES=[384, 44634]
