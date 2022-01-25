@@ -4,7 +4,7 @@ name: publish docs to github pages
 on:
   push:
     branches:
-      - mjj/sphinx_docs
+      - main
 
 jobs:
   deploy:
