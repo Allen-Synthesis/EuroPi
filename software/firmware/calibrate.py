@@ -9,6 +9,11 @@ ain = ADC(Pin(26, Pin.IN, Pin.PULL_DOWN))
 cv1 = PWM(Pin(21))
 usb = Pin(24, Pin.IN)
 
+def sample():
+    readings = []
+    for reading in range(256):
+        readings.append(ain.read_u16())
+    return round(sum(readings)/256)
 
 def wait_for_voltage(voltage):
     wait_for_b1(0)
@@ -20,10 +25,7 @@ def wait_for_voltage(voltage):
         wait_for_b1(1)
     oled.centre_text('Calibrating...')
     sleep(1.5)
-    readings = []
-    for reading in range(256):
-        readings.append(ain.read_u16())
-    return round(sum(readings)/256)
+    return sample()
 
 def text_wait(text, wait):
     oled.centre_text(text)
@@ -76,23 +78,34 @@ with open(f'lib/calibration_values.py', 'w') as file:
     
 
 from europi import AnalogueInput
-ain = AnalogueInput(26)
 cv1 = PWM(Pin(21))
 
 oled.centre_text(f'Plug CV1 into\nanalogue in\nDone: Button 1')
 wait_for_b1(1)
 oled.centre_text('Calibrating...')
 
+
+if chosen_process == 1:
+    new_readings = [readings[0]]
+    m = (readings[1] - readings[0]) / 10
+    c = readings[0]
+    for x in range(1,10):
+        new_readings.append(round((m * x) + c))
+    new_readings.append(readings[1])
+    readings = new_readings
+
+
 output_duties = [0]
 duty = 0
-reading = 0
-for voltage in range(1,11):
-    while abs(reading - voltage) > 0.002 and reading < voltage:
+cv1.duty_u16(duty)
+reading = sample()
+for index, expected_reading in enumerate(readings[1:]):
+    while abs(reading - expected_reading) > 0.002 and reading < expected_reading:
         cv1.duty_u16(duty)
         duty += 10
-        reading = round(ain.read_voltage(),2)
+        reading = sample()
     output_duties.append(duty)
-    oled.centre_text(f'Calibrating...\n{voltage}V')
+    oled.centre_text(f'Calibrating...\n{index}V')
 
 with open(f'lib/calibration_values.py', 'a+') as file:
     values = ", ".join(map(str, output_duties))
