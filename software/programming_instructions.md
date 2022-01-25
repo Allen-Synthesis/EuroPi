@@ -65,7 +65,7 @@ Now that you have installed the europi.py and ssd1306 libraries, you are ready t
 [Option 3](): Calibrate the module for higher accuracy  
 
 
-## Write your own program from scratch
+### Write your own program from scratch
 
 To program the module, just create a new Python file, and then press Ctrl-Shift-S to save as to the Raspberry Pi Pico, and name it 'main.py'.  
 Do not save files to the 'lib' folder, as this is just for libraries to be imported rather than programs that you will write.  
@@ -76,7 +76,7 @@ Now import the entire europi library by simply adding the line 'from europi impo
 Now you have access to the inputs and outputs using easy methods, which you can read about more in the [README.md](/software/README.md) of the software folder.
 
 
-## Copy someone else's program to run on your module
+### Copy someone else's program to run on your module
 
 1. Open the [contrib folder](/contrib/) and decide which program you would like to run. Each program will have an identically named '.md' file describing how to use it.
 2. Once you have chosen a program, click the '.py' file with the same name as the explanatory '.md' file to open it in GitHub.
@@ -97,7 +97,7 @@ Now you have access to the inputs and outputs using easy methods, which you can 
   ![image](https://user-images.githubusercontent.com/79809962/151054018-0f495bb5-067e-4cd6-9640-c38e44a216de.png)  
   
   
-## Calibrate the module
+### Calibrate the module
 
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
@@ -105,7 +105,7 @@ If you do not wish to calibrate the module and don't mind your voltages being sl
 1. To begin, you need to copy the [calibrate.py](/software/firmware/calibrate.py) file from the firmware folder to your Pico using the [process outlined above]().
 2. Name it 'main.py', just as if it were a program you were running as normal. Make sure there are no other programs also called 'main.py' at the same time, or Python won't know which one to run.
 3. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
-4. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).
+4. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).  
 5. There are 2 options for calibration:
   - Low Accuracy: Only a single 10V supply is required
   - High Accuracy: A variable supply is required to produce voltages from 0-10V  
