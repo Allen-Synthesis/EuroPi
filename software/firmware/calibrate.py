@@ -77,8 +77,6 @@ with open(f'lib/calibration_values.py', 'w') as file:
     file.write(f"INPUT_CALIBRATION_VALUES=[{values}]")
     
 
-from europi import AnalogueInput
-cv1 = PWM(Pin(21))
 
 oled.centre_text(f'Plug CV1 into\nanalogue in\nDone: Button 1')
 wait_for_b1(1)
