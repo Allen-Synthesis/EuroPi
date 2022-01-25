@@ -60,8 +60,8 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
 
-1. To begin, you need to copy the [calibration.py](/software/firmware/calibration.py) file from the firmware folder to your Pico using the same process as you did for europi.py.
-2. Save the file into the lib folder, next to europi.py, but instead of naming it 'calibration.py', name it 'main.py'. This is so that the module knows to run this program automatically when connected to power, without you needing to have USB connected. This is also the way you choose what program will run when you power on the module later on.
+1. To begin, you need to copy the [calibrate.py](/software/firmware/calibrate.py) file from the firmware folder to your Pico using the same process as you did for europi.py.
+2. Save the file into the lib folder, next to europi.py, but instead of naming it 'calibrate.py', name it 'main.py'. This is so that the module knows to run this program automatically when connected to power, without you needing to have USB connected. This is also the way you choose what program will run when you power on the module later on.
 3. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
 4. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).
 5. There are 2 options for calibration:
@@ -72,7 +72,7 @@ If you do not wish to calibrate the module and don't mind your voltages being sl
 7. Once all the required voltages have been input, you now need to disconnect the analogue input from your voltage source, and instead connect it to CV output 1.
 8. Once you have connected the analogue input to CV output 1, press button 1
 9. Wait for each voltage up to 10V to complete. The module will tell you once it has completed.
-10. The calibration process is now complete! You now need to rename or delete the 'calibration.py' program, however DO NOT delete the new file created called 'calibrate.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
+10. The calibration process is now complete! You now need to rename or delete the 'calibrate.py' program, however DO NOT delete the new file created called 'calibration_values.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
 
 
 ## Programming
