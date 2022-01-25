@@ -115,6 +115,3 @@ If you do not wish to calibrate the module and don't mind your voltages being sl
 8. Once you have connected the analogue input to CV output 1, press button 1
 9. Wait for each voltage up to 10V to complete. The module will tell you once it has completed.
 10. The calibration process is now complete! You now need to rename or delete the 'calibrate.py' program, however DO NOT delete the new file created called 'calibration_values.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
-
-
-
