@@ -16,8 +16,8 @@ k1.set_samples(32)
 k2.set_samples(32)
 
 # Overclock the Pico for improved performance.
-machine.freq(250000000)
-# machine.freq(125000000)  # Default clock speed.
+machine.freq(250_000_000)
+# machine.freq(125_000_000)  # Default clock speed.
 
 
 class CoinToss:

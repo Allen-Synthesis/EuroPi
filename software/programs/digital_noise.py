@@ -1,7 +1,7 @@
 from europi import *
 from random import randint
 
-machine.freq(250000000)
+machine.freq(250_000_000)
 
 while True:
     if randint(0,1) == 0:

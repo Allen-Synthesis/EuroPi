@@ -56,7 +56,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
     ![Save europi.py](https://i.imgur.com/vK5Xgik.jpg)
 
 ### Calibration
-  
+
 If you wish to calibrate the module yourself, you will need access to fixed voltage sources, ideally up to 10V.
   
 **NOTE: For calibration, the module *must* be connected to both USB for programming *and* rack power for ±12V.**

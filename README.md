@@ -40,7 +40,7 @@ There are Issue templates available, so please choose whichever is most relevant
 
 ### License
 
-This module, and any documentation included in this repository, is entirely "free" software and hardware, under difference licenses depending on the software, hardware, and documentation itself.
+This module, and any documentation included in this repository, is entirely "free" software and hardware, under different licenses depending on the software, hardware, and documentation itself.
   
 Software: [Apache 2.0](https://github.com/Allen-Synthesis/EuroPi/blob/main/software/LICENSE)  
 Hardware: [CERN OHL-S v2](https://github.com/Allen-Synthesis/EuroPi/blob/main/hardware/LICENSE)  
