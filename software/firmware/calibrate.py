@@ -1,8 +1,9 @@
-from machine import Pin, ADC, PWM
+from machine import Pin, ADC, PWM, freq
 from time import sleep
 from europi import oled, b1, b2
 
-machine.freq(250000000)
+# Overclock for faster calibration
+freq(250_000_000)
 
 
 ain = ADC(Pin(26, Pin.IN, Pin.PULL_DOWN))
@@ -30,28 +31,30 @@ def wait_for_voltage(voltage):
 def text_wait(text, wait):
     oled.centre_text(text)
     sleep(wait)
-    
+
 def fill_show(colour):
     oled.fill(colour)
     oled.show()
-    
+
 def flash(flashes, period):
     for flash in range(flashes):
         fill_show(1)
         sleep(period/2)
         fill_show(0)
         sleep(period/2)
-    
+
 def wait_for_b1(value):
     while b1.value() != value:
         sleep(0.05)
 
 
+# Calibration start
+
 if usb.value() == 1:
     oled.centre_text('Make sure rack\npower is on\nDone: Button 1')
     wait_for_b1(1)
     wait_for_b1(0)
-    
+
 text_wait('Calibration\nMode', 3)
 
 oled.centre_text('Choose Process\n\n1         2')
@@ -64,6 +67,8 @@ while True:
         break
 
 
+# Input calibration
+
 readings = []
 if chosen_process == 1:
     readings.append(wait_for_voltage(0))
@@ -71,17 +76,17 @@ if chosen_process == 1:
 else:
     for voltage in range(11):
         readings.append(wait_for_voltage(voltage))
-        
+
 with open(f'lib/calibration_values.py', 'w') as file:
     values = ", ".join(map(str, readings))
     file.write(f"INPUT_CALIBRATION_VALUES=[{values}]")
-    
 
+
+# Output Calibration
 
 oled.centre_text(f'Plug CV1 into\nanalogue in\nDone: Button 1')
 wait_for_b1(1)
 oled.centre_text('Calibrating...')
-
 
 if chosen_process == 1:
     new_readings = [readings[0]]
@@ -91,7 +96,6 @@ if chosen_process == 1:
         new_readings.append(round((m * x) + c))
     new_readings.append(readings[1])
     readings = new_readings
-
 
 output_duties = [0]
 duty = 0
@@ -103,13 +107,11 @@ for index, expected_reading in enumerate(readings[1:]):
         duty += 10
         reading = sample()
     output_duties.append(duty)
-    oled.centre_text(f'Calibrating...\n{index}V')
+    oled.centre_text(f'Calibrating...\n{index+1}V')
 
 with open(f'lib/calibration_values.py', 'a+') as file:
     values = ", ".join(map(str, output_duties))
     file.write(f"\nOUTPUT_CALIBRATION_VALUES=[{values}]")
-    
-    
+
+
 oled.centre_text('Calibration\nComplete!')
-
-
