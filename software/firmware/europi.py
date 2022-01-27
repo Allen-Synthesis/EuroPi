@@ -1,11 +1,11 @@
 """
 Rory Allen 19/11/2021 Apache License Version 2.0
 
-Import this library into your own programs using 'from europi import *'
+Import this library into your own programs using ``from europi import *``
 You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
 
 """
-from time import ticks_ms
+import time
 
 from machine import ADC
 from machine import I2C
@@ -15,10 +15,17 @@ from machine import Pin
 from ssd1306 import SSD1306_I2C
 
 try:
-    from calibration import CALIBRATION_VALUES
+    import micropython
+    TEST_ENV = False # We're in micropython, so we can assume access to real hardware
+except ModuleNotFoundError:
+    TEST_ENV = True # This var is set when we don't have any real hardware, for example in a test or doc generation setting
+
+try:
+    from calibration_values import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
 except ImportError:
     # Note: run calibrate.py to get a more precise calibration.
-    CALIBRATION_VALUES=[384, 44634]
+    INPUT_CALIBRATION_VALUES=[384, 44634]
+    OUTPUT_CALIBRATION_VALUES = [0, 6300, 12575, 19150, 25375, 31625, 38150, 44225, 50525, 56950, 63475]
 
 
 # OLED component display dimensions.
@@ -53,7 +60,8 @@ def clamp(value, low, high):
 
 def reset_state():
     """Return device to initial state with all components off and handlers reset."""
-    oled.clear()
+    if not TEST_ENV:
+        oled.clear()
     [cv.off() for cv in cvs]
     [d.reset_handler() for d in (b1, b2, din)]
 
@@ -112,28 +120,32 @@ class AnalogueInput(AnalogueReader):
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
         self._gradients = []
-        for index, value in enumerate(CALIBRATION_VALUES[:-1]):
-            self._gradients.append(1 / (CALIBRATION_VALUES[index+1] - value))
+        for index, value in enumerate(INPUT_CALIBRATION_VALUES[:-1]):
+            try:
+                self._gradients.append(1 / (INPUT_CALIBRATION_VALUES[index+1] - value))
+            except ZeroDivisionError:
+                raise Exception(
+                    "The input calibration process did not complete properly. Please complete again with rack power turned on")
         self._gradients.append(self._gradients[-1])
 
     def percent(self, samples=None):
         """Current voltage as a relative percentage of the component's range."""
         # Determine the percent value from the max calibration value.
         reading = self._sample_adc(samples)
-        max_value = max(reading, CALIBRATION_VALUES[-1])
+        max_value = max(reading, INPUT_CALIBRATION_VALUES[-1])
         return reading / max_value
 
     def read_voltage(self, samples=None):
         reading = self._sample_adc(samples)
-        max_value = max(reading, CALIBRATION_VALUES[-1])
+        max_value = max(reading, INPUT_CALIBRATION_VALUES[-1])
         percent = reading / max_value
         # low precision vs. high precision
         if len(self._gradients) == 2:
-            cv = 10 * (reading / CALIBRATION_VALUES[-1])
+            cv = 10 * (reading / INPUT_CALIBRATION_VALUES[-1])
         else:
-            index = int(percent * (len(CALIBRATION_VALUES) - 1))
+            index = int(percent * (len(INPUT_CALIBRATION_VALUES) - 1))
             cv = index + (self._gradients[index] *
-                          (reading - CALIBRATION_VALUES[index]))
+                          (reading - INPUT_CALIBRATION_VALUES[index]))
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
@@ -171,8 +183,8 @@ class DigitalReader:
     def handler(self, func):
         """Define the callback func to call when rising edge detected."""
         def bounce_wrapper(pin):
-            if (ticks_ms() - self.last_pressed) > self.debounce_delay:
-                self.last_pressed = ticks_ms()
+            if (time.ticks_ms() - self.last_pressed) > self.debounce_delay:
+                self.last_pressed = time.ticks_ms()
                 func()
         # Both the digital input and buttons are normally high, and 'pulled'
         # low when on, so here we use IRQ_FALLING to detect rising edge.
@@ -202,8 +214,9 @@ class Display(SSD1306_I2C):
         self.height = height
 
         if len(i2c.scan()) == 0:
-            raise Exception(
-                "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
+            if not TEST_ENV:
+                raise Exception(
+                    "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
 
         super().__init__(self.width, self.height, i2c)
 
@@ -242,6 +255,12 @@ class Output:
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
 
+        self._gradients = []
+        for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
+            self._gradients.append(OUTPUT_CALIBRATION_VALUES[index+1] - value)
+        self._gradients.append(self._gradients[-1])
+
+
     def _set_duty(self, cycle):
         cycle = int(cycle)
         self.pin.duty_u16(clamp(cycle, 0, MAX_UINT16))
@@ -251,8 +270,11 @@ class Output:
         """Set the output voltage to the provided value within the range of 0 to 10."""
         if voltage is None:
             return self._duty / MAX_UINT16
+
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
-        self._set_duty(voltage * (MAX_UINT16 / 10))
+        for index, current_gradient in enumerate(self._gradients):
+            if (voltage // 1) >= index:
+                self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (current_gradient*(voltage%1)))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
@@ -296,3 +318,6 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
+
+
+

@@ -8,7 +8,7 @@ Inputs and outputs are used as objects, which each have methods to allow them to
 These methods are used by using the name of the object, for example 'cv3' followed by a '.' and then the method name, and finally a pair of brackets containing any parameters that the method requires.
 
 For example:
-```
+```python
 cv3.voltage(4.5)
 ```
 Will set the CV output 3 to a voltage of 4.5V.
@@ -64,6 +64,14 @@ A class is used named 'DigitalInput' in the europi.py library, which handles bot
 It should be noted that the value will be 0 when the input is 'high', and 1 when 'low'. This is simply a hardware technicality, but will not affect the use of the handler, only the .value() mathod.
 
 To use the handler method, you simply define whatever you want to happen when a button or the digital input is triggered, and then use x.handler(new_function). Do not include the brackets for the function, and replace the 'x' in the example with the name of your input, either b1, b2, or din.
+
+Button instances have an attribute `last_pressed` which can be used to perform some action or behavior relative to when the button was last pressed. For example, if you want to display that a button was pressed, you could add the following code to your main script loop:
+
+```python
+    if ticks_diff(ticks_ms(), b1.last_pressed) < 2000:
+        # Do something for two seconds after button press.
+        display_button_pressed()
+```
 
 ## OLED Display
 

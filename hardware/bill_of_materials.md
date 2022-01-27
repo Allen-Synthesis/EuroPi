@@ -7,10 +7,11 @@ Please note that a few of these are multi-packs of components, and there may wel
 
 | Component | Quantity | Value | Description | Suggested Supplier
 |-|-|-|-|-|
-| R1 - R20 | 20 | 1k | 1 Kiloohm Resistor | [CPC](https://cpc.farnell.com/unbranded/mf25-1k/resistor-0-25w-1-1k/dp/RE03722?st=1k%20resistor)
+| R1 - R12, R19 - R20 | 14 | 1k | 1 Kiloohm Resistor | [CPC](https://cpc.farnell.com/unbranded/mf25-1k/resistor-0-25w-1-1k/dp/RE03722?st=1k%20resistor)
+|R13 - R18 | 6 | 4.7k | 4.7 Kiloohm Resistor | [CPC](https://cpc.farnell.com/unbranded/mf25-4k7/resistor-0-25w-1-4k7/dp/RE03757?st=4.7k%20ressistor)
 | R21 - R23 | 3 | 22k | 22 Kiloohm Resistor | [CPC](https://cpc.farnell.com/unbranded/mf25-22k/resistor-0-25w-1-22k/dp/RE03743?st=22k%20resistor)
 | R24 - R26 | 3 | 10k | 10 Kiloohm Resistor | [CPC](https://cpc.farnell.com/unbranded/mf25-10k/resistor-0-25w-1-10k/dp/RE03723?st=0.25w%2010k%201%25)
-| R27 - R34 | 8 | 100k | 100 Kiloohm Resistor | [CPC](https://cpc.farnell.com/multicomp-pro/mcmf006ff1003a50/res-100k-1-600mw-axial-metal-film/dp/RE07823?st=100k%20resistor)
+| R27 - R34 | 8 | 100k | 100 Kiloohm Resistor | [CPC](https://cpc.farnell.com/unbranded/mf25-100k/resistor-0-25w-1-100k/dp/RE03724?st=100k%20resistor)
 | R35 - R40 | 6 | 220k | 220 Kiloohm Resistor | [CPC](https://cpc.farnell.com/unbranded/mf25-220k/resistor-0-25w-1-220k/dp/RE03744?st=220k%20resistor)
 | C1 - C2 | 2 | 1uF | 1 Microfarad Capacitor (Polarised)| [CPC](https://cpc.farnell.com/multicomp/mcmhr50v105m4x7/capacitor-1uf-50v-radial-105-deg/dp/CA08237?st=1uf%20capacitor)
 | C3 - C14 | 12 | 100nF | 100 Nanofarad Capacitor (Non-Polarised)| [CPC](https://cpc.farnell.com/multicomp/mcrr50104x7rk0050/capacitor-100nf-50v/dp/CA06296?st=100nf%20capacitor)
