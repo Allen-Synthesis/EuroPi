@@ -18,10 +18,10 @@ button_2: edit current parameter options
 
 output_1: pitch 1
 output_2: trigger 1
-output_3: (display) on when editing seq 1
+output_3: master clock
 output_4: pitch 2
 output_5: trigger 2
-output_6: (display) on when editing seq 2
+output_6: logical XOR
 
 """
 try:
@@ -58,11 +58,11 @@ MIN_TEMPO = 20
 class SubharmoniconSeq:
     pages = ['SEQUENCE 1', 'SEQUENCE 2', 'POLYRHYTHM', 'TEMPO']
     seqs = [
-        ["C", "D", "D#", "G"],
-        ["G#", "F", "C", "F"],
+        ["C", "D#", "D", "G"],
+        ["G", "F", "D#", "C"],
     ]
-    polys = [16, 2, 5, 9]
-    seq_poly = [2, 1, 1, 1]
+    polys = [8, 3, 2, 5]
+    seq_poly = [2, 1, 1, 0]
 
     def __init__(self):
         self.seq = self.seqs[0]
@@ -71,23 +71,19 @@ class SubharmoniconSeq:
         self.page = 0
         self.index = 0
         self._prev_k2 = 0
-        cv3.on()
 
-        self.tempo = 120
+        self.tempo = 85
         self.counter = 0
 
         @b1.handler
         def page_handler():
-            self.page = (self.page + 1) % len(self.pages)
             self._prev_k2 = None
+            self.page = (self.page + 1) % len(self.pages)
 
-            [o.off() for o in (cv3, cv6)]
             if self.page == 0:
                 self.seq = self.seqs[0]
-                cv3.on()
             if self.page == 1:
                 self.seq = self.seqs[1]
-                cv6.on()
 
         @b2.handler
         def edit_parameter():
@@ -146,7 +142,6 @@ class SubharmoniconSeq:
 
             # Display graphic for seq 1 & 2 enablement.
             seq1, seq2 = self._trigger_seq(poly_index)
-            print(f"{poly_index} {seq1=} {seq2=}")
             y1 = OLED_HEIGHT - 10
 
             x1 = 4 + int(OLED_WIDTH/4) * poly_index
@@ -168,21 +163,31 @@ class SubharmoniconSeq:
     def play_notes(self):
         # For each polyrhythm, check if each sequence is enabled and if the
         # current beat should play.
+        seq1 = False
+        seq2 = False
         for i, poly in enumerate(self.polys):
+            cv3.on()
             if self.counter % poly == 0:
-                seq1, seq2 = self._trigger_seq(i)
-                if seq1:
+                _seq1, _seq2 = self._trigger_seq(i)
+                if _seq1 and not seq1:
                     self.seq_index[0] = (self.seq_index[0] + 1) % 4
                     cv1.voltage(self._pitch_cv(
                         self.seqs[0][self.seq_index[0]]))
                     cv2.on()
-                if seq2:
+                if _seq2 and not seq2:
                     self.seq_index[1] = (self.seq_index[1] + 1) % 4
                     cv4.voltage(self._pitch_cv(
                         self.seqs[1][self.seq_index[1]]))
                     cv5.on()
+                seq1 = seq1 or _seq1
+                seq2 = seq2 or _seq2
+        
+        # Trigger logical XOR
+        if (seq1 or seq2) and seq1 != seq2:
+            cv6.on()
+        
         sleep_ms(10)
-        [c.off() for c in (cv2, cv5)]
+        [c.off() for c in (cv2, cv3, cv5, cv6)]
         self.counter = self.counter + 1
 
     def main(self):
