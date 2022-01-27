@@ -80,17 +80,16 @@ This allows you to perform more complicated graphics without slowing your progra
 
 More explanations and tips about the the display can be found in the [oled_tips](/software/oled_tips.md) file
 
-
 ## Outputs
 
-The outputs are capable of providing 0-10V, which can be achieved using the *voltage()* method 
-  
+The outputs are capable of providing 0-10V, which can be achieved using either the *voltage()* methods.
+
 So that there is no chance of not having the full range, the chosen resistor values actually give you a range of about 0-10.5V, which is why calibration is important if you want to be able to output precise voltages.
 
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
-|voltage|Sets the output to a fixed voltage|voltage
-|on|Sets the output to 5V|n/a
-|off|Sets the output to 0V|n/a
-|toggle|'Flip' the output between 0V or 5V depending on current state|n/a
-|value|Sets the output to 0V or 5V based on a binary input|0 or 1
+|voltage|Sets the output to a fixed voltage|voltage (int between 0 and 10)
+|on|Sets the output to 5V|
+|off|Sets the output to 0V|
+|toggle|'Flip' the output between 0V or 5V depending on current state|
+|value|Sets the output to 0V or 5V based on a binary input| 0 or 1
