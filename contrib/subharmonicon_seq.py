@@ -166,7 +166,6 @@ class SubharmoniconSeq:
         seq1 = False
         seq2 = False
         for i, poly in enumerate(self.polys):
-            cv3.on()
             if self.counter % poly == 0:
                 _seq1, _seq2 = self._trigger_seq(i)
                 if _seq1 and not seq1:
@@ -182,10 +181,11 @@ class SubharmoniconSeq:
                 seq1 = seq1 or _seq1
                 seq2 = seq2 or _seq2
         
+        # Master clock trigger
+        cv3.on()
         # Trigger logical XOR
         if (seq1 or seq2) and seq1 != seq2:
             cv6.on()
-        
         sleep_ms(10)
         [c.off() for c in (cv2, cv3, cv5, cv6)]
         self.counter = self.counter + 1
