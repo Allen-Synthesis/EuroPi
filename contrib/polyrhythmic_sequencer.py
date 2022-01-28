@@ -1,17 +1,26 @@
 """
 Polyrhythmic Sequencer
-author: awonak
+author: Adam Wonak (github.com/awonak)
 date: 2022-01-17
+labels: polyrhythms, sequencer, triggers
 
 EuroPi version of a Subharmonicon style polyrhythmic sequencer.
 Partially inspired by m0wh: https://github.com/m0wh/subharmonicon-sequencer
 Demo video: https://youtu.be/vMAVqVQIpW0
 
+Page 1 is the first 4 note sequence, page 2 is the second 4 note sequence, page
+3 is the polyrhythms assignable to each sequence. Use knob 1 to select between
+the 4 steps and use knob 2 to edit that step. On page 3 there are 4 polyrhythm
+options ranging from triggering every 1 beat to every 16 beats. On this page
+button 2 assigns which sequence this polyrhythm should apply to. Button 1 will
+cycle through the pages. The script needs a clock source in the digital input
+to play.
+
 digital_in: clock in
 analog_in: unused
 
-knob_1: cycle between inputs
-knob_2: adjust value of current input
+knob_1: select step option for current page
+knob_2: adjust the value of the selected option
 
 button_1: cycle through editable parameters (seq1, seq1, poly)
 button_2: edit current parameter options
