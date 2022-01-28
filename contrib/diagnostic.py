@@ -5,7 +5,7 @@ from europi import OLED_HEIGHT, OLED_WIDTH, ain, b1, b2, cv1, cv2, cv3, cv4, cv5
 """
 A diagnostic utility intended to help prove out a new europi build and calibration.
 - Input values, including knobs and buttons, are shown on the screen.
-- Outputs are held at specific, predictible, and hopefully useful values.
+- Outputs are held at specific, predictable, and hopefully useful values.
 - The boundary of the screen is outlined.
 - Inputs can be tested by self-patching the various CV outputs.
 """
