@@ -1,4 +1,5 @@
 ```{include} ../README.md
+:end-before: "## Capabilities"
 ```
 
 Source code and additional documentation can be found in the [GitHub repo](https://github.com/Allen-Synthesis/EuroPi).
@@ -9,6 +10,5 @@ Source code and additional documentation can be found in the [GitHub repo](https
 :titlesonly:
 
 api
-contributing
 genindex
 ```
