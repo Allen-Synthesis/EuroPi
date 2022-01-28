@@ -29,7 +29,8 @@ You can find more about this (including a project diary) and other projects of m
 * The power supply is now diode protected to prevent back-powering your rack when the module is connected via USB
 * All jacks are protected from overvoltage input (previously the Pico GPIO pin was directly exposed to any input, potentially leading to damage)
 
-Please see the README.md files in the hardware and software folders for more specific information about each, including hardware specifications and how to use the [europi.py](software/firmware/europi.py) library.
+Please see the README.md files in the hardware and software folders for more specific information about each, including hardware specifications and how to use the [europi.py](software/firmware/europi.py) library. Additional API documentation
+can be found [here](https://allen-synthesis.github.io/EuroPi/).
 
 
 ### Issues
