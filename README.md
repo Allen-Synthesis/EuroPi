@@ -29,7 +29,8 @@ You can find more about this (including a project diary) and other projects of m
 * The power supply is now diode protected to prevent back-powering your rack when the module is connected via USB
 * All jacks are protected from overvoltage input (previously the Pico GPIO pin was directly exposed to any input, potentially leading to damage)
 
-Please see the README.md files in the hardware and software folders for more specific information about each, including hardware specifications and how to use the [europi.py](https://github.com/Allen-Synthesis/EuroPi/blob/main/software/firmware/europi.py) library.
+Please see the README.md files in the hardware and software folders for more specific information about each, including hardware specifications and how to use the [europi.py](software/firmware/europi.py) library. Additional API documentation
+can be found [here](https://allen-synthesis.github.io/EuroPi/).
 
 
 ### Issues
@@ -41,11 +42,11 @@ There are Issue templates available, so please choose whichever is most relevant
 ### License
 
 This module, and any documentation included in this repository, is entirely "free" software and hardware, under different licenses depending on the software, hardware, and documentation itself.
-  
-Software: [Apache 2.0](https://github.com/Allen-Synthesis/EuroPi/blob/main/software/LICENSE)  
-Hardware: [CERN OHL-S v2](https://github.com/Allen-Synthesis/EuroPi/blob/main/hardware/LICENSE)  
-Documentation: [CC0 1.0](https://github.com/Allen-Synthesis/EuroPi/blob/main/LICENSE)
-  
+
+* Software: [Apache 2.0](software/LICENSE)
+* Hardware: [CERN OHL-S v2](hardware/LICENSE)
+* Documentation: [CC0 1.0](LICENSE)
+
 Anyone is welcome to design their own versions of the idea, or modify my designs.
 The only thing I would ask is that you refrain from using the brand name 'Allen Synthesis' on your DIY builds if they have modified my files in any way, just to prevent any confusion if they end up being re-sold or distributed. This is in line with section 8.2 of the CERN license. You may use the brand name if you have simply copied the files from this repository to replicate without modification.
   

@@ -1,8 +1,11 @@
 ## Building the Docs
 
-The EuroPi documentation is built by [Sphinx](https://www.sphinx-doc.org) and deployed to
-[GitHub Pages](https://pages.github.com) upon pushes to the ``main`` branch using
+The [EuroPi documentation](https://allen-synthesis.github.io/EuroPi/) is built by [Sphinx](https://www.sphinx-doc.org)
+and deployed to [GitHub Pages](https://pages.github.com) upon pushes to the ``main`` branch using
 [GitHub Actions](https://github.com/features/actions).
+
+If you've made changes to the documentation you'll want to build the docs locally in order ot verify that the build runs
+without errors and that your changes are rendered as you expect.
 
 In order to build the documentation locally you'll need to install Sphinx and the related dependencies in a virtual
 environment. Our deployment uses Python 3.8. Install the requirements with:
