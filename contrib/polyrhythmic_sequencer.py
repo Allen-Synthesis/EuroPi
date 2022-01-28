@@ -54,15 +54,21 @@ NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
 class PolyrhythmSeq:
     pages = ['SEQUENCE 1', 'SEQUENCE 2', 'POLYRHYTHM']
+    # Two 4-step melodic sequences.
     seqs = [
         ["C", "D#", "D", "G"],
         ["G", "F", "D#", "C"],
     ]
+    # 4 editable polyrhythms, assignable to the sequences.
     polys = [8, 3, 2, 5]
+    # Indicates which sequences are assigned to each polyrhythm.
+    # 0: none, 1: seq1, 2: seq2, 3: both seq1 and seq2.
     seq_poly = [2, 1, 1, 0]
 
     def __init__(self):
+        # Current editable sequence.
         self.seq = self.seqs[0]
+        # Sequence step index state.
         self.seq_index = [0, 0]
 
         self.page = 0
@@ -73,6 +79,7 @@ class PolyrhythmSeq:
 
         @b1.handler
         def page_handler():
+            # Pressing button 1 cycles through the pages of editable parameters.
             self._prev_k2 = None
             self.page = (self.page + 1) % len(self.pages)
             if self.page == 0:
@@ -82,21 +89,26 @@ class PolyrhythmSeq:
 
         @b2.handler
         def edit_parameter():
+            # Pressing button 2 edits the current selected parameter.
             # TODO: add seq octave select for page 1 & 2
             if self.page == 2:
+                # Cycles through which sequence this polyrhythm is assigned to.
                 self.seq_poly[self.index] = (self.seq_poly[self.index] + 1) % 4
-        
+
         @din.handler
         def play_notes():
             # For each polyrhythm, check if each sequence is enabled and if the
             # current beat should play.
             seq1 = False
             seq2 = False
+            # Check each polyrhythm to determine if a sequence should be triggered.
             for i, poly in enumerate(self.polys):
                 if self.counter % poly == 0:
                     _seq1, _seq2 = self._trigger_seq(i)
                     if _seq1 and not seq1:
+                        # Advance the sequence step index.
                         self.seq_index[0] = (self.seq_index[0] + 1) % 4
+                        # Set cv output voltage to sequence step pitch.
                         cv1.voltage(self._pitch_cv(
                             self.seqs[0][self.seq_index[0]]))
                         cv2.on()
@@ -107,7 +119,7 @@ class PolyrhythmSeq:
                         cv5.on()
                     seq1 = seq1 or _seq1
                     seq2 = seq2 or _seq2
-            
+
             # Trigger logical AND / XOR
             if seq1 and seq2:
                 cv3.on()
