@@ -52,7 +52,7 @@ VOLT_PER_OCT = 1 / 12
 NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
 
-class SubharmoniconSeq:
+class PolyrhythmSeq:
     pages = ['SEQUENCE 1', 'SEQUENCE 2', 'POLYRHYTHM']
     seqs = [
         ["C", "D#", "D", "G"],
@@ -198,7 +198,7 @@ class SubharmoniconSeq:
 
 # Main script execution
 try:
-    script = SubharmoniconSeq()
+    script = PolyrhythmSeq()
     script.main()
 finally:
     reset_state()
