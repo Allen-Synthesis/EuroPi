@@ -1,9 +1,9 @@
 """
-Subharmonicon Sequencer
+Polyrhythmic Sequencer
 author: awonak
 date: 2022-01-17
 
-EuroPi version of a Subharmonicon polyrhythmic sequencer.
+EuroPi version of a Subharmonicon style polyrhythmic sequencer.
 Partially inspired by m0wh: https://github.com/m0wh/subharmonicon-sequencer
 Demo video: https://youtu.be/vMAVqVQIpW0
 
