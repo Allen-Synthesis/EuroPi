@@ -60,9 +60,9 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
 Now that you have installed the europi.py and ssd1306 libraries, you are ready to take the next step with the module.  
 
-[Option 1](https://github.com/roryjamesallen/EuroPi/blob/main/software/programming_instructions.md#write-your-own-program-from-scratch): Start writing your own program from scratch  
-[Option 2](https://github.com/roryjamesallen/EuroPi/blob/main/software/programming_instructions.md#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/contrib/)  
-[Option 3](https://github.com/roryjamesallen/EuroPi/blob/main/software/programming_instructions.md#calibrate-the-module): Calibrate the module for higher accuracy  
+* [Option 1](#write-your-own-program-from-scratch): Start writing your own program from scratch
+* [Option 2](#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/contrib/)
+* [Option 3](#calibrate-the-module): Calibrate the module for higher accuracy
 
 
 ### Write your own program from scratch
@@ -102,7 +102,7 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
 
-1. To begin, you need to copy the [calibrate.py](/software/firmware/calibrate.py) file from the firmware folder to your Pico using the [process outlined above](https://github.com/roryjamesallen/EuroPi/blob/main/software/programming_instructions.md#copy-someone-elses-program-to-run-on-your-module).
+1. To begin, you need to copy the [calibrate.py](/software/firmware/calibrate.py) file from the firmware folder to your Pico using the [process outlined above](#copy-someone-elses-program-to-run-on-your-module).
 2. Name it 'main.py', just as if it were a program you were running as normal. Make sure there are no other programs also called 'main.py' at the same time, or Python won't know which one to run.
 3. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
 4. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).  
