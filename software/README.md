@@ -71,7 +71,7 @@ To use the handler method, you simply define whatever you want to happen when a 
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
 |handler|Assign a new function to be used as the handler|function
 |reset_handler|Detach the handler methods from the Pin IRQ|
-|last_pressed|Return the time in milliseconds of the last rising edge.|
+|last_pressed|Return the time in milliseconds when the button was last pressed.|
 
 Button instances have a method `last_pressed()` which can be used to perform some action or behavior relative to when the button was last pressed. For example, if you want to display that a button was pressed, you could add the following code to your main script loop:
 
