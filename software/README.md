@@ -60,8 +60,6 @@ The Digital Input jack can detect a HIGH signal when recieving voltage > 0.8v an
 |reset_handler|Detach the handler method from the Pin IRQ|
 |last_trigger|Return the time in milliseconds of the last trigger.|
 
-It should be noted that the value will be 0 when the input is 'high', and 1 when 'low'. This is simply a hardware technicality, but will not affect the use of the handler, only the .value() mathod.
-
 To use the handler method, you simply define whatever you want to happen when a button or the digital input is triggered, and then use x.handler(new_function). Do not include the brackets for the function, and replace the 'x' in the example with the name of your input, either b1, b2, or din.
 
 ## Button
@@ -70,7 +68,7 @@ To use the handler method, you simply define whatever you want to happen when a 
 | ------------- | ----------- | ----------- |
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
 |handler|Assign a new function to be used as the handler|function
-|reset_handler|Detach the handler methods from the Pin IRQ|
+|reset_handler|Detach the handler method from the Pin IRQ|
 |last_pressed|Return the time in milliseconds when the button was last pressed.|
 
 Button instances have a method `last_pressed()` which can be used to perform some action or behavior relative to when the button was last pressed. For example, if you want to display that a button was pressed, you could add the following code to your main script loop:
