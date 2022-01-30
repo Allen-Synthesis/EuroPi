@@ -24,7 +24,7 @@ This means that your device is either not connected, or not being detected.
 1. Make sure the USB cable is connected firmly to both the Pico and your computer
 2. Make sure your USB cable is capable of data transfer rather than just power
 3. Re-flash the firmware by following the process set out in the [programming instructions](/software/programming_instructions.md)
-4. Re-flash the firmware using the 'flash_nuke.uf2', and then re-flash it again using the most recent firmware
+4. Re-flash the firmware using the 'flash_nuke.uf2' found on the [Adafruit website](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython), and then re-flash it again using the most recent firmware
 
 
 ## EuroPi Hardware Error
