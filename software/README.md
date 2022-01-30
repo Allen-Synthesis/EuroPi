@@ -58,7 +58,7 @@ The Digital Input jack can detect a HIGH signal when recieving voltage > 0.8v an
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
 |handler|Define the callback function to call when rising edge detected|function
 |reset_handler|Detach the handler method from the Pin IRQ|
-|last_trigger|Return the time in milliseconds of the last trigger.|
+|last_triggered|Return the duration in milliseconds from the last trigger.|
 
 To use the handler method, you simply define whatever you want to happen when a button or the digital input is triggered, and then use x.handler(new_function). Do not include the brackets for the function, and replace the 'x' in the example with the name of your input, either b1, b2, or din.
 
@@ -69,12 +69,12 @@ To use the handler method, you simply define whatever you want to happen when a 
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
 |handler|Define the callback function to call when the button is pressed|function
 |reset_handler|Detach the handler method from the Pin IRQ|
-|last_pressed|Return the time in milliseconds when the button was last pressed.|
+|last_pressed|Return the duration in milliseconds from when the button was last pressed.|
 
 Button instances have a method `last_pressed()` which can be used to perform some action or behavior relative to when the button was last pressed. For example, if you want to display that a button was pressed, you could add the following code to your main script loop:
 
 ```python
-    if ticks_diff(ticks_ms(), b1.last_pressed()) < 2000:
+    if b1.last_pressed() < 2000:
         # Do something for two seconds after button press.
         display_button_pressed()
 ```
