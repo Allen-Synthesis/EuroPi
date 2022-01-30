@@ -67,7 +67,7 @@ To use the handler method, you simply define whatever you want to happen when a 
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
-|handler|Define the callback function to call when button is pressed|function
+|handler|Define the callback function to call when the button is pressed|function
 |reset_handler|Detach the handler method from the Pin IRQ|
 |last_pressed|Return the time in milliseconds when the button was last pressed.|
 
