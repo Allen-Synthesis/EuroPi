@@ -194,7 +194,7 @@ class DigitalReader:
         self.pin.irq(trigger=Pin.IRQ_FALLING)
     
     def _duration_since_last_rising(self):
-        """Return the duration in milliseconds from the last trigger."""
+        """Return the duration in milliseconds since the last trigger."""
         return time.ticks_diff(time.ticks_ms(), self.last_rising_ms)
 
 
@@ -204,7 +204,7 @@ class DigitalInput(DigitalReader):
         super().__init__(pin, debounce_delay)
     
     def last_triggered(self):
-        """Return the duration in milliseconds from the last trigger."""
+        """Return the duration in milliseconds since the last trigger."""
         return self._duration_since_last_rising()
 
 
@@ -214,7 +214,7 @@ class Button(DigitalReader):
         super().__init__(pin, debounce_delay)
     
     def last_pressed(self):
-        """Return the duration in milliseconds from when the button was last pressed."""
+        """Return the duration in milliseconds since the button was last pressed."""
         return self._duration_since_last_rising()
 
 
