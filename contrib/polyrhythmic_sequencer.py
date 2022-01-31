@@ -134,9 +134,12 @@ class PolyrhythmSeq:
                 cv3.on()
             if (seq1 or seq2) and seq1 != seq2:
                 cv6.on()
-            sleep_ms(10)
-            [c.off() for c in (cv2, cv3, cv5, cv6)]
             self.counter = self.counter + 1
+
+        @din.handler_falling
+        def triggers_off():
+            # Turn off all of the trigger CV outputs.
+            [c.off() for c in (cv2, cv3, cv5, cv6)]
 
     def _pitch_cv(self, note):
         return NOTES.index(note) * VOLT_PER_OCT

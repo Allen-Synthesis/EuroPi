@@ -173,8 +173,8 @@ class DigitalReader:
         self.debounce_delay = debounce_delay
 
         # Default handlers are noop callables.
-        self.rising_handler = lambda: None
-        self.falling_handler = lambda: None
+        self._rising_handler = lambda: None
+        self._falling_handler = lambda: None
 
         # IRQ event timestamps
         self.last_rising_ms = 0
@@ -186,13 +186,13 @@ class DigitalReader:
             if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) < self.debounce_delay:
                 return
             self.last_rising_ms = time.ticks_ms()
-            return self.rising_handler()
+            return self._rising_handler()
 
         elif self.value() == 0:
             if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
                 return
             self.last_falling_ms = time.ticks_ms()
-            return self.falling_handler()
+            return self._falling_handler()
 
     def _duration_since_last_rising(self):
         """Return the duration in milliseconds from the last trigger."""
@@ -209,14 +209,14 @@ class DigitalReader:
         """Define the callback func to call when rising edge detected."""
         if not callable(func):
             raise ValueError("Provided handler func is not callable")
-        self.rising_handler = func
+        self._rising_handler = func
         self.pin.irq(handler=self._bounce_wrapper)
 
     def handler_falling(self, func):
         """Define the callback func to call when falling edge detected."""
         if not callable(func):
             raise ValueError("Provided handler func is not callable")
-        self.falling_handler = func
+        self._falling_handler = func
         self.pin.irq(handler=self._bounce_wrapper)
 
     def reset_handler(self):
