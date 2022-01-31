@@ -221,6 +221,10 @@ class DigitalReader:
 
     def reset_handler(self):
         self.pin.irq(handler=None)
+    
+    def _duration_since_last_rising(self):
+        """Return the duration in milliseconds since the last trigger."""
+        return time.ticks_diff(time.ticks_ms(), self.last_rising_ms)
 
 
 class DigitalInput(DigitalReader):
@@ -239,7 +243,7 @@ class Button(DigitalReader):
         super().__init__(pin, debounce_delay)
 
     def last_pressed(self):
-        """Return the duration in milliseconds from when the button was last pressed."""
+        """Return the duration in milliseconds since the button was last pressed."""
         return self._duration_since_last_rising()
 
 

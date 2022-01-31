@@ -71,7 +71,7 @@ To use the handler method, you simply define whatever you want to happen when a 
 |handler|Define the callback function to call when the button is pressed|function
 |handler_falling|Define the callback function to call when the button is released|function
 |reset_handler|Detach the handler method from the Pin IRQ|
-|last_pressed|Return the duration in milliseconds from when the button was last pressed.|
+|last_pressed|Return the duration in milliseconds since the button was last pressed.|
 
 Button instances have a method `last_pressed()` which can be used to perform some action or behavior relative to when the button was last pressed. For example, if you want to display that a button was pressed, you could add the following code to your main script loop:
 
