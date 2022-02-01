@@ -217,7 +217,7 @@ class DigitalReader:
 
     def reset_handler(self):
         self.pin.irq(handler=None)
-    
+
 
 class DigitalInput(DigitalReader):
     """A class for handling reading of the digital input."""
