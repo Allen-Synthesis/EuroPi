@@ -4,6 +4,3 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / 'firmware'))
 sys.path.append(str(Path(__file__).parent.parent / 'firmware' / 'contrib'))
 sys.path.append(str(Path(__file__).parent.parent / 'tests' / 'mocks'))
-
-print(str(Path(__file__)))
-print(sys.path)
