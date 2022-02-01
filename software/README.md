@@ -56,7 +56,8 @@ The Digital Input jack can detect a HIGH signal when recieving voltage > 0.8v an
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
-|handler|Define the callback function to call when rising edge detected|function
+|handler|Define the callback function to call when a rising edge is detected|function
+|handler_falling|Define the callback function to call when a falling edge is detected|function
 |reset_handler|Detach the handler method from the Pin IRQ|
 |last_triggered|Return the ticks_ms of the last trigger or 0 prior to the first trigger.|
 
@@ -68,6 +69,7 @@ To use the handler method, you simply define whatever you want to happen when a 
 | ------------- | ----------- | ----------- |
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
 |handler|Define the callback function to call when the button is pressed|function
+|handler_falling|Define the callback function to call when the button is released|function
 |reset_handler|Detach the handler method from the Pin IRQ|
 |last_pressed|Return the ticks_ms of the last button press or 0 prior to the first button press.|
 
