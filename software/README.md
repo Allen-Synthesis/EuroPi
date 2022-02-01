@@ -58,7 +58,7 @@ The Digital Input jack can detect a HIGH signal when recieving voltage > 0.8v an
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
 |handler|Define the callback function to call when rising edge detected|function
 |reset_handler|Detach the handler method from the Pin IRQ|
-|last_triggered|Return the duration in milliseconds since the last trigger.|
+|since_last_triggered|Return the duration in milliseconds since the last trigger.<br/>Throws `HandlerNotYetCalled`|
 
 To use the handler method, you simply define whatever you want to happen when a button or the digital input is triggered, and then use x.handler(new_function). Do not include the brackets for the function, and replace the 'x' in the example with the name of your input, either b1, b2, or din.
 
@@ -69,14 +69,21 @@ To use the handler method, you simply define whatever you want to happen when a 
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
 |handler|Define the callback function to call when the button is pressed|function
 |reset_handler|Detach the handler method from the Pin IRQ|
-|last_pressed|Return the duration in milliseconds since the button was last pressed.|
+|since_last_pressed|Return the duration in milliseconds since the button was last pressed.<br/>Throws `HandlerNotYetCalled`|
 
 Button instances have a method `last_pressed()` which can be used to perform some action or behavior relative to when the button was last pressed. For example, if you want to display that a button was pressed, you could add the following code to your main script loop:
 
 ```python
-    if b1.last_pressed() < 2000:
+    # Inside the main loop...
+    try:
         # Do something for two seconds after button press.
-        display_button_pressed()
+        if b1.since_last_pressed() < 2000:
+            display_button_pressed()
+    except HandlerNotYetCalled:
+        # When since_last_pressed is called prior to the first button 
+        # press, there is no previous button press to compare against.
+        # Ignore this exception prior to the button being pressed.
+        pass
 ```
 
 ## OLED Display

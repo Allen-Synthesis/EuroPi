@@ -66,6 +66,12 @@ def reset_state():
     [d.reset_handler() for d in (b1, b2, din)]
 
 
+# Error Classes
+
+class HandlerNotYetCalled(Exception):
+    pass
+
+
 # Component classes.
 
 class AnalogueReader:
@@ -171,7 +177,7 @@ class DigitalReader:
     def __init__(self, pin, debounce_delay=500):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay
-        self.last_rising_ms = 0
+        self.last_rising_ms = None
 
     def value(self):
         """The current binary value, HIGH (1) or LOW (0)."""
@@ -195,6 +201,8 @@ class DigitalReader:
     
     def _duration_since_last_rising(self):
         """Return the duration in milliseconds since the last trigger."""
+        if self.last_rising_ms is None:
+            raise HandlerNotYetCalled
         return time.ticks_diff(time.ticks_ms(), self.last_rising_ms)
 
 
@@ -203,8 +211,11 @@ class DigitalInput(DigitalReader):
     def __init__(self, pin, debounce_delay=0):
         super().__init__(pin, debounce_delay)
     
-    def last_triggered(self):
-        """Return the duration in milliseconds since the last trigger."""
+    def since_last_triggered(self):
+        """Return the duration in milliseconds since the last trigger.
+        
+        Raises HandlerNotYetCalled when this method is called before the digital input receives a trigger.
+        """
         return self._duration_since_last_rising()
 
 
@@ -213,8 +224,11 @@ class Button(DigitalReader):
     def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
     
-    def last_pressed(self):
-        """Return the duration in milliseconds since the button was last pressed."""
+    def since_last_pressed(self):
+        """Return the duration in milliseconds since the button was last pressed.
+        
+        Raises HandlerNotYetCalled when this method is called before the button has been pressed.
+        """
         return self._duration_since_last_rising()
 
 
