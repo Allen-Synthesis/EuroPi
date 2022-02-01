@@ -171,7 +171,7 @@ class DigitalReader:
     def __init__(self, pin, debounce_delay=500):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay
-        self.last_pressed = 0
+        self.last_rising_ms = 0
 
     def value(self):
         """The current binary value, HIGH (1) or LOW (0)."""
@@ -183,8 +183,8 @@ class DigitalReader:
     def handler(self, func):
         """Define the callback func to call when rising edge detected."""
         def bounce_wrapper(pin):
-            if (time.ticks_ms() - self.last_pressed) > self.debounce_delay:
-                self.last_pressed = time.ticks_ms()
+            if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) > self.debounce_delay:
+                self.last_rising_ms = time.ticks_ms()
                 func()
         # Both the digital input and buttons are normally high, and 'pulled'
         # low when on, so here we use IRQ_FALLING to detect rising edge.
@@ -192,18 +192,26 @@ class DigitalReader:
 
     def reset_handler(self):
         self.pin.irq(trigger=Pin.IRQ_FALLING)
-
+    
 
 class DigitalInput(DigitalReader):
     """A class for handling reading of the digital input."""
     def __init__(self, pin, debounce_delay=0):
         super().__init__(pin, debounce_delay)
+    
+    def last_triggered(self):
+        """Return the ticks_ms of the last trigger or 0 prior to the first trigger."""
+        return self.last_rising_ms
 
 
 class Button(DigitalReader):
     """A class for handling push button behavior."""
     def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
+    
+    def last_pressed(self):
+        """Return the ticks_ms of the last button press or 0 prior to the first button press."""
+        return self.last_rising_ms
 
 
 class Display(SSD1306_I2C):

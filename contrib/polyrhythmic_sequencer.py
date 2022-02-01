@@ -41,7 +41,7 @@ try:
 except ImportError:
     # Device import path
     from europi import *
-from time import sleep_ms, ticks_add, ticks_diff, ticks_ms
+from time import sleep_ms, ticks_diff, ticks_ms
 import machine
 
 # Overclock the Pico for improved performance.
@@ -149,7 +149,7 @@ class PolyrhythmSeq:
         return int(status[1]) == 1, int(status[0]) == 1
 
     def show_menu_header(self):
-        if ticks_diff(ticks_ms(), b1.last_pressed) < MENU_DURATION:
+        if ticks_diff(ticks_ms(), b1.last_pressed()) < MENU_DURATION:
             oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
             oled.text(f"{self.pages[self.page]}", 0, 0, 0)
 
