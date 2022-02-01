@@ -189,7 +189,7 @@ class DigitalReader:
     def handler(self, func):
         """Define the callback func to call when rising edge detected."""
         def bounce_wrapper(pin):
-            if self._duration_since_last_rising() > self.debounce_delay:
+            if self.last_rising_ms is None or self._duration_since_last_rising() > self.debounce_delay:
                 self.last_rising_ms = time.ticks_ms()
                 func()
         # Both the digital input and buttons are normally high, and 'pulled'

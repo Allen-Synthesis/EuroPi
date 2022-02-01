@@ -36,6 +36,7 @@ output_6: trigger logical XOR
 try:
     # Local development
     from software.firmware.europi import OLED_WIDTH, OLED_HEIGHT, CHAR_HEIGHT
+    from software.firmware.europi import HandlerNotYetCalled
     from software.firmware.europi import din, k1, k2, oled, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6
     from software.firmware.europi import reset_state
 except ImportError:
@@ -149,9 +150,12 @@ class PolyrhythmSeq:
         return int(status[1]) == 1, int(status[0]) == 1
 
     def show_menu_header(self):
-        if b1.last_pressed() < MENU_DURATION:
-            oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
-            oled.text(f"{self.pages[self.page]}", 0, 0, 0)
+        try:
+            if b1.since_last_pressed() < MENU_DURATION:
+                oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
+                oled.text(f"{self.pages[self.page]}", 0, 0, 0)
+        except HandlerNotYetCalled:
+            pass
 
     def edit_sequence(self):
         # Display each sequence step.
