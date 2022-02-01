@@ -122,12 +122,24 @@ You can then use the inputs, outputs, knobs, and buttons as objects, and make us
 <dt class="sig sig-object py" id="europi.Button">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debounce_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Button" title="Permalink to this definition"></a></dt>
 <dd><p>A class for handling push button behavior.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="europi.Button.last_pressed">
+<span class="sig-name descname"><span class="pre">last_pressed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Button.last_pressed" title="Permalink to this definition"></a></dt>
+<dd><p>Return the ticks_ms of the last button press or 0 prior to the first button press.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="europi.DigitalInput">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">DigitalInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debounce_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalInput" title="Permalink to this definition"></a></dt>
 <dd><p>A class for handling reading of the digital input.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="europi.DigitalInput.last_triggered">
+<span class="sig-name descname"><span class="pre">last_triggered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalInput.last_triggered" title="Permalink to this definition"></a></dt>
+<dd><p>Return the ticks_ms of the last trigger or 0 prior to the first trigger.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
