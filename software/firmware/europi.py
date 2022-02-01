@@ -94,7 +94,7 @@ class AnalogueReader:
         return self._sample_adc(samples) / MAX_UINT16
 
     def range(self, steps=100, samples=None):
-        """Return a value (upper bound excluded) chosen by the current voltages relative position."""
+        """Return a value (upper bound excluded) chosen by the current voltage value."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
         percent = self.percent(samples)
@@ -103,7 +103,7 @@ class AnalogueReader:
         return int(percent * steps)
 
     def choice(self, values, samples=None):
-        """Return a value from a list chosen by the relative knob position."""
+        """Return a value from a list chosen by the current voltage value."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
         percent = self.percent(samples)
