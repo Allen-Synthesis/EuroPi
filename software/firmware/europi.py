@@ -194,10 +194,6 @@ class DigitalReader:
             self.last_falling_ms = time.ticks_ms()
             return self._falling_handler()
 
-    def _duration_since_last_rising(self):
-        """Return the duration in milliseconds from the last trigger."""
-        return time.ticks_diff(time.ticks_ms(), self.last_rising_ms)
-
     def value(self):
         """The current binary value, HIGH (1) or LOW (0)."""
         # Both the digital input and buttons are normally high, and 'pulled'
