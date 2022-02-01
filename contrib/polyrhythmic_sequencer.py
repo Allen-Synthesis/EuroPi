@@ -36,12 +36,13 @@ output_6: trigger logical XOR
 try:
     # Local development
     from software.firmware.europi import OLED_WIDTH, OLED_HEIGHT, CHAR_HEIGHT
+    from software.firmware.europi import HandlerNotYetCalled
     from software.firmware.europi import din, k1, k2, oled, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6
     from software.firmware.europi import reset_state
 except ImportError:
     # Device import path
     from europi import *
-from time import sleep_ms, ticks_add, ticks_diff, ticks_ms
+from time import sleep_ms, ticks_diff, ticks_ms
 import machine
 
 # Overclock the Pico for improved performance.
@@ -152,7 +153,7 @@ class PolyrhythmSeq:
         return int(status[1]) == 1, int(status[0]) == 1
 
     def show_menu_header(self):
-        if b1.last_pressed() < MENU_DURATION:
+        if ticks_diff(ticks_ms(), b1.last_pressed()) < MENU_DURATION:
             oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
             oled.text(f"{self.pages[self.page]}", 0, 0, 0)
 

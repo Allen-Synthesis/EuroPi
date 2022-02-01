@@ -222,10 +222,6 @@ class DigitalReader:
     def reset_handler(self):
         self.pin.irq(handler=None)
     
-    def _duration_since_last_rising(self):
-        """Return the duration in milliseconds since the last trigger."""
-        return time.ticks_diff(time.ticks_ms(), self.last_rising_ms)
-
 
 class DigitalInput(DigitalReader):
     """A class for handling reading of the digital input."""
@@ -233,8 +229,8 @@ class DigitalInput(DigitalReader):
         super().__init__(pin, debounce_delay)
 
     def last_triggered(self):
-        """Return the duration in milliseconds from the start of the last trigger."""
-        return self._duration_since_last_rising()
+        """Return the ticks_ms of the last trigger or 0 prior to the first trigger."""
+        return self.last_rising_ms
 
 
 class Button(DigitalReader):
@@ -243,8 +239,8 @@ class Button(DigitalReader):
         super().__init__(pin, debounce_delay)
 
     def last_pressed(self):
-        """Return the duration in milliseconds since the button was last pressed."""
-        return self._duration_since_last_rising()
+        """Return the ticks_ms of the last button press or 0 prior to the first button press."""
+        return self.last_rising_ms
 
 
 class Display(SSD1306_I2C):
