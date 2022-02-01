@@ -1,7 +1,5 @@
 API
 ===
 
-.. autosummary::
-   :toctree: generated
-
-   europi
+.. automodule:: europi
+   :inherited-members:
