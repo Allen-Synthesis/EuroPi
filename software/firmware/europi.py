@@ -1,9 +1,17 @@
 """
 Rory Allen 19/11/2021 Apache License Version 2.0
 
-Import this library into your own programs using ``from europi import *``
-You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
+Before using any of this library, follow the instructions in
+`programming_instructions.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/programming_instructions.md>`_
+to set up your module.
 
+The EuroPi library is a single file named europi.py. It should be imported into any custom program by using 'from europi import \*' to give you full access to the functions within, which are outlined below. Inputs and outputs are used as objects, which each have methods to allow them to be used. These methods are used by using the name of the object, for example 'cv3' followed by a '.' and then the method name, and finally a pair of brackets containing any parameters that the method requires.
+
+For example::
+
+    cv3.voltage(4.5)
+
+Will set the CV output 3 to a voltage of 4.5V.
 """
 import time
 
@@ -94,7 +102,7 @@ class AnalogueReader:
         return self._sample_adc(samples) / MAX_UINT16
 
     def range(self, steps=100, samples=None):
-        """Return a value (upper bound excluded) chosen by the current voltages relative position."""
+        """Return a value (upper bound excluded) chosen by the current voltage value."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
         percent = self.percent(samples)
@@ -103,7 +111,7 @@ class AnalogueReader:
         return int(percent * steps)
 
     def choice(self, values, samples=None):
-        """Return a value from a list chosen by the relative knob position."""
+        """Return a value from a list chosen by the current voltage value."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
         percent = self.percent(samples)
@@ -113,8 +121,21 @@ class AnalogueReader:
 
 
 class AnalogueInput(AnalogueReader):
-    """A class for handling the reading of analogue control voltage."""
+    """A class for handling the reading of analogue control voltage.
+    
+    The analogue input allows you to 'read' CV from anywhere between 0 and 12V.
 
+    It is protected for the entire Eurorack range, so don't worry about
+    plugging in a bipolar source, it will simply be clipped to 0-12V.
+
+    The functions all take an optional parameter of ``samples``, which will
+    oversample the ADC and then take an average, which will take more time per
+    reading, but will give you a statistically more accurate result. The
+    default is 32, provides a balance of performance vs accuracy, but if you
+    want to process at the maximum speed you can use as little as 1, and the
+    processor won't bog down until you get way up into the thousands if you
+    wan't incredibly accurate (but quite slow) readings.
+    """
     def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
         super().__init__(pin)
         self.MIN_VOLTAGE = min_voltage
@@ -150,7 +171,24 @@ class AnalogueInput(AnalogueReader):
 
 
 class Knob(AnalogueReader):
-    """A class for handling the reading of knob voltage and position."""
+    """A class for handling the reading of knob voltage and position.
+    
+    Read_position has a default value of 100, meaning if you simply use 
+    ``kx.read_position()`` you will return a percent style value from 0-100.
+
+    There is also the optional parameter of samples (which must come after the
+    normal parameter), the same as the analogue input uses (the knob positions
+    are 'read' via an analogue to digital converter). It has a default value
+    of 256, but you can use higher or lower depending on if you value speed or
+    accuracy more. If you really want to avoid 'noise' which would present as
+    a flickering value despite the knob being still, then I'd suggest using
+    higher samples (and probably a smaller number to divide the position by).
+
+    The ADCs used to read the knob position are only 12 bit, which means that
+    any read_position value above 4096 (2^12) will not actually be any finer
+    resolution, but will instead just go up in steps. For example using 8192
+    would only return values which go up in steps of 2.
+    """
 
     def __init__(self, pin):
         super().__init__(pin)
@@ -220,7 +258,17 @@ class DigitalReader:
 
 
 class DigitalInput(DigitalReader):
-    """A class for handling reading of the digital input."""
+    """A class for handling reading of the digital input.
+    
+    The Digital Input jack can detect a HIGH signal when recieving voltage >
+    0.8v and will be LOW when below.
+
+    To use the handler method, you simply define whatever you want to happen
+    when a button or the digital input is triggered, and then use
+    ``x.handler(new_function)``. Do not include the brackets for the function,
+    and replace the 'x' in the example with the name of your input, either
+    ``b1``, ``b2``, or ``din``.
+    """
     def __init__(self, pin, debounce_delay=0):
         super().__init__(pin, debounce_delay)
 
@@ -230,7 +278,21 @@ class DigitalInput(DigitalReader):
 
 
 class Button(DigitalReader):
-    """A class for handling push button behavior."""
+    """A class for handling push button behavior.
+    
+    Button instances have a method last_pressed() 
+    (similar to ``DigitalInput.last_triggered()``) which can be used to perform
+    some action or behavior relative to when the button was last pressed 
+    (or input trigger received). For example, if you want to display a message
+    that a button was pressed, you could add the following code to your main
+    script loop::
+
+        # Inside the main loop...
+        if b1.last_pressed() > 0 and ticks_diff(ticks_ms(), b1.last_pressed()) < 2000:
+            # Call this during the 2000 ms duration after button press.
+            display_button_pressed()
+    
+    """
     def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
 
@@ -240,7 +302,17 @@ class Button(DigitalReader):
 
 
 class Display(SSD1306_I2C):
-    """A class for drawing graphics and text to the OLED."""
+    """A class for drawing graphics and text to the OLED.
+    
+    The OLED Display works by collecting all the applied commands and only
+    updates the physical display when ``oled.show()`` is called. This allows
+    you to perform more complicated graphics without slowing your program, or
+    to perform the calculations for other functions, but only update the 
+    display every few steps to prevent lag.
+
+    More explanations and tips about the the display can be found in the oled_tips file
+    `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
+    """
     def __init__(self, sda, scl, width=OLED_WIDTH, height=OLED_HEIGHT, channel=I2C_CHANNEL, freq=I2C_FREQUENCY):
         i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
@@ -279,7 +351,15 @@ class Display(SSD1306_I2C):
 
 
 class Output:
-    """A class for sending digital or analogue voltage to an output jack."""
+    """A class for sending digital or analogue voltage to an output jack.
+    
+    The outputs are capable of providing 0-10V, which can be achieved using 
+    the ``cvx.voltage()`` method.
+
+    So that there is no chance of not having the full range, the chosen
+    resistor values actually give you a range of about 0-10.5V, which is why
+    calibration is important if you want to be able to output precise voltages.
+    """
     def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
         self.pin = PWM(Pin(pin))
         # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
