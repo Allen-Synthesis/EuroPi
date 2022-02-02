@@ -8,7 +8,7 @@ Inputs and outputs are used as objects, which each have methods to allow them to
 These methods are used by using the name of the object, for example 'cv3' followed by a '.' and then the method name, and finally a pair of brackets containing any parameters that the method requires.
 
 For example:
-```
+```python
 cv3.voltage(4.5)
 ```
 Will set the CV output 3 to a voltage of 4.5V.
@@ -49,21 +49,38 @@ If you really want to avoid 'noise' which would present as a flickering value de
 The ADCs used to read the knob position are only 12 bit, which means that any read_position value above 4096 (2^12) will not actually be any finer resolution, but will instead just go up in steps. For example using 8192 would only return values which go up in steps of 2.
 
 
-## Digital Input and Buttons
+## Digital Input
 
-It may seem a little strange to see the digital input and buttons grouped together, but if you think about it, all the button is doing is create an internal digital input when you press it. For this reason, the method for handling the event that should happen when either a button is pressed or a digital input detected is the same.
-
-A class is used named 'DigitalInput' in the europi.py library, which handles both the debounce (only used for buttons) and the handler (what happens when a press/input is detected).
+The Digital Input jack can detect a HIGH signal when recieving voltage > 0.8v and will be LOW when below.
 
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
 |value|Reads the current value of the input, HIGH (1) or LOW (0).|
-|handler|Assign a new function to be used as the handler|function
+|handler|Define the callback function to call when a rising edge is detected|function
+|handler_falling|Define the callback function to call when a falling edge is detected|function
 |reset_handler|Detach the handler method from the Pin IRQ|
-
-It should be noted that the value will be 0 when the input is 'high', and 1 when 'low'. This is simply a hardware technicality, but will not affect the use of the handler, only the .value() mathod.
+|last_triggered|Return the ticks_ms of the last trigger or 0 prior to the first trigger.|
 
 To use the handler method, you simply define whatever you want to happen when a button or the digital input is triggered, and then use x.handler(new_function). Do not include the brackets for the function, and replace the 'x' in the example with the name of your input, either b1, b2, or din.
+
+## Button
+
+| Method        | Usage       | Parameter(s)       |
+| ------------- | ----------- | ----------- |
+|value|Reads the current value of the input, HIGH (1) or LOW (0).|
+|handler|Define the callback function to call when the button is pressed|function
+|handler_falling|Define the callback function to call when the button is released|function
+|reset_handler|Detach the handler method from the Pin IRQ|
+|last_pressed|Return the ticks_ms of the last button press or 0 prior to the first button press.|
+
+Button instances have a method `last_pressed()` (similar to `DigitalInput.last_triggered()`) which can be used to perform some action or behavior relative to when the button was last pressed (or input trigger received). For example, if you want to display a message that a button was pressed, you could add the following code to your main script loop:
+
+```python
+    # Inside the main loop...
+    if b1.last_pressed() > 0 and ticks_diff(ticks_ms(), b1.last_pressed()) < 2000:
+        # Call this during the 2000 ms duration after button press.
+        display_button_pressed()
+```
 
 ## OLED Display
 
@@ -72,16 +89,17 @@ This allows you to perform more complicated graphics without slowing your progra
 
 More explanations and tips about the the display can be found in the [oled_tips](/software/oled_tips.md) file
 
+
 ## Outputs
 
-The outputs are capable of providing 0-10V, which can be achieved using either the *voltage()* methods.
+The outputs are capable of providing 0-10V, which can be achieved using the *voltage()* method
 
 So that there is no chance of not having the full range, the chosen resistor values actually give you a range of about 0-10.5V, which is why calibration is important if you want to be able to output precise voltages.
 
 | Method        | Usage       | Parameter(s)       |
 | ------------- | ----------- | ----------- |
-|voltage|Sets the output to a fixed voltage|voltage (int between 0 and 10)
+|voltage|Sets the output to a fixed voltage|voltage (0.0 to 10.0)
 |on|Sets the output to 5V|
 |off|Sets the output to 0V|
 |toggle|'Flip' the output between 0V or 5V depending on current state|
-|value|Sets the output to 0V or 5V based on a binary input| 0 or 1
+|value|Sets the output to 0V or 5V based on a binary input|0 or 1

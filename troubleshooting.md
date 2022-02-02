@@ -24,7 +24,7 @@ This means that your device is either not connected, or not being detected.
 1. Make sure the USB cable is connected firmly to both the Pico and your computer
 2. Make sure your USB cable is capable of data transfer rather than just power
 3. Re-flash the firmware by following the process set out in the [programming instructions](/software/programming_instructions.md)
-4. Re-flash the firmware using the 'flash_nuke.uf2', and then re-flash it again using the most recent firmware
+4. Re-flash the firmware using the 'flash_nuke.uf2' found on the [Adafruit website](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython), and then re-flash it again using the most recent firmware
 
 
 ## EuroPi Hardware Error
@@ -39,7 +39,7 @@ This means that the Pico cannot detect the OLED display.
 1. Make sure that the solder joints between the OLED board and the PCB are secure and free of dirt
 2. If you have a multimeter, test the continuity of each pin with the appropriate pin on the Pico according to [the pinout](hardware/europi_pinout.pdf)
 3. Make sure your PCB standoffs are screwed on tightly; if the two board slip apart by any more than a millimetre or two then the connection will not be made
-4. Make sure your OLED matches one of the two compatible pin configurations as outlined in the [build guide](https://github.com/roryjamesallen/EuroPi/blob/main/hardware/build_guide.md#oled-configuration)
+4. Make sure your OLED matches one of the two compatible pin configurations as outlined in the [build guide](hardware/build_guide.md#oled-configuration)
 
 
 ## Backend terminated or disconnected

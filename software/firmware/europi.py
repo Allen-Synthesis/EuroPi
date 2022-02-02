@@ -1,11 +1,11 @@
 """
 Rory Allen 19/11/2021 Apache License Version 2.0
 
-Import this library into your own programs using 'from europi import *'
+Import this library into your own programs using ``from europi import *``
 You can then use the inputs, outputs, knobs, and buttons as objects, and make use of the general purpose functions
 
 """
-from time import ticks_ms
+import time
 
 from machine import ADC
 from machine import I2C
@@ -15,7 +15,13 @@ from machine import Pin
 from ssd1306 import SSD1306_I2C
 
 try:
-    from calibration import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
+    import micropython
+    TEST_ENV = False # We're in micropython, so we can assume access to real hardware
+except ModuleNotFoundError:
+    TEST_ENV = True # This var is set when we don't have any real hardware, for example in a test or doc generation setting
+
+try:
+    from calibration_values import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
 except ImportError:
     # Note: run calibrate.py to get a more precise calibration.
     INPUT_CALIBRATION_VALUES=[384, 44634]
@@ -54,7 +60,8 @@ def clamp(value, low, high):
 
 def reset_state():
     """Return device to initial state with all components off and handlers reset."""
-    oled.clear()
+    if not TEST_ENV:
+        oled.clear()
     [cv.off() for cv in cvs]
     [d.reset_handler() for d in (b1, b2, din)]
 
@@ -164,7 +171,28 @@ class DigitalReader:
     def __init__(self, pin, debounce_delay=500):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay
-        self.last_pressed = 0
+
+        # Default handlers are noop callables.
+        self._rising_handler = lambda: None
+        self._falling_handler = lambda: None
+
+        # IRQ event timestamps
+        self.last_rising_ms = 0
+        self.last_falling_ms = 0
+
+    def _bounce_wrapper(self, pin):
+        """IRQ handler wrapper for falling and rising edge callback functions."""
+        if self.value() == 1:
+            if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) < self.debounce_delay:
+                return
+            self.last_rising_ms = time.ticks_ms()
+            return self._rising_handler()
+
+        elif self.value() == 0:
+            if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
+                return
+            self.last_falling_ms = time.ticks_ms()
+            return self._falling_handler()
 
     def value(self):
         """The current binary value, HIGH (1) or LOW (0)."""
@@ -175,16 +203,20 @@ class DigitalReader:
 
     def handler(self, func):
         """Define the callback func to call when rising edge detected."""
-        def bounce_wrapper(pin):
-            if (ticks_ms() - self.last_pressed) > self.debounce_delay:
-                self.last_pressed = ticks_ms()
-                func()
-        # Both the digital input and buttons are normally high, and 'pulled'
-        # low when on, so here we use IRQ_FALLING to detect rising edge.
-        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce_wrapper)
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._rising_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
+
+    def handler_falling(self, func):
+        """Define the callback func to call when falling edge detected."""
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._falling_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
 
     def reset_handler(self):
-        self.pin.irq(trigger=Pin.IRQ_FALLING)
+        self.pin.irq(handler=None)
 
 
 class DigitalInput(DigitalReader):
@@ -192,11 +224,19 @@ class DigitalInput(DigitalReader):
     def __init__(self, pin, debounce_delay=0):
         super().__init__(pin, debounce_delay)
 
+    def last_triggered(self):
+        """Return the ticks_ms of the last trigger or 0 prior to the first trigger."""
+        return self.last_rising_ms
+
 
 class Button(DigitalReader):
     """A class for handling push button behavior."""
     def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
+
+    def last_pressed(self):
+        """Return the ticks_ms of the last button press or 0 prior to the first button press."""
+        return self.last_rising_ms
 
 
 class Display(SSD1306_I2C):
@@ -207,8 +247,9 @@ class Display(SSD1306_I2C):
         self.height = height
 
         if len(i2c.scan()) == 0:
-            raise Exception(
-                "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
+            if not TEST_ENV:
+                raise Exception(
+                    "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
 
         super().__init__(self.width, self.height, i2c)
 
@@ -246,12 +287,12 @@ class Output:
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
-        
+
         self._gradients = []
         for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
             self._gradients.append(OUTPUT_CALIBRATION_VALUES[index+1] - value)
         self._gradients.append(self._gradients[-1])
-        
+
 
     def _set_duty(self, cycle):
         cycle = int(cycle)
@@ -262,7 +303,7 @@ class Output:
         """Set the output voltage to the provided value within the range of 0 to 10."""
         if voltage is None:
             return self._duty / MAX_UINT16
-        
+
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
         for index, current_gradient in enumerate(self._gradients):
             if (voltage // 1) >= index:
@@ -310,6 +351,3 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
-
-
-

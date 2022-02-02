@@ -1,41 +1,73 @@
-from europi import AnalogueInput, MAX_UINT16
-from machine import Pin, PWM, freq
+from machine import Pin, ADC, PWM, freq
+from time import sleep
+from europi import oled, b1, b2
 
 # Overclock for faster calibration
 freq(250_000_000)
 
-ain = AnalogueInput(26)
+
+ain = ADC(Pin(26, Pin.IN, Pin.PULL_DOWN))
 cv1 = PWM(Pin(21))
+usb = Pin(24, Pin.IN)
 
-
-def wait_for_voltage(voltage):
-    if voltage != 0:
-        input(f"\nPlease plug {voltage}V into the CV input and then press Enter")
-    else:
-        input('\nPlease unplug all cables and then press Enter')
-    print('\n Calibrating...')
+def sample():
     readings = []
     for reading in range(256):
-        readings.append(ain.pin.read_u16())
+        readings.append(ain.read_u16())
     return round(sum(readings)/256)
 
+def wait_for_voltage(voltage):
+    wait_for_b1(0)
+    if voltage != 0:
+        oled.centre_text(f'Plug in {voltage}V\n\nDone: Button 1')
+        wait_for_b1(1)
+    else:
+        oled.centre_text(f'Unplug all\n\nDone: Button 1')
+        wait_for_b1(1)
+    oled.centre_text('Calibrating...')
+    sleep(1.5)
+    return sample()
 
-## Input Calibration 
+def text_wait(text, wait):
+    oled.centre_text(text)
+    sleep(wait)
 
-chosen_process = ''
-print("""
-There are two options for running the calibration process, 1 and 2
+def fill_show(colour):
+    oled.fill(colour)
+    oled.show()
 
-1. Low accuracy (Only requires 10V)
-2. High accuracy (Requires adjustable voltage source)
+def flash(flashes, period):
+    for flash in range(flashes):
+        fill_show(1)
+        sleep(period/2)
+        fill_show(0)
+        sleep(period/2)
 
-Please type your chosen calibration process to choose it""")
-while chosen_process not in ['1','2']:
-    chosen_process = input('\n> ')
-    if chosen_process not in ['1','2']:
-        print("\n\033[1;31;48mPlease choose a value from the list, either 1 or 2\033[0m")
+def wait_for_b1(value):
+    while b1.value() != value:
+        sleep(0.05)
 
-chosen_process = int(chosen_process)
+
+# Calibration start
+
+if usb.value() == 1:
+    oled.centre_text('Make sure rack\npower is on\nDone: Button 1')
+    wait_for_b1(1)
+    wait_for_b1(0)
+
+text_wait('Calibration\nMode', 3)
+
+oled.centre_text('Choose Process\n\n1         2')
+while True:
+    if b1.value() == 1:
+        chosen_process = 1
+        break
+    elif b2.value() == 1:
+        chosen_process = 2
+        break
+
+
+# Input calibration
 
 readings = []
 if chosen_process == 1:
@@ -45,34 +77,41 @@ else:
     for voltage in range(11):
         readings.append(wait_for_voltage(voltage))
 
-with open(f'lib/calibration.py', 'w') as file:
+with open(f'lib/calibration_values.py', 'w') as file:
     values = ", ".join(map(str, readings))
     file.write(f"INPUT_CALIBRATION_VALUES=[{values}]")
-print(f'\n{readings}\n')
 
 
-## Output Calibration
+# Output Calibration
+
+oled.centre_text(f'Plug CV1 into\nanalogue in\nDone: Button 1')
+wait_for_b1(1)
+oled.centre_text('Calibrating...')
+
+if chosen_process == 1:
+    new_readings = [readings[0]]
+    m = (readings[1] - readings[0]) / 10
+    c = readings[0]
+    for x in range(1,10):
+        new_readings.append(round((m * x) + c))
+    new_readings.append(readings[1])
+    readings = new_readings
 
 output_duties = [0]
 duty = 0
-reading = 0
-step = 25
-input('\nPlease plug CV output 1 into the analogue input and then press Enter')
-for voltage in range(1,11):
-    while abs(reading - voltage) > 0.005 and reading < voltage:
-        if duty > MAX_UINT16:
-            print(f'{output_duties}')
-            raise Exception(f"The module failed to output {voltage}v. Last voltage reading: {reading}v")
+cv1.duty_u16(duty)
+reading = sample()
+for index, expected_reading in enumerate(readings[1:]):
+    while abs(reading - expected_reading) > 0.002 and reading < expected_reading:
         cv1.duty_u16(duty)
-        duty += step
-        reading = round(ain.read_voltage(), 2)
+        duty += 10
+        reading = sample()
     output_duties.append(duty)
-    print(f'\n{voltage}V')
+    oled.centre_text(f'Calibrating...\n{index+1}V')
 
-print(f'\n{output_duties}')
-
-with open(f'lib/calibration.py', 'a+') as file:
+with open(f'lib/calibration_values.py', 'a+') as file:
     values = ", ".join(map(str, output_duties))
     file.write(f"\nOUTPUT_CALIBRATION_VALUES=[{values}]")
 
-print('\nCalibration Complete!')
+
+oled.centre_text('Calibration\nComplete!')
