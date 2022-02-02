@@ -1,5 +1,6 @@
 from europi import *
 from random import randint
+from time import sleep
 
 # Reset EuroPi to a default state
 # Clears the screen, sets all CV outputs to 0v and resets the handlers for buttons and digital input
@@ -19,7 +20,9 @@ while True:
     delay = 1 - (k1.read_position(100)/100)
 
     # Write the delay between cycles to the screen
-    oled.centre_text("Step: " + str(step), " Delay: " + str(delay))
+    oled.clear()
+    oled.text("Step: " + str(step),0,0,1)
+    oled.text("Delay: " + str(delay),0,10,1)
     oled.show()
 
     # Set level to 5v
