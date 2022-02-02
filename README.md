@@ -29,9 +29,15 @@ You can find more about this (including a project diary) and other projects of m
 * The power supply is now diode protected to prevent back-powering your rack when the module is connected via USB
 * All jacks are protected from overvoltage input (previously the Pico GPIO pin was directly exposed to any input, potentially leading to damage)
 
-Please see the README.md files in the hardware and software folders for more specific information about each, including hardware specifications and how to use the [europi.py](software/firmware/europi.py) library. Additional API documentation
-can be found [here](https://allen-synthesis.github.io/EuroPi/).
+### Documentation
 
+**Hardware**: Details of the hardware can be found at [hardware/README.md](). Additionally the [BoM](hardware/bill_of_materials.md) and the [build guild](hardware/bill_of_materials.md) can be found in the hardware folder.
+
+**Software**: Before using any of the software, follow the instructions in [programming_instructions.md](software/programming_instructions.md) to set up and calibrate your module.
+
+The EuroPi firmware API documentation can be found at https://allen-synthesis.github.io/EuroPi/. This documentation will explain all of the available features of the EuroPi firmware API. It also includes some examples of how to use various features of the firmware as well as [interesting_things.md](software/interesting_things.md).
+
+If you would like to extend any of the features of the EuroPi software, you can view the firmware source code at [europi.py](software/firmware/europi.py).
 
 ### Issues
 If you find any bugs, either in the software, the hardware, or the documentation, please create an Issue by clicking the 'Issue' tab along the top.  
