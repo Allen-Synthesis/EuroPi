@@ -11,6 +11,4 @@ clean:
 
 deploy_firmware: clean
 	# requires rshell  https://github.com/dhylands/rshell
-	 rshell rsync software/firmware /pyboard/lib
-	 rshell 'repl ~ import machine ~ machine.soft_reset()~'
-
+	rshell -f scripts/deploy_firmware.rshell
