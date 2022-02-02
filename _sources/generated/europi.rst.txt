@@ -3,3 +3,4 @@
 
 .. automodule:: europi
     :members:
+    :inherited-members:
