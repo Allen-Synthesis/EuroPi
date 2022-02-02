@@ -41,7 +41,7 @@ try:
 except ImportError:
     # Device import path
     from europi import *
-from time import sleep_ms, ticks_add, ticks_diff, ticks_ms
+from time import sleep_ms, ticks_diff, ticks_ms
 import machine
 
 # Overclock the Pico for improved performance.
@@ -134,9 +134,12 @@ class PolyrhythmSeq:
                 cv3.on()
             if (seq1 or seq2) and seq1 != seq2:
                 cv6.on()
-            sleep_ms(10)
-            [c.off() for c in (cv2, cv3, cv5, cv6)]
             self.counter = self.counter + 1
+
+        @din.handler_falling
+        def triggers_off():
+            # Turn off all of the trigger CV outputs.
+            [c.off() for c in (cv2, cv3, cv5, cv6)]
 
     def _pitch_cv(self, note):
         return NOTES.index(note) * VOLT_PER_OCT
@@ -149,7 +152,7 @@ class PolyrhythmSeq:
         return int(status[1]) == 1, int(status[0]) == 1
 
     def show_menu_header(self):
-        if ticks_diff(ticks_ms(), b1.last_pressed) < MENU_DURATION:
+        if ticks_diff(ticks_ms(), b1.last_pressed()) < MENU_DURATION:
             oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
             oled.text(f"{self.pages[self.page]}", 0, 0, 0)
 

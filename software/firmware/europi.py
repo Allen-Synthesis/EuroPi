@@ -209,7 +209,28 @@ class DigitalReader:
     def __init__(self, pin, debounce_delay=500):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay
-        self.last_pressed = 0
+
+        # Default handlers are noop callables.
+        self._rising_handler = lambda: None
+        self._falling_handler = lambda: None
+
+        # IRQ event timestamps
+        self.last_rising_ms = 0
+        self.last_falling_ms = 0
+
+    def _bounce_wrapper(self, pin):
+        """IRQ handler wrapper for falling and rising edge callback functions."""
+        if self.value() == 1:
+            if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) < self.debounce_delay:
+                return
+            self.last_rising_ms = time.ticks_ms()
+            return self._rising_handler()
+
+        elif self.value() == 0:
+            if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
+                return
+            self.last_falling_ms = time.ticks_ms()
+            return self._falling_handler()
 
     def value(self):
         """The current binary value, HIGH (1) or LOW (0)."""
@@ -220,16 +241,20 @@ class DigitalReader:
 
     def handler(self, func):
         """Define the callback func to call when rising edge detected."""
-        def bounce_wrapper(pin):
-            if (time.ticks_ms() - self.last_pressed) > self.debounce_delay:
-                self.last_pressed = time.ticks_ms()
-                func()
-        # Both the digital input and buttons are normally high, and 'pulled'
-        # low when on, so here we use IRQ_FALLING to detect rising edge.
-        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=bounce_wrapper)
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._rising_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
+
+    def handler_falling(self, func):
+        """Define the callback func to call when falling edge detected."""
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._falling_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
 
     def reset_handler(self):
-        self.pin.irq(trigger=Pin.IRQ_FALLING)
+        self.pin.irq(handler=None)
 
 
 class DigitalInput(DigitalReader):
@@ -246,6 +271,10 @@ class DigitalInput(DigitalReader):
     """
     def __init__(self, pin, debounce_delay=0):
         super().__init__(pin, debounce_delay)
+
+    def last_triggered(self):
+        """Return the ticks_ms of the last trigger or 0 prior to the first trigger."""
+        return self.last_rising_ms
 
 
 class Button(DigitalReader):
@@ -266,6 +295,10 @@ class Button(DigitalReader):
     """
     def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
+
+    def last_pressed(self):
+        """Return the ticks_ms of the last button press or 0 prior to the first button press."""
+        return self.last_rising_ms
 
 
 class Display(SSD1306_I2C):
@@ -398,6 +431,3 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
-
-
-
