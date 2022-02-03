@@ -5,7 +5,7 @@ Before using any of this library, follow the instructions in
 `programming_instructions.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/programming_instructions.md>`_
 to set up your module.
 
-The EuroPi library is a single file named europi.py. It should be imported into any custom program by using 'from europi import \*' to give you full access to the functions within, which are outlined below. Inputs and outputs are used as objects, which each have methods to allow them to be used. These methods are used by using the name of the object, for example 'cv3' followed by a '.' and then the method name, and finally a pair of brackets containing any parameters that the method requires.
+The EuroPi library is a single file named europi.py. It should be imported into any custom program by using ``from europi import *`` to give you full access to the functions within, which are outlined below. Inputs and outputs are used as objects, which each have methods to allow them to be used. These methods are used by using the name of the object, for example 'cv3' followed by a '.' and then the method name, and finally a pair of brackets containing any parameters that the method requires.
 
 For example::
 
