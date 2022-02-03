@@ -63,9 +63,7 @@ class mainClass:
         self.clock_division = 1
         self.pattern = 0
         self.random_HH = False
-        self.running = False
-        self.stopped_count = 0
-
+        self.last_clock_input = 0
         # ------------------------
         # Pre-loaded patterns
         # ------------------------
@@ -153,16 +151,17 @@ class mainClass:
         # Triggered on each clock into digital input. Output triggers.
         @din.handler
         def clockTrigger():
-            self.setClockDivision()
+            #self.setClockDivision()
             self.updateScreen()
+            self.last_clock_input = ticks_ms()
             
             if self.clock_step % self.clock_division == 0:
                 
                 # Prevent the pattern number from going higher than the max number of patterns
-                if k2.read_position() <= len(self.BD):
+                if k2.read_position() <= len(self.BD)-1:
                     self.pattern = k2.read_position()
                 else:
-                    self.pattern = len(self.BD)
+                    self.pattern = len(self.BD)-1
 
                 cv1.value(int(self.BD[self.pattern][self.step]))
                 cv2.value(int(self.SN[self.pattern][self.step]))
@@ -194,15 +193,13 @@ class mainClass:
     
     def main(self):
         while True:
-            self.setClockDivision()
+            #self.setClockDivision()
             self.updateScreen()
-            # If I have been stopped for 10 cycles, reset the steps and clock_step to 0
-            if not self.running:
-                self.stopped_count += 1
-                if self.stopped_count == 10:
-                    self.step = 0
-                    self.stopped_count = 0
-                    self.clock_step = 0
+            self.reset_timeout = 500
+            # If I have been stopped for longer than reset_timeout, reset the steps and clock_step to 0
+            if ticks_diff(ticks_ms(), self.last_clock_input) > self.reset_timeout:
+                self.step = 0
+                self.clock_step = 0
             sleep_ms(100)
 
     def setClockDivision(self):
@@ -230,8 +227,9 @@ class mainClass:
 
     def updateScreen(self):
         oled.clear()
-        oled.text('S:' + str(self.step) + ' ' + 'CD:' + str(self.clock_division), 0, 0, 1)
-        oled.text('Pattern: ' + str(self.pattern) + ' / ' + len(self.BD), 0, 10, 1)
+        #oled.text('S:' + str(self.step) + ' ' + 'CD:' + str(self.clock_division), 0, 0, 1)
+        oled.text('S:' + str(self.step) + ' ', 0, 0, 1)
+        oled.text('Pattern: ' + str(self.pattern) + ' / ' + str(len(self.BD)-1), 0, 10, 1)
         oled.text('HHR: ' + str(self.random_HH), 0, 20, 1)
         oled.show()
 
@@ -239,5 +237,3 @@ class mainClass:
 reset_state()
 ct = mainClass()
 ct.main()
-
-
