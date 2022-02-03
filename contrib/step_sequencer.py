@@ -19,7 +19,7 @@ Knob 1 can also be used as a clock divider.
 digital_in: clock in
 analog_in: unused
 
-knob_1: clock divider (1,2,3,4,5,6,7,8,16,32)
+knob_1: unused
 knob_2: select pre-loaded drum pattern
 
 button_1: toggle randomized hi-hats on / off
@@ -41,7 +41,7 @@ To do / Ideas:
 - Add a ratchet function
 - Provide auto-generated CV waves/Random from outputs 4-6
 - Reduce screen flicker
-- Auto reset when the clock-input stops
+- Change pattern using analogue input
 '''
 
 # Overclock the Pico for improved performance.
@@ -64,6 +64,7 @@ class mainClass:
         self.pattern = 0
         self.random_HH = False
         self.last_clock_input = 0
+        self.randomness = 0
         # ------------------------
         # Pre-loaded patterns
         # ------------------------
@@ -157,25 +158,30 @@ class mainClass:
             
             if self.clock_step % self.clock_division == 0:
                 
-                # Prevent the pattern number from going higher than the max number of patterns
-                if k2.read_position() <= len(self.BD)-1:
-                    self.pattern = k2.read_position()
-                else:
-                    self.pattern = len(self.BD)-1
+                self.getPattern()
+                self.getRandomness()
 
-                cv1.value(int(self.BD[self.pattern][self.step]))
-                cv2.value(int(self.SN[self.pattern][self.step]))
-
-                # If randomize HH is ON:
-                if self.random_HH:
-                    self.t=''
-                    self.p=[]
-                    for i in range(0, self.step_length):
-                        self.t += str(randint(0, 1))
-                    self.p.append(self.t)
-                    cv3.value(int(self.p[0][self.step]))
+                # How much randomness to add?
+                # As the randomness value gets higher, the chance of a randomly select int being lower gets higher
+                if randint(0,99) < self.randomness:
+                    cv1.value(randint(0, 1))
+                    cv2.value(randint(0, 1))
+                    cv3.value(randint(0, 1))
                 else:
-                    cv3.value(int(self.HH[self.pattern][self.step]))
+                    cv1.value(int(self.BD[self.pattern][self.step]))
+                    cv2.value(int(self.SN[self.pattern][self.step]))                    
+
+                    # If randomize HH is ON:
+                    if self.random_HH:
+                        self.t=''
+                        self.p=[]
+                        for i in range(0, self.step_length):
+                            self.t += str(randint(0, 1))
+                        self.p.append(self.t)
+                        cv3.value(int(self.p[0][self.step]))
+                    else:
+                        cv3.value(int(self.HH[self.pattern][self.step]))
+                
                 sleep_ms(self.trigger_duration_ms)
                 cv1.off()
                 cv2.off()
@@ -191,9 +197,21 @@ class mainClass:
             else:
                 self.step = 0
     
+    def getPattern(self):
+        # Prevent the pattern number from going higher than the max number of patterns
+        if k2.read_position() <= len(self.BD)-1:
+            self.pattern = k2.read_position()
+        else:
+            self.pattern = len(self.BD)-1        
+
+    def getRandomness(self):
+        self.randomness = k1.read_position()
+
     def main(self):
         while True:
             #self.setClockDivision()
+            self.getPattern()
+            self.getRandomness()
             self.updateScreen()
             self.reset_timeout = 500
             # If I have been stopped for longer than reset_timeout, reset the steps and clock_step to 0
@@ -228,7 +246,7 @@ class mainClass:
     def updateScreen(self):
         oled.clear()
         #oled.text('S:' + str(self.step) + ' ' + 'CD:' + str(self.clock_division), 0, 0, 1)
-        oled.text('S:' + str(self.step) + ' ', 0, 0, 1)
+        oled.text('S:' + str(self.step) + ' ' + 'R: ' + str(self.randomness), 0, 0, 1)
         oled.text('Pattern: ' + str(self.pattern) + ' / ' + str(len(self.BD)-1), 0, 10, 1)
         oled.text('HHR: ' + str(self.random_HH), 0, 20, 1)
         oled.show()
