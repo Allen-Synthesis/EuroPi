@@ -20,8 +20,8 @@ You can then build the documentation locally with:
  $ make docs
  ```
 
-If successful, the built docs will end up in ``$EUROPI_DIR/docs/_build/html/``, and the docs can be viewed by opening
-the [index.html file](index) in your browser.
+If successful, the built docs will end up in ``docs/_build/html/``, and the docs can be viewed by opening
+the ``index.html`` file in your browser.
 
 
 If necessary, you can remove the generated docs with:
@@ -45,12 +45,13 @@ See the root level Makefile for details on the exact command and options we are 
  ### Updating the doc build process requirements
 
 Occasionally, a new requirement is added, or an existing requirement needs to be updated. To do so, first add or update
-the requirement in ``docs/requirements.in``. Be sure that any newly added requirements are pinned to a specific version.
-Then, regenerate the ``requirements.txt`` by executing the tool ``pip-compile`` in the ``docs`` directory:
+the requirements in ``docs/requirements.in``. Be sure that any newly added requirements are pinned to a specific version.
+Then, regenerate the ``docs/requirements.txt`` file by executing the tool ``pip-compile``:
 
 ```console
-$ cd docs
-$ pip-compile requirements.in
+$ pip-compile docs/requirements.in
 ```
+``pip-compile`` is part of the ``pip-tools`` package and can be installed with the other development requirements by
+following the instructions in the [software README](../software/README.md).
 
-Both the ``requirements.in`` and the generated ``requirements.txt`` files should be committed.
+Both the ``docs/requirements.in`` and the generated ``docs/requirements.txt`` files should be committed.
