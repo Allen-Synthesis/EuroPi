@@ -41,6 +41,7 @@ To do / Ideas:
 - Add a ratchet function
 - Provide auto-generated CV waves/Random from outputs 4-6
 - Reduce screen flicker
+- Auto reset when the clock-input stops
 '''
 
 # Overclock the Pico for improved performance.
@@ -62,8 +63,14 @@ class mainClass:
         self.clock_division = 1
         self.pattern = 0
         self.random_HH = False
+        self.running = False
+        self.stopped_count = 0
 
         # Pre-loaded patterns
+        self.BD.append("1000100010001000")
+        self.SN.append("0000000000000000")
+        self.HH.append("0000000000000000")
+
         self.BD.append("1000100010001000")
         self.SN.append("0000100000000000")
         self.HH.append("0001000000000000")
@@ -79,6 +86,32 @@ class mainClass:
         self.BD.append("1000100010001000")
         self.SN.append("0000100000001000")
         self.HH.append("1111111111111111")
+
+        # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
+        # Billie Jean
+        self.BD.append("1000000010000000")
+        self.SN.append("0000100000001000")
+        self.HH.append("1010101010101010")
+
+        # Funky Drummer
+        self.BD.append("1010001000100100")
+        self.SN.append("0000100101011001")
+        self.HH.append("0000000100000100")
+
+        # Impeach The President
+        self.BD.append("1000000110000010")
+        self.SN.append("0000100000001000")
+        self.HH.append("1010101110001010")
+
+        # When the Levee Breaks
+        self.BD.append("1100000100110000")
+        self.SN.append("0000100000001000")
+        self.HH.append("1010101010101010")
+
+        # Walk this way
+        self.BD.append("1000000110100000")
+        self.SN.append("0000100000001000")
+        self.HH.append("0010101010101010")
 
         # Triggered when button 1 is pressed. Toggle random HH feature
         @b1.handler
@@ -127,6 +160,13 @@ class mainClass:
         while True:
             self.setClockDivision()
             self.updateScreen()
+            # If I have been stopped for 10 cycles, reset the steps and clock_step to 0
+            if not self.running:
+                self.stopped_count += 1
+                if self.stopped_count == 10:
+                    self.step = 0
+                    self.stopped_count = 0
+                    self.clock_step = 0
             sleep_ms(100)
 
     def setClockDivision(self):
