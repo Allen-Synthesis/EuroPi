@@ -66,52 +66,84 @@ class mainClass:
         self.running = False
         self.stopped_count = 0
 
+        # ------------------------
         # Pre-loaded patterns
+        # ------------------------
+        # 0
         self.BD.append("1000100010001000")
         self.SN.append("0000000000000000")
         self.HH.append("0000000000000000")
 
+        # 1
         self.BD.append("1000100010001000")
         self.SN.append("0000100000000000")
         self.HH.append("0001000000000000")
 
+        # 2
         self.BD.append("1000100010001000")
         self.SN.append("0000100000000000")
         self.HH.append("0001001000000000")
 
+        # 3
         self.BD.append("1000100010001000")
         self.SN.append("0000100000001000")
         self.HH.append("0000100010001001")
 
+        # 4
         self.BD.append("1000100010001000")
         self.SN.append("0000100000001000")
         self.HH.append("1111111111111111")
 
         # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
-        # Billie Jean
+        # 5 Billie Jean
         self.BD.append("1000000010000000")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010101010")
 
-        # Funky Drummer
+        # 6 Funky Drummer
         self.BD.append("1010001000100100")
         self.SN.append("0000100101011001")
         self.HH.append("0000000100000100")
 
-        # Impeach The President
+        # 7 Impeach The President
         self.BD.append("1000000110000010")
         self.SN.append("0000100000001000")
         self.HH.append("1010101110001010")
 
-        # When the Levee Breaks
+        # 8 When the Levee Breaks
         self.BD.append("1100000100110000")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010101010")
 
-        # Walk this way
+        # 9 Walk this way
         self.BD.append("1000000110100000")
         self.SN.append("0000100000001000")
         self.HH.append("0010101010101010")
+
+        # 10 Its a new day
+        self.BD.append("1010000000110001")
+        self.SN.append("0000100000001000")
+        self.HH.append("1010101010101010")
+
+        # 11 Papa was Too
+        self.BD.append("1000000110100001")
+        self.SN.append("0000100000001000")
+        self.HH.append("0000100010101011")
+
+        # 12 The Big Beat
+        self.BD.append("1001001010000000")
+        self.SN.append("0000100000001000")
+        self.HH.append("0000100000001000")
+
+        # 13 Ashleys Roachclip
+        self.BD.append("1010001001100000")
+        self.SN.append("0000100000001000")
+        self.HH.append("1010101010001010")
+
+        # 14 Synthetic Substitution
+        self.BD.append("1010000101110001")
+        self.SN.append("0000100000001000")
+        self.HH.append("1010101010001010")
 
         # Triggered when button 1 is pressed. Toggle random HH feature
         @b1.handler
@@ -126,8 +158,12 @@ class mainClass:
             
             if self.clock_step % self.clock_division == 0:
                 
-                self.pattern = k2.read_position()
-            
+                # Prevent the pattern number from going higher than the max number of patterns
+                if k2.read_position() <= len(self.BD):
+                    self.pattern = k2.read_position()
+                else:
+                    self.pattern = len(self.BD)
+
                 cv1.value(int(self.BD[self.pattern][self.step]))
                 cv2.value(int(self.SN[self.pattern][self.step]))
 
@@ -195,7 +231,7 @@ class mainClass:
     def updateScreen(self):
         oled.clear()
         oled.text('S:' + str(self.step) + ' ' + 'CD:' + str(self.clock_division), 0, 0, 1)
-        oled.text('Pattern: ' + str(self.pattern), 0, 10, 1)
+        oled.text('Pattern: ' + str(self.pattern) + ' / ' + len(self.BD), 0, 10, 1)
         oled.text('HHR: ' + str(self.random_HH), 0, 20, 1)
         oled.show()
 
