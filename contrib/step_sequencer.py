@@ -1,5 +1,5 @@
 from europi import *
-from time import sleep_ms, ticks_diff, ticks_ms
+from time import sleep_ms, ticks_diff, ticks_ms, sleep_us
 from random import randint
 
 '''
@@ -153,7 +153,7 @@ class mainClass:
         @din.handler
         def clockTrigger():
             #self.setClockDivision()
-            self.updateScreen()
+            #self.updateScreen()
             self.last_clock_input = ticks_ms()
             
             if self.clock_step % self.clock_division == 0:
@@ -218,7 +218,7 @@ class mainClass:
             if ticks_diff(ticks_ms(), self.last_clock_input) > self.reset_timeout:
                 self.step = 0
                 self.clock_step = 0
-            sleep_ms(100)
+            #sleep_ms(100)
 
     def setClockDivision(self):
         k1Val = k1.read_position()
@@ -244,9 +244,10 @@ class mainClass:
             self.clock_division = 2
 
     def updateScreen(self):
-        oled.clear()
+        #oled.clear() - dont use this, it causes the screen to flicker!
+        oled.fill(0)
         #oled.text('S:' + str(self.step) + ' ' + 'CD:' + str(self.clock_division), 0, 0, 1)
-        oled.text('S:' + str(self.step) + ' ' + 'R: ' + str(self.randomness), 0, 0, 1)
+        oled.text('S:' + str(self.step) + ' ' + 'R:' + str(self.randomness), 0, 0, 1)
         oled.text('Pattern: ' + str(self.pattern) + ' / ' + str(len(self.BD)-1), 0, 10, 1)
         oled.text('HHR: ' + str(self.random_HH), 0, 20, 1)
         oled.show()
