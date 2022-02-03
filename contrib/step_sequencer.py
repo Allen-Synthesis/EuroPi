@@ -198,11 +198,12 @@ class mainClass:
                 self.step = 0
     
     def getPattern(self):
+        self.pattern = k2.read_position(len(self.BD))
         # Prevent the pattern number from going higher than the max number of patterns
-        if k2.read_position() <= len(self.BD)-1:
-            self.pattern = k2.read_position()
-        else:
-            self.pattern = len(self.BD)-1        
+        #if k2.read_position() <= len(self.BD)-1:
+        #    self.pattern = k2.read_position()
+        #else:
+        #    self.pattern = len(self.BD)-1        
 
     def getRandomness(self):
         self.randomness = k1.read_position()
