@@ -36,6 +36,7 @@ output_6: trigger logical XOR
 try:
     # Local development
     from software.firmware.europi import OLED_WIDTH, OLED_HEIGHT, CHAR_HEIGHT
+    from software.firmware.europi import Output
     from software.firmware.europi import din, k1, k2, oled, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6
     from software.firmware.europi import reset_state
 except ImportError:
@@ -58,15 +59,55 @@ MENU_DURATION = 1200
 
 VOLT_PER_OCT = 1 / 12
 
-NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+NOTES = [
+    "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0",
+    "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1",
+    "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
+    "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
+    "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
+]
+
+
+class Sequence:
+    def __init__(self, notes: list[str], pitch_cv: Output, trigger_cv: Output):
+        self.notes = notes
+        self.pitch_cv = pitch_cv
+        self.trigger_cv = trigger_cv
+        self.step_index = 0
+
+    def _pitch_cv(self, note: str) -> float:
+        return NOTES.index(note) * VOLT_PER_OCT
+
+    def _set_pitch(self):
+        pitch =  self._pitch_cv(self.current_note())
+        self.pitch_cv.voltage(pitch)
+
+    def current_note(self) -> str:
+        return self.notes[self.step_index]
+
+    def edit_step(self, step: int, note: str):
+        """Set the given step to the given note value and update pitch cv out."""
+        self.notes[step] = note
+        self._set_pitch()
+
+    def advance_step(self):
+        """Advance the sequence step index."""
+        self.step_index = (self.step_index + 1) % len(self.notes)
+
+    def play_next_step(self):
+        """Advance the sequence step and play the note."""
+        self.advance_step()
+        # Set cv output voltage to sequence step pitch.
+        self._set_pitch()
+        self.trigger_cv.on()
 
 
 class PolyrhythmSeq:
     pages = ['SEQUENCE 1', 'SEQUENCE 2', 'POLYRHYTHM']
     # Two 4-step melodic sequences.
     seqs = [
-        ["C", "D#", "D", "G"],
-        ["G", "F", "D#", "C"],
+        Sequence(["C0", "D#0", "D0", "G0"], cv1, cv2),
+        Sequence(["G0", "F0", "D#0", "C0"], cv4, cv5),
     ]
     # 4 editable polyrhythms, assignable to the sequences.
     polys = [8, 3, 2, 5]
@@ -77,14 +118,11 @@ class PolyrhythmSeq:
     def __init__(self):
         # Current editable sequence.
         self.seq = self.seqs[0]
-        # Sequence step index state.
-        self.seq_index = [0, 0]
 
         self.page = 0
-        self.index = 0
-        self._prev_k2 = 0
-
+        self.param_index = 0
         self.counter = 0
+        self._prev_k2 = 0
 
         @b1.handler
         def page_handler():
@@ -99,10 +137,10 @@ class PolyrhythmSeq:
         @b2.handler
         def edit_parameter():
             # Pressing button 2 edits the current selected parameter.
-            # TODO: add seq octave select for page 1 & 2
             if self.page == 2:
                 # Cycles through which sequence this polyrhythm is assigned to.
-                self.seq_poly[self.index] = (self.seq_poly[self.index] + 1) % 4
+                self.seq_poly[self.param_index] = (
+                    self.seq_poly[self.param_index] + 1) % len(self.seq_poly)
 
         @din.handler
         def play_notes():
@@ -114,20 +152,12 @@ class PolyrhythmSeq:
             for i, poly in enumerate(self.polys):
                 if self.counter % poly == 0:
                     _seq1, _seq2 = self._trigger_seq(i)
-                    if _seq1 and not seq1:
-                        # Advance the sequence step index.
-                        self.seq_index[0] = (self.seq_index[0] + 1) % 4
-                        # Set cv output voltage to sequence step pitch.
-                        cv1.voltage(self._pitch_cv(
-                            self.seqs[0][self.seq_index[0]]))
-                        cv2.on()
-                    if _seq2 and not seq2:
-                        self.seq_index[1] = (self.seq_index[1] + 1) % 4
-                        cv4.voltage(self._pitch_cv(
-                            self.seqs[1][self.seq_index[1]]))
-                        cv5.on()
-                    seq1 = seq1 or _seq1
-                    seq2 = seq2 or _seq2
+                    seq1 = _seq1 or seq1
+                    seq2 = _seq2 or seq2
+            if seq1:
+                self.seqs[0].play_next_step()
+            if seq2:
+                self.seqs[1].play_next_step()
 
             # Trigger logical AND / XOR
             if seq1 and seq2:
@@ -139,12 +169,10 @@ class PolyrhythmSeq:
         @din.handler_falling
         def triggers_off():
             # Turn off all of the trigger CV outputs.
-            [c.off() for c in (cv2, cv3, cv5, cv6)]
+            [seq.trigger_cv.off() for seq in self.seqs]
+            [c.off() for c in (cv3, cv6)]
 
-    def _pitch_cv(self, note):
-        return NOTES.index(note) * VOLT_PER_OCT
-
-    def _trigger_seq(self, step):
+    def _trigger_seq(self, step: int):
         # Convert poly sequence enablement into binary to determine which
         # sequences are triggered on this step.
         status = f"{self.seq_poly[step]:02b}"
@@ -158,46 +186,48 @@ class PolyrhythmSeq:
 
     def edit_sequence(self):
         # Display each sequence step.
-        for step in range(len(self.seq)):
-            padding_x = 7 + (int(OLED_WIDTH/4) * step)
-            padding_y = 12
+        for step in range(len(self.seq.notes)):
             # If the current step is selected, edit with the parameter edit knob.
-            if step == self.index:
+            if step == self.param_index:
                 selected_note = k2.choice(NOTES)
                 if self._prev_k2 and self._prev_k2 != selected_note:
-                    self.seq[step] = selected_note
+                    self.seq.edit_step(step, selected_note)
                 self._prev_k2 = selected_note
-            # Display the current step.
-            oled.text(f"{self.seq[step]:<2}", padding_x, padding_y, 1)
 
-            # Display a bar over current playing step.
-            if step == self.seq_index[0 if self.page == 0 else 1]:
-                x1 = (int(OLED_WIDTH/4) * step)
-                x2 = int(OLED_WIDTH/4)
-                oled.fill_rect(x1, 0, x2, 6, 1)
+            # Display the current step.
+            padding_x = 4 + (int(OLED_WIDTH/4) * step)
+            padding_y = 12
+            oled.text(f"{self.seq.notes[step]:<3}", padding_x, padding_y, 1)
+
+            # Display a bar under current playing step.
+            if step == self.seq.step_index:
+                x1 = (int(OLED_WIDTH / 4) * step)
+                x2 = int(OLED_WIDTH / 4)
+                oled.fill_rect(x1, OLED_HEIGHT - 6, x2, OLED_HEIGHT, 1)
 
     def edit_poly(self):
         # Display each polyrhythm option.
         for poly_index in range(len(self.polys)):
-            padding_x = 7 + (int(OLED_WIDTH/4) * poly_index)
-            padding_y = 12
             # If the current polyrhythm is selected, edit with the parameter knob.
-            if poly_index == self.index:
+            if poly_index == self.param_index:
                 poly = k2.range(16) + 1
                 if self._prev_k2 and self._prev_k2 != poly:
                     self.polys[poly_index] = poly
                 self._prev_k2 = poly
+
             # Display the current polyrhythm.
+            padding_x = 8 + (int(OLED_WIDTH/4) * poly_index)
+            padding_y = 12
             oled.text(f"{self.polys[poly_index]:>2}", padding_x, padding_y, 1)
 
             # Display graphic for seq 1 & 2 enablement.
             seq1, seq2 = self._trigger_seq(poly_index)
             y1 = OLED_HEIGHT - 10
 
-            x1 = 4 + int(OLED_WIDTH/4) * poly_index
+            x1 = 9 + int(OLED_WIDTH/4) * poly_index
             (oled.fill_rect if seq1 else oled.rect)(x1, y1, 6, 6, 1)
 
-            x1 = 12 + int(OLED_WIDTH/4) * poly_index
+            x1 = 17 + int(OLED_WIDTH/4) * poly_index
             (oled.fill_rect if seq2 else oled.rect)(x1, y1, 6, 6, 1)
 
     def main(self):
@@ -205,8 +235,8 @@ class PolyrhythmSeq:
             oled.fill(0)
 
             # Parameter edit index & display selected box
-            self.index = k1.range(4)
-            left_x = int((OLED_WIDTH/4) * self.index)
+            self.param_index = k1.range(4)
+            left_x = int((OLED_WIDTH/4) * self.param_index)
             right_x = int(OLED_WIDTH/4)
             oled.rect(left_x, 0, right_x, OLED_HEIGHT, 1)
 
