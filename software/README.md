@@ -2,9 +2,6 @@
 
 See the EuroPi firmware API documentation here: https://allen-synthesis.github.io/EuroPi/generated/europi.html
 
-
-
-
 ## Testing
 
 In order to run the automated tests locally you'll need to install the development dependencies in a virtual

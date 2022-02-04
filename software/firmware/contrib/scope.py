@@ -3,10 +3,10 @@ from time import sleep
 try:
     # local dev
     from software.firmware.europi import ain, b1, b2, cv1, cv2, cv4, din, k1, k2, oled
-    from software.firmware.europi import reset_state, MAX_INPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH
+    from software.firmware.europi import MAX_INPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH
 except ImportError:
     from europi import ain, b1, b2, cv1, cv2, cv4, din, k1, k2, oled
-    from europi import reset_state, MAX_INPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH
+    from europi import MAX_INPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH
 
 """
 Can we make a functional oscilloscope on the EuroPi? Kinda! This script displays the inputs received on both the analog
