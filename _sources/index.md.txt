@@ -10,5 +10,6 @@ Source code and additional documentation can be found in the [GitHub repo](https
 :titlesonly:
 
 api
+changelog
 genindex
 ```
