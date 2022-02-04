@@ -5,8 +5,8 @@ from random import randint
 '''
 Step Sequencer (Inspired by Mutable Grids)
 author: Nik Ansell (github.com/gamecat69)
-date: 2022-02-03
-labels: sequencer, triggers
+date: 2022-02-04
+labels: sequencer, triggers, drums
 
 A very basic EuroPi step sequencer inspired by Grids from Mutable Instruments.
 Demo video: TBC
@@ -23,14 +23,14 @@ knob_1: randomness
 knob_2: select pre-loaded drum pattern
 
 button_1: toggle randomized hi-hats on / off
-button_2: unused
+button_2: If b2 + b1 are held together - create new random cv pattern for cv4-6
 
 output_1: trigger 1 / Bass Drum
 output_2: trigger 2 / Snare Drum
 output_3: trigger 3 / Hi-Hat
-output_4: unused
-output_5: unused
-output_6: unused
+output_4: randomly generated CV (cycled by pushing b2+b1)
+output_5: randomly generated CV (cycled by pushing b2+b1)
+output_6: randomly generated CV (cycled by pushing b2+b1)
 
 '''
 
@@ -66,11 +66,11 @@ class mainClass:
         
         # Generate random CV for cv4-6
         self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
-        print(self.random4)
         self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
-        print(self.random5)
         self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
-        print(self.random6)
+        #print(self.random4)
+        #print(self.random5)
+        #print(self.random6)
         
         # ------------------------
         # Pre-loaded patterns
@@ -151,10 +151,26 @@ class mainClass:
         self.SN.append("0000100000001000")
         self.HH.append("1010101010001010")
 
+        # No function built yet, but handler needed to populate b2.last_pressed to detect double button press
+        @b2.handler
+        def fake():
+            pass
+
         # Triggered when button 1 is pressed. Toggle random HH feature
         @b1.handler
         def toggle_HH_Randomization():
-            self.random_HH = not self.random_HH
+            if ticks_diff(ticks_ms(), b2.last_pressed) < 500:
+                #print('B1 + B2 detected')
+                # Generate random CV for cv4-6
+                self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
+                self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
+                self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
+            else:
+                self.random_HH = not self.random_HH
+            #print('ticks_ms  :' + str(ticks_ms()))
+            #print('last press:' + str(b2.last_pressed))
+            #print('last press:' + str(b1.last_pressed))
+            #print(ticks_diff(ticks_ms(), b2.last_pressed))
 
         # Triggered on each clock into digital input. Output triggers.
         @din.handler
