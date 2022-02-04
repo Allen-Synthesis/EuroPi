@@ -69,20 +69,20 @@ NOTES = [
 
 
 class Sequence:
-    def __init__(self, notes: list[int], pitch_cv: Output, trigger_cv: Output):
+    def __init__(self, notes: list[str], pitch_cv: Output, trigger_cv: Output):
         self.notes = notes
         self.pitch_cv = pitch_cv
         self.trigger_cv = trigger_cv
         self.step_index = 0
 
-    def _pitch_cv(self, note: str):
+    def _pitch_cv(self, note: str) -> float:
         return NOTES.index(note) * VOLT_PER_OCT
 
     def _set_pitch(self):
         pitch =  self._pitch_cv(self.current_note())
         self.pitch_cv.voltage(pitch)
 
-    def current_note(self):
+    def current_note(self) -> str:
         return self.notes[self.step_index]
 
     def edit_step(self, step: int, note: str):
@@ -201,11 +201,9 @@ class PolyrhythmSeq:
 
             # Display a bar under current playing step.
             if step == self.seq.step_index:
-                x1 = (int(OLED_WIDTH/4) * step)
-                y1 = OLED_HEIGHT-6
-                x2 = int(OLED_WIDTH/4)
-                y2 = OLED_HEIGHT
-                oled.fill_rect(x1, y1, x2, y2, 1)
+                x1 = (int(OLED_WIDTH / 4) * step)
+                x2 = int(OLED_WIDTH / 4)
+                oled.fill_rect(x1, OLED_HEIGHT - 6, x2, OLED_HEIGHT, 1)
 
     def edit_poly(self):
         # Display each polyrhythm option.
