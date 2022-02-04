@@ -19,7 +19,7 @@ Knob 1 can also be used as a clock divider.
 digital_in: clock in
 analog_in: unused
 
-knob_1: unused
+knob_1: randomness
 knob_2: select pre-loaded drum pattern
 
 button_1: toggle randomized hi-hats on / off
@@ -38,10 +38,8 @@ output_6: unused
 To do / Ideas:
 
 - Add more pre-loaded drum patterns
-- Add a ratchet function
-- Provide auto-generated CV waves/Random from outputs 4-6
-- Reduce screen flicker
-- Change pattern using analogue input
+- Add a ratchet function?
+- Change randomness using analogue input?
 '''
 
 # Overclock the Pico for improved performance.
@@ -65,6 +63,15 @@ class mainClass:
         self.random_HH = False
         self.last_clock_input = 0
         self.randomness = 0
+        
+        # Generate random CV for cv4-6
+        self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
+        print(self.random4)
+        self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
+        print(self.random5)
+        self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
+        print(self.random6)
+        
         # ------------------------
         # Pre-loaded patterns
         # ------------------------
@@ -161,8 +168,13 @@ class mainClass:
                 self.getPattern()
                 self.getRandomness()
 
-                # How much randomness to add?
-                # As the randomness value gets higher, the chance of a randomly select int being lower gets higher
+                # Set cv4-6 voltage outputs based on previously generated random pattern
+                cv4.voltage(int(self.random4[self.step]))
+                cv5.voltage(int(self.random5[self.step]))
+                cv6.voltage(int(self.random6[self.step]))
+
+                # How much randomness to add to cv1-3
+                # As the randomness value gets higher, the chance of a randomly selected int being lower gets higher
                 if randint(0,99) < self.randomness:
                     cv1.value(randint(0, 1))
                     cv2.value(randint(0, 1))
@@ -173,12 +185,14 @@ class mainClass:
 
                     # If randomize HH is ON:
                     if self.random_HH:
-                        self.t=''
-                        self.p=[]
-                        for i in range(0, self.step_length):
-                            self.t += str(randint(0, 1))
-                        self.p.append(self.t)
-                        cv3.value(int(self.p[0][self.step]))
+                        #generateRandomPattern(self, length, min, max)
+                        #self.t=''
+                        #self.p=[]
+                        #for i in range(0, self.step_length):
+                        #    self.t += str(randint(0, 1))
+                        #self.p.append(self.t)
+                        #cv3.value(int(self.p[0][self.step]))
+                        cv3.value(randint(0, 1))
                     else:
                         cv3.value(int(self.HH[self.pattern][self.step]))
                 
@@ -204,6 +218,15 @@ class mainClass:
         #    self.pattern = k2.read_position()
         #else:
         #    self.pattern = len(self.BD)-1        
+
+    def generateRandomPattern(self, length, min, max):
+        self.t=''
+        #self.p=[]
+        for i in range(0, length):
+            self.t += str(randint(min, max))
+        #self.p.append(self.t)
+        return str(self.t)
+        #cv3.value(int(self.p[0][self.step]))
 
     def getRandomness(self):
         self.randomness = k1.read_position()
