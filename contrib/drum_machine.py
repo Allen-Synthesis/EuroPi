@@ -1,6 +1,6 @@
 from europi import *
 from time import sleep_ms, ticks_diff, ticks_ms
-from random import randint
+from random import randint, randrange, uniform
 
 '''
 Drum Sequencer (Inspired by Mutable Grids)
@@ -57,6 +57,10 @@ class drumMachine:
         self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
         self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
         self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
+
+        #print(self.random4)
+        #print(self.random5)
+        #print(self.random6)
         
         # ------------------------
         # Pre-loaded patterns
@@ -175,9 +179,10 @@ class drumMachine:
                 self.getRandomness()
 
                 # Set cv4-6 voltage outputs based on previously generated random pattern
-                cv4.voltage(int(self.random4[self.step]))
-                cv5.voltage(int(self.random5[self.step]))
-                cv6.voltage(int(self.random6[self.step]))
+                #print(self.random4[self.step])
+                cv4.voltage(self.random4[self.step])
+                cv5.voltage(self.random5[self.step])
+                cv6.voltage(self.random6[self.step])
 
                 # How much randomness to add to cv1-3
                 # As the randomness value gets higher, the chance of a randomly selected int being lower gets higher
@@ -214,10 +219,16 @@ class drumMachine:
         self.pattern = k2.read_position(len(self.BD))
        
     def generateRandomPattern(self, length, min, max):
-        self.t=''
+        #self.t=''
+        #for i in range(0, length):
+        #    self.t += str(randint(min, max))
+        #return str(self.t)
+
+        self.t=[]
         for i in range(0, length):
-            self.t += str(randint(min, max))
-        return str(self.t)
+            self.t.append(uniform(0,9))
+        return self.t
+
 
     def getRandomness(self):
         # Check if there is CV on the Analogue input, if not use the k1 position
