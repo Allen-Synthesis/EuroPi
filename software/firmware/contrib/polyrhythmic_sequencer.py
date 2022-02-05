@@ -42,7 +42,7 @@ try:
 except ImportError:
     # Device import path
     from europi import *
-from time import sleep_ms, ticks_diff, ticks_ms
+import time
 import machine
 
 # Overclock the Pico for improved performance.
@@ -87,6 +87,7 @@ class Sequence:
 
     def edit_step(self, step: int, note: str):
         """Set the given step to the given note value and update pitch cv out."""
+        assert note in NOTES, f"Given note not in available notes: {note}"
         self.notes[step] = note
         self._set_pitch()
 
@@ -180,7 +181,7 @@ class PolyrhythmSeq:
         return int(status[1]) == 1, int(status[0]) == 1
 
     def show_menu_header(self):
-        if ticks_diff(ticks_ms(), b1.last_pressed()) < MENU_DURATION:
+        if time.ticks_diff(time.ticks_ms(), b1.last_pressed()) < MENU_DURATION:
             oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
             oled.text(f"{self.pages[self.page]}", 0, 0, 0)
 
@@ -251,8 +252,9 @@ class PolyrhythmSeq:
 
 
 # Main script execution
-try:
-    script = PolyrhythmSeq()
-    script.main()
-finally:
-    reset_state()
+if __name__ == '__main__':
+    try:
+        script = PolyrhythmSeq()
+        script.main()
+    finally:
+        reset_state()
