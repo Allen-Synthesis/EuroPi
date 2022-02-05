@@ -1,55 +1,43 @@
 from europi import *
-from time import sleep_ms, ticks_diff, ticks_ms, sleep_us
+from time import sleep_ms, ticks_diff, ticks_ms
 from random import randint
 
 '''
-Step Sequencer (Inspired by Mutable Grids)
+Drum Sequencer (Inspired by Mutable Grids)
 author: Nik Ansell (github.com/gamecat69)
-date: 2022-02-04
-labels: sequencer, triggers, drums
+date: 2022-02-05
+labels: sequencer, triggers, drums, randomness
 
-A very basic EuroPi step sequencer inspired by Grids from Mutable Instruments.
+A drum sequencer inspired by Grids from Mutable Instruments that contains pre-loaded drum patterns that can be smoothly morphed from one to another. Triggers are sent from outputs 1 - 3, randomized stepped CV patterns are sent from outputs 4 - 6.
+Send a clock to the digital input to start the sequence.
+
 Demo video: TBC
 
-Contains pre-loaded patterns that are cycled through using knob 2.
-Includes a feature to toggle randomized high-hat patterns using button 1.
-The script needs a clock source in the digital input to play.
-Knob 1 can also be used as a clock divider.
-
 digital_in: clock in
-analog_in: unused
+analog_in: randomness CV
 
 knob_1: randomness
 knob_2: select pre-loaded drum pattern
 
 button_1: toggle randomized hi-hats on / off
-button_2: If b2 + b1 are held together - create new random cv pattern for cv4-6
+button_2: generate a new random cv pattern for outputs 4 - 6
 
 output_1: trigger 1 / Bass Drum
 output_2: trigger 2 / Snare Drum
 output_3: trigger 3 / Hi-Hat
-output_4: randomly generated CV (cycled by pushing b2+b1)
-output_5: randomly generated CV (cycled by pushing b2+b1)
-output_6: randomly generated CV (cycled by pushing b2+b1)
+output_4: randomly generated CV (cycled by pushing button 2)
+output_5: randomly generated CV (cycled by pushing button 2)
+output_6: randomly generated CV (cycled by pushing button 2)
 
-'''
-
-'''
-To do / Ideas:
-
-- Add more pre-loaded drum patterns
-- Add a ratchet function?
-- Change randomness using analogue input?
 '''
 
 # Overclock the Pico for improved performance.
 machine.freq(250_000_000)
 
-class mainClass:
+class drumMachine:
     def __init__(self):
 
         # Initialize sequencer pattern arrays        
-        self.Names=[]
         self.BD=[]
         self.SN=[]
         self.HH=[]
@@ -69,114 +57,110 @@ class mainClass:
         self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
         self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
         self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
-        #print(self.random4)
-        #print(self.random5)
-        #print(self.random6)
         
         # ------------------------
         # Pre-loaded patterns
         # ------------------------
-        self.Names.append("4/4 Kick")
         self.BD.append("1000100010001000")
         self.SN.append("0000000000000000")
         self.HH.append("0000000000000000")
 
-        self.Names.append("4/4 Kick, Snare")
+        self.BD.append("1000100010001000")
+        self.SN.append("0000000000000000")
+        self.HH.append("0010010010010010")
+
         self.BD.append("1000100010001000")
         self.SN.append("0000100000000000")
-        self.HH.append("0001000000000000")
+        self.HH.append("0010010010010010")
 
-        self.Names.append("4/4 Kick, Snare, Hat")
+        self.BD.append("1000100010001000")
+        self.SN.append("0000100000001000")
+        self.HH.append("0010010010010010")
+
         self.BD.append("1000100010001000")
         self.SN.append("0000100000000000")
         self.HH.append("0000000000000000")
 
-        self.Names.append("4/4 Kick, Snare, 2Hat")
         self.BD.append("1000100010001000")
-        self.SN.append("0000100000000000")
-        self.HH.append("0001001000000000")
+        self.SN.append("0000100000001000")
+        self.HH.append("0000000000000000")
 
-        self.Names.append("4/4 Kick, Snare, 4Hat")
         self.BD.append("1000100010001000")
         self.SN.append("0000100000001000")
         self.HH.append("0000100010001001")
 
-        self.Names.append("4/4 Kick, Snare, Hats")
+        self.BD.append("1000100010001000")
+        self.SN.append("0000100000001000")
+        self.HH.append("0101010101010101")
+
+        self.BD.append("1000100010001000")
+        self.SN.append("0000000000000000")
+        self.HH.append("1111111111111111")
+
         self.BD.append("1000100010001000")
         self.SN.append("0000100000001000")
         self.HH.append("1111111111111111")
 
+        self.BD.append("1000100010001000")
+        self.SN.append("0000100000000000")
+        self.HH.append("0001000000000000")
+
+        self.BD.append("1000100010001000")
+        self.SN.append("0000100000000000")
+        self.HH.append("0001001000000000")
+
         # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
-        self.Names.append("Billie Jean")
         self.BD.append("1000000010000000")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010101010")
 
-        self.Names.append("Funky Drummer")
         self.BD.append("1010001000100100")
         self.SN.append("0000100101011001")
         self.HH.append("0000000100000100")
 
-        self.Names.append("Impeach The President")
         self.BD.append("1000000110000010")
         self.SN.append("0000100000001000")
         self.HH.append("1010101110001010")
 
-        self.Names.append("When the Levee Breaks")
         self.BD.append("1100000100110000")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010101010")
 
-        self.Names.append("Walk this way")
         self.BD.append("1000000110100000")
         self.SN.append("0000100000001000")
         self.HH.append("0010101010101010")
 
-        self.Names.append("Its a new day")
         self.BD.append("1010000000110001")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010101010")
 
-        self.Names.append("Papa was Too")
         self.BD.append("1000000110100001")
         self.SN.append("0000100000001000")
         self.HH.append("0000100010101011")
 
-        self.Names.append("The Big Beat")
         self.BD.append("1001001010000000")
         self.SN.append("0000100000001000")
         self.HH.append("0000100000001000")
 
-        self.Names.append("Ashleys Roachclip")
         self.BD.append("1010001001100000")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010001010")
 
-        self.Names.append("Synthetic Substitution")
         self.BD.append("1010000101110001")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010001010")
 
-        # No function built yet, but handler needed to populate b2.last_pressed to detect double button press
+        # Triggered when buttom 2 is pressed. Generate random CV for cv4-6
         @b2.handler
-        def fake():
-            pass
+        def generateNewRandomCVPattern():
+            self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
+            self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
+            self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
 
         # Triggered when button 1 is pressed. Toggle random HH feature
         @b1.handler
         def toggle_HH_Randomization():
-            if ticks_diff(ticks_ms(), b2.last_pressed) < 500:
-                #print('B1 + B2 detected')
-                # Generate random CV for cv4-6
-                self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
-                self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
-                self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
-            else:
-                self.random_HH = not self.random_HH
-            #print('ticks_ms  :' + str(ticks_ms()))
-            #print('last press:' + str(b2.last_pressed))
-            #print('last press:' + str(b1.last_pressed))
-            #print(ticks_diff(ticks_ms(), b2.last_pressed))
+            self.random_HH = not self.random_HH
 
         # Triggered on each clock into digital input. Output triggers.
         @din.handler
@@ -207,13 +191,6 @@ class mainClass:
 
                     # If randomize HH is ON:
                     if self.random_HH:
-                        #generateRandomPattern(self, length, min, max)
-                        #self.t=''
-                        #self.p=[]
-                        #for i in range(0, self.step_length):
-                        #    self.t += str(randint(0, 1))
-                        #self.p.append(self.t)
-                        #cv3.value(int(self.p[0][self.step]))
                         cv3.value(randint(0, 1))
                     else:
                         cv3.value(int(self.HH[self.pattern][self.step]))
@@ -235,26 +212,26 @@ class mainClass:
     
     def getPattern(self):
         self.pattern = k2.read_position(len(self.BD))
-        # Prevent the pattern number from going higher than the max number of patterns
-        #if k2.read_position() <= len(self.BD)-1:
-        #    self.pattern = k2.read_position()
-        #else:
-        #    self.pattern = len(self.BD)-1        
-
+       
     def generateRandomPattern(self, length, min, max):
         self.t=''
-        #self.p=[]
         for i in range(0, length):
             self.t += str(randint(min, max))
-        #self.p.append(self.t)
         return str(self.t)
-        #cv3.value(int(self.p[0][self.step]))
 
     def getRandomness(self):
-        self.randomness = k1.read_position()
+        # Check if there is CV on the Analogue input, if not use the k1 position
+        rCvVal = 100 * ain.percent()
+        if rCvVal < 0.5:
+            self.randomness = k1.read_position()
+        else:
+            self.randomness = rCvVal
+        #print(rCvVal)
+        #print(ain.read_voltage())
 
     def main(self):
         while True:
+
             #self.setClockDivision()
             self.getPattern()
             self.getRandomness()
@@ -289,16 +266,27 @@ class mainClass:
         else:
             self.clock_division = 2
 
+    def visualizePattern(self, pattern):
+        self.t = pattern
+        self.t = self.t.replace('1','^')
+        self.t = self.t.replace('0',' ')
+        return self.t
+
     def updateScreen(self):
         #oled.clear() - dont use this, it causes the screen to flicker!
         oled.fill(0)
-        oled.centre_text(self.Names[self.pattern])
-        #oled.text('S:' + str(self.step) + ' ' + 'R:' + str(self.randomness), 0, 0, 1)
-        #oled.text('Pattern: ' + str(self.pattern) + ' / ' + str(len(self.BD)-1), 0, 10, 1)
-        #oled.text('HHR: ' + str(self.random_HH), 0, 20, 1)
+        
+        # Show selected pattern visually
+        oled.text(self.visualizePattern(self.BD[self.pattern]),0,0,1)
+        oled.text(self.visualizePattern(self.SN[self.pattern]),0,10,1)
+        oled.text(self.visualizePattern(self.HH[self.pattern]),0,20,1)
+
+        # If the random toggle is on, show a rectangle
+        if self.random_HH:
+            oled.fill_rect(0,29,20,3,1)
         oled.show()
 
 # Reset module display state.
 reset_state()
-ct = mainClass()
-ct.main()
+dm = drumMachine()
+dm.main()
