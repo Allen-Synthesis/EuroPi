@@ -13,6 +13,9 @@ Demo video: TBC
 
 The following sections provide instructions for creating a simple 3 drum pattern with a kick, snare and hi-hat, then using random CV patterns to control the sound of each drum patter. You can of course connect outputs 1 - 3 to any module which expects triggers and outputs 4 - 6 to any module expecting a control voltage.
 
+Credits:
+- Some drum patterns were recreated from here: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
+
 ## Basic Usage
 1. Connect a clock input to the Digital input
 2. Connect a Bass Drum to output 1, Snare to output 2 and Hi-hat to output 3
