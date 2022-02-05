@@ -49,6 +49,7 @@ class mainClass:
     def __init__(self):
 
         # Initialize sequencer pattern arrays        
+        self.Names=[]
         self.BD=[]
         self.SN=[]
         self.HH=[]
@@ -75,78 +76,83 @@ class mainClass:
         # ------------------------
         # Pre-loaded patterns
         # ------------------------
-        # 0
+        self.Names.append("4/4 Kick")
         self.BD.append("1000100010001000")
         self.SN.append("0000000000000000")
         self.HH.append("0000000000000000")
 
-        # 1
+        self.Names.append("4/4 Kick, Snare")
         self.BD.append("1000100010001000")
         self.SN.append("0000100000000000")
         self.HH.append("0001000000000000")
 
-        # 2
+        self.Names.append("4/4 Kick, Snare, Hat")
+        self.BD.append("1000100010001000")
+        self.SN.append("0000100000000000")
+        self.HH.append("0000000000000000")
+
+        self.Names.append("4/4 Kick, Snare, 2Hat")
         self.BD.append("1000100010001000")
         self.SN.append("0000100000000000")
         self.HH.append("0001001000000000")
 
-        # 3
+        self.Names.append("4/4 Kick, Snare, 4Hat")
         self.BD.append("1000100010001000")
         self.SN.append("0000100000001000")
         self.HH.append("0000100010001001")
 
-        # 4
+        self.Names.append("4/4 Kick, Snare, Hats")
         self.BD.append("1000100010001000")
         self.SN.append("0000100000001000")
         self.HH.append("1111111111111111")
 
         # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
-        # 5 Billie Jean
+        self.Names.append("Billie Jean")
         self.BD.append("1000000010000000")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010101010")
 
-        # 6 Funky Drummer
+        self.Names.append("Funky Drummer")
         self.BD.append("1010001000100100")
         self.SN.append("0000100101011001")
         self.HH.append("0000000100000100")
 
-        # 7 Impeach The President
+        self.Names.append("Impeach The President")
         self.BD.append("1000000110000010")
         self.SN.append("0000100000001000")
         self.HH.append("1010101110001010")
 
-        # 8 When the Levee Breaks
+        self.Names.append("When the Levee Breaks")
         self.BD.append("1100000100110000")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010101010")
 
-        # 9 Walk this way
+        self.Names.append("Walk this way")
         self.BD.append("1000000110100000")
         self.SN.append("0000100000001000")
         self.HH.append("0010101010101010")
 
-        # 10 Its a new day
+        self.Names.append("Its a new day")
         self.BD.append("1010000000110001")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010101010")
 
-        # 11 Papa was Too
+        self.Names.append("Papa was Too")
         self.BD.append("1000000110100001")
         self.SN.append("0000100000001000")
         self.HH.append("0000100010101011")
 
-        # 12 The Big Beat
+        self.Names.append("The Big Beat")
         self.BD.append("1001001010000000")
         self.SN.append("0000100000001000")
         self.HH.append("0000100000001000")
 
-        # 13 Ashleys Roachclip
+        self.Names.append("Ashleys Roachclip")
         self.BD.append("1010001001100000")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010001010")
 
-        # 14 Synthetic Substitution
+        self.Names.append("Synthetic Substitution")
         self.BD.append("1010000101110001")
         self.SN.append("0000100000001000")
         self.HH.append("1010101010001010")
@@ -286,10 +292,10 @@ class mainClass:
     def updateScreen(self):
         #oled.clear() - dont use this, it causes the screen to flicker!
         oled.fill(0)
-        #oled.text('S:' + str(self.step) + ' ' + 'CD:' + str(self.clock_division), 0, 0, 1)
-        oled.text('S:' + str(self.step) + ' ' + 'R:' + str(self.randomness), 0, 0, 1)
-        oled.text('Pattern: ' + str(self.pattern) + ' / ' + str(len(self.BD)-1), 0, 10, 1)
-        oled.text('HHR: ' + str(self.random_HH), 0, 20, 1)
+        oled.centre_text(self.Names[self.pattern])
+        #oled.text('S:' + str(self.step) + ' ' + 'R:' + str(self.randomness), 0, 0, 1)
+        #oled.text('Pattern: ' + str(self.pattern) + ' / ' + str(len(self.BD)-1), 0, 10, 1)
+        #oled.text('HHR: ' + str(self.random_HH), 0, 20, 1)
         oled.show()
 
 # Reset module display state.
