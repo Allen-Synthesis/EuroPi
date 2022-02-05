@@ -1,8 +1,9 @@
-from ast import Index
 import pytest
 
 from polyrhythmic_sequencer import Sequence
-from europi import cv1, cv2
+from polyrhythmic_sequencer import PolyrhythmSeq
+
+from europi import cv1, cv2, k2, oled
 
 
 @pytest.mark.parametrize(
@@ -56,7 +57,6 @@ def test_advance_step(step_index, expected):
     assert seq.current_note() == expected
 
 
-
 @pytest.mark.parametrize(
     "step_index, expected_note, expected_voltage",
     [
@@ -74,3 +74,35 @@ def test_play_step(step_index, expected_note, expected_voltage):
     assert seq.current_note() == expected_note, f"{step_index} failed"
     assert seq._pitch_cv(seq.current_note()) == expected_voltage, f"{step_index} failed"
 
+
+@pytest.mark.parametrize(
+    "seq_index, step_index, cur_note, new_note",
+    [
+        (0, 0, "C0", "D#0"),
+        (0, 3, "G0", "F0"),
+        (1, 1, "F0", "G1"),
+        (1, 3, "C0", "A2"),
+    ],
+)
+def test_script_edit_step(seq_index, step_index, cur_note, new_note, monkeypatch):
+    # Initialize and validate initial state.
+    script = PolyrhythmSeq()
+    assert script.page == 0
+    assert script.param_index == 0
+    assert script._prev_k2 == None
+    assert script.seqs[seq_index].notes[step_index] == cur_note
+
+    # Alter script state for test
+    script.param_index = step_index
+    script.seq = script.seqs[seq_index]
+    script._prev_k2 = "C0"
+
+    # Mock out Knob choice response.
+    monkeypatch.setattr(k2, "choice", lambda *args: new_note)
+    # Mock out Display text wiht noop.
+    monkeypatch.setattr(oled, "text", lambda *args: None)
+
+    # Call method under test and validate state changes.
+    script.edit_sequence()
+    assert script.param_index == step_index
+    assert script.seqs[seq_index].notes[step_index] == new_note, f"actual notes: {script.seqs[seq_index].notes}"

@@ -123,7 +123,7 @@ class PolyrhythmSeq:
         self.page = 0
         self.param_index = 0
         self.counter = 0
-        self._prev_k2 = 0
+        self._prev_k2 = None
 
         @b1.handler
         def page_handler():

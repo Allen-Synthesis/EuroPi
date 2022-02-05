@@ -8,3 +8,9 @@ class SSD1306_I2C:
 
     def fill(self, *args):
         pass
+
+    def fill_rect(self, *args):
+        pass
+
+    def text(self, *args):
+        pass

@@ -33,12 +33,6 @@ class PWM:
     def duty_u16(self, f):
         pass
 
-class Display:
-    def __init__(self, *args):
-        pass
-
-    def contrast(self, _):
-        pass
 
 def freq(_):
     pass
