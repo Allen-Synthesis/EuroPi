@@ -12,5 +12,8 @@ class SSD1306_I2C:
     def fill_rect(self, *args):
         pass
 
+    def rect(self, *args):
+        pass
+
     def text(self, *args):
         pass

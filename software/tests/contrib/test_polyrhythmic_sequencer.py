@@ -84,7 +84,7 @@ def test_play_step(step_index, expected_note, expected_voltage):
         (1, 3, "C0", "A2"),
     ],
 )
-def test_script_edit_step(seq_index, step_index, cur_note, new_note, monkeypatch):
+def test_script_edit_sequence(seq_index, step_index, cur_note, new_note, monkeypatch):
     # Initialize and validate initial state.
     script = PolyrhythmSeq()
     assert script.page == 0
@@ -106,3 +106,28 @@ def test_script_edit_step(seq_index, step_index, cur_note, new_note, monkeypatch
     script.edit_sequence()
     assert script.param_index == step_index
     assert script.seqs[seq_index].notes[step_index] == new_note, f"actual notes: {script.seqs[seq_index].notes}"
+
+
+@pytest.mark.parametrize(
+    "param_index, new_poly",
+    [(0, 1), (1, 2), (2, 5), (3, 16)],
+)
+def test_script_edit_poly(param_index, new_poly, monkeypatch):
+    # Initialize and validate initial state.
+    script = PolyrhythmSeq()
+    assert script.page == 0
+    assert script.param_index == 0
+    assert script._prev_k2 == None
+    # assert script.polys == [8, 3, 2, 5]
+    assert script.seq_poly == [2, 1, 1, 0]
+
+    # Alter script state for test
+    script.param_index = param_index
+    script._prev_k2 = 99
+
+    # Mock out Knob choice response.
+    monkeypatch.setattr(k2, "range", lambda *args: new_poly - 1)
+
+    # Call method under test and validate state changes.
+    script.edit_poly()
+    assert script.polys[param_index] == new_poly, f"actual polys: {script.polys}"
