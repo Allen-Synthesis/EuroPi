@@ -31,7 +31,7 @@ You can find more about this (including a project diary) and other projects of m
 
 ### Documentation
 
-**Hardware**: Details of the hardware can be found at [hardware/README.md](). Additionally the [BoM](hardware/bill_of_materials.md) and the [build guide](hardware/build_guide.md) can be found in the hardware folder.
+**Hardware**: Details of the hardware can be found at [hardware README](hardware/README.md). Additionally the [BoM](hardware/bill_of_materials.md) and the [build guide](hardware/build_guide.md) can be found in the hardware folder.
 
 
 **Software**: Before using any of the software, follow the instructions in [programming_instructions.md](software/programming_instructions.md) to set up and calibrate your module.
