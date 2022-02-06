@@ -52,11 +52,16 @@ class drumMachine:
         self.random_HH = False
         self.last_clock_input = 0
         self.randomness = 0
+        self.analogInputMode = 2 # 1: Randomness, 2: Pattern
         
         # Generate random CV for cv4-6
         self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
         self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
         self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
+
+        #cv1.voltage(10)
+        print(INPUT_CALIBRATION_VALUES)
+        print(OUTPUT_CALIBRATION_VALUES)
 
         #print(self.random4)
         #print(self.random5)
@@ -65,6 +70,7 @@ class drumMachine:
         # ------------------------
         # Pre-loaded patterns
         # ------------------------
+
         self.BD.append("1000100010001000")
         self.SN.append("0000000000000000")
         self.HH.append("0000000000000000")
@@ -154,6 +160,28 @@ class drumMachine:
         self.SN.append("0000100000001000")
         self.HH.append("1010101010001010")
 
+        # End external patterns
+
+        self.BD.append("1000100010001000")
+        self.SN.append("0000101001001000")
+        self.HH.append("0101010101010101")
+
+        self.BD.append("1100000001010000")
+        self.SN.append("0000101000001000")
+        self.HH.append("0101010101010101")
+
+        self.BD.append("1100000001010000")
+        self.SN.append("0000101000001000")
+        self.HH.append("1111111111111111")
+
+        self.BD.append("1001001001000100")
+        self.SN.append("0001000000010000")
+        self.HH.append("0101110010011110")
+
+        self.BD.append("1001001001000100")
+        self.SN.append("0001000000010000")
+        self.HH.append("1111111111111111")
+
         # Triggered when buttom 2 is pressed. Generate random CV for cv4-6
         @b2.handler
         def generateNewRandomCVPattern():
@@ -216,14 +244,19 @@ class drumMachine:
                 self.step = 0
     
     def getPattern(self):
-        self.pattern = k2.read_position(len(self.BD))
-       
-    def generateRandomPattern(self, length, min, max):
-        #self.t=''
-        #for i in range(0, length):
-        #    self.t += str(randint(min, max))
-        #return str(self.t)
 
+        # Get the analogue input voltage as a percentage
+        pVal = 100 * ain.percent()
+        
+        # Is there a voltage on the analogue input and are we configured to use it?
+        if pVal > 0.4 and self.analogInputMode == 2:
+            # Convert percentage value to a representative index of the pattern array
+            self.pattern = int((len(self.BD) / 100) * pVal)
+        else:
+            self.pattern = k2.read_position(len(self.BD))
+
+
+    def generateRandomPattern(self, length, min, max):
         self.t=[]
         for i in range(0, length):
             self.t.append(uniform(0,9))
@@ -233,10 +266,11 @@ class drumMachine:
     def getRandomness(self):
         # Check if there is CV on the Analogue input, if not use the k1 position
         rCvVal = 100 * ain.percent()
-        if rCvVal < 0.5:
-            self.randomness = k1.read_position()
-        else:
+        if rCvVal > 0.4 and self.analogInputMode == 1:
             self.randomness = rCvVal
+        else:
+            self.randomness = k1.read_position()
+
         #print(rCvVal)
         #print(ain.read_voltage())
 
