@@ -52,7 +52,7 @@ class drumMachine:
         self.random_HH = False
         self.last_clock_input = 0
         self.randomness = 0
-        self.analogInputMode = 2 # 1: Randomness, 2: Pattern
+        self.analogInputMode = 1 # 1: Randomness, 2: Pattern
         
         # Generate random CV for cv4-6
         self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
@@ -184,11 +184,20 @@ class drumMachine:
 
         # Triggered when buttom 2 is pressed. Generate random CV for cv4-6
         @b2.handler
-        def generateNewRandomCVPattern():
-            self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
-            self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
-            self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
-
+        def b2Pressed():
+            # If b1 is also pressed, change the mode
+            if b1.value() == 1:
+                if self.analogInputMode == 1:
+                    self.analogInputMode = 2
+                else:
+                    self.analogInputMode = 1
+                #print(b1.value())
+                # Hack: Pressing button 1 will have toggle the mode, switch it back
+                # Todo: improve button handling and avoid this
+                self.random_HH = not self.random_HH
+            else:
+                self.generateNewRandomCVPattern()
+            
         # Triggered when button 1 is pressed. Toggle random HH feature
         @b1.handler
         def toggle_HH_Randomization():
@@ -242,7 +251,12 @@ class drumMachine:
                 self.step += 1
             else:
                 self.step = 0
-    
+
+    def generateNewRandomCVPattern(self):
+        self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
+        self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
+        self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
+
     def getPattern(self):
 
         # Get the analogue input voltage as a percentage
@@ -329,7 +343,16 @@ class drumMachine:
         # If the random toggle is on, show a rectangle
         if self.random_HH:
             oled.fill_rect(0,29,20,3,1)
+
+        # Show the analogInputMode
+        if self.analogInputMode == 2:
+            oled.text('P', 120, 25, 1)
+        else:
+            oled.text('R', 120, 25, 1)
+        #self.analogInputMode
+
         oled.show()
+        
 
 # Reset module display state.
 reset_state()
