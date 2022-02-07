@@ -1,0 +1,4 @@
+cp ./software/firmware/*.py /pyboard/lib
+mkdir /pyboard/lib/contrib
+cp software/firmware/contrib/*.py /pyboard/lib/contrib
+repl ~ import machine ~ machine.soft_reset()~
