@@ -126,6 +126,5 @@ class CoinToss:
 
 
 # Reset module display state.
-reset_state()
 coin_toss = CoinToss()
 coin_toss.main()
