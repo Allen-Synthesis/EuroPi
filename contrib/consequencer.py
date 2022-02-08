@@ -45,7 +45,6 @@ class drumMachine:
 
         # Initialize variables
         self.step = 0
-        self.step_length = 16
         self.trigger_duration_ms = 50
         self.clock_step = 0
         self.clock_division = 1
@@ -55,29 +54,16 @@ class drumMachine:
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
+        #self.step_length = 16
         
         # Generate random CV for cv4-6
         self.random4 = []
         self.random5 = []
         self.random6 = []
 
-        #self.random4.append(self.generateRandomPattern(self.step_length, 0, 9))
-        #self.random5.append(self.generateRandomPattern(self.step_length, 0, 9))
-        #self.random6.append(self.generateRandomPattern(self.step_length, 0, 9))
-
-        #self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
-        #self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
-        #self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
-
-        self.generateNewRandomCVPattern()
-
         #cv1.voltage(10)
-        print(INPUT_CALIBRATION_VALUES)
-        print(OUTPUT_CALIBRATION_VALUES)
-
-        #print(self.random4)
-        #print(self.random5)
-        #print(self.random6)
+        print('Input Calibration Vals  : ' + str(INPUT_CALIBRATION_VALUES))
+        print('Output Calibration Vals : ' + str(OUTPUT_CALIBRATION_VALUES))
         
         # ------------------------
         # Pre-loaded patterns
@@ -194,6 +180,62 @@ class drumMachine:
         self.SN.append("0001000000010000")
         self.HH.append("1111111111111111")
 
+        # Be warned patterns < 16 steps sound disjointed when using CV to select the pattern!
+
+        self.BD.append("10010000010010")
+        self.SN.append("00010010000010")
+        self.HH.append("11100110111011")
+
+        self.BD.append("1001000001001")
+        self.SN.append("0001001000001")
+        self.HH.append("1110011011101")
+
+        self.BD.append("100100000100")
+        self.SN.append("000100100000")
+        self.HH.append("111001101110")
+
+        self.BD.append("10010000010")
+        self.SN.append("00010010000")
+        self.HH.append("11100110111")
+
+        self.BD.append("10010000010")
+        self.SN.append("00010010000")
+        self.HH.append("11111010011")
+
+        self.BD.append("1001000010")
+        self.SN.append("0001000000")
+        self.HH.append("1111101101")
+
+        self.BD.append("100100010")
+        self.SN.append("000100000")
+        self.HH.append("111110111")
+
+        self.BD.append("10010010")
+        self.SN.append("00010000")
+        self.HH.append("11111111")
+
+        self.BD.append("1001001")
+        self.SN.append("0001000")
+        self.HH.append("1111111")
+
+        self.BD.append("100100")
+        self.SN.append("000100")
+        self.HH.append("111111")
+
+        self.BD.append("10000")
+        self.SN.append("00001")
+        self.HH.append("11110")
+
+        self.BD.append("1000")
+        self.SN.append("0000")
+        self.HH.append("1111")
+
+        self.BD.append("100")
+        self.SN.append("000")
+        self.HH.append("111")
+
+        self.generateNewRandomCVPattern()
+
         # Triggered when button 2 is released.
         # Short press: Generate random CV for cv4-6
         # Long press: Change operating mode
@@ -206,19 +248,11 @@ class drumMachine:
                     self.analogInputMode += 1
                 else:
                     self.analogInputMode = 1
-                #if self.analogInputMode == 1:
-                #    self.analogInputMode = 2
-                #else:
-                #    self.analogInputMode = 1
             else:
-                # Move to next cv pattern is already exists, otherwise create a new one
+                # Move to next cv pattern if one already exists, otherwise create a new one
                 self.CvPattern += 1
                 if self.CvPattern == len(self.random4):
                     self.generateNewRandomCVPattern()
-                print('CV Pattern:' + str(self.CvPattern))
-                #print('r4 len: ' + str(len(self.random4)))
-                #print('r5 len: ' + str(len(self.random5)))
-                #print('r6 len: ' + str(len(self.random5)))
             
         # Triggered when button 1 is released
         # Short press: Play previous CV pattern for cv4-6
@@ -235,16 +269,24 @@ class drumMachine:
                     self.CvPattern -= 1
 
         # Triggered on each clock into digital input. Output triggers.
-        @din.handler
+        @din.handler_falling
         def clockTrigger():
             #self.setClockDivision()
             #self.updateScreen()
             self.last_clock_input = ticks_ms()
             
             if self.clock_step % self.clock_division == 0:
+
+                self.step_length = len(self.BD[self.pattern])
                 
-                #self.getPattern()
-                #self.getRandomness()
+                print('Seq: ' + str(self.step))
+                print('Pattern: ' + str(self.pattern))
+                print('Step Length: ' + str(self.step_length))
+
+                # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
+                if self.step >= self.step_length:
+                    print('Resetting step')
+                    self.step = 0 
 
                 # Set cv4-6 voltage outputs based on previously generated random pattern
                 #print(self.random4[self.step])
@@ -272,48 +314,61 @@ class drumMachine:
                 cv1.off()
                 cv2.off()
                 cv3.off()
-    
+
+            # Reset clock step at 128    
             if self.clock_step < 128:
                 self.clock_step +=1
             else:
                 self.clock_step = 0
     
+            # Reset step number at step_length -1 as pattern arrays are zero-based
             if self.step < self.step_length - 1:
                 self.step += 1
             else:
                 self.step = 0
 
     def generateNewRandomCVPattern(self):
-        #self.random4 = self.generateRandomPattern(self.step_length, 0, 9)
-        #self.random5 = self.generateRandomPattern(self.step_length, 0, 9)
-        #self.random6 = self.generateRandomPattern(self.step_length, 0, 9)
-
-        self.random4.append(self.generateRandomPattern(self.step_length, 0, 9))
-        self.random5.append(self.generateRandomPattern(self.step_length, 0, 9))
-        self.random6.append(self.generateRandomPattern(self.step_length, 0, 9))
+        #print('Pattern: ' + str(self.pattern))
+        self.step_length = len(self.BD[self.pattern])
+        #print('Step Length: ' +str( self.step_length))
+        self.random4.append(self.generateRandomPattern(16, 0, 9))
+        self.random5.append(self.generateRandomPattern(16, 0, 9))
+        self.random6.append(self.generateRandomPattern(16, 0, 9))
 
     def getPattern(self):
 
-        # Get the analogue input voltage as a percentage
-        pVal = 100 * ain.percent()
-        
-        # Is there a voltage on the analogue input and are we configured to use it?
-        if pVal > 0.4 and self.analogInputMode == 2:
-            # Convert percentage value to a representative index of the pattern array
-            self.pattern = int((len(self.BD) / 100) * pVal)
-        else:
+        # If not analogInput mode 2, get the pattern from the knob position
+        if self.analogInputMode != 2:
             self.pattern = k2.read_position(len(self.BD))
+        else:
+            # Get the analogue input voltage as a percentage
+            val = 100 * ain.percent()
+        
+            # Is there a voltage on the analogue input and are we configured to use it?
+            if val > 0.4:
+                # Convert percentage value to a representative index of the pattern array
+                self.pattern = int((len(self.BD) / 100) * val)
+            else:
+                self.pattern = k2.read_position(len(self.BD))
+        
+        #self.step_length = 16
+        self.step_length = len(self.BD[self.pattern])
+        #print('Pattern: ' + str(self.pattern) + ' Step Length: ' + str(self.step_length))
 
     def getCvPattern(self):
 
-        # Get the analogue input voltage as a percentage
-        CvpVal = 100 * ain.percent()
-        
-        # Is there a voltage on the analogue input and are we configured to use it?
-        #print('CvpVal: ' + str(CvpVal))
-        if CvpVal > 0.4 and self.analogInputMode == 3:
-            # Convert percentage value to a representative index of the pattern array
-            self.CvPattern = int((len(self.random4) / 100) * CvpVal)
+        # If analogue input mode 3, get the CV pattern from CV input
+
+        if self.analogInputMode != 3:
+            return
+        else:
+            # Get the analogue input voltage as a percentage
+            CvpVal = 100 * ain.percent()
+            
+            # Is there a voltage on the analogue input and are we configured to use it?
+            if CvpVal > 0.4:
+                # Convert percentage value to a representative index of the pattern array
+                self.CvPattern = int((len(self.random4) / 100) * CvpVal)
 
     def generateRandomPattern(self, length, min, max):
         self.t=[]
@@ -323,12 +378,16 @@ class drumMachine:
 
 
     def getRandomness(self):
-        # Check if there is CV on the Analogue input, if not use the k1 position
-        rCvVal = 100 * ain.percent()
-        if rCvVal > 0.4 and self.analogInputMode == 1:
-            self.randomness = rCvVal
-        else:
+        # If not mode 1, get the value from the knob position
+        if self.analogInputMode != 1:
             self.randomness = k1.read_position()
+        else:
+            # Check if there is CV on the Analogue input, if not use the k1 position
+            val = 100 * ain.percent()
+            if val > 0.4:
+                self.randomness = val
+            else:
+                self.randomness = k1.read_position()
 
         #print(rCvVal)
         #print(ain.read_voltage())
@@ -342,8 +401,9 @@ class drumMachine:
             self.getCvPattern()
             self.updateScreen()
             self.reset_timeout = 500
-            # If I have been stopped for longer than reset_timeout, reset the steps and clock_step to 0
-            if ticks_diff(ticks_ms(), self.last_clock_input) > self.reset_timeout:
+            # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
+            if self.clock_step != 0 and ticks_diff(ticks_ms(), self.last_clock_input) > self.reset_timeout:
+                print('Resetting...')
                 self.step = 0
                 self.clock_step = 0
             #sleep_ms(100)
@@ -391,20 +451,15 @@ class drumMachine:
             oled.fill_rect(0,29,20,3,1)
 
         # Show the analogInputMode
-        oled.text('m' + str(self.analogInputMode), 112, 25, 1)
-        #if self.analogInputMode == 2:
-        #    oled.text('m2', 112, 25, 1)
-        #elif self.analogInputMode == 1:
-        #    oled.text('m1', 112, 25, 1)
-        #else:
-        #    oled.text('m3', 112, 25, 1)
-        #self.analogInputMode
+        oled.text('M' + str(self.analogInputMode), 112, 25, 1)
+
+        # Show randomness
+        oled.text('R' + str(int(self.randomness)), 40, 25, 1)    
 
         # Show CV pattern
-        oled.text(str(self.CvPattern), 80, 25, 1)
+        oled.text('C' + str(self.CvPattern), 76, 25, 1)
 
         oled.show()
-        
 
 # Reset module display state.
 reset_state()
