@@ -57,8 +57,8 @@ There is also an interesting bug caused by small amount of noise in the Europi w
 - knob_1: randomness
 - knob_2: select pre-loaded drum pattern
 
-- button_1: toggle randomized hi-hats on / off
-- button_2: generate a new random cv pattern for outputs 4 - 6
+- button_1: Short Press: toggle randomized hi-hats on / off. Long Press: Play previous CV Pattern
+- button_2: Short PressL Generate a new random cv pattern for outputs 4 - 6. Long Press: Cycle through analogue input modes
 
 - output_1: trigger 1 e.g. Bass Drum
 - output_2: trigger 2 e.g Snare Drum
