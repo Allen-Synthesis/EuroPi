@@ -33,5 +33,5 @@ and run my scripts.
 From the root dir of the repo, enter rshell:
 
     $ rshell
-    > cp contrib/coin_toss.py /pyboard/main.py
-    > repl pyboard ~ from  main import * ~ c=CoinToss() ~ c.main()
+    > cp software/contrib/coin_toss.py /pyboard/main.py
+    > repl pyboard ~ import main
