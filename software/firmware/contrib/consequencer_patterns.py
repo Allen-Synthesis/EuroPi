@@ -117,7 +117,7 @@ class pattern:
     SN.append("0001000000010000")
     HH.append("1111111111111111")
 
-    # Be warned patterns < 16 steps sound disjointed when using CV to select the pattern!
+    # Be warned patterns < 16 steps can sound disjointed when using CV to select the pattern!
 
     BD.append("10010000010010")
     SN.append("00010010000010")
