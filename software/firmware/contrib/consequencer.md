@@ -1,4 +1,4 @@
-# Consequencer
+# EuroPi Consequencer - An open source sequencer and random source power house!
 
 author: Nik Ansell (github.com/gamecat69)
 
@@ -6,18 +6,18 @@ date: 2022-02-09
 
 labels: sequencer, gates, triggers, drums, randomness
 
-Consequencer is a gate and stepped CV sequencer inspired by Grids from Mutable Instruments.
+Consequencer is a gate and stepped CV sequencer inspired by Grids from Mutable Instruments and the randomness created by the Turing Machine.
 Pattern changes and randomness are introduced as a consequence of both manual input and control voltages sent to the analogue input.
 A large number of popular gate patterns are pre-loaded. Stepped CV sequences are automatically generated.
 
-Both gate patterns and CV sequences can be changed without disrupting playback.
-Use outputs 1 - 3 for gates and outputs 4 -6 for randomized stepped CV patterns.
+Both gate patterns and CV sequences can be smoothly morphed between without disrupting playback.
+Use outputs 1 - 3 for gates and outputs 4 - 6 for randomised stepped CV patterns.
 Send a clock to the digital input to start the sequence.
 
 Demo video: https://youtu.be/UwjajP6uiQU
 
 Credits:
-- Allen Synthesis: Europi hardware and firmware design: https://github.com/Allen-Synthesis/EuroPi
+- The Europi hardware and firmware was designed by Allen Synthesis: https://github.com/Allen-Synthesis/EuroPi
 - A small number of preload drum patterns were recreated from here: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
 
 # Controls
@@ -30,7 +30,7 @@ Credits:
 - knob_1: Adjust randomness
 - knob_2: Select pre-loaded gate pattern
 
-- button_1: Short Press: Toggle randomized pattern on output 3 on / off. Long Press: Play previous stepped CV sequenc
+- button_1: Short Press: Toggle randomized pattern on output 3 on / off. Long Press: Play previous stepped CV sequence
 - button_2: Short Press: Generate a new random stepped cv sequence for outputs 4 - 6. Long Press: Cycle through analogue input modes
 
 - output_1: gate 1 e.g Kick Drum
