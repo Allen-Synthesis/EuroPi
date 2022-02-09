@@ -14,7 +14,7 @@ Both gate patterns and CV sequences can be changed without disrupting playback.
 Use outputs 1 - 3 for gates and outputs 4 -6 for randomized stepped CV patterns.
 Send a clock to the digital input to start the sequence.
 
-Demo video: TBC
+Demo video: https://youtu.be/UwjajP6uiQU
 
 Credits:
 - Allen Synthesis: Europi hardware and firmware design: https://github.com/Allen-Synthesis/EuroPi
