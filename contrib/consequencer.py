@@ -42,6 +42,7 @@ class drumMachine:
         self.BD=p.BD
         self.SN=p.SN
         self.HH=p.HH
+        #print(str(len(p.BD)) + ' patterns loaded')
 
         # Initialize variables
         self.step = 0
@@ -61,9 +62,8 @@ class drumMachine:
         self.random5 = []
         self.random6 = []
 
-        #cv1.voltage(10)
-        print('Input Calibration Vals  : ' + str(INPUT_CALIBRATION_VALUES))
-        print('Output Calibration Vals : ' + str(OUTPUT_CALIBRATION_VALUES))
+        #print('Input Calibration Vals  : ' + str(INPUT_CALIBRATION_VALUES))
+        #print('Output Calibration Vals : ' + str(OUTPUT_CALIBRATION_VALUES))
         
         self.generateNewRandomCVPattern()
 
@@ -110,13 +110,13 @@ class drumMachine:
 
                 self.step_length = len(self.BD[self.pattern])
                 
-                print('Seq: ' + str(self.step))
-                print('Pattern: ' + str(self.pattern))
-                print('Step Length: ' + str(self.step_length))
+                #print('Seq: ' + str(self.step))
+                #print('Pattern: ' + str(self.pattern))
+                #print('Step Length: ' + str(self.step_length))
 
                 # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
                 if self.step >= self.step_length:
-                    print('Resetting step')
+                    #print('Resetting step')
                     self.step = 0 
 
                 # Set cv4-6 voltage outputs based on previously generated random pattern
@@ -234,7 +234,7 @@ class drumMachine:
             self.reset_timeout = 500
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
             if self.clock_step != 0 and ticks_diff(ticks_ms(), self.last_clock_input) > self.reset_timeout:
-                print('Resetting...')
+                #print('Resetting...')
                 self.step = 0
                 self.clock_step = 0
             #sleep_ms(100)
