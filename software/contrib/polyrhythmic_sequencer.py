@@ -69,7 +69,7 @@ NOTES = [
 
 
 class Sequence:
-    def __init__(self, notes: list[str], pitch_cv: Output, trigger_cv: Output):
+    def __init__(self, notes, pitch_cv, trigger_cv):
         self.notes = notes
         self.pitch_cv = pitch_cv
         self.trigger_cv = trigger_cv
