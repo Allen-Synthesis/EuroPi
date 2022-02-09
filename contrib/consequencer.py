@@ -1,15 +1,15 @@
 from europi import *
 from time import sleep_ms, ticks_diff, ticks_ms
 from random import randint, randrange, uniform
-#from patterns import *
+from consequencer_patterns import pattern as p
 
 '''
-Drum Sequencer (Inspired by Mutable Grids)
+Consequencer (Inspired by Mutable Grids)
 author: Nik Ansell (github.com/gamecat69)
 date: 2022-02-05
 labels: sequencer, triggers, drums, randomness
 
-A drum sequencer inspired by Grids from Mutable Instruments that contains pre-loaded drum patterns that can be smoothly morphed from one to another. Triggers are sent from outputs 1 - 3, randomized stepped CV patterns are sent from outputs 4 - 6.
+A gate and CV sequencer inspired by Grids from Mutable Instruments that contains pre-loaded drum patterns that can be smoothly morphed from one to another. Triggers are sent from outputs 1 - 3, randomized stepped CV patterns are sent from outputs 4 - 6.
 Send a clock to the digital input to start the sequence.
 
 Demo video: TBC
@@ -39,9 +39,9 @@ class drumMachine:
     def __init__(self):
 
         # Initialize sequencer pattern arrays        
-        self.BD=[]
-        self.SN=[]
-        self.HH=[]
+        self.BD=p.BD
+        self.SN=p.SN
+        self.HH=p.HH
 
         # Initialize variables
         self.step = 0
@@ -65,175 +65,6 @@ class drumMachine:
         print('Input Calibration Vals  : ' + str(INPUT_CALIBRATION_VALUES))
         print('Output Calibration Vals : ' + str(OUTPUT_CALIBRATION_VALUES))
         
-        # ------------------------
-        # Pre-loaded patterns
-        # ------------------------
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000000000000000")
-        self.HH.append("0000000000000000")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000000000000000")
-        self.HH.append("0010010010010010")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000000000")
-        self.HH.append("0010010010010010")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000001000")
-        self.HH.append("0010010010010010")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000000000")
-        self.HH.append("0000000000000000")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000001000")
-        self.HH.append("0000000000000000")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000001000")
-        self.HH.append("0000100010001001")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000001000")
-        self.HH.append("0101010101010101")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000000000000000")
-        self.HH.append("1111111111111111")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000001000")
-        self.HH.append("1111111111111111")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000000000")
-        self.HH.append("0001000000000000")
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000100000000000")
-        self.HH.append("0001001000000000")
-
-        # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
-        self.BD.append("1000000010000000")
-        self.SN.append("0000100000001000")
-        self.HH.append("1010101010101010")
-
-        self.BD.append("1010001000100100")
-        self.SN.append("0000100101011001")
-        self.HH.append("0000000100000100")
-
-        self.BD.append("1000000110000010")
-        self.SN.append("0000100000001000")
-        self.HH.append("1010101110001010")
-
-        self.BD.append("1100000100110000")
-        self.SN.append("0000100000001000")
-        self.HH.append("1010101010101010")
-
-        self.BD.append("1000000110100000")
-        self.SN.append("0000100000001000")
-        self.HH.append("0010101010101010")
-
-        self.BD.append("1010000000110001")
-        self.SN.append("0000100000001000")
-        self.HH.append("1010101010101010")
-
-        self.BD.append("1000000110100001")
-        self.SN.append("0000100000001000")
-        self.HH.append("0000100010101011")
-
-        self.BD.append("1001001010000000")
-        self.SN.append("0000100000001000")
-        self.HH.append("0000100000001000")
-
-        self.BD.append("1010001001100000")
-        self.SN.append("0000100000001000")
-        self.HH.append("1010101010001010")
-
-        self.BD.append("1010000101110001")
-        self.SN.append("0000100000001000")
-        self.HH.append("1010101010001010")
-
-        # End external patterns
-
-        self.BD.append("1000100010001000")
-        self.SN.append("0000101001001000")
-        self.HH.append("0101010101010101")
-
-        self.BD.append("1100000001010000")
-        self.SN.append("0000101000001000")
-        self.HH.append("0101010101010101")
-
-        self.BD.append("1100000001010000")
-        self.SN.append("0000101000001000")
-        self.HH.append("1111111111111111")
-
-        self.BD.append("1001001001000100")
-        self.SN.append("0001000000010000")
-        self.HH.append("0101110010011110")
-
-        self.BD.append("1001001001000100")
-        self.SN.append("0001000000010000")
-        self.HH.append("1111111111111111")
-
-        # Be warned patterns < 16 steps sound disjointed when using CV to select the pattern!
-
-        self.BD.append("10010000010010")
-        self.SN.append("00010010000010")
-        self.HH.append("11100110111011")
-
-        self.BD.append("1001000001001")
-        self.SN.append("0001001000001")
-        self.HH.append("1110011011101")
-
-        self.BD.append("100100000100")
-        self.SN.append("000100100000")
-        self.HH.append("111001101110")
-
-        self.BD.append("10010000010")
-        self.SN.append("00010010000")
-        self.HH.append("11100110111")
-
-        self.BD.append("10010000010")
-        self.SN.append("00010010000")
-        self.HH.append("11111010011")
-
-        self.BD.append("1001000010")
-        self.SN.append("0001000000")
-        self.HH.append("1111101101")
-
-        self.BD.append("100100010")
-        self.SN.append("000100000")
-        self.HH.append("111110111")
-
-        self.BD.append("10010010")
-        self.SN.append("00010000")
-        self.HH.append("11111111")
-
-        self.BD.append("1001001")
-        self.SN.append("0001000")
-        self.HH.append("1111111")
-
-        self.BD.append("100100")
-        self.SN.append("000100")
-        self.HH.append("111111")
-
-        self.BD.append("10000")
-        self.SN.append("00001")
-        self.HH.append("11110")
-
-        self.BD.append("1000")
-        self.SN.append("0000")
-        self.HH.append("1111")
-
-        self.BD.append("100")
-        self.SN.append("000")
-        self.HH.append("111")
-
         self.generateNewRandomCVPattern()
 
         # Triggered when button 2 is released.
