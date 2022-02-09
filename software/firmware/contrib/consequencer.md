@@ -1,4 +1,4 @@
-# EuroPi Consequencer - An open source sequencer and random source power house!
+# EuroPi Consequencer - A 6-channel open source sequencer and random source power house!
 
 author: Nik Ansell (github.com/gamecat69)
 
