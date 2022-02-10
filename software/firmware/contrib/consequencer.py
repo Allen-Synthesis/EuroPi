@@ -51,7 +51,7 @@ class drumMachine:
         self.clock_division = 1
         self.pattern = 0
         self.random_HH = False
-        self.last_clock_input = 0
+        #self.last_clock_input = 0
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
@@ -107,7 +107,7 @@ class drumMachine:
         def clockTrigger():
             #self.setClockDivision()
             #self.updateScreen()
-            self.last_clock_input = ticks_ms()
+            #self.last_clock_input = ticks_ms()
             
             if self.clock_step % self.clock_division == 0:
 
@@ -236,8 +236,11 @@ class drumMachine:
             self.updateScreen()
             self.reset_timeout = 500
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
-            if self.clock_step != 0 and ticks_diff(ticks_ms(), self.last_clock_input) > self.reset_timeout:
-                #print('Resetting...')
+            #if self.clock_step != 0 and ticks_diff(ticks_ms(), self.last_clock_input) > self.reset_timeout:
+            #print('din.last_triggered: ' + str(din.last_triggered()))
+            #print('Step: ' + str(self.step))
+            if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
+                print('Resetting...')
                 self.step = 0
                 self.clock_step = 0
             #sleep_ms(100)
