@@ -73,7 +73,9 @@ class drumMachine:
         @b2.handler_falling
         def b2Pressed():
             
-            if (ticks_ms() - b2.last_rising_ms) > 300:
+            #if (ticks_ms() - b2.last_rising_ms) > 300:
+            if ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
+
                 #print('b2 long press')
                 if self.analogInputMode < 3:
                     self.analogInputMode += 1
@@ -91,7 +93,8 @@ class drumMachine:
         @b1.handler_falling
         def b1Pressed():
             #print(ticks_ms() - b1.last_rising_ms)
-            if (ticks_ms() - b1.last_rising_ms) > 300:
+            #if (ticks_ms() - b1.last_rising_ms) > 300:
+            if ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 #print('b1 long press')
                 self.random_HH = not self.random_HH
             else:
