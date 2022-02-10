@@ -103,7 +103,7 @@ class drumMachine:
                     self.CvPattern -= 1
 
         # Triggered on each clock into digital input. Output triggers.
-        @din.handler_falling
+        @din.handler
         def clockTrigger():
             #self.setClockDivision()
             #self.updateScreen()
@@ -144,10 +144,10 @@ class drumMachine:
                     else:
                         cv3.value(int(self.HH[self.pattern][self.step]))
                 
-                sleep_ms(self.trigger_duration_ms)
-                cv1.off()
-                cv2.off()
-                cv3.off()
+                #sleep_ms(self.trigger_duration_ms)
+                #cv1.off()
+                #cv2.off()
+                #cv3.off()
 
             # Reset clock step at 128    
             if self.clock_step < 128:
@@ -160,6 +160,12 @@ class drumMachine:
                 self.step += 1
             else:
                 self.step = 0
+
+        @din.handler_falling
+        def clockTriggerEnd():
+            cv1.off()
+            cv2.off()
+            cv3.off()
 
     def generateNewRandomCVPattern(self):
         #print('Pattern: ' + str(self.pattern))
@@ -240,7 +246,7 @@ class drumMachine:
             #print('din.last_triggered: ' + str(din.last_triggered()))
             #print('Step: ' + str(self.step))
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
-                print('Resetting...')
+                #print('Resetting...')
                 self.step = 0
                 self.clock_step = 0
             #sleep_ms(100)
