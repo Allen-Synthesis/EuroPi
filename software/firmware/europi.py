@@ -77,7 +77,11 @@ def reset_state():
 # Component classes.
 
 class AnalogueReader:
-    """A base class for common analogue read methods."""
+    """A base class for common analogue read methods.
+
+    This class in inherited by classes like Knob and AnalogueInput and does
+    not need to be used by user scripts.
+    """
 
     def __init__(self, pin, samples=DEFAULT_SAMPLES):
         self.pin = ADC(Pin(pin))
@@ -122,7 +126,7 @@ class AnalogueReader:
 
 class AnalogueInput(AnalogueReader):
     """A class for handling the reading of analogue control voltage.
-    
+
     The analogue input allows you to 'read' CV from anywhere between 0 and 12V.
 
     It is protected for the entire Eurorack range, so don't worry about
@@ -172,17 +176,31 @@ class AnalogueInput(AnalogueReader):
 
 class Knob(AnalogueReader):
     """A class for handling the reading of knob voltage and position.
-    
-    Read_position has a default value of 100, meaning if you simply use 
-    ``kx.read_position()`` you will return a percent style value from 0-100.
 
-    There is also the optional parameter of samples (which must come after the
+    Read_position has a default value of 100, meaning if you simply use
+    ``kx.read_position()`` you will return a whole number percent style value
+    from 0-100.
+
+    There is also the optional parameter of ``samples`` (which must come after the
     normal parameter), the same as the analogue input uses (the knob positions
     are 'read' via an analogue to digital converter). It has a default value
     of 256, but you can use higher or lower depending on if you value speed or
     accuracy more. If you really want to avoid 'noise' which would present as
     a flickering value despite the knob being still, then I'd suggest using
     higher samples (and probably a smaller number to divide the position by).
+    The default ``samples`` value can also be set using the ``set_samples()``
+    method, which will then be used on all analogue read calls for that
+    component.
+
+    Additionally, the ``choice()`` method can be used to select a value from a
+    list of values based on the knob's position::
+
+        def clock_division(self):
+            return k1.choice([1, 2, 3, 4, 5, 6, 7, 8, 16, 32])
+
+    When the knob is all the way to the left, the return value will be ``1``,
+    at 12 o'clock it will return the mid point value of ``5`` and when fully
+    clockwise, the last list item of ``32`` will be returned.
 
     The ADCs used to read the knob position are only 12 bit, which means that
     any read_position value above 4096 (2^12) will not actually be any finer
@@ -204,8 +222,12 @@ class Knob(AnalogueReader):
 
 
 class DigitalReader:
-    """A base class for common digital inputs methods."""
+    """A base class for common digital inputs methods.
 
+    This class in inherited by classes like Button and DigitalInput and does
+    not need to be used by user scripts.
+
+    """
     def __init__(self, pin, debounce_delay=500):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay
@@ -240,14 +262,14 @@ class DigitalReader:
         return 1 - self.pin.value()
 
     def handler(self, func):
-        """Define the callback func to call when rising edge detected."""
+        """Define the callback function to call when rising edge detected."""
         if not callable(func):
             raise ValueError("Provided handler func is not callable")
         self._rising_handler = func
         self.pin.irq(handler=self._bounce_wrapper)
 
     def handler_falling(self, func):
-        """Define the callback func to call when falling edge detected."""
+        """Define the callback function to call when falling edge detected."""
         if not callable(func):
             raise ValueError("Provided handler func is not callable")
         self._falling_handler = func
@@ -259,7 +281,7 @@ class DigitalReader:
 
 class DigitalInput(DigitalReader):
     """A class for handling reading of the digital input.
-    
+
     The Digital Input jack can detect a HIGH signal when recieving voltage >
     0.8v and will be LOW when below.
 
@@ -268,46 +290,78 @@ class DigitalInput(DigitalReader):
     ``x.handler(new_function)``. Do not include the brackets for the function,
     and replace the 'x' in the example with the name of your input, either
     ``b1``, ``b2``, or ``din``.
+
+    Here is another example how you can write digital input handlers to react
+    to a clock source and match its trigger duration.::
+
+        @din.handler
+        def gate_on():
+            # Trigger outputs with a probability set by knobs.
+            cv1.value(random() > k1.percent())
+            cv2.value(random() > k2.percent())
+
+        @din.handler_falling
+        def gate_off():
+            # Turn off all triggers on falling clock trigger to match clock.
+            cv1.off()
+            cv2.off()
+
+    When writing a handler, try to keep the code as minimal as possible.
+    Ideally handlers should be used to change state and allow your main loop
+    to change behavior based on the altered state. See `tips <https://docs.micropython.org/en/latest/reference/isr_rules.html#tips-and-recommended-practices>`_
+    from the MicroPython documentation for more details.
     """
     def __init__(self, pin, debounce_delay=0):
         super().__init__(pin, debounce_delay)
 
     def last_triggered(self):
-        """Return the ticks_ms of the last trigger or 0 prior to the first trigger."""
+        """Return the ticks_ms of the last trigger.
+
+        If the button has not yet been pressed, the default return value is 0.
+        """
         return self.last_rising_ms
 
 
 class Button(DigitalReader):
     """A class for handling push button behavior.
-    
-    Button instances have a method last_pressed() 
-    (similar to ``DigitalInput.last_triggered()``) which can be used to perform
-    some action or behavior relative to when the button was last pressed 
-    (or input trigger received). For example, if you want to display a message
-    that a button was pressed, you could add the following code to your main
-    script loop::
+
+    Button instances have a method ``last_pressed()``
+    (similar to ``DigitalInput.last_triggered()``) which can be used by your
+    script to help perform some action or behavior relative to when the button
+    was last pressed (or input trigger received). For example, if you want to
+    call a function to display a message that a button was pressed, you could
+    add the following code to your main script loop::
 
         # Inside the main loop...
         if b1.last_pressed() > 0 and ticks_diff(ticks_ms(), b1.last_pressed()) < 2000:
             # Call this during the 2000 ms duration after button press.
             display_button_pressed()
-    
+
+    Note, if a button has not yet been pressed, the ``last_pressed()`` default
+    return value is 0, so you may want to add the check `if b1.last_pressed() > 0`
+    before you check the elapsed duration to ensure the button has been
+    pressed. This is also useful when checking if the digital input has been
+    triggered with the ``DigitalInput.last_triggered()`` method.
+
     """
     def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
 
     def last_pressed(self):
-        """Return the ticks_ms of the last button press or 0 prior to the first button press."""
+        """Return the ticks_ms of the last button press
+
+        If the button has not yet been pressed, the default return value is 0.
+        """
         return self.last_rising_ms
 
 
 class Display(SSD1306_I2C):
     """A class for drawing graphics and text to the OLED.
-    
+
     The OLED Display works by collecting all the applied commands and only
     updates the physical display when ``oled.show()`` is called. This allows
     you to perform more complicated graphics without slowing your program, or
-    to perform the calculations for other functions, but only update the 
+    to perform the calculations for other functions, but only update the
     display every few steps to prevent lag.
 
     More explanations and tips about the the display can be found in the oled_tips file
@@ -352,8 +406,8 @@ class Display(SSD1306_I2C):
 
 class Output:
     """A class for sending digital or analogue voltage to an output jack.
-    
-    The outputs are capable of providing 0-10V, which can be achieved using 
+
+    The outputs are capable of providing 0-10V, which can be achieved using
     the ``cvx.voltage()`` method.
 
     So that there is no chance of not having the full range, the chosen
