@@ -61,7 +61,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 Now that you have installed the europi.py and ssd1306 libraries, you are ready to take the next step with the module.  
 
 * [Option 1](#write-your-own-program-from-scratch): Start writing your own program from scratch
-* [Option 2](#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/contrib/)
+* [Option 2](#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/software/contrib/)
 * [Option 3](#calibrate-the-module): Calibrate the module for higher accuracy
 
 
@@ -78,7 +78,7 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 
 ### Copy someone else's program to run on your module
 
-1. Open the [contrib folder](/contrib/) and decide which program you would like to run. Each program will have an identically named '.md' file describing how to use it.
+1. Open the [contrib folder](/software/contrib/) and decide which program you would like to run. Each program will have an identically named '.md' file describing how to use it.
 2. Once you have chosen a program, click the '.py' file with the same name as the explanatory '.md' file to open it in GitHub.
 3. Click the pencil icon to 'Edit this file' in the top right  
   
