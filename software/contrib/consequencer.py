@@ -1,10 +1,9 @@
 from europi import *
 from time import ticks_diff, ticks_ms
 from random import randint, uniform
-from consequencer_patterns import pattern as p
 
 '''
-Consequencer (Inspired by Mutable Grids)
+Consequencer
 author: Nik Ansell (github.com/gamecat69)
 date: 2022-02-05
 labels: sequencer, triggers, drums, randomness
@@ -38,7 +37,8 @@ machine.freq(250_000_000)
 class drumMachine:
     def __init__(self):
 
-        # Initialize sequencer pattern arrays        
+        # Initialize sequencer pattern arrays   
+        p = pattern()     
         self.BD=p.BD
         self.SN=p.SN
         self.HH=p.HH
@@ -51,7 +51,6 @@ class drumMachine:
         self.pattern = 0
         self.random_HH = False
         self.minAnalogInputVoltage = 0.9
-        #self.last_clock_input = 0
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
@@ -251,6 +250,179 @@ class drumMachine:
         oled.text('C' + str(self.CvPattern), 76, 25, 1)
 
         oled.show()
+
+class pattern:
+
+    # Initialize pattern lists
+    BD=[]
+    SN=[]
+    HH=[]
+
+    # Add patterns
+    BD.append("1000100010001000")
+    SN.append("0000000000000000")
+    HH.append("0000000000000000")
+
+    BD.append("1000100010001000")
+    SN.append("0000000000000000")
+    HH.append("0010010010010010")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000000000")
+    HH.append("0010010010010010")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000001000")
+    HH.append("0010010010010010")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000000000")
+    HH.append("0000000000000000")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000001000")
+    HH.append("0000000000000000")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000001000")
+    HH.append("0000100010001001")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000001000")
+    HH.append("0101010101010101")
+
+    BD.append("1000100010001000")
+    SN.append("0000000000000000")
+    HH.append("1111111111111111")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000001000")
+    HH.append("1111111111111111")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000000000")
+    HH.append("0001000000000000")
+
+    BD.append("1000100010001000")
+    SN.append("0000100000000000")
+    HH.append("0001001000000000")
+
+    # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
+    BD.append("1000000010000000")
+    SN.append("0000100000001000")
+    HH.append("1010101010101010")
+
+    BD.append("1010001000100100")
+    SN.append("0000100101011001")
+    HH.append("0000000100000100")
+
+    BD.append("1000000110000010")
+    SN.append("0000100000001000")
+    HH.append("1010101110001010")
+
+    BD.append("1100000100110000")
+    SN.append("0000100000001000")
+    HH.append("1010101010101010")
+
+    BD.append("1000000110100000")
+    SN.append("0000100000001000")
+    HH.append("0010101010101010")
+
+    BD.append("1010000000110001")
+    SN.append("0000100000001000")
+    HH.append("1010101010101010")
+
+    BD.append("1000000110100001")
+    SN.append("0000100000001000")
+    HH.append("0000100010101011")
+
+    BD.append("1001001010000000")
+    SN.append("0000100000001000")
+    HH.append("0000100000001000")
+
+    BD.append("1010001001100000")
+    SN.append("0000100000001000")
+    HH.append("1010101010001010")
+
+    BD.append("1010000101110001")
+    SN.append("0000100000001000")
+    HH.append("1010101010001010")
+
+    # End external patterns
+
+    BD.append("1000100010001000")
+    SN.append("0000101001001000")
+    HH.append("0101010101010101")
+
+    BD.append("1100000001010000")
+    SN.append("0000101000001000")
+    HH.append("0101010101010101")
+
+    BD.append("1100000001010000")
+    SN.append("0000101000001000")
+    HH.append("1111111111111111")
+
+    BD.append("1001001001000100")
+    SN.append("0001000000010000")
+    HH.append("0101110010011110")
+
+    BD.append("1001001001000100")
+    SN.append("0001000000010000")
+    HH.append("1111111111111111")
+
+    # Be warned patterns < 16 steps can sound disjointed when using CV to select the pattern!
+
+    BD.append("10010000010010")
+    SN.append("00010010000010")
+    HH.append("11100110111011")
+
+    BD.append("1001000001001")
+    SN.append("0001001000001")
+    HH.append("1110011011101")
+
+    BD.append("100100000100")
+    SN.append("000100100000")
+    HH.append("111001101110")
+
+    BD.append("10010000010")
+    SN.append("00010010000")
+    HH.append("11100110111")
+
+    BD.append("10010000010")
+    SN.append("00010010000")
+    HH.append("11111010011")
+
+    BD.append("1001000010")
+    SN.append("0001000000")
+    HH.append("1111101101")
+
+    BD.append("100100010")
+    SN.append("000100000")
+    HH.append("111110111")
+
+    BD.append("10010010")
+    SN.append("00010000")
+    HH.append("11111111")
+
+    BD.append("1001001")
+    SN.append("0001000")
+    HH.append("1111111")
+
+    BD.append("100100")
+    SN.append("000100")
+    HH.append("111111")
+
+    BD.append("10000")
+    SN.append("00001")
+    HH.append("11110")
+
+    BD.append("1000")
+    SN.append("0000")
+    HH.append("1111")
+
+    BD.append("100")
+    SN.append("000")
+    HH.append("111")
 
 # Reset module display state.
 reset_state()
