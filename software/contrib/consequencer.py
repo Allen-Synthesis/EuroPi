@@ -1,6 +1,6 @@
 from europi import *
-from time import sleep_ms, ticks_diff, ticks_ms
-from random import randint, randrange, uniform
+from time import ticks_diff, ticks_ms
+from random import randint, uniform
 from consequencer_patterns import pattern as p
 
 '''
@@ -42,7 +42,6 @@ class drumMachine:
         self.BD=p.BD
         self.SN=p.SN
         self.HH=p.HH
-        #print(str(len(p.BD)) + ' patterns loaded')
 
         # Initialize variables
         self.step = 0
@@ -56,15 +55,11 @@ class drumMachine:
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
-        #self.step_length = 16
         
         # Generate random CV for cv4-6
         self.random4 = []
         self.random5 = []
         self.random6 = []
-
-        #print('Input Calibration Vals  : ' + str(INPUT_CALIBRATION_VALUES))
-        #print('Output Calibration Vals : ' + str(OUTPUT_CALIBRATION_VALUES))
         
         self.generateNewRandomCVPattern()
 
@@ -74,10 +69,7 @@ class drumMachine:
         @b2.handler_falling
         def b2Pressed():
             
-            #if (ticks_ms() - b2.last_rising_ms) > 300:
             if ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
-
-                #print('b2 long press')
                 if self.analogInputMode < 3:
                     self.analogInputMode += 1
                 else:
@@ -93,10 +85,7 @@ class drumMachine:
         # Long press: Toggle random high-hat mode
         @b1.handler_falling
         def b1Pressed():
-            #print(ticks_ms() - b1.last_rising_ms)
-            #if (ticks_ms() - b1.last_rising_ms) > 300:
             if ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
-                #print('b1 long press')
                 self.random_HH = not self.random_HH
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
@@ -106,25 +95,16 @@ class drumMachine:
         # Triggered on each clock into digital input. Output triggers.
         @din.handler
         def clockTrigger():
-            #self.setClockDivision()
-            #self.updateScreen()
-            #self.last_clock_input = ticks_ms()
             
             if self.clock_step % self.clock_division == 0:
 
                 self.step_length = len(self.BD[self.pattern])
                 
-                #print('Seq: ' + str(self.step))
-                #print('Pattern: ' + str(self.pattern))
-                #print('Step Length: ' + str(self.step_length))
-
                 # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
                 if self.step >= self.step_length:
-                    #print('Resetting step')
                     self.step = 0 
 
                 # Set cv4-6 voltage outputs based on previously generated random pattern
-                #print(self.random4[self.step])
                 cv4.voltage(self.random4[self.CvPattern][self.step])
                 cv5.voltage(self.random5[self.CvPattern][self.step])
                 cv6.voltage(self.random6[self.CvPattern][self.step])
@@ -144,13 +124,8 @@ class drumMachine:
                         cv3.value(randint(0, 1))
                     else:
                         cv3.value(int(self.HH[self.pattern][self.step]))
-                
-                #sleep_ms(self.trigger_duration_ms)
-                #cv1.off()
-                #cv2.off()
-                #cv3.off()
 
-            # Reset clock step at 128    
+            # Reset clock step at 128 to avoid an overflow if running for a long time
             if self.clock_step < 128:
                 self.clock_step +=1
             else:
@@ -169,9 +144,7 @@ class drumMachine:
             cv3.off()
 
     def generateNewRandomCVPattern(self):
-        #print('Pattern: ' + str(self.pattern))
         self.step_length = len(self.BD[self.pattern])
-        #print('Step Length: ' +str( self.step_length))
         self.random4.append(self.generateRandomPattern(16, 0, 9))
         self.random5.append(self.generateRandomPattern(16, 0, 9))
         self.random6.append(self.generateRandomPattern(16, 0, 9))
@@ -184,13 +157,10 @@ class drumMachine:
         else:
             self.pattern = k2.read_position(len(self.BD))
         
-        #self.step_length = 16
         self.step_length = len(self.BD[self.pattern])
-        #print('Pattern: ' + str(self.pattern) + ' Step Length: ' + str(self.step_length))
 
     def getCvPattern(self):
         # If analogue input mode 3, get the CV pattern from CV input
-
         if self.analogInputMode != 3:
             return
         else:
@@ -219,22 +189,15 @@ class drumMachine:
 
     def main(self):
         while True:
-
-            #self.setClockDivision()
             self.getPattern()
             self.getRandomness()
             self.getCvPattern()
             self.updateScreen()
             self.reset_timeout = 500
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
-            #if self.clock_step != 0 and ticks_diff(ticks_ms(), self.last_clock_input) > self.reset_timeout:
-            #print('din.last_triggered: ' + str(din.last_triggered()))
-            #print('Step: ' + str(self.step))
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
-                #print('Resetting...')
                 self.step = 0
                 self.clock_step = 0
-            #sleep_ms(100)
 
     def setClockDivision(self):
         k1Val = k1.read_position()
