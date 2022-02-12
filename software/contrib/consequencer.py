@@ -12,7 +12,7 @@ labels: sequencer, triggers, drums, randomness
 A gate and CV sequencer inspired by Grids from Mutable Instruments that contains pre-loaded drum patterns that can be smoothly morphed from one to another. Triggers are sent from outputs 1 - 3, randomized stepped CV patterns are sent from outputs 4 - 6.
 Send a clock to the digital input to start the sequence.
 
-Demo video: TBC
+Demo video: https://youtu.be/UwjajP6uiQU
 
 digital_in: clock in
 analog_in: randomness CV
@@ -51,6 +51,7 @@ class drumMachine:
         self.clock_division = 1
         self.pattern = 0
         self.random_HH = False
+        self.minAnalogInputVoltage = 0.9
         #self.last_clock_input = 0
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
@@ -176,27 +177,18 @@ class drumMachine:
         self.random6.append(self.generateRandomPattern(16, 0, 9))
 
     def getPattern(self):
-
-        # If not analogInput mode 2, get the pattern from the knob position
-        if self.analogInputMode != 2:
-            self.pattern = k2.read_position(len(self.BD))
+        # If mode 2 and there is CV on the analogue input use it, if not use the knob position
+        val = 100 * ain.percent()
+        if self.analogInputMode == 2 and val > self.minAnalogInputVoltage:
+            self.pattern = int((len(self.BD) / 100) * val)
         else:
-            # Get the analogue input voltage as a percentage
-            val = 100 * ain.percent()
-        
-            # Is there a voltage on the analogue input and are we configured to use it?
-            if val > 0.4:
-                # Convert percentage value to a representative index of the pattern array
-                self.pattern = int((len(self.BD) / 100) * val)
-            else:
-                self.pattern = k2.read_position(len(self.BD))
+            self.pattern = k2.read_position(len(self.BD))
         
         #self.step_length = 16
         self.step_length = len(self.BD[self.pattern])
         #print('Pattern: ' + str(self.pattern) + ' Step Length: ' + str(self.step_length))
 
     def getCvPattern(self):
-
         # If analogue input mode 3, get the CV pattern from CV input
 
         if self.analogInputMode != 3:
@@ -218,19 +210,12 @@ class drumMachine:
 
 
     def getRandomness(self):
-        # If not mode 1, get the value from the knob position
-        if self.analogInputMode != 1:
-            self.randomness = k1.read_position()
+        # If mode 1 and there is CV on the analogue input use it, if not use the knob position
+        val = 100 * ain.percent()
+        if self.analogInputMode == 1 and val > self.minAnalogInputVoltage:
+            self.randomness = val
         else:
-            # Check if there is CV on the Analogue input, if not use the k1 position
-            val = 100 * ain.percent()
-            if val > 0.4:
-                self.randomness = val
-            else:
-                self.randomness = k1.read_position()
-
-        #print(rCvVal)
-        #print(ain.read_voltage())
+            self.randomness = k1.read_position()
 
     def main(self):
         while True:
