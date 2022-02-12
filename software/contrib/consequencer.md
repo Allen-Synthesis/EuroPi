@@ -86,7 +86,7 @@ Example usage for these CV outputs, (this will depend on the inputs your drum mo
 
 Consequencer can perform 3 different actions when a control voltage input is received at the analogue input.
 The current running mode is shown on the bottom right of the screen (e.g. M1, M2, M3)
-Cycle through the modes by long-pressing and releasing button 2. Tbe following modes are available:
+Cycle through the modes by long-pressing and releasing button 2. The following modes are available:
 
 - Mode 1: Control voltage adjusts randomness of the gate patterns sent to outputs 1 - 3
 - Mode 2: Control voltage selects the gate pattern
