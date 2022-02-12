@@ -106,13 +106,10 @@ for index, expected_reading in enumerate(readings[1:]):
         cv1.duty_u16(duty)
         duty += 10
         reading = sample()
-        #print('duty: ' + str(duty) + ' expected: ' + str(expected_reading) + ' got: ' + str(reading))
-    print(str(index+1) + 'V duty: ' + str(duty))
     output_duties.append(duty)
     oled.centre_text(f'Calibrating...\n{index+1}V')
 
 with open(f'lib/calibration_values.py', 'a+') as file:
-    print('Writing values')
     values = ", ".join(map(str, output_duties))
     file.write(f"\nOUTPUT_CALIBRATION_VALUES=[{values}]")
 
