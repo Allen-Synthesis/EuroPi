@@ -19,7 +19,7 @@ from machine import ADC
 from machine import I2C
 from machine import PWM
 from machine import Pin
-from time import sleep_ms
+from time import sleep
 
 from ssd1306 import SSD1306_I2C
 
@@ -97,7 +97,7 @@ def diagnostic():
         oled.rect(0, 0, OLED_WIDTH, OLED_HEIGHT, 1)
         oled.show()
 
-        sleep_ms(10)
+        sleep(0.1)
 
 
 # Component classes.
