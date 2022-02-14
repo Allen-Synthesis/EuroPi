@@ -19,6 +19,9 @@ class Pin:
 
     def irq(self, handler=None, trigger=None):
         pass
+    
+    def value(self):
+        pass
 
 class PWM:
     def __init__(self, *args):
