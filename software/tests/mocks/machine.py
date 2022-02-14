@@ -3,6 +3,9 @@
 class ADC:
     def __init__(self, *args):
         pass
+    
+    def read_u16(self, *args):
+        pass
 
 class I2C:
     def __init__(self, channel, sda, scl, freq, *args):
@@ -32,3 +35,7 @@ class PWM:
 
     def duty_u16(self, f):
         pass
+
+
+def freq(_):
+    pass
