@@ -21,7 +21,7 @@ class Pin:
         pass
     
     def value(self):
-        pass
+        return 0
 
 class PWM:
     def __init__(self, *args):
