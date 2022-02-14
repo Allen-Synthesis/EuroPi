@@ -24,7 +24,7 @@ class Pin:
         pass
     
     def value(self):
-        return 0
+        return 1  # default unpressed state
 
 class PWM:
     def __init__(self, *args):
