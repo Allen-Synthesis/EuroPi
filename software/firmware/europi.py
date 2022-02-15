@@ -380,7 +380,13 @@ class Display(SSD1306_I2C):
         super().__init__(self.width, self.height, i2c)
 
     def clear(self):
-        """Clear the display upon call."""
+        """Clear the display upon call.
+
+        Note, this is meant to be a standalone call to clear the screen because
+        it also calls ``show()``. Using this in a loop with other oled 
+        functions will cause the screen to flicker. Instead you want to start
+        your loops with ``oled.fill(0)`` to clear the FrameBuffer.
+        """
         self.fill(0)
         self.show()
 
