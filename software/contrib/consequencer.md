@@ -40,17 +40,6 @@ Credits:
 - output_5: randomly generated stepped CV
 - output_6: randomly generated stepped CV
 
-# Building a Consequencer module
-
-Consequencer is software which is loaded onto a Europi module. Europi is an open-source hardware and software project found here: https://github.com/Allen-Synthesis/EuroPi.
-Consequencer is also open-source, all code can be found in this repository and license terms can be found at the bottom of this document.
-
-To build your own Consequencer:
-1. Build a module and load the europi firmware onto the module using the instructions in the above repository
-2. Copy consequencer.py as main.py and consequencer_patterns.py to the Europi
-
-Alternatively, Consequencer Europi modules can be provided built, calibrated and pre-loaded with software and drum patterns by contacting nikansell00@gmail.com.
-
 # Getting Started
 
 The following sections provide instructions for creating a simple 3 drum pattern with a kick, snare and hi-hat, then using random CV patterns to vary the timbre in each drum pattern.
@@ -119,11 +108,3 @@ The mapping of `BD`, `SN`, `HH` is as follows:
 # Known bugs / Interesting features
 
 A small amount of noise causes the analogue input to vary slightly. This can sometimes cause the randomness, gate pattern or stepped CV pattern to flicker between values. It happens only occassionally, but introduces an interesting and subtle variation to the sequence being played.
-
-# License
-
-Consequencer, like the Europi module, and any documentation included in this repository, is entirely "free" software and hardware, under different licenses depending on the software, hardware, and documentation itself.
-
-* Software: [Apache 2.0](software/LICENSE)
-* Hardware: [CERN OHL-S v2](hardware/LICENSE)
-* Documentation: [CC0 1.0](LICENSE)
