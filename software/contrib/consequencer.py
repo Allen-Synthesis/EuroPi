@@ -47,7 +47,6 @@ class drumMachine:
         self.step = 0
         self.trigger_duration_ms = 50
         self.clock_step = 0
-        self.clock_division = 1
         self.pattern = 0
         self.random_HH = False
         self.minAnalogInputVoltage = 0.9
@@ -94,37 +93,36 @@ class drumMachine:
         # Triggered on each clock into digital input. Output triggers.
         @din.handler
         def clockTrigger():
+
+            self.step_length = len(self.BD[self.pattern])
             
-            if self.clock_step % self.clock_division == 0:
+            # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
+            if self.step >= self.step_length:
+                self.step = 0 
 
-                self.step_length = len(self.BD[self.pattern])
-                
-                # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
-                if self.step >= self.step_length:
-                    self.step = 0 
+            # Set cv4-6 voltage outputs based on previously generated random pattern
+            cv4.voltage(self.random4[self.CvPattern][self.step])
+            cv5.voltage(self.random5[self.CvPattern][self.step])
+            cv6.voltage(self.random6[self.CvPattern][self.step])
 
-                # Set cv4-6 voltage outputs based on previously generated random pattern
-                cv4.voltage(self.random4[self.CvPattern][self.step])
-                cv5.voltage(self.random5[self.CvPattern][self.step])
-                cv6.voltage(self.random6[self.CvPattern][self.step])
+            # How much randomness to add to cv1-3
+            # As the randomness value gets higher, the chance of a randomly selected int being lower gets higher
+            if randint(0,99) < self.randomness:
+                cv1.value(randint(0, 1))
+                cv2.value(randint(0, 1))
+                cv3.value(randint(0, 1))
+            else:
+                cv1.value(int(self.BD[self.pattern][self.step]))
+                cv2.value(int(self.SN[self.pattern][self.step]))                    
 
-                # How much randomness to add to cv1-3
-                # As the randomness value gets higher, the chance of a randomly selected int being lower gets higher
-                if randint(0,99) < self.randomness:
-                    cv1.value(randint(0, 1))
-                    cv2.value(randint(0, 1))
+                # If randomize HH is ON:
+                if self.random_HH:
                     cv3.value(randint(0, 1))
                 else:
-                    cv1.value(int(self.BD[self.pattern][self.step]))
-                    cv2.value(int(self.SN[self.pattern][self.step]))                    
+                    cv3.value(int(self.HH[self.pattern][self.step]))
 
-                    # If randomize HH is ON:
-                    if self.random_HH:
-                        cv3.value(randint(0, 1))
-                    else:
-                        cv3.value(int(self.HH[self.pattern][self.step]))
-
-            # Reset clock step at 128 to avoid an overflow if running for a long time
+            # Reset clock step at 128 to avoid a HUGE integer if running for a long time
+            # over a really long period of time this would look like a memory leak
             if self.clock_step < 128:
                 self.clock_step +=1
             else:
@@ -197,29 +195,6 @@ class drumMachine:
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
                 self.clock_step = 0
-
-    def setClockDivision(self):
-        k1Val = k1.read_position()
-        if int(k1Val) <= 1:
-            self.clock_division = 1
-        elif k1Val >= 90:
-            self.clock_division = 32
-        elif k1Val >= 80:
-            self.clock_division = 16           
-        elif k1Val >= 70:
-            self.clock_division = 8 
-        elif k1Val >= 60:
-            self.clock_division = 7
-        elif k1Val >= 50:
-            self.clock_division = 6           
-        elif k1Val >= 40:
-            self.clock_division = 5 
-        elif k1Val >= 30:
-            self.clock_division = 4               
-        elif k1Val >= 20:
-            self.clock_division = 3 
-        else:
-            self.clock_division = 2
 
     def visualizePattern(self, pattern):
         self.t = pattern
