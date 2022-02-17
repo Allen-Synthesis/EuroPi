@@ -50,59 +50,34 @@ class LongPressAndTapButton(Button):
 
 
 class Menu:
-    """A class representing a menu displayable on the EuroPi screen. The user can navigate the menu using the buttons.
-
-    - b1: move selection up
-    - b2: move selection down
-    - longpress one button and tap the other: select the item
+    """A class representing a menu displayable on the EuroPi screen. The user can navigate the menu using the configured
+    knob and button(s).
     """
 
-    def __init__(self, items, select_func, selected=0):
+    def __init__(self, items, select_func, select_knob=europi.k1, choice_buttons=None):
         """
         :param items: a list of the menu items
-        :param select_func: the function to call when a menu selection is made
-        :param selected: the index of the initial menu selection
+        :param select_func: the function to call when a menu item is chosen
+        :param select_knob: the knob used to select the menu item, defaults to k1
+        :param choice_buttons: a List of Buttons that can be pressed to choose the selected item. defaults to b1
         """
         self.items = items
         self.items.append("----- MENU -----")
         self.select_func = select_func
-        self.selected = clamp(selected, 0, len(items))
+        self.select_knob = select_knob
+        choice_buttons = choice_buttons or [europi.b1]
 
-        b1_pin_id = int(repr(europi.b1.pin)[4])  # TODO: make PIN constants
-        b2_pin_id = int(repr(europi.b2.pin)[4])  # TODO: make PIN constants
-        europi.b1 = LongPressAndTapButton(b1_pin_id, other_button=europi.b2)
-        europi.b2 = LongPressAndTapButton(b2_pin_id, other_button=europi.b1)
-
-        self.init_handlers()
-
-    def init_handlers(self):
-        @europi.b1.handler_falling
-        def up():
-
-            self.selected = self.prev()
-
-        @europi.b2.handler_falling
-        def down():
-            self.selected = self.next()
-
+        # init handlers
         def select():
             if self.selected != len(self.items) - 1:  # ignore the '-- MENU --' item
                 self.select_func(self.items[self.selected])
 
-        europi.b1.handler_falling_longpress_and_tap(select)
-        europi.b2.handler_falling_longpress_and_tap(select)
+        for b in choice_buttons:
+            b.handler_falling(select)
 
-    def next(self):
-        next = self.selected + 1
-        if next >= len(self.items):
-            next = 0
-        return next
-
-    def prev(self):
-        prev = self.selected - 1
-        if prev < 0:
-            prev = len(self.items) - 1
-        return prev
+    @property
+    def selected(self):
+        return self.select_knob.read_position(steps=len(self.items) - 1)
 
     def inverted_text(self, s, x, y):
         """displays the given text with an inverted background"""
@@ -110,11 +85,14 @@ class Menu:
         oled.text(s, x, y, 0)
 
     def draw_menu(self):
+        current = self.selected
         oled.fill(0)
         # TODO: abstract these to the oled lib
-        oled.text(f"{self.items[self.prev()]}", 2, 3, 1)
-        self.inverted_text(f"{self.items[self.selected]}", 2, 13)
-        oled.text(f"{self.items[self.next()]}", 2, 23, 1)
+        oled.text(f"{self.items[current - 1]}", 2, 3, 1)
+        self.inverted_text(f"{self.items[current]}", 2, 13)
+        if current != len(self.items) - 2:
+            # don't show the title at the bottom of the menu
+            oled.text(f"{self.items[current + 1]}", 2, 23, 1)
         oled.show()
 
 
@@ -127,9 +105,16 @@ class BootloaderMenu(Menu):
 
     def __init__(self):
         self.scripts_config = BootloaderMenu._build_scripts_config(BootloaderMenu._get_contrib_scripts())
-        super().__init__(list(self.scripts_config.keys()), self.launch)
+        super().__init__(
+            list(self.scripts_config.keys()), self.launch, select_knob=europi.k2, choice_buttons=[europi.b1, europi.b2]
+        )
         self.run_request = None
         self.exit_request = asyncio.Event()
+
+        b1_pin_id = int(repr(europi.b1.pin)[4])  # TODO: make PIN constants
+        b2_pin_id = int(repr(europi.b2.pin)[4])  # TODO: make PIN constants
+        europi.b1 = LongPressAndTapButton(b1_pin_id, other_button=europi.b2)
+        europi.b2 = LongPressAndTapButton(b2_pin_id, other_button=europi.b1)
 
     def _is_script(filestat):
         # must be a regular file whose name ends in '.py' and is not in the excluded list

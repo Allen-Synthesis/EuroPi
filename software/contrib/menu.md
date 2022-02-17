@@ -8,21 +8,20 @@ labels: utility
 
 A Menu which allows the user to select and execute one of the scripts available to this EuroPi. The menu will includes
 the contents of the contrib directory as well as the calibrate script. In addition, handlers are added that allow the
-user to exit the running script by rebooting the board back to this menu. Both the selection of a menu item and the
-exiting of a running program is achieved with the a 'hold one button and tap the other' action. This will work with 
-either button first.
+user to exit the running script by rebooting the board back to this menu. The exiting of a running program is achieved
+with the a 'hold one button and tap the other' action. This will work with either button first.
 
 In the menu: 
 
-* button 1: scroll up
-* button 2: scroll down
-* tap button 1 while holding down button 2: launch selected program
-* tap button 2 while holding down button 1: launch selected program
+* **Button 1:** choose the selected item
+* **Button 2:** choose the selected item
+* **Knob 1:** unused
+* **Knob 2:** change the current selection
 
 In a program that was launched from the menu:
 
-* tap button 1 while holding down button 2: exit the running program, returning to the menu
-* tap button 2 while holding down button 1: exit the running program, returning to the menu
+* **Tap button 1 while holding down button 2:** exit the running program, returning to the menu
+* **Tap button 2 while holding down button 1:** exit the running program, returning to the menu
 
 ## Setup
 
