@@ -1,5 +1,9 @@
 # Change Log
 
+### 2022-02-18
+
+- update [diagnostic script](/software/contrib/diagnostic.md) to add temperature display and CV output rotation.
+
 ### 2022-02-04
 
 - Add support for automated testing
