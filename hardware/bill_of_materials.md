@@ -18,7 +18,7 @@ Please note that a few of these are multi-packs of components, and there may wel
 | C15 - C16 | 2 | 10uF | 10 Microfarad Capacitor (Polarised)| [CPC](https://cpc.farnell.com/panasonic/eeueb1j100s/capacitor-10uf-63v-5x11mm/dp/CA08350)
 | D1 - D4 | 4 | 1N5817 | Schottky Diode | [CPC](https://cpc.farnell.com/multicomp-pro/1n5817/schottky-rectifier-1a-20v-do-204al/dp/SC15528)
 | LED1 - LED6 | 6 | L-424HDT | 3mm LED | [CPC](https://cpc.farnell.com/kingbright/l-424hdt/led-flat-top-3mm-red/dp/SC11541)
-| VR1 - VR2 | 2 | 50k | 50 Kiloohm Linear Rotary Potentiometer | [CPC](https://cpc.farnell.com/alps/rk09k11310kb/potentiometer-10k-lin/dp/RE04560), [Thonk](https://www.thonk.co.uk/shop/alpha-9mm-pots-vertical-t18/)
+| VR1 - VR2 | 2 | 10k | 10 Kiloohm Linear Rotary Potentiometer | [CPC](https://cpc.farnell.com/alps/rk09k11310kb/potentiometer-10k-lin/dp/RE04560), [Thonk](https://www.thonk.co.uk/shop/alpha-9mm-pots-vertical-t18/)
 | SW1 - SW2 | 2 | D6R00 F1 LFS | C&K Tactile Switch (Non-Illuminated) | [Thonk](https://www.thonk.co.uk/shop/radio-music-switch/)
 | OLED1 | 1 | 0.91" SSD1306 | I2C OLED Display | [CPC](https://cpc.farnell.com/winstar/wea012832fwpp3n00000/oled-display-128x32-white-i2c/dp/SC15661), [The Pi Hut](https://thepihut.com/products/0-91-oled-display-module)
 | J1 - J8 | 8 | PJ398SM | Thonkiconn 3.5mm Mono Jack | [Thonk](https://www.thonk.co.uk/shop/thonkiconn/), [Banananuts](https://www.thonk.co.uk/shop/bananuts/), [Cosmonuts](https://www.thonk.co.uk/shop/cosmonuts/)
