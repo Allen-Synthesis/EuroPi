@@ -2,16 +2,16 @@
 
 ### 2022-02-18
 
-- update [diagnostic script](/software/contrib/diagnostic.md) to add temperature display and CV output rotation.
+- update diagnostic script to add temperature display and CV output rotation.
 
 ### 2022-02-15
 
-- add [consequencer script](/software/contrib/consequencer.md)
+- add consequencer script
 
 ### 2022-02-04
 
 - Add support for automated testing
-- Add [scope script](/software/contrib/scope.py)
+- Add scope script
 
 ### 2022-02-01
 
@@ -20,9 +20,9 @@
 ### 2021-10-15 - 2022-02-02
 
 - initial development of EuroPi library and documentation, including the following scripts:
-  - [calibrate](/software/firmware/calibrate.py)
-  - [coin_toss](/software/contrib/coin_toss.md)
-  - [diagnostic](/software/contrib/diagnostic.md)
-  - [harmonic_lfos](/software/contrib/harmonic_lfos.md)
-  - [polyrhythmic_sequencer](/software/contrib/polyrhythmic_sequencer.py)
-  - [radio_scanner](/software/contrib/radio_scanner.md)
+  - calibrate
+  - coin_toss
+  - diagnostic
+  - harmonic_lfos
+  - polyrhythmic_sequencer
+  - radio_scanner
