@@ -9,28 +9,56 @@ def turing_machine():
     return tm
 
 
-def test_rotate_bits(turing_machine):
-    turing_machine.rotate_bits()
-    assert turing_machine.get_bit_string() == "1001100111100001"
-    turing_machine.rotate_bits()
-    assert turing_machine.get_bit_string() == "0011001111000011"
+def tm(bit_count, starting_bits):
+    tm = TuringMachine(bit_count)
+    tm.bits = starting_bits  # set the bits to a known value
+    return tm
 
 
-def test_get_8_bits(turing_machine):
+def test_bad_bit_count():
+    with pytest.raises(ValueError, match=r"4") as e:
+        tm = TuringMachine(4)
+
+
+@pytest.mark.parametrize(
+    "bit_count,starting_bits,expected1,expected2",
+    [
+        (16, 0b1100110011110000, "1001100111100001", "0011001111000011"),
+        (8, 0b11110000, "11100001", "11000011"),
+    ],
+)
+def test_rotate_bits(bit_count, starting_bits, expected1, expected2):
+    turing_machine = tm(bit_count, starting_bits)
+    turing_machine.rotate_bits()
+    assert turing_machine.get_bit_string() == expected1
+    turing_machine.rotate_bits()
+    assert turing_machine.get_bit_string() == expected2
+
+
+@pytest.mark.parametrize(
+    "bit_count,starting_bits,expected",
+    [
+        (16, 0b1100110011110000, "11110000"),
+        (8, 0b11110000, "11110000"),
+    ],
+)
+def test_get_8_bits(bit_count, starting_bits, expected):
+    turing_machine = tm(bit_count, starting_bits)
     eight_bits = turing_machine.get_8_bits()
-    assert f"{eight_bits:08b}" == "11110000"
+    assert f"{eight_bits:08b}" == expected
+
 
 def test_get_voltage(turing_machine):
-    turing_machine.bits = 0xFFFF # MAX
+    turing_machine.bits = 0xFFFF  # MAX
     assert turing_machine.get_voltage() == 10
 
-    turing_machine.bits = 0x0000 # MIN
+    turing_machine.bits = 0x0000  # MIN
     assert turing_machine.get_voltage() == 0
-    
-    turing_machine.bits = 0x007F # MED
+
+    turing_machine.bits = 0x007F  # MED
     assert turing_machine.get_voltage() >= 4.9
     assert turing_machine.get_voltage() <= 5
 
-    turing_machine.bits = 0x0080 # MED
+    turing_machine.bits = 0x0080  # MED
     assert turing_machine.get_voltage() >= 5
     assert turing_machine.get_voltage() <= 5.1

@@ -23,20 +23,24 @@ except ImportError:
 from europi import oled
 
 INT_MAX_8 = 0xFF
-INT_MAX_16 = 0xFFFF
-BIT_COUNT = 16
+DEFAULT_BIT_COUNT = 16
 
 class TuringMachine():
     
-    def __init__(self):
-        self.bits = getrandbits(16)
+    def __init__(self, bit_count=DEFAULT_BIT_COUNT):
+        """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8.
+        """
+        if bit_count < 8:
+            raise ValueError(f"Specified bit_count ({bit_count}) is less than the minimum (8).")
+        self.bit_count = bit_count
+        self.bits = getrandbits(self.bit_count)
         self.flip_probability = 0
 
     def get_bit_string(self):
-        return f"{self.bits:016b}"
+        return f"{self.bits:0{self.bit_count}b}"
 
     def rotate_bits(self):
-        self.bits = ((self.bits << 1) % (1 << BIT_COUNT))|(self.bits >> (BIT_COUNT - 1))
+        self.bits = ((self.bits << 1) % (1 << self.bit_count))|(self.bits >> (self.bit_count - 1))
 
     def step(self):
         self.rotate_bits()
