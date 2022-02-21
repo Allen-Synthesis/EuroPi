@@ -4,5 +4,7 @@ Print upside down for best results/least amount of supports. Should print very q
 
 The 'parametric-ish' Blender file is included in case you'd like to mod it. 
 
-
-"https://raw.githubusercontent.com/aTanguay/EuroPi/main/hardware/OLED_Stand/OLED_Stand_01.jpg"
+ <img src="OLED_Stand_01.jpg" width="600" title="OLED Stand">
+ 
+ 
+"https://raw.githubusercontent.com/aTanguay/EuroPi/main/hardware/OLED_Stand/OLED_Stand_01.jpg
