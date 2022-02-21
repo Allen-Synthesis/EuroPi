@@ -3,3 +3,6 @@ A simple small stand for your OLED display. This helps hold it in place while so
 Print upside down for best results/least amount of supports. Should print very quickly on most printers. It takes 30 minutes on my Ender3 Pro.
 
 The 'parametric-ish' Blender file is included in case you'd like to mod it. 
+
+
+OLED_Stand_01.jpg 
