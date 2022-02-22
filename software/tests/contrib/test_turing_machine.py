@@ -92,3 +92,8 @@ def test_random_loop(turing_machine):
         assert turing_machine.get_bit_string() != "1100110011110000"
         #technically, we _could_ randomply end up back at our starting sequence, but probably not in 1000 steps
 
+def test_scale(turing_machine):
+    turing_machine.scale = 5
+    for _ in range(1000):
+        assert turing_machine.get_voltage() <= 5
+        turing_machine.step()

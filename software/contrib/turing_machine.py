@@ -14,20 +14,26 @@ cv5 - pulse
 cv6 - pulse
 """
 from random import getrandbits, randint
-from europi import MAX_OUTPUT_VOLTAGE, cv1
+try:
+    from firmware import europi
+    from firmware.europi import cv1, oled
+except ImportError:
+    import europi
+    from europi import cv1, oled
 
 try:
     import uasyncio as asyncio
 except ImportError:
     import asyncio
-from europi import oled
+    
 
 INT_MAX_8 = 0xFF
 DEFAULT_BIT_COUNT = 16
+MAX_OUTPUT_VOLTAGE = europi.MAX_OUTPUT_VOLTAGE
 
 class TuringMachine():
     
-    def __init__(self, bit_count=DEFAULT_BIT_COUNT):
+    def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
         """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8.
         """
         if bit_count < 8:
@@ -35,6 +41,8 @@ class TuringMachine():
         self.bit_count = bit_count
         self.bits = getrandbits(self.bit_count)
         self._flip_probability = 0
+        self.max_output_voltage = max_output_voltage
+        self._scale = max_output_voltage
 
     def get_bit_string(self):
         return f"{self.bits:0{self.bit_count}b}"
@@ -51,7 +59,7 @@ class TuringMachine():
         return self.bits & 0xFF
 
     def get_voltage(self):
-        return self.get_8_bits() / INT_MAX_8 * MAX_OUTPUT_VOLTAGE
+        return self.get_8_bits() / INT_MAX_8 * self._scale
 
     @property
     def flip_probability(self):
@@ -60,9 +68,18 @@ class TuringMachine():
     @flip_probability.setter
     def flip_probability(self, probability:int):
         if probability < 0 or probability > 100:
-            raise ValueError(f"Probability of {probability} is outside teh expected range of [0,100]")
+            raise ValueError(f"Probability of {probability} is outside the expected range of [0,100]")
         self._flip_probability = probability
 
+    @property
+    def scale(self):
+        return self._scale
+
+    @scale.setter
+    def scale(self, scale:float):
+        if scale < 0 or scale > self.max_output_voltage:
+            raise ValueError(f"Scale of {scale} is outside the expected range of [0,{self.max_output_voltage}]")
+        self._scale = scale
 
 # code to tie it to the EuroPi's interface
 
