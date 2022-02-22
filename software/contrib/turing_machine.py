@@ -14,6 +14,7 @@ cv5 - pulse
 cv6 - pulse
 """
 from random import getrandbits, randint
+
 try:
     from firmware import europi
     from firmware.europi import cv1, oled
@@ -25,17 +26,20 @@ try:
     import uasyncio as asyncio
 except ImportError:
     import asyncio
-    
+
 
 INT_MAX_8 = 0xFF
 DEFAULT_BIT_COUNT = 16
 MAX_OUTPUT_VOLTAGE = europi.MAX_OUTPUT_VOLTAGE
 
-class TuringMachine():
-    
+
+def _mask(n):
+    return (1 << n) - 1
+
+
+class TuringMachine:
     def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
-        """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8.
-        """
+        """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8."""
         if bit_count < 8:
             raise ValueError(f"Specified bit_count ({bit_count}) is less than the minimum (8).")
         self.bit_count = bit_count
@@ -43,12 +47,19 @@ class TuringMachine():
         self._flip_probability = 0
         self.max_output_voltage = max_output_voltage
         self._scale = max_output_voltage
+        self._length = bit_count
 
     def get_bit_string(self):
         return f"{self.bits:0{self.bit_count}b}"
 
     def rotate_bits(self):
-        self.bits = ((self.bits << 1) % (1 << self.bit_count))|(self.bits >> (self.bit_count - 1))
+        length_mask = _mask(self.length)
+        bits_to_rotate = self.bits & length_mask
+        inverse_length_mask = _mask(self.bit_count) ^ length_mask
+        bits_to_ignore = self.bits & inverse_length_mask
+        self.bits = (
+            ((bits_to_rotate << 1) % (1 << self.length)) | (bits_to_rotate >> (self.length - 1))
+        ) | bits_to_ignore
 
     def step(self):
         self.rotate_bits()
@@ -66,7 +77,7 @@ class TuringMachine():
         return self._flip_probability
 
     @flip_probability.setter
-    def flip_probability(self, probability:int):
+    def flip_probability(self, probability: int):
         if probability < 0 or probability > 100:
             raise ValueError(f"Probability of {probability} is outside the expected range of [0,100]")
         self._flip_probability = probability
@@ -76,20 +87,30 @@ class TuringMachine():
         return self._scale
 
     @scale.setter
-    def scale(self, scale:float):
+    def scale(self, scale: float):
         if scale < 0 or scale > self.max_output_voltage:
             raise ValueError(f"Scale of {scale} is outside the expected range of [0,{self.max_output_voltage}]")
         self._scale = scale
 
-# code to tie it to the EuroPi's interface
+    @property
+    def length(self):
+        return self._length
 
+    @length.setter
+    def length(self, length):
+        if length < 2 or length > self.bit_count:
+            raise ValueError(f"Length of {length} is outside the expected range of [2,{self.bit_count}]")
+        self._length = length
+
+
+# code to tie it to the EuroPi's interface
 
 
 async def main():
     tm = TuringMachine()
     while True:
 
-        oled.centre_text(f"{tm.get_bit_string()}\n{tm.get_voltage()}")
+        oled.centre_text(f"{tm.get_8_bits()}\n{tm.get_voltage()}")
         cv1.voltage(tm.get_voltage())
 
         await asyncio.sleep(0.5)
