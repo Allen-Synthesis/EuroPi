@@ -1,5 +1,9 @@
 import pytest
-from turing_machine import TuringMachine
+
+try:
+    from contrib.turing_machine import TuringMachine
+except ImportError:
+    from turing_machine import TuringMachine
 
 
 @pytest.fixture
@@ -62,3 +66,29 @@ def test_get_voltage(turing_machine):
     turing_machine.bits = 0x0080  # MED
     assert turing_machine.get_voltage() >= 5
     assert turing_machine.get_voltage() <= 5.1
+
+
+def test_locked_loop(turing_machine):
+    for i in range(16 * 1000):  # step until we're back where we started many times
+        turing_machine.step()
+    assert turing_machine.get_bit_string() == "1100110011110000"
+
+
+def test_mobius_loop(turing_machine):
+    turing_machine.flip_probability = 100
+    for _ in range(1000):
+        for i in range(16):  # step halfway through
+            turing_machine.step()
+        assert turing_machine.get_bit_string() == "0011001100001111"  # inverted
+        for i in range(16):  # step back to the beginning
+            turing_machine.step()
+        assert turing_machine.get_bit_string() == "1100110011110000"
+
+
+def test_random_loop(turing_machine):
+    turing_machine.flip_probability = 50
+    for _ in range(1000):
+        turing_machine.step()
+        assert turing_machine.get_bit_string() != "1100110011110000"
+        #technically, we _could_ randomply end up back at our starting sequence, but probably not in 1000 steps
+

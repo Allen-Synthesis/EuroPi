@@ -34,7 +34,7 @@ class TuringMachine():
             raise ValueError(f"Specified bit_count ({bit_count}) is less than the minimum (8).")
         self.bit_count = bit_count
         self.bits = getrandbits(self.bit_count)
-        self.flip_probability = 0
+        self._flip_probability = 0
 
     def get_bit_string(self):
         return f"{self.bits:0{self.bit_count}b}"
@@ -44,7 +44,7 @@ class TuringMachine():
 
     def step(self):
         self.rotate_bits()
-        if randint(0, 100) <= self.flip_probability:
+        if randint(0, 99) < self._flip_probability:
             self.bits = self.bits ^ 0b1
 
     def get_8_bits(self):
@@ -52,6 +52,16 @@ class TuringMachine():
 
     def get_voltage(self):
         return self.get_8_bits() / INT_MAX_8 * MAX_OUTPUT_VOLTAGE
+
+    @property
+    def flip_probability(self):
+        return self._flip_probability
+
+    @flip_probability.setter
+    def flip_probability(self, probability:int):
+        if probability < 0 or probability > 100:
+            raise ValueError(f"Probability of {probability} is outside teh expected range of [0,100]")
+        self._flip_probability = probability
 
 
 # code to tie it to the EuroPi's interface
