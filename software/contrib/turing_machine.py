@@ -17,10 +17,10 @@ from random import getrandbits, randint
 
 try:
     from firmware import europi
-    from firmware.europi import cv1, oled
+    from firmware.europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
 except ImportError:
     import europi
-    from europi import cv1, oled
+    from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
 
 try:
     import uasyncio as asyncio
@@ -61,16 +61,20 @@ class TuringMachine:
             ((bits_to_rotate << 1) % (1 << self.length)) | (bits_to_rotate >> (self.length - 1))
         ) | bits_to_ignore
 
+    def step_handler(self):
+        pass
+
     def step(self):
         self.rotate_bits()
-        if randint(0, 99) < self._flip_probability:
+        if randint(0, 99) < self.flip_probability:
             self.bits = self.bits ^ 0b1
+        self.step_handler()
 
     def get_8_bits(self):
         return self.bits & 0xFF
 
     def get_voltage(self):
-        return self.get_8_bits() / INT_MAX_8 * self._scale
+        return self.get_8_bits() / INT_MAX_8 * self.scale
 
     @property
     def flip_probability(self):
@@ -104,17 +108,51 @@ class TuringMachine:
 
 
 # code to tie it to the EuroPi's interface
+class EuroPiTuringMachine(TuringMachine):
+    def __init__(self):
+        super().__init__(bit_count=DEFAULT_BIT_COUNT, max_output_voltage=europi.MAX_OUTPUT_VOLTAGE)
+        self.k2_scale = True  # if it's not scale, it's length
+
+        @din.handler
+        def clock():
+            self.step()
+
+        @b2.handler_falling
+        def mode_toggle():
+            self.k2_scale = not self.k2_scale
+
+    def step_handler(self):
+        cv1.voltage(self.get_voltage())
+
+    @TuringMachine.flip_probability.getter
+    def flip_probability(self):
+        return int((1 - k1.percent()) *100)
+
+    @flip_probability.setter
+    def flip_probability(self):
+        raise NotImplementedError("Setting the flip_probability is done via a knob.")
+
+    
+    @TuringMachine.scale.getter
+    def scale(self):
+        return k2.percent() * self.max_output_voltage
+
+    @scale.setter
+    def scale(self):
+        raise NotImplementedError("Setting the scale is done via a knob.")
+
+    
+
 
 
 async def main():
-    tm = TuringMachine()
+    tm = EuroPiTuringMachine()
     while True:
+        probability = tm.flip_probability
+        scale = tm.scale
+        oled.centre_text(f"{tm.get_8_bits()}\n{probability}\n{scale}")
 
-        oled.centre_text(f"{tm.get_8_bits()}\n{tm.get_voltage()}")
-        cv1.voltage(tm.get_voltage())
-
-        await asyncio.sleep(0.5)
-        tm.step()
+        await asyncio.sleep(0.1)
 
 
 if __name__ in ["__main__", "contrib.turing_machine"]:
