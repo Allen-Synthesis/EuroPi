@@ -48,6 +48,7 @@ class TuringMachine:
         self.max_output_voltage = max_output_voltage
         self._scale = max_output_voltage
         self._length = bit_count
+        self._write = False
 
     def get_bit_string(self):
         return f"{self.bits:0{self.bit_count}b}"
@@ -66,6 +67,8 @@ class TuringMachine:
 
     def step(self):
         self.rotate_bits()
+        if self.write:
+            self.bits = self.bits & ~1
         if randint(0, 99) < self.flip_probability:
             self.bits = self.bits ^ 0b1
         self.step_handler()
@@ -105,6 +108,14 @@ class TuringMachine:
         if length < 2 or length > self.bit_count:
             raise ValueError(f"Length of {length} is outside the expected range of [2,{self.bit_count}]")
         self._length = length
+
+    @property
+    def write(self):
+        return self._write
+
+    @write.setter
+    def write(self, value: bool):
+        self._write = value
 
 
 # code to tie it to the EuroPi's interface
@@ -158,6 +169,13 @@ class EuroPiTuringMachine(TuringMachine):
     def length(self):
         raise NotImplementedError("Setting the length is done via a knob.")
 
+    @TuringMachine.write.getter
+    def write(self):
+        return b1.value()
+
+    @write.setter
+    def write(self):
+        raise NotImplementedError("Setting the write flag is done via a button.")
 
 async def main():
     tm = EuroPiTuringMachine()
@@ -171,7 +189,7 @@ async def main():
         else:
             primary = f"l: {tm.length}"
             secondary = f"s: {tm.scale}"
-        oled.text(f"{tm.get_8_bits()}", 2, 3, 1)
+        oled.text(f"{tm.get_8_bits():08b}", 2, 3, 1)
         oled.text(f"p: {probability}   {primary}", 2, 13, 1)
         oled.text(f"     {secondary}", 2, 23, 1)
         oled.show()

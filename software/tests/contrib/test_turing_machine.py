@@ -147,3 +147,9 @@ def test_bad_length(turing_machine):
 
     with pytest.raises(ValueError, match=r"" + str(DEFAULT_BIT_COUNT + 1)) as e:
         turing_machine.length = DEFAULT_BIT_COUNT + 1
+
+def test_write(turing_machine):
+    turing_machine.write = True
+    for _ in range(16):
+        turing_machine.step()
+    assert turing_machine.get_bit_string() == "0000000000000000"
