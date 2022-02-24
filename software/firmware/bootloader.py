@@ -55,8 +55,8 @@ def launch_menu():
                 script = cls()
                 # Save script path to previously_selected.py.
                 save_choice(cls)
-                # Execute the selected script.
-                script.main()
+                # Reset to clear memory and launch saved script.
+                reset()
 
             finally:
                 reset_state()
