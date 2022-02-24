@@ -20,7 +20,7 @@ machine.freq(250_000_000)
 # machine.freq(125_000_000)  # Default clock speed.
 
 
-class CoinToss:
+class CoinToss(EuroPiScript):
     def __init__(self):
         self.gate_mode = True
         self.internal_clock = True
@@ -126,5 +126,6 @@ class CoinToss:
 
 
 # Reset module display state.
-coin_toss = CoinToss()
-coin_toss.main()
+if __name__ == "__main__":
+    coin_toss = CoinToss()
+    coin_toss.main()

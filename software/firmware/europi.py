@@ -74,6 +74,13 @@ def reset_state():
     [d.reset_handler() for d in (b1, b2, din)]
 
 
+# Base class for EuroPi Menu bootloader.
+
+class EuroPiScript:
+    def main(self):
+        raise NotImplementedError
+
+
 # Component classes.
 
 class AnalogueReader:
@@ -213,6 +220,10 @@ class DigitalReader:
         # Default handlers are noop callables.
         self._rising_handler = lambda: None
         self._falling_handler = lambda: None
+        
+        # Both button pressed handler
+        self._both_handler = lambda: None
+        self._other = None
 
         # IRQ event timestamps
         self.last_rising_ms = 0
@@ -220,6 +231,10 @@ class DigitalReader:
 
     def _bounce_wrapper(self, pin):
         """IRQ handler wrapper for falling and rising edge callback functions."""
+        # First check if other pin is set and if both pins are high.
+        if self._other and self.value() == 1 and self._other.value() == 1:
+            return self._both_handler()
+
         if self.value() == 1:
             if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) < self.debounce_delay:
                 return
@@ -251,6 +266,14 @@ class DigitalReader:
         if not callable(func):
             raise ValueError("Provided handler func is not callable")
         self._falling_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
+    
+    def handler_both(self, other, func):
+        """When this and other are high, execute the both func."""
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._other = other
+        self._both_handler = func
         self.pin.irq(handler=self._bounce_wrapper)
 
     def reset_handler(self):

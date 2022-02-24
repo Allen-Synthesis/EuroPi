@@ -61,20 +61,27 @@ b1.handler(rotate_cvs)
 din.handler(rotate_cvs)
 b2.handler(remap_knob)
 
-while True:
+class RadioScanner(EuroPiScript):
+    def main(self):
+        while True:
 
-    if knob_mapping != 1:
-        x = k1.percent()
-    else:
-        x = clamp(ain.percent() + k1.percent(), 0, 1)
+            if knob_mapping != 1:
+                x = k1.percent()
+            else:
+                x = clamp(ain.percent() + k1.percent(), 0, 1)
 
-    if knob_mapping != 2:
-        y = k2.percent()
-    else:
-        y = clamp(ain.percent() + k2.percent(), 0, 1)
+            if knob_mapping != 2:
+                y = k2.percent()
+            else:
+                y = clamp(ain.percent() + k2.percent(), 0, 1)
 
-    do_step(x, y)
+            do_step(x, y)
 
-    if ticks_diff(ticks_ms(), b2.last_pressed()) < HEADER_DURATION:
-        display_mapping(knob_mapping)
-    oled.show()
+            if ticks_diff(ticks_ms(), b2.last_pressed()) < HEADER_DURATION:
+                display_mapping(knob_mapping)
+            oled.show()
+
+
+if __name__ == '__main__':
+    script = RadioScanner()
+    script.run()
