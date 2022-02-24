@@ -1,6 +1,7 @@
 from europi import *
-import utime as time
 from machine import reset
+import utime as time
+import os
 
 # In order for a script to be included in the menu, it must be imported here
 from contrib.coin_toss import CoinToss
@@ -26,7 +27,17 @@ def display_choice(cls):
     oled.centre_text(cls.__qualname__)
 
 
-def bootloader():
+def save_choice(cls):
+    with open(f'previously_selected.py', 'w') as file:
+        file.write(f"MODULE_PATH=\"{cls.__module__}\"\nCLASS_NAME=\"{cls.__name__}\"\n")
+
+def reset_menu():
+    with open(f'previously_selected.py', 'w') as file:
+        file.write(f"")
+    reset()
+
+def launch_menu():
+
     # Validate all scripts implement EuroPiScript or fail loudly.
     for script in SCRIPTS:
         if not issubclass(script, EuroPiScript):
@@ -42,6 +53,9 @@ def bootloader():
             try:
                 # Initialize and execute the main loop of the currently selected script.
                 script = cls()
+                # Save script path to previously_selected.py.
+                save_choice(cls)
+                # Execute the selected script.
                 script.main()
 
             finally:
@@ -49,8 +63,5 @@ def bootloader():
 
         time.sleep_ms(100)
 
-
-if __name__ == '__main__':
-    b1.handler_both(b2, reset)
-    b2.handler_both(b1, reset)
-    bootloader()
+b1.handler_both(b2, reset)
+b2.handler_both(b1, reset)
