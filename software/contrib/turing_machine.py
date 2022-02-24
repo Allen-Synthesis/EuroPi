@@ -111,7 +111,7 @@ class TuringMachine:
 class EuroPiTuringMachine(TuringMachine):
     def __init__(self):
         super().__init__(bit_count=DEFAULT_BIT_COUNT, max_output_voltage=europi.MAX_OUTPUT_VOLTAGE)
-        self.k2_scale = True  # if it's not scale, it's length
+        self.k2_scale_mode = True  # if it's not scale, it's length
 
         @din.handler
         def clock():
@@ -119,39 +119,62 @@ class EuroPiTuringMachine(TuringMachine):
 
         @b2.handler_falling
         def mode_toggle():
-            self.k2_scale = not self.k2_scale
+            if self.k2_scale_mode:
+                self._scale = self.scale
+            else:
+                self._length = self.length
+            self.k2_scale_mode = not self.k2_scale_mode
 
     def step_handler(self):
         cv1.voltage(self.get_voltage())
 
     @TuringMachine.flip_probability.getter
     def flip_probability(self):
-        return int((1 - k1.percent()) *100)
+        return int((1 - k1.percent()) * 100)
 
     @flip_probability.setter
     def flip_probability(self):
         raise NotImplementedError("Setting the flip_probability is done via a knob.")
 
-    
     @TuringMachine.scale.getter
     def scale(self):
-        return k2.percent() * self.max_output_voltage
+        if self.k2_scale_mode:
+            return k2.percent() * self.max_output_voltage
+        else:
+            return self._scale
 
     @scale.setter
     def scale(self):
         raise NotImplementedError("Setting the scale is done via a knob.")
 
-    
+    @TuringMachine.length.getter
+    def length(self):
+        if self.k2_scale_mode:
+            return self._length
+        else:
+            return k2.choice([2, 3, 4, 5, 6, 8, 12, 16])  # TODO: vary based on bit_count?
 
+    @length.setter
+    def length(self):
+        raise NotImplementedError("Setting the length is done via a knob.")
 
 
 async def main():
     tm = EuroPiTuringMachine()
     while True:
+        oled.fill(0)
         probability = tm.flip_probability
         scale = tm.scale
-        oled.centre_text(f"{tm.get_8_bits()}\n{probability}\n{scale}")
-
+        if tm.k2_scale_mode:
+            primary = f"s: {tm.scale}"
+            secondary = f"l: {tm.length}"
+        else:
+            primary = f"l: {tm.length}"
+            secondary = f"s: {tm.scale}"
+        oled.text(f"{tm.get_8_bits()}", 2, 3, 1)
+        oled.text(f"p: {probability}   {primary}", 2, 13, 1)
+        oled.text(f"     {secondary}", 2, 23, 1)
+        oled.show()
         await asyncio.sleep(0.1)
 
 
