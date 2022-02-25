@@ -54,13 +54,7 @@ class TuringMachine:
         return f"{self.bits:0{self.bit_count}b}"
 
     def rotate_bits(self):
-        length_mask = _mask(self.length)
-        bits_to_rotate = self.bits & length_mask
-        inverse_length_mask = _mask(self.bit_count) ^ length_mask
-        bits_to_ignore = self.bits & inverse_length_mask
-        self.bits = (
-            ((bits_to_rotate << 1) % (1 << self.length)) | (bits_to_rotate >> (self.length - 1))
-        ) | bits_to_ignore
+        self.bits = ((self.bits << 1) % (1 << self.bit_count)) | ((self.bits >> (self.length - 1)) & 1)
 
     def step_handler(self):
         pass

@@ -27,9 +27,16 @@ def test_bad_bit_count():
 @pytest.mark.parametrize(
     "bit_count,length,starting_bits,expected1,expected2",
     [
-        (16, 16, 0b1100110011110000, "1001100111100001", "0011001111000011"),
-        (16, 2, 0b1100110011110001, "1100110011110010", "1100110011110001"),
-        (8, 8, 0b11110000, "11100001", "11000011"),
+        (16, 16, 0b1100110010101010, "1001100101010101", "0011001010101011"),
+        (16, 5, 0b1100110010101010, "1001100101010100", "0011001010101001"),
+        (16, 4, 0b1100110010101010, "1001100101010101", "0011001010101010"),
+        (16, 3, 0b1100110010101010, "1001100101010100", "0011001010101001"),
+        (16, 2, 0b1100110010101010, "1001100101010101", "0011001010101010"),
+        (8, 8, 0b11110110, "11101101", "11011011"),
+        (8, 5, 0b11110110, "11101101", "11011010"),
+        (8, 4, 0b11110110, "11101100", "11011001"),
+        (8, 3, 0b11110110, "11101101", "11011011"),
+        (8, 2, 0b11110110, "11101101", "11011010"),
     ],
 )
 def test_rotate_bits(bit_count, length, starting_bits, expected1, expected2):
@@ -119,26 +126,37 @@ def test_bad_scale(turing_machine):
         turing_machine.scale = MAX_OUTPUT_VOLTAGE + 1
 
 
-def test_length(turing_machine):
+def test_length_2(turing_machine):
     turing_machine.bits = 0b1100110011110001
 
     turing_machine.length = 2
-    for _ in range(10):
-        assert turing_machine.get_voltage() == 9.450980392156863
-        turing_machine.step()
-        assert turing_machine.get_voltage() ==  9.490196078431373
+    for _ in range(6):
+        # it takes 6 steps for us to settle into a repeating pattern
         turing_machine.step()
 
+    for _ in range(10):
+        assert turing_machine.get_voltage() == 3.333333333333333
+        turing_machine.step()
+        assert turing_machine.get_voltage() ==  6.666666666666666
+        turing_machine.step()
+
+def test_length_4(turing_machine):
+    turing_machine.bits = 0b1100110011110001
+
     turing_machine.length = 4
+    for _ in range(3):
+        # it takes 3 steps for us to settle into a repeating pattern
+        turing_machine.step()
+
     for _ in range(10):
         print(_)
-        assert turing_machine.get_voltage() == 9.450980392156863
+        assert turing_machine.get_voltage() ==   5.333333333333333
         turing_machine.step()
-        assert turing_machine.get_voltage() ==  9.490196078431373
+        assert turing_machine.get_voltage() ==  0.6666666666666666
         turing_machine.step()
-        assert turing_machine.get_voltage() == 9.568627450980392
+        assert turing_machine.get_voltage() ==  1.3333333333333333
         turing_machine.step()
-        assert turing_machine.get_voltage() ==  9.72549019607843
+        assert turing_machine.get_voltage() == 2.6666666666666665
         turing_machine.step()
 
 def test_bad_length(turing_machine):
