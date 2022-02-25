@@ -31,17 +31,12 @@ def save_choice(cls):
     with open(f'previously_selected.py', 'w') as file:
         file.write(f"MODULE_PATH=\"{cls.__module__}\"\nCLASS_NAME=\"{cls.__name__}\"\n")
 
-def reset_menu():
-    with open(f'previously_selected.py', 'w') as file:
-        file.write(f"")
-    reset()
-
 def launch_menu():
 
     # Validate all scripts implement EuroPiScript or fail loudly.
-    for script in SCRIPTS:
-        if not issubclass(script, EuroPiScript):
-            raise NotImplementedError(f"Script does not implement EuroPiScript: {script}")
+    # for script in SCRIPTS:
+    #     if not issubclass(script, EuroPiScript):
+    #         raise NotImplementedError(f"Script does not implement EuroPiScript: {script}")
 
     # Bootloader script selection.
     while True:
@@ -50,18 +45,9 @@ def launch_menu():
 
         # If button 1 is pressed, execute the currently selected script.
         if b1.value() == 1 or b2.value() == 1:
-            try:
-                # Initialize and execute the main loop of the currently selected script.
-                script = cls()
-                # Save script path to previously_selected.py.
-                save_choice(cls)
-                # Reset to clear memory and launch saved script.
-                reset()
-
-            finally:
-                reset_state()
+            # Save script path to previously_selected.py.
+            save_choice(cls)
+            # Reset to clear memory and launch saved script.
+            reset()
 
         time.sleep_ms(100)
-
-b1.handler_both(b2, reset)
-b2.handler_both(b1, reset)

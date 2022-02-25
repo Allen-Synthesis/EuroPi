@@ -2,6 +2,17 @@
 Default EuroPi main entry point which loads a menu of scripts available.
 
 """
+from machine import reset
+from europi import b1, b2
+
+def reset_menu():
+    with open(f'previously_selected.py', 'w') as file:
+        file.write(f"")
+    reset()
+
+b1.handler_both(b2, reset_menu)
+b2.handler_both(b1, reset_menu)
+
 
 # If a previously selected script was saved, load it and execute it.
 try:

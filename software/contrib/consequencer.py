@@ -404,6 +404,5 @@ class pattern:
 
 if __name__ == '__main__':
     # Reset module display state.
-    reset_state()
     dm = Consequencer()
     dm.main()

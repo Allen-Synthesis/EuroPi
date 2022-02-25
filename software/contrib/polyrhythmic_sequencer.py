@@ -253,8 +253,5 @@ class PolyrhythmSeq(EuroPiScript):
 
 # Main script execution
 if __name__ == '__main__':
-    try:
-        script = PolyrhythmSeq()
-        script.main()
-    finally:
-        reset_state()
+    script = PolyrhythmSeq()
+    script.main()
