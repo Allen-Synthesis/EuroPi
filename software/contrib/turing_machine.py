@@ -135,7 +135,7 @@ class EuroPiTuringMachine(TuringMachine):
 
     @TuringMachine.flip_probability.getter
     def flip_probability(self):
-        return int((1 - k1.percent()) * 100)
+        return round((1 - k1.percent()) * 100)
 
     @flip_probability.setter
     def flip_probability(self):
@@ -171,21 +171,34 @@ class EuroPiTuringMachine(TuringMachine):
     def write(self):
         raise NotImplementedError("Setting the write flag is done via a button.")
 
+
+def bits_as_led_line(oled, bits):
+    bit_str = f"{bits:08b}"
+    x_pos = 0
+    width = int(europi.OLED_WIDTH / 8)
+    for c in bit_str:
+        if c == "1":
+            oled.hline(x_pos, 0, width - 1, 1)
+        x_pos += width
+
 async def main():
     tm = EuroPiTuringMachine()
+    line1_y = 11
+    line2_y = 23
     while True:
         oled.fill(0)
-        probability = tm.flip_probability
-        scale = tm.scale
-        if tm.k2_scale_mode:
-            primary = f"s: {tm.scale}"
-            secondary = f"l: {tm.length}"
-        else:
-            primary = f"l: {tm.length}"
-            secondary = f"s: {tm.scale}"
-        oled.text(f"{tm.get_8_bits():08b}", 2, 3, 1)
-        oled.text(f"p: {probability}   {primary}", 2, 13, 1)
-        oled.text(f"     {secondary}", 2, 23, 1)
+        prob = tm.flip_probability
+        prob_2 = "locked" if tm.flip_probability == 0 or tm.flip_probability == 100 else ""
+        scale_str = f"{'*' if tm.k2_scale_mode else ''}scale:{tm.scale:3.1f}"
+        len_str = f"{'' if tm.k2_scale_mode else '*'}{tm.length:2} steps"
+
+        bits_as_led_line(oled, tm.get_8_bits())
+
+        oled.text(f"  {prob}", 0, line1_y, 1)
+        oled.text(f"{scale_str}", 48, line1_y, 1)
+
+        oled.text(f"{prob_2}", 0, line2_y, 1)
+        oled.text(f"{len_str}", 64, line2_y, 1)
         oled.show()
         await asyncio.sleep(0.1)
 
