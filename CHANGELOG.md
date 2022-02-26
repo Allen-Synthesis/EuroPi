@@ -6,7 +6,7 @@
 
 ### 2022-02-15
 
-- add consequencer script
+- add Consequencer script
 
 ### 2022-02-04
 
