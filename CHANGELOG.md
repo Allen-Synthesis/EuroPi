@@ -2,7 +2,11 @@
 
 ### 2022-02-18
 
-- update [diagnostic script](/software/contrib/diagnostic.md) to add temperature display and CV output rotation.
+- update diagnostic script to add temperature display and CV output rotation.
+
+### 2022-02-15
+
+- add Consequencer script
 
 ### 2022-02-04
 
