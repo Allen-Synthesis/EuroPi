@@ -77,7 +77,21 @@ def reset_state():
 # Base class for EuroPi Menu bootloader.
 
 class EuroPiScript:
+    """Base class for defining the interface required to conform to a menu script.
+    
+    To make your script compatible with the menu, you must define your script
+    as a class that inherits this base class. For example::
+
+        MyScript(EuroPiScript):
+            # init and other methods
+
+            # Override main with your script main method.
+            def main(self):
+                # Your script's main loop.
+    
+    """
     def main(self):
+        """Override this method with your script's main loop method."""
         raise NotImplementedError
 
 
