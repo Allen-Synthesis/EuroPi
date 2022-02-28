@@ -1,10 +1,11 @@
 """
 Default EuroPi main entry point which loads a menu of scripts available.
 
-Copy this file to main.py on your EuroPi pico to install the menu bootloader.
+Copy this file to main.py on your EuroPi pico along with menu.py to
+install the menu bootloader.
 
 When a script is selected, subsequent boots will automatically launch that 
-script. To return to the bootloader menu, press both buttons simultaneously.
+script. To return to the bootloader menu, press both buttons.
 
 """
 from machine import reset

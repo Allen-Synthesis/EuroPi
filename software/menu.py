@@ -33,11 +33,6 @@ def save_choice(cls):
 
 def launch_menu():
 
-    # Validate all scripts implement EuroPiScript or fail loudly.
-    # for script in SCRIPTS:
-    #     if not issubclass(script, EuroPiScript):
-    #         raise NotImplementedError(f"Script does not implement EuroPiScript: {script}")
-
     # Bootloader script selection.
     while True:
         cls = k1.choice(SCRIPTS)
