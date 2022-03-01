@@ -37,6 +37,8 @@ Please note that a few of these are multi-packs of components, and there may wel
 | | 1 | | Raspberry Pi Pico | [The Pi Hut](https://thepihut.com/products/raspberry-pi-pico), [CPC](https://cpc.farnell.com/raspberry-pi/raspberry-pi-pico/raspberry-pi-pico-rp2040-mcu-board/dp/SC17106)
 
 #### Note about OLED
-The OLED has two suppliers listed, each with different pin configurations. The module supports either of these two configurations (the most common), but no others, so make sure that the one you buy, wherever you source it, has one of these two configurations.
+The OLED has two suppliers listed, each with different pin configurations. The module supports either of these two configurations (the most common), but no others, so make sure that the one you buy, wherever you source it, has one of these two configurations.  
+It also *must* be 36mm or less. There are some displays which are 38mm wide, which will not only not fit within the width of the module, but will also leave the display off-centre in relation to the panel cutout. You can check the datasheet of any display before you buy to determine the width, but both of the displays listed in the BOM above are the correct 36mm.
 
 ![OLED Pin Configurations](https://user-images.githubusercontent.com/79809962/145800121-2c88d73b-b4d2-4196-baa1-8628dc327467.png)
+![OLED Width](https://user-images.githubusercontent.com/79809962/153423641-4242a637-bd0d-493f-a1f7-94823b07cfd7.png)
