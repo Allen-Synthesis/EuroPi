@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name="micropython-europi",
-    version="0.0.1",
+    version="0.0.1.dev1",
     description="EuroPi module for MicroPython",
     long_description="",
     url="https://github.com/Allen-Synthesis/EuroPi",
