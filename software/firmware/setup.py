@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name="micropython-europi",
-    version="0.0.2.dev1",
+    version="0.0.2.dev2",
     description="EuroPi module for MicroPython",
     long_description="",
     url="https://github.com/Allen-Synthesis/EuroPi",
@@ -18,5 +18,5 @@ setup(
     license="Apache 2.0",
     # cmdclass={'sdist': sdist_upip.sdist},
     py_modules=["europi", "calibrate"],
-    install_requires=["micropython-ssd1306"],
+    install_requires=[],
 )
