@@ -4,7 +4,7 @@ import sys
 from setuptools import setup
 
 DEFAULTS = dict(
-    version="0.0.2.dev2",
+    version="0.0.2.dev3",
     url="https://github.com/Allen-Synthesis/EuroPi",
     author="Allen Synthesis",
     author_email="contact@allensynthesis.co.uk",
