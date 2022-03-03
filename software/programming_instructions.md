@@ -30,7 +30,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
     ![Interpreter Select](https://i.imgur.com/XeRem1w.jpg)
 
 5. Click Tools -> Manage Packages to open the package manager.
-6. Type 'ssd1306' into the search box and click search.
+6. Type 'ssd1306' into the search box and click 'Search on PyPi'
 7. Click the result named 'micropython-ssd1306'.
 
     ![ssd1306 library](https://i.imgur.com/7t2mWHh.jpg)
@@ -42,19 +42,14 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
 ### Installing the EuroPi library
 
-1. Open the [europi.py](/software/firmware/europi.py) file from this repository.
-2. Copy its entire contents by selecting all and pressing Ctrl-C.
-3. Open Thonny back up and press Ctrl-N to create a new file.
-4. Paste the europi.py contents into the new file, and press Ctrl-Shift-S to save as.
-5. Choose Raspberry Pi Pico.
+Use the exact same process as for the ssd1306 library to install the europi library:
+1. Type 'europi' into the search box and click 'Search on PyPi'
+2. Click the result named 'micropython-europi'.
 
-    ![Save to Pico](https://i.imgur.com/BTn7kAz.jpg)
+    ![image](https://user-images.githubusercontent.com/79809962/156630180-7f727567-89b1-4b8a-a3e0-63f2da3ea30c.png)
 
-6. Navigate inside the 'lib' folder by double clicking it.
-7. Save the new file as 'europi.py', making sure to include the '.py' at the end.
-
-    ![Save europi.py](https://i.imgur.com/vK5Xgik.jpg)
-
+3. Click 'Install'.
+4. You will now see the new file 'europi.py' alongside the 'ssd1306.py' inside the 'lib' folder.
 
 ## Next Steps
 
@@ -102,11 +97,15 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
 
-1. To begin, you need to copy the [calibrate.py](/software/firmware/calibrate.py) file from the firmware folder to your Pico using the [process outlined above](#copy-someone-elses-program-to-run-on-your-module).
-2. Name it 'main.py', just as if it were a program you were running as normal. Make sure there are no other programs also called 'main.py' at the same time, or Python won't know which one to run.
-3. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
-4. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).  
-5. There are 2 options for calibration:
+1. To begin, you need to copy the [calibrate.py](/software/firmware/calibrate.py) file from the firmware folder to your Pico.
+2. First, open the file on GitHub using the link in step 1.
+3. Then click the button that says 'Raw' to view the whole file in your browser.
+4. Press Ctrl-A to select all, then Ctrl-C to copy.
+5. In Thonny, press Ctrl-N to create a new blank file, and then Ctrl-V to paste the contents of calibrate.py into it.
+6. Press Ctrl-S to save it and name it 'main.py', just as if it were a program you were running as normal. Make sure there are no other programs also called 'main.py' at the same time, or Python won't know which one to run.
+7. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
+8. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).  
+9. There are 2 options for calibration:
   - Low Accuracy: Only a single 10V supply is required
   - High Accuracy: A variable supply is required to produce voltages from 0-10V  
   Press button 1 to choose Low Accuracy mode, or button 2 to choose High Accuracy mode.
