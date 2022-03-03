@@ -14,8 +14,12 @@ jobs:
         with:
           python-version: '3.8'
       
-      - name: Build source tarball
+      - name: Build firmware tarball
         working-directory: software/firmware
+        run: python setup.py sdist --dist-dir=../dist
+      
+      - name: Build contrib tarball
+        working-directory: software
         run: python setup.py sdist
 
       - name: Publish distribution to Test PyPI
@@ -23,7 +27,7 @@ jobs:
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
-          packages_dir: software/firmware/dist
+          packages_dir: software/dist
           skip_existing: true
 
       - name: Publish distribution to PyPI
@@ -31,5 +35,5 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1.5
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-          packages_dir: software/firmware/dist
+          packages_dir: software/dist
 
