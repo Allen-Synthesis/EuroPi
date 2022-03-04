@@ -97,7 +97,7 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
 
-1. To begin, you need to rename the file inside the 'lib' folder on your Pico to 'main.py'. Make sure there are no other programs also called 'main.py' at the same time, or Python won't know which one to run.
+1. To begin, you need to copy the `calibrate.py` file and name it `/main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/calibrate.py).
 2. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
 3. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).  
 4. There are 2 options for calibration:
