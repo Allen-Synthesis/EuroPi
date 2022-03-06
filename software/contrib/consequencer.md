@@ -22,7 +22,7 @@ Credits:
 
 # Controls
 
-![Operating Diagram](./consequencer.png)
+![Operating Diagram](https://user-images.githubusercontent.com/79809962/154732035-ccc0d8c1-0e4e-4b8c-97e3-ccfa07a4880b.png)
 
 - digital_in: Clock in
 - analog_in: Mode 1: Adjusts randonmess, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern

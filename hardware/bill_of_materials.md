@@ -22,10 +22,10 @@ Please note that a few of these are multi-packs of components, and there may wel
 | SW1 - SW2 | 2 | D6R00 F1 LFS | C&K Tactile Switch (Non-Illuminated) | [Thonk](https://www.thonk.co.uk/shop/radio-music-switch/)
 | OLED1 | 1 | 0.91" SSD1306 | I2C OLED Display | [CPC](https://cpc.farnell.com/winstar/wea012832fwpp3n00000/oled-display-128x32-white-i2c/dp/SC15661), [The Pi Hut](https://thepihut.com/products/0-91-oled-display-module)
 | J1 - J8 | 8 | PJ398SM | Thonkiconn 3.5mm Mono Jack | [Thonk](https://www.thonk.co.uk/shop/thonkiconn/), [Banananuts](https://www.thonk.co.uk/shop/bananuts/), [Cosmonuts](https://www.thonk.co.uk/shop/cosmonuts/)
-| CONN0 | 2 (pairs) | 1 Row 20 Way 2.54mm | Pico Connection Header (Male + Female) | [Male](https://cpc.farnell.com/harwin/m22-2012005/header-vertical-1row-20way/dp/CN14644), [Female](https://cpc.farnell.com/multicomp/2212s-20sg-85/socket-pcb-1-row-20way/dp/CN14539)
-| CONN1 - CONN4 | 2 (pairs) | 8 Way 2 Row 2.54mm | PCB Connection Header (Male + Female) | [Male](https://cpc.farnell.com/harwin/m20-9980445/header-2row-4way/dp/CN14381)
-| CONN5 | 1 | 4 Way 1 Row 2.54mm | I2C Header (Male) | [CPC](https://cpc.farnell.com/multicomp/2211s-04g/header-1-row-vert-4way/dp/CN14489)
-| CONN6 | 1 | 10 Way 2 Row 2.54mm | Eurorack Power Header (Shrouded) | [CPC](https://cpc.farnell.com/3m/n2510-6002rb/2-54mm-header-straight-10-way/dp/CN20355)
+| CONN0 | 2 (pairs) | 20x1 2.54mm | Pico Connection Header (Male + Female) | [Male](https://cpc.farnell.com/harwin/m22-2012005/header-vertical-1row-20way/dp/CN14644), [Female](https://cpc.farnell.com/multicomp/2212s-20sg-85/socket-pcb-1-row-20way/dp/CN14539)
+| CONN1 - CONN4 | 2 (pairs) | 4x2 2.54mm | PCB Connection Header (Male + Female) | [Male](https://cpc.farnell.com/harwin/m20-9980445/header-2row-4way/dp/CN14381), [Female](https://cpc.farnell.com/harwin/m22-7140442/socket-vertical-2row-4way/dp/CN14661?st=2%20row%204%20way)
+| CONN5 | 1 | 4x1 2.54mm | I2C Header (Male) | [CPC](https://cpc.farnell.com/multicomp/2211s-04g/header-1-row-vert-4way/dp/CN14489)
+| CONN6 | 1 | 5x2 2.54mm | Eurorack Power Header (Shrouded) | [CPC](https://cpc.farnell.com/3m/n2510-6002rb/2-54mm-header-straight-10-way/dp/CN20355)
 | TL074-1 - TL074-2 | 2 | TL074 DIP | Quad Operational Amplifier (+ Socket) | [Op-Amp](https://cpc.farnell.com/texas-instruments/tl074acn/ic-op-amp-quad-jfet-dip14/dp/SC16602), [Socket](https://cpc.farnell.com/unbranded/mc-2227-14-03-f1/socket-ic-dil-0-3-tube-34-14way/dp/SC08125)
 | MCP6002 | 1 | MCP6002 DIP | Dual Operational Amplifier (+ Socket) | [Op-Amp](https://cpc.farnell.com/microchip/mcp6002-i-p/ic-op-amp-1-8v-1mhz-dual-pdip8/dp/SC17118), [Socket](https://cpc.farnell.com/multicomp/spc15494/dip-socket-8pos-2row-2-54mm-th/dp/SC15358)
 | Q1 | 1 | 2N3904 | NPN Transistor | [CPC](https://cpc.farnell.com/multicomp-pro/2n3904/transistor-npn-to-92/dp/SC15978)
@@ -37,6 +37,8 @@ Please note that a few of these are multi-packs of components, and there may wel
 | | 1 | | Raspberry Pi Pico | [The Pi Hut](https://thepihut.com/products/raspberry-pi-pico), [CPC](https://cpc.farnell.com/raspberry-pi/raspberry-pi-pico/raspberry-pi-pico-rp2040-mcu-board/dp/SC17106)
 
 #### Note about OLED
-The OLED has two suppliers listed, each with different pin configurations. The module supports either of these two configurations (the most common), but no others, so make sure that the one you buy, wherever you source it, has one of these two configurations.
+The OLED has two suppliers listed, each with different pin configurations. The module supports either of these two configurations (the most common), but no others, so make sure that the one you buy, wherever you source it, has one of these two configurations.  
+It also *must* be 36mm or less. There are some displays which are 38mm wide, which will not only not fit within the width of the module, but will also leave the display off-centre in relation to the panel cutout. You can check the datasheet of any display before you buy to determine the width, but both of the displays listed in the BOM above are the correct 36mm.
 
 ![OLED Pin Configurations](https://user-images.githubusercontent.com/79809962/145800121-2c88d73b-b4d2-4196-baa1-8628dc327467.png)
+![OLED Width](https://user-images.githubusercontent.com/79809962/153423641-4242a637-bd0d-493f-a1f7-94823b07cfd7.png)
