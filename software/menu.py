@@ -1,7 +1,6 @@
-from europi import *
+from europi import b1, b2, k1, oled
 from machine import reset
 import utime as time
-import os
 
 # In order for a script to be included in the menu, it must be imported here
 from contrib.coin_toss import CoinToss
@@ -28,7 +27,7 @@ def display_choice(cls):
 
 
 def save_choice(cls):
-    with open(f'previously_selected.py', 'w') as file:
+    with open(f'menu_state.py', 'w') as file:
         file.write(f"MODULE_PATH=\"{cls.__module__}\"\nCLASS_NAME=\"{cls.__name__}\"\n")
 
 def launch_menu():
@@ -40,7 +39,7 @@ def launch_menu():
 
         # If button 1 is pressed, execute the currently selected script.
         if b1.value() == 1 or b2.value() == 1:
-            # Save script path to previously_selected.py.
+            # Save script path to menu_state.py.
             save_choice(cls)
             # Reset to clear memory and launch saved script.
             reset()

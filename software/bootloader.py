@@ -8,16 +8,20 @@ When a script is selected, subsequent boots will automatically launch that
 script. To return to the bootloader menu, press both buttons.
 
 """
-from machine import reset
-from europi import b1, b2
-import os
+from machine import soft_reset
+from europi import b1, b2, oled
+import os, time
 
 def reset_menu():
     os.remove("menu_state.py")
-    reset()
+    soft_reset()
 
 b1.handler_both(b2, reset_menu)
 b2.handler_both(b1, reset_menu)
+
+oled.centre_text("EuroPi Booting...")
+# Provide a 3 second delay before attempting to load previous script.
+time.sleep(3)
 
 
 # If a previously selected script was saved, load it and execute it.
@@ -31,5 +35,5 @@ except ImportError:
     pass  # No previous script available, proceed to menu.
 
 # Otherwise, launch the menu
-from bootloader import launch_menu
+from menu import launch_menu
 launch_menu()

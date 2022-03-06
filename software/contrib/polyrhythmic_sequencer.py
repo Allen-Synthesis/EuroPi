@@ -37,7 +37,6 @@ try:
     # Local development
     from software.firmware.europi import OLED_WIDTH, OLED_HEIGHT, CHAR_HEIGHT
     from software.firmware.europi import din, k1, k2, oled, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6
-    from software.firmware.europi import reset_state
     from software.firmware.europi import EuroPiScript
 except ImportError:
     # Device import path

@@ -465,6 +465,3 @@ cv4 = Output(17)
 cv5 = Output(18)
 cv6 = Output(19)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
-
-# Reset the module state upon import.
-reset_state()
