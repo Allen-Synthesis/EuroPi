@@ -44,10 +44,6 @@ except ImportError:
     from europi import *
 import time
 import machine
-try:
-    import uasyncio as asyncio
-except ImportError:
-    import asyncio
 
 # Overclock the Pico for improved performance.
 machine.freq(250000000)
@@ -235,7 +231,7 @@ class PolyrhythmSeq:
             x1 = 17 + int(OLED_WIDTH/4) * poly_index
             (oled.fill_rect if seq2 else oled.rect)(x1, y1, 6, 6, 1)
 
-    async def main(self):
+    def main(self):
         while True:
             oled.fill(0)
 
@@ -253,13 +249,12 @@ class PolyrhythmSeq:
 
             self.show_menu_header()
             oled.show()
-            await asyncio.sleep(0)
 
 
 # Main script execution
 if __name__ in ['__main__', 'contrib.polyrhythmic_sequencer']:
     try:
         script = PolyrhythmSeq()
-        asyncio.run(script.main())
+        script.main()
     finally:
         reset_state()

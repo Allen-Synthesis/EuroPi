@@ -1,12 +1,7 @@
 from europi import *
-from time import ticks_diff, ticks_ms
-import uasyncio as asyncio
+from time import sleep_ms, ticks_diff, ticks_ms
 
 HEADER_DURATION = 2000  # 2 seconds in ms
-
-cv_mapping = [cv1, cv2, cv3, cv4, cv5, cv6]
-knob_mapping = 0 #0 = not used, 1 = knob 1, 2 = knob 2
-knob_mapping_text = ['Off', 'Knob 1', 'Knob 2']
 
 
 def remap_knob():
@@ -51,35 +46,35 @@ def do_step(x, y):
     cv_mapping[4].voltage(MAX_OUTPUT_VOLTAGE - cvy)
     cv_mapping[5].voltage(MAX_OUTPUT_VOLTAGE - abs(cvy - cvx))
 
+    sleep_ms(10)
+
 def display_mapping(new_map):
     oled.fill_rect(0, 0, 64, 12, 1)
     oled.text(knob_mapping_text[new_map], 0, 2, 0)
 
-async def main():
-    
-    b1.handler(rotate_cvs)
-    din.handler(rotate_cvs)
-    b2.handler(remap_knob)
 
-    while True:
+cv_mapping = [cv1, cv2, cv3, cv4, cv5, cv6]
+knob_mapping = 0 #0 = not used, 1 = knob 1, 2 = knob 2
+knob_mapping_text = ['Off', 'Knob 1', 'Knob 2']
 
-        if knob_mapping != 1:
-            x = k1.percent()
-        else:
-            x = clamp(ain.percent() + k1.percent(), 0, 1)
+b1.handler(rotate_cvs)
+din.handler(rotate_cvs)
+b2.handler(remap_knob)
 
-        if knob_mapping != 2:
-            y = k2.percent()
-        else:
-            y = clamp(ain.percent() + k2.percent(), 0, 1)
+while True:
 
-        do_step(x, y)
+    if knob_mapping != 1:
+        x = k1.percent()
+    else:
+        x = clamp(ain.percent() + k1.percent(), 0, 1)
 
-        await asyncio.sleep_ms(10)
+    if knob_mapping != 2:
+        y = k2.percent()
+    else:
+        y = clamp(ain.percent() + k2.percent(), 0, 1)
 
-        if ticks_diff(ticks_ms(), b2.last_pressed()) < HEADER_DURATION:
-            display_mapping(knob_mapping)
-        oled.show()
+    do_step(x, y)
 
-if __name__ in ['__main__', 'contrib.radio_scanner']:
-    asyncio.run(main())
+    if ticks_diff(ticks_ms(), b2.last_pressed()) < HEADER_DURATION:
+        display_mapping(knob_mapping)
+    oled.show()

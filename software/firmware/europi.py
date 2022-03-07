@@ -236,6 +236,10 @@ class DigitalReader:
         self._rising_handler = lambda: None
         self._falling_handler = lambda: None
 
+        # Both high handler
+        self._both_handler = lambda: None
+        self._other = None
+
         # IRQ event timestamps
         self.last_rising_ms = 0
         self.last_falling_ms = 0
@@ -252,6 +256,11 @@ class DigitalReader:
             if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
                 return
             self.last_falling_ms = time.ticks_ms()
+
+            # Check if 'other' pin is set and if 'other' pins is high and if this pin has been high for long enough.
+            if self._other and self._other.value() and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500:
+                return self._both_handler()
+
             return self._falling_handler()
 
     def value(self):
@@ -277,6 +286,14 @@ class DigitalReader:
 
     def reset_handler(self):
         self.pin.irq(handler=None)
+
+    def _handler_both(self, other, func):
+        """When this and other are high, execute the both func."""
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._other = other
+        self._both_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
 
 
 class DigitalInput(DigitalReader):

@@ -2,7 +2,6 @@ from europi import *
 from random import random
 from time import sleep_ms, ticks_ms, ticks_add, ticks_diff
 import machine
-import uasyncio as asyncio
 
 
 # Internal clock tempo range.
@@ -50,14 +49,13 @@ class CoinToss:
         wait_ms = int(((60 / self.tempo()) / 4) * 1000)
         return ticks_add(ticks_ms(), wait_ms)
 
-    async def wait(self):
+    def wait(self):
         """Pause script execution waiting for next quarter note in the clock cycle."""
         if self.internal_clock:
             while True:
                 if ticks_diff(self._deadline, ticks_ms()) <= 0:
                     self._deadline = self.get_next_deadline()
                     return
-                await asyncio.sleep(0)
         else:  # External clock
             # Loop until digital in goes high (clock pulse received).
             while not self.internal_clock:
@@ -68,7 +66,6 @@ class CoinToss:
                     # value for the first time, break wait and return.
                     if self._prev_clock == 0:
                         return
-                await asyncio.sleep(0)
 
     def toss(self, a, b, draw=True):
         """If random value is below trigger a, otherwise trigger b.
@@ -98,7 +95,7 @@ class CoinToss:
             oled.fill_rect(offset, h, tick, OLED_HEIGHT, 1)
 
 
-    async def main(self):
+    def main(self):
         # Start the main loop.
         counter = 0
         while True:
@@ -112,7 +109,7 @@ class CoinToss:
                 self.toss(cv4, cv5, False)
                 cv6.on()  # Second column clock trigger (1/4x speed)
             
-            await asyncio.sleep_ms(10)
+            sleep_ms(10)
             if self.gate_mode:
                 # Only turn off clock triggers.
                 [o.off() for o in (cv3, cv6)]
@@ -125,9 +122,9 @@ class CoinToss:
             oled.show()
 
             counter += 1
-            await self.wait()
+            self.wait()
 
 if __name__ in ['main', 'contrib.coin_toss']:
     # Reset module display state.
     coin_toss = CoinToss()
-    asyncio.run(coin_toss.main())
+    coin_toss.main()

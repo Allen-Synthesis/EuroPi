@@ -1,5 +1,6 @@
-from hello_world import increment
+from hello_world import HelloWorld
 
 
 def test_increment():
-    assert increment(1) == 2
+    hw = HelloWorld()
+    assert hw.increment(1) == 2

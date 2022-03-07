@@ -1,5 +1,4 @@
 from europi import *
-import uasyncio as asyncio
 import machine
 from time import ticks_diff, ticks_ms
 from random import randint, uniform
@@ -186,7 +185,7 @@ class drumMachine:
         else:
             self.randomness = k1.read_position()
 
-    async def main(self):
+    def main(self):
         while True:
             self.getPattern()
             self.getRandomness()
@@ -197,7 +196,6 @@ class drumMachine:
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
                 self.clock_step = 0
-            await asyncio.sleep(0)
 
     def visualizePattern(self, pattern):
         self.t = pattern
@@ -407,4 +405,4 @@ class pattern:
 oled.clear()
 [cv.off() for cv in cvs]
 dm = drumMachine()
-asyncio.run(dm.main())
+dm.main()

@@ -1,23 +1,25 @@
-try:
-    import uasyncio as asyncio
-except ImportError:
-    import asyncio
+from time import sleep
 from europi import oled
+from europi_script import EuroPiScript
 
 
-def increment(counter):
-    return counter + 1
+class HelloWorld(EuroPiScript):
+    def __init__(self) -> None:
+        super().__init__()
+        self.counter = 0
+
+    @staticmethod
+    def increment(counter):
+        return counter + 1
+
+    def main(self):
+        while True:
+            oled.centre_text(f"Hello world\n{self.counter}")
+
+            self.counter = self.increment(self.counter)
+
+            sleep(1)
 
 
-async def main():
-    counter = 0
-    while True:
-        oled.centre_text(f"Hello world\n{counter}")
-
-        counter = increment(counter)
-
-        await asyncio.sleep(1)
-
-
-if __name__ in ["__main__", "contrib.hello_world"]:
-    asyncio.run(main())
+if __name__ == "__main__":
+    HelloWorld().main()
