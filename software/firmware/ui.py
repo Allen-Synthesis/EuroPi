@@ -33,7 +33,7 @@ class Menu:
         """The currently selected menu item."""
         return self.select_knob.read_position(steps=len(self.items) - 1)
 
-    def inverted_text(self, s, x, y):
+    def _inverted_text(self, s, x, y):
         """displays the given text with an inverted background"""
         oled.fill_rect(x, y, CHAR_WIDTH * len(s), CHAR_HEIGHT, 1)
         oled.text(s, x, y, 0)
@@ -42,12 +42,9 @@ class Menu:
         """This funciton should be called by your script's main loop in order to display and refresh the menu."""
         current = self.selected
         oled.fill(0)
-        # TODO: abstract these to the oled lib
         oled.text(f"{self.items[current - 1]}", 2, 3, 1)
-        self.inverted_text(f"{self.items[current]}", 2, 13)
+        self._inverted_text(f"{self.items[current]}", 2, 13)
         if current != len(self.items) - 2:
             # don't show the title at the bottom of the menu
             oled.text(f"{self.items[current + 1]}", 2, 23, 1)
         oled.show()
-
-

@@ -14,50 +14,35 @@ SCRIPT_DIR = "/lib/contrib/"
 REG_FILE_CODE = 0x8000
 
 
-def europi_script_classes():
-    """Scripts that are included in the menu"""
+class BootloaderMenu(EuroPiScript):
+    """A Menu which allows the user to select and execute one of the scripts available to this EuroPi. The menu will
+    include the ``EuroPiScripts`` provided to it in the constructor. Button press handlers are added that allow the user
+    to exit the script and return to the menu by holding both buttons down for a short period of time. If the module is
+    restarted while a script is running it will boot right back into that same script.
 
-    from contrib.coin_toss import CoinToss
-    from contrib.consequencer import Consequencer
-    from contrib.diagnostic import Diagnostic
-    from contrib.harmonic_lfos import HarmonicLFOs
-    from contrib.hello_world import HelloWorld
-    from contrib.polyrhythmic_sequencer import PolyrhythmSeq
-    from contrib.radio_scanner import RadioScanner
-    from contrib.scope import Scope
-    from calibrate import Calibrate
+    In the menu:
 
-    return [
-        CoinToss,
-        Consequencer,
-        Diagnostic,
-        HarmonicLFOs,
-        HelloWorld,
-        PolyrhythmSeq,
-        RadioScanner,
-        Scope,
+    * **Button 1:** choose the selected item
+    * **Button 2:** choose the selected item
+    * **Knob 1:** unused
+    * **Knob 2:** change the current selection
 
-        Calibrate,
-    ]
+    In a program that was launched from the menu:
 
+    * Hold both buttons for at least 0.5s and release to return to the menu.
 
-class BootloaderMenu(Menu, EuroPiScript):
-    """A Menu which allows the user to select and execute one of the scripts available to this EuroPi. Includes the
-    contents of the contrib directory as well as the calibrate script. In addition, handlers are added that allow the
-    user to exit the running script by rebooting the board back to this menu. This is achieved with the 'hold one button
-    and tap the other' action.
+    :param script_classes: a list of Classes implementing EuroPiScript to be included in the menu
     """
 
-    def __init__(self):
-        self.scripts_config = BootloaderMenu._build_scripts_config(europi_script_classes())
-        Menu.__init__(
-            self,
+    def __init__(self, script_classes):
+        EuroPiScript.__init__(self)
+        self.scripts_config = BootloaderMenu._build_scripts_config(script_classes)
+        self.menu = Menu(
             items=list(sorted(self.scripts_config.keys())),
             select_func=self.launch,
             select_knob=europi.k2,
             choice_buttons=[europi.b1, europi.b2],
         )
-        EuroPiScript.__init__(self)
         self.run_request = None
 
     @classmethod
@@ -72,9 +57,8 @@ class BootloaderMenu(Menu, EuroPiScript):
         self.run_request = selected_item
 
     def exit_to_menu(self):
-        print("exit requested")
         self._reset_state()
-        machine.reset()  # TODO why doesn't machine.soft_reset() work anymore?
+        machine.reset()  # why doesn't machine.soft_reset() work anymore?
 
     def main(self):
         state = self._load_state()
@@ -87,9 +71,9 @@ class BootloaderMenu(Menu, EuroPiScript):
             # let the user make a selection
             old_selected = -1
             while not self.run_request:
-                if old_selected != self.selected:
-                    old_selected = self.selected
-                    self.draw_menu()
+                if old_selected != self.menu.selected:
+                    old_selected = self.menu.selected
+                    self.menu.draw_menu()
                 time.sleep(0.1)
             self._save_state(self.run_request)
 
@@ -97,19 +81,10 @@ class BootloaderMenu(Menu, EuroPiScript):
         europi.b1._handler_both(europi.b2, self.exit_to_menu)
         europi.b2._handler_both(europi.b1, self.exit_to_menu)
 
-        print(f"b1 type: {type(europi.b1)}")
         time.sleep(0.25)
         selected_class = self.scripts_config[self.run_request]
-        print(f"running {selected_class.__qualname__}")
         selected_class().main()
 
 
-def main():
-    print("bootloader main() start")
-    menu = BootloaderMenu()
-    menu.main()
-
-
 if __name__ == "__main__":
-    print("bootloader script")
-    main()
+    BootloaderMenu().main()

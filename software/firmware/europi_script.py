@@ -47,19 +47,15 @@ class EuroPiScript:
     def _save_state(self, state: str):
         with open(self._state_filename, 'w') as file:
             file.write(state)
-        print(f"saved file: {self._state_filename}")
 
     def _load_state(self) -> str:
-        print(f"loading file: {self._state_filename}")
         try:
             with open(self._state_filename, 'r') as file:
                 return file.read()
         except OSError as e:
-            print(e)
             return ""
     
     def _reset_state(self):
-        print(f"deleting file: {self._state_filename}")
         try: 
             os.remove(self._state_filename)
         except OSError:
