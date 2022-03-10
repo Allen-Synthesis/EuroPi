@@ -2,7 +2,7 @@
 
 ### 2022-02-XX
 
-- add [menu script](/software/contrib/menu.md)
+- add menu script
 
 ### 2022-03-10
 

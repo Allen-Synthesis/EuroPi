@@ -1,18 +1,19 @@
+"""This module provides reusable UI components.
+"""
 from europi import CHAR_HEIGHT, CHAR_WIDTH, b1, k1, oled
 
 
 class Menu:
-    """A class representing a menu displayable on the EuroPi screen. The user can navigate the menu using the configured
-    knob and button(s).
+    """A class representing a menu displayable on the EuroPi screen. The user can select a menu item using the
+    configured knob and select it with the configured button(s).
+
+    :param items: a list of the menu items
+    :param select_func: the function to call when a menu item is chosen. The function will be called with single argument, the selected item.
+    :param select_knob: the knob used to select the menu item, defaults to k1
+    :param choice_buttons: a List of Buttons that can be pressed to choose the selected item. Defaults to b1
     """
 
     def __init__(self, items, select_func, select_knob=k1, choice_buttons=None):
-        """
-        :param items: a list of the menu items
-        :param select_func: the function to call when a menu item is chosen
-        :param select_knob: the knob used to select the menu item, defaults to k1
-        :param choice_buttons: a List of Buttons that can be pressed to choose the selected item. defaults to b1
-        """
         self.items = items
         self.items.append("----- MENU -----")
         self.select_func = select_func
@@ -29,6 +30,7 @@ class Menu:
 
     @property
     def selected(self):
+        """The currently selected menu item."""
         return self.select_knob.read_position(steps=len(self.items) - 1)
 
     def inverted_text(self, s, x, y):
@@ -37,6 +39,7 @@ class Menu:
         oled.text(s, x, y, 0)
 
     def draw_menu(self):
+        """This funciton should be called by your script's main loop in order to display and refresh the menu."""
         current = self.selected
         oled.fill(0)
         # TODO: abstract these to the oled lib

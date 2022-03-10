@@ -11,6 +11,12 @@ setup(
     author="Allen Synthesis",
     author_email="contact@allensynthesis.co.uk",
     license="Apache 2.0",
-    py_modules=["europi", "calibrate"],
+    py_modules=[
+        "bootloader",
+        "calibrate",
+        "europi_script",
+        "europi",
+        "ui",
+    ],
     install_requires=[],
 )
