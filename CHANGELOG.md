@@ -1,5 +1,9 @@
 # Change Log
 
+### 2022-03-10
+
+- release version 0.1.0
+
 ### 2022-02-18
 
 - update diagnostic script to add temperature display and CV output rotation.
