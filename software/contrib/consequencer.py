@@ -3,6 +3,8 @@ import machine
 from time import ticks_diff, ticks_ms
 from random import randint, uniform
 
+from europi_script import EuroPiScript
+
 '''
 Consequencer
 author: Nik Ansell (github.com/gamecat69)
@@ -32,11 +34,10 @@ output_6: randomly generated CV (cycled by pushing button 2)
 
 '''
 
-# Overclock the Pico for improved performance.
-machine.freq(250_000_000)
-
-class drumMachine:
+class Consequencer(EuroPiScript):
     def __init__(self):
+        # Overclock the Pico for improved performance.
+        machine.freq(250_000_000)
 
         # Initialize sequencer pattern arrays   
         p = pattern()     
@@ -401,8 +402,9 @@ class pattern:
     HH.append("111")
 
 
-# Reset module display state.
-oled.clear()
-[cv.off() for cv in cvs]
-dm = drumMachine()
-dm.main()
+if __name__ == '__main__':
+    # Reset module display state.
+    oled.clear()
+    [cv.off() for cv in cvs]
+    dm = Consequencer()
+    dm.main()

@@ -44,15 +44,7 @@ except ImportError:
     from europi import *
 import time
 import machine
-
-# Overclock the Pico for improved performance.
-machine.freq(250000000)
-
-# Configure EuroPi options to improve performance.
-k1.set_samples(32)
-k2.set_samples(32)
-b2.debounce_delay = 200
-oled.contrast(0)  # dim the oled
+from europi_script import EuroPiScript
 
 # Script Constants
 MENU_DURATION = 1200
@@ -103,7 +95,7 @@ class Sequence:
         self.trigger_cv.on()
 
 
-class PolyrhythmSeq:
+class PolyrhythmSeq(EuroPiScript):
     pages = ['SEQUENCE 1', 'SEQUENCE 2', 'POLYRHYTHM']
     # Two 4-step melodic sequences.
     seqs = [
@@ -117,6 +109,15 @@ class PolyrhythmSeq:
     seq_poly = [2, 1, 1, 0]
 
     def __init__(self):
+        # Overclock the Pico for improved performance.
+        machine.freq(250000000)
+
+        # Configure EuroPi options to improve performance.
+        k1.set_samples(32)
+        k2.set_samples(32)
+        b2.debounce_delay = 200
+        oled.contrast(0)  # dim the oled
+
         # Current editable sequence.
         self.seq = self.seqs[0]
 
@@ -252,9 +253,6 @@ class PolyrhythmSeq:
 
 
 # Main script execution
-if __name__ in ['__main__', 'contrib.polyrhythmic_sequencer']:
-    try:
-        script = PolyrhythmSeq()
-        script.main()
-    finally:
-        reset_state()
+if __name__ == '__main__':
+    script = PolyrhythmSeq()
+    script.main()

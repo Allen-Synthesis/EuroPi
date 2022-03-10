@@ -17,17 +17,27 @@ REG_FILE_CODE = 0x8000
 def europi_script_classes():
     """Scripts that are included in the menu"""
 
-    try:
-        # dev
-        from hello_world import HelloWorld
-        from diagnostic import Diagnostic
-    except ImportError:
-        from contrib.hello_world import HelloWorld
-        from contrib.diagnostic import Diagnostic
+    from contrib.coin_toss import CoinToss
+    from contrib.consequencer import Consequencer
+    from contrib.diagnostic import Diagnostic
+    from contrib.harmonic_lfos import HarmonicLFOs
+    from contrib.hello_world import HelloWorld
+    from contrib.polyrhythmic_sequencer import PolyrhythmSeq
+    from contrib.radio_scanner import RadioScanner
+    from contrib.scope import Scope
+    from calibrate import Calibrate
 
     return [
+        CoinToss,
+        Consequencer,
         Diagnostic,
+        HarmonicLFOs,
         HelloWorld,
+        PolyrhythmSeq,
+        RadioScanner,
+        Scope,
+
+        Calibrate,
     ]
 
 

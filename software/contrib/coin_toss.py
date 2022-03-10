@@ -2,7 +2,7 @@ from europi import *
 from random import random
 from time import sleep_ms, ticks_ms, ticks_add, ticks_diff
 import machine
-
+from europi_script import EuroPiScript
 
 # Internal clock tempo range.
 MAX_BPM = 280
@@ -20,7 +20,7 @@ machine.freq(250_000_000)
 # machine.freq(125_000_000)  # Default clock speed.
 
 
-class CoinToss:
+class CoinToss(EuroPiScript):
     def __init__(self):
         self.gate_mode = True
         self.internal_clock = True
@@ -124,7 +124,7 @@ class CoinToss:
             counter += 1
             self.wait()
 
-if __name__ in ['main', 'contrib.coin_toss']:
+if __name__ == '__main__':
     # Reset module display state.
     coin_toss = CoinToss()
     coin_toss.main()
