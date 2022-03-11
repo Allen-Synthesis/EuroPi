@@ -52,29 +52,46 @@ def display_mapping(new_map):
     oled.fill_rect(0, 0, 64, 12, 1)
     oled.text(knob_mapping_text[new_map], 0, 2, 0)
 
+def app_back():
+    global done
+    print('long')
+    oled.centre_text('App Select')
+    done = 1
+    sleep_ms(1500)
 
-cv_mapping = [cv1, cv2, cv3, cv4, cv5, cv6]
-knob_mapping = 0 #0 = not used, 1 = knob 1, 2 = knob 2
-knob_mapping_text = ['Off', 'Knob 1', 'Knob 2']
+def run():
+    global done, cv_mapping, knob_mapping, knob_mapping_text
+    b2.handler_long(app_back)
+    done = 0
+    
+    cv_mapping = [cv1, cv2, cv3, cv4, cv5, cv6]
+    knob_mapping = 0 #0 = not used, 1 = knob 1, 2 = knob 2
+    knob_mapping_text = ['Off', 'Knob 1', 'Knob 2']
 
-b1.handler(rotate_cvs)
-din.handler(rotate_cvs)
-b2.handler(remap_knob)
+    b1.handler(rotate_cvs)
+    din.handler(rotate_cvs)
+    b2.handler(remap_knob)
 
-while True:
+    while True:
+        if done == 1:
+            print('Return')
+            return 0
+        
+        if knob_mapping != 1:
+            x = k1.percent()
+        else:
+            x = clamp(ain.percent() + k1.percent(), 0, 1)
 
-    if knob_mapping != 1:
-        x = k1.percent()
-    else:
-        x = clamp(ain.percent() + k1.percent(), 0, 1)
+        if knob_mapping != 2:
+            y = k2.percent()
+        else:
+            y = clamp(ain.percent() + k2.percent(), 0, 1)
 
-    if knob_mapping != 2:
-        y = k2.percent()
-    else:
-        y = clamp(ain.percent() + k2.percent(), 0, 1)
+        do_step(x, y)
 
-    do_step(x, y)
+        if ticks_diff(ticks_ms(), b2.last_pressed()) < HEADER_DURATION:
+            display_mapping(knob_mapping)
+        
+        oled.text(str(), 0, 15, 0)
+        oled.show()
 
-    if ticks_diff(ticks_ms(), b2.last_pressed()) < HEADER_DURATION:
-        display_mapping(knob_mapping)
-    oled.show()
