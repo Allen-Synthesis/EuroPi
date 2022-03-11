@@ -7,7 +7,7 @@ This repository relates to the EuroPi module, however some users may be expectin
 
 You can find more about this (including a project diary) and other projects of mine on [my website](https://www.allensynthesis.co.uk)
 
-![Imgur](https://i.imgur.com/wHL7558.png)
+![github banner](https://user-images.githubusercontent.com/79809962/157898134-44cc0534-ac3b-4051-9773-a3be95ba4602.jpg)
 
 ## Capabilities
 
