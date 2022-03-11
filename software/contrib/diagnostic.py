@@ -1,7 +1,7 @@
 from machine import ADC
-from time import sleep
+from time import sleep, sleep_ms
 
-from europi import OLED_HEIGHT, OLED_WIDTH, ain, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, din, k1, k2, oled
+from europi import *
 
 """
 A diagnostic utility intended to help prove out a new EuroPi build and calibration. Each aspect of the EuroPi's hardware
@@ -46,34 +46,49 @@ def rotate_l():
     global voltages
     voltages = voltages[1:] + voltages[:1]
 
+def app_back():
+    global done
+    print('long')
+    oled.centre_text('App Select')
+    done = 1
+    sleep_ms(1500)
+    
+def run():
+    global done
+    done = 0
+    
+    b1.handler(rotate_l)
+    b2.handler(rotate_r)
+    b2.handler_long(app_back)
+    
+    while True:
+        if done == 1:
+            print('Return')
+            return 0
+        
+        # Set the outputs to useful values
+        cv1.voltage(voltages[0])
+        cv2.voltage(voltages[1])
+        cv3.voltage(voltages[2])
+        cv4.voltage(voltages[3])
+        cv5.voltage(voltages[4])
+        cv6.voltage(voltages[5])
 
-b1.handler(rotate_l)
-b2.handler(rotate_r)
+        oled.fill(0)
 
-while True:
+        # calc and format temp
+        use_fahrenheit = b1.value() or b2.value()
+        t = calc_temp()
+        formatted_temp = f"{int(convert_fahrenheit(t) if use_fahrenheit else t)}{'F' if use_fahrenheit else 'C'}"
 
-    # Set the outputs to useful values
-    cv1.voltage(voltages[0])
-    cv2.voltage(voltages[1])
-    cv3.voltage(voltages[2])
-    cv4.voltage(voltages[3])
-    cv5.voltage(voltages[4])
-    cv6.voltage(voltages[5])
+        # display the input values
+        oled.text(f"ain: {ain.read_voltage():5.2f}v {formatted_temp}", 2, 3, 1)
+        oled.text(f"k1: {k1.read_position():2}  k2: {k2.read_position():2}", 2, 13, 1)
+        oled.text(f"din:{din.value()} b1:{b1.value()} b2:{b2.value()}", 2, 23, 1)
 
-    oled.fill(0)
+        # show the screen boundaries
+        oled.rect(0, 0, OLED_WIDTH, OLED_HEIGHT, 1)
+        oled.show()
 
-    # calc and format temp
-    use_fahrenheit = b1.value() or b2.value()
-    t = calc_temp()
-    formatted_temp = f"{int(convert_fahrenheit(t) if use_fahrenheit else t)}{'F' if use_fahrenheit else 'C'}"
+        sleep(0.1)
 
-    # display the input values
-    oled.text(f"ain: {ain.read_voltage():5.2f}v {formatted_temp}", 2, 3, 1)
-    oled.text(f"k1: {k1.read_position():2}  k2: {k2.read_position():2}", 2, 13, 1)
-    oled.text(f"din:{din.value()} b1:{b1.value()} b2:{b2.value()}", 2, 23, 1)
-
-    # show the screen boundaries
-    oled.rect(0, 0, OLED_WIDTH, OLED_HEIGHT, 1)
-    oled.show()
-
-    sleep(0.1)

@@ -1,6 +1,5 @@
 """
 Rory Allen 19/11/2021 Apache License Version 2.0
-
 Before using any of this library, follow the instructions in
 `programming_instructions.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/programming_instructions.md>`_
 to set up your module.
@@ -12,6 +11,8 @@ For example::
     cv3.voltage(4.5)
 
 Will set the CV output 3 to a voltage of 4.5V.
+
+Bridge Zhao 03/08/2022 Add long press, and longer press handlers for button
 """
 import time
 
@@ -57,7 +58,6 @@ MAX_OUTPUT_VOLTAGE = 10
 # Default font is 8x8 pixel monospaced font.
 CHAR_WIDTH = 8
 CHAR_HEIGHT = 8
-
 
 # Helper functions.
 
@@ -292,9 +292,52 @@ class Button(DigitalReader):
             # Call this during the 2000 ms duration after button press.
             display_button_pressed()
     
+    Added two new handlers: handler_long, handler_longer
     """
-    def __init__(self, pin, debounce_delay=200):
+    
+    def __init__(self, pin, debounce_delay=200, long_delay=1500, longer_delay=4000):
+        """Added two more variables for button determing long/longer press time"""
+        self.long_delay = long_delay
+        self.longer_delay = longer_delay
+        
+        self._long_handler = lambda: None
+        self._longer_handler = lambda: None
+        
         super().__init__(pin, debounce_delay)
+
+    def _bounce_wrapper(self, pin):
+        """IRQ handler wrapper for falling and rising edge callback functions."""
+        """Added wraper for long/longer press"""
+        if self.value() == 1:
+            if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) < self.debounce_delay:
+                return
+            self.last_rising_ms = time.ticks_ms()
+            return self._rising_handler()
+
+        elif self.value() == 0:
+            if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
+                return
+            elif time.ticks_diff(time.ticks_ms(), self.last_rising_ms) > self.longer_delay:
+                self.last_falling_ms = time.ticks_ms()
+                return self._longer_handler()
+            elif time.ticks_diff(time.ticks_ms(), self.last_rising_ms) > self.long_delay:
+                self.last_falling_ms = time.ticks_ms()
+                return self._long_handler()
+            else:
+                self.last_falling_ms = time.ticks_ms()
+                return self._falling_handler()
+        
+    def handler_long(self, func):
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._long_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
+        
+    def handler_longer(self, func):
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._longer_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
 
     def last_pressed(self):
         """Return the ticks_ms of the last button press or 0 prior to the first button press."""
@@ -431,3 +474,5 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
+
+
