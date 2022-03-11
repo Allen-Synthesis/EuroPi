@@ -1,15 +1,8 @@
-# menu
-
-author: Matthew Jaskula
-
-date: 2022/02/15
-
-labels: utility
-
-A Menu which allows the user to select and execute one of the scripts available to this EuroPi. The menu will includes
-the contents of the contrib directory as well as the calibrate script. In addition, handlers are added that allow the
-user to exit the running script by rebooting the board back to this menu. The exiting of a running program is achieved
-with the a 'hold one button and tap the other' action. This will work with either button first.
+# Menu 
+A Menu which allows the user to select and execute one of the scripts available to this EuroPi. The menu will 
+include the ``EuroPiScripts`` included in the ``EUROPI_SCRIPT_CLASSES`` List. Button press handlers are added that allow
+the user to exit the script and return to the menu by holding both buttons down for a short period of time. If the 
+module is restarted while a script is running it will boot right back into that same script.
 
 In the menu: 
 
@@ -20,122 +13,40 @@ In the menu:
 
 In a program that was launched from the menu:
 
-* **Tap button 1 while holding down button 2:** exit the running program, returning to the menu
-* **Tap button 2 while holding down button 1:** exit the running program, returning to the menu
+* Hold both buttons for at least 0.5s and release to return to the menu.
 
-## Setup
+## Script requirements
 
-In order to use the menu you must copy it to ``main.py`` like any other script. In addition you must have all of the
-scripts you'd like to use copied to your pico in the places where the menu expects them. An example of the expected
-directory structure is below.
-
-```
-/
-├── main.py
-├── lib
-│   ├── contrib
-│   │   ├── coin_toss.py
-│   │   ├── diagnostic.py
-│   │   ├── harmonic_lfos.py
-│   │   ├── hello_world.py
-│   │   ├── menu.py
-│   │   ├── polyrhythmic_sequencer.py
-│   │   ├── radio_scanner.py
-│   │   └── scope.py
-│   ├── calibrate.py
-│   ├── europi.py
-│   └── ssd1306.py
-```
-
-You can use either Thony or rshell to copy the files to the pico. If you'd like to use rshell, the [deploy_firmware
-script](scripts/deploy_firmware.rshell) may be useful. It can be called using ``rshell -f scripts/deploy_firmware.rshell``
-
-## Menu Inclusion
-
-In order to be included in the menu a program needs to meet a few additional requirements, described below. Programs are
-not required to participate in the menu, but if they do not, they should be added to the ``EXCLUDED_SCRIPTS`` list near 
-the top of [``menu.py``](/software/contrib/menu.py).
-
-An example 'hello world' script is shown here and the details discussed below.
+An example 'hello world' script is shown here and the requirement details are discussed below.
 
 ``hello_world.py``
 ```Python
-import uasyncio as asyncio  # 1
 from europi import oled
+from europi_script import EuroPiScript  # 1
 
-
-async def main():  # 2
-    while True:
+class HelloWorld(EuroPiScript):  # 2
+    def main():  # 3
         oled.centre_text("Hello world")
-        await asyncio.sleep(1)  # 3
 
 
-asyncio.run(main())  # 4
-
+if __name__ == "__main__":  #4
+    HelloWorld().main()
 ```
 
-1. **Import ``asyncio``:** MicroPython includes an asyncio library that is similar to the library included in CPython 
-under the name ``uasyncio``. These libraries are similar enough that it is standard practice to import ``uasyncio`` 
-under the alias ``asyncio``.
+1. **Import ``EuroPiScript``:** Import the ``EuroPiScript`` base class so that we can implement it below.
+2. **Define a class that extends ``EuroPiScript``:** This defines your script as one that adheres to the menu's requirements.
+3. **A ``main()`` method:** The main code of the script should be encapsulated in an 'main()' method. The menu will initialize your class and then call this function to launch your script.
+4. **a ``__name__`` guard around the ``main()`` call site:** This allows your code to work correctly when it itself is the ``main.py``
 
-2. **An asynchronous main method:** The main code of the script should be encapsulated in an asynchronous method so that
-you can await on any sleep calls, described below. The method itself does not need to be called 'main'.
+## Menu Inclusion
 
-3. **``sleep()`` inside any loops:** In order for the user to be able to request that your program exit, your program should 
-periodically relinquish control to other threads. This is most easily done by adding calls to `asyncio.sleep()` to any
-loops that will run for a significant amount of time. The program's main loop is the most obvious place for this; but,
-depending on your code, there may be other loops that also execute for a significant amount of time which should also
-sleep.
+Once you have a script that conforms to the above requirements, you can add it to the list of scripts that are included
+in the menu. This list is in [menu.py](/software/contrib/menu.py) in the contrib folder. You will need to add two lines,
+one to import your class and one to add the class to the list. Use the existing scripts as examples.
 
-4. **Execute your main method asynchronously:** Use ``asyncio.run()`` to call your main method asynchronously. This
-allows the menu program to properly call your script and wait for its completion.
+Note that the scripts are sorted before being displayed, so order in this file doesn't matter.
 
 ## Support testing
 
-To support unit testing in CPython, a couple of changes need to be made to the example ``hello_world.py``. In order to have something to test, we'll add the display of a simple counter to our script, a method to increment it, and add a test
-that the increment method works properly.
-
-``hello_world.py``
-```python
-try:  # 1
-    import uasyncio as asyncio
-except ImportError:
-    import asyncio
-from europi import oled
-
-
-def increment(counter):
-    return counter + 1
-
-
-async def main():
-    counter = 0
-    while True:
-        oled.centre_text(f"Hello world\n{counter}")
-
-        counter = increment(counter)
-
-        await asyncio.sleep(1)
-
-
-if __name__ in ["__main__", "contrib.hello_world"]:  # 2
-    asyncio.run(main())
-
-```
-
-``test_hello_world.py``
-```python
-from hello_world import increment
-
-
-def test_increment():
-    assert increment(1) == 2
-```
-
-1. **Import ``uasyncio`` but fall back to ``asyncio``:** Since ``uasyncio`` doesn't exist in CPython, it will raise an 
-error if we try to import it. We can catch that error and instead import CPython's ``asyncio``. This will result in code
-that may be portable between the two environments. In most cases this is good enough to execute our tests.
-
-2. **A ``__name__`` guard around the ``main()`` call site:** The guard allows the script to be imported without being 
-executed in the cases where that is not desired, such as tests. This form of guard is a bit different than what you may
-be used to in a standard python script. These two cases allow the script to be executed both with and without the menu.
+For a simple, but complete example of a testable ``EuroPiScript`` see [hello_world.py](/software/contrib/hello_world.py)
+and its test [test_hello_world.py](/software/tests/contrib/test_hello_world.py).

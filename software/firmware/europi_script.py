@@ -1,23 +1,30 @@
+"""Provides a base class for scripts which wish to participate in the bootloader menu."""
 import os
 
 class EuroPiScript:
-    """A Base class for scripts which wish to participate in the bootloader menu.
+    """A base class for scripts which wish to participate in the bootloader menu.
      
     To make your script compatible with the menu, you must:
       
-      * define your script as a class that inherits from this base class.
-      * override ``main()`` to define your script's main loop
+      1. import ``EuroPiScript``
+      2. define your script as a class that inherits from this base class.
+      3. override ``main()`` to define your script's main loop
+      4. Surround the call to ``main()`` with a guard to prevent execution upon import
 
-    For example::
+    An minimal example::
     
-       from europi_script import EuroPiScript
+       from europi import oled
+       from europi_script import EuroPiScript  # 1
+
+       class HelloWorld(EuroPiScript):  # 2
+           def main():  # 3
+               oled.centre_text("Hello world")
+
+
+       if __name__ == "__main__":  # 4
+           HelloWorld().main()
     
-       class HelloWorld(EuroPiScript):
-           # init and other methods
-           # Override main with your script main method.
-           def main(self):
-               # Your script's main loop.
-    
+    To include your script in the menu it must be added to the ``EUROPI_SCRIPT_CLASSES`` list in ``contrib/menu.py``.
     """
 
     def __init__(self) -> None:

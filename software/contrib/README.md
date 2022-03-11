@@ -25,7 +25,9 @@ sample_and_hold.md**
 
 ### Menu Inclusion
 
-In order to be included in the menu a program needs to meet a few additional requirements. See [menu.md](/software/contrib/menu.md) for details. Programs are not required to participate in the menu, but if they do not, they should be added to the ``EXCLUDED_SCRIPTS`` list near the top of [``menu.py``](/software/contrib/menu.py).
+In order to be included in the menu a program needs to meet a few additional requirements. See 
+[menu.md](/software/contrib/menu.md) for details. Programs are not required to participate in the menu in order to be 
+accepted, but it is nice.
 
 
 ### If you are unsure

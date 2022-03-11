@@ -4,9 +4,13 @@ from europi_script import EuroPiScript
 
 
 class HelloWorld(EuroPiScript):
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
         self.counter = 0
+
+    @classmethod
+    def display_name(cls):
+        return "Hello World"
 
     @staticmethod
     def increment(counter):
