@@ -69,7 +69,7 @@ def clamp(value, low, high):
 def reset_state():
     """Return device to initial state with all components off and handlers reset."""
     if not TEST_ENV:
-        oled.clear()
+        oled.fill(0)
     [cv.off() for cv in cvs]
     [d.reset_handler() for d in (b1, b2, din)]
 
@@ -378,17 +378,6 @@ class Display(SSD1306_I2C):
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
 
         super().__init__(self.width, self.height, i2c)
-
-    def clear(self):
-        """Clear the display upon call.
-
-        Note, this is meant to be a standalone call to clear the screen because
-        it also calls ``show()``. Using this in a loop with other oled 
-        functions will cause the screen to flicker. Instead you want to start
-        your loops with ``oled.fill(0)`` to clear the FrameBuffer.
-        """
-        self.fill(0)
-        self.show()
 
     def centre_text(self, text):
         """Split the provided text across 3 lines of display."""
