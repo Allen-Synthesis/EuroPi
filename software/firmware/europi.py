@@ -363,6 +363,8 @@ class Display(SSD1306_I2C):
     you to perform more complicated graphics without slowing your program, or
     to perform the calculations for other functions, but only update the
     display every few steps to prevent lag.
+    
+    To clear the display, simply fill the display with the colour black by using ``oled.fill(0)``
 
     More explanations and tips about the the display can be found in the oled_tips file
     `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
