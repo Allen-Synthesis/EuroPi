@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>europi_script &mdash; EuroPi  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ui" href="ui.html" />
+    <link rel="prev" title="europi" href="europi.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> EuroPi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">europi_script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EuroPi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../api.html">API</a> &raquo;</li>
+      <li>europi_script</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/europi_script.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-europi_script">
+<span id="europi-script"></span><h1>europi_script<a class="headerlink" href="#module-europi_script" title="Permalink to this headline"></a></h1>
+<p>Provides a base class for scripts which wish to participate in the bootloader menu.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi_script.</span></span><span class="sig-name descname"><span class="pre">EuroPiScript</span></span><a class="headerlink" href="#europi_script.EuroPiScript" title="Permalink to this definition"></a></dt>
+<dd><p>A base class for scripts which wish to participate in the bootloader menu.</p>
+<p>To make your script compatible with the menu, you must:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>import <code class="docutils literal notranslate"><span class="pre">EuroPiScript</span></code></p></li>
+<li><p>define your script as a class that inherits from this base class.</p></li>
+<li><p>override <code class="docutils literal notranslate"><span class="pre">main()</span></code> to define your script’s main loop</p></li>
+<li><p>Surround the call to <code class="docutils literal notranslate"><span class="pre">main()</span></code> with a guard to prevent execution upon import</p></li>
+</ol>
+</div></blockquote>
+<p>An minimal example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">europi</span> <span class="kn">import</span> <span class="n">oled</span>
+<span class="kn">from</span> <span class="nn">europi_script</span> <span class="kn">import</span> <span class="n">EuroPiScript</span>  <span class="c1"># 1</span>
+
+<span class="k">class</span> <span class="nc">HelloWorld</span><span class="p">(</span><span class="n">EuroPiScript</span><span class="p">):</span>  <span class="c1"># 2</span>
+    <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>  <span class="c1"># 3</span>
+        <span class="n">oled</span><span class="o">.</span><span class="n">centre_text</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>  <span class="c1"># 4</span>
+    <span class="n">HelloWorld</span><span class="p">()</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To include your script in the menu it must be added to the <code class="docutils literal notranslate"><span class="pre">EUROPI_SCRIPT_CLASSES</span></code> list in <code class="docutils literal notranslate"><span class="pre">contrib/menu.py</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.display_name">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.display_name" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the string used to identify this script in the Menu. Defaults to the class name. Override it if you 
+would like to use a different name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">display_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello World&quot;</span>
+</pre></div>
+</div>
+<p>Note that the screen is only 16 characters wide. Anything longer will be cut off.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.main" title="Permalink to this definition"></a></dt>
+<dd><p>Override this method with your script’s main loop method.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="europi.html" class="btn btn-neutral float-left" title="europi" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ui.html" class="btn btn-neutral float-right" title="ui" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Rory Allen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
