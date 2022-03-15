@@ -14,3 +14,6 @@ def script_for_testing():
 def test_save_state(script_for_testing):
     script_for_testing._save_state("test state")
     assert script_for_testing._load_state() == "test state"
+
+def test_state_file_name(script_for_testing):
+    assert script_for_testing._state_filename == "saved_state_ScriptForTesting.txt"

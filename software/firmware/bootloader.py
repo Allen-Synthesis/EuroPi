@@ -35,7 +35,7 @@ class BootloaderMenu(EuroPiScript):
     """
 
     def __init__(self, script_classes):
-        EuroPiScript.__init__(self)
+        super().__init__()
         self.scripts_config = BootloaderMenu._build_scripts_config(script_classes)
         self.menu = Menu(
             items=list(sorted(self.scripts_config.keys())),
@@ -78,13 +78,10 @@ class BootloaderMenu(EuroPiScript):
             self._save_state(self.run_request)
 
         # setup the exit handlers, and execute the selection
+        reset_state()  # remove menu's button handlers
         europi.b1._handler_both(europi.b2, self.exit_to_menu)
         europi.b2._handler_both(europi.b1, self.exit_to_menu)
 
         time.sleep(0.25)
         selected_class = self.scripts_config[self.run_request]
         selected_class().main()
-
-
-if __name__ == "__main__":
-    BootloaderMenu().main()
