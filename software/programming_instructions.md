@@ -49,7 +49,7 @@ Use the exact same process as for the ssd1306 library to install the europi libr
     ![image](https://user-images.githubusercontent.com/79809962/156630180-7f727567-89b1-4b8a-a3e0-63f2da3ea30c.png)
 
 3. Click 'Install'.
-4. You will now see the new file 'europi.py' alongside the 'ssd1306.py' inside the 'lib' folder.
+4. You will now see several new files, including 'europi.py' alongside the 'ssd1306.py' inside the 'lib' folder.
 
 ## Next Steps
 
@@ -57,7 +57,8 @@ Now that you have installed the europi.py and ssd1306 libraries, you are ready t
 
 * [Option 1](#write-your-own-program-from-scratch): Start writing your own program from scratch
 * [Option 2](#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/software/contrib/)
-* [Option 3](#calibrate-the-module): Calibrate the module for higher accuracy
+* [Option 3](#install-the-contrib-scripts-and-setup-the-menu): Install all of the contrib scripts and use the bootloader menu
+* [Option 4](#calibrate-the-module): Calibrate the module for higher accuracy
 
 
 ### Write your own program from scratch
@@ -91,7 +92,18 @@ Now you have access to the inputs and outputs using easy methods, which you can 
   
   ![image](https://user-images.githubusercontent.com/79809962/151054018-0f495bb5-067e-4cd6-9640-c38e44a216de.png)  
   
-  
+### Install the contrib scripts and setup the menu
+
+1. Use the exact same process as for the ssd1306 and europi libraries to install the europi-contrib library:
+   1. In Thonny, click Tools -> Manage Packages to open the package manager.
+   2. Type 'europi' into the search box and click 'Search on PyPi'
+   3. Click the result named 'micropython-europi-contrib'.
+   4. Click 'Install'.
+   5. You will now see the new directory 'contrib' inside the 'lib' folder, containing the contrib scripts.
+2. The menu program is called ``main.py`` and can be found in the lib directory on the Pico or in the [``software/contrib``](/software/contrib/menu.py) directory on github. Copy this file as your ``main.py`` as described in 
+ [Option 2](#copy-someone-elses-program-to-run-on-your-module) above.
+
+
 ### Calibrate the module
 
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  

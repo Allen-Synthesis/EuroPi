@@ -1,5 +1,6 @@
 from europi import *
 from time import sleep_ms, ticks_diff, ticks_ms
+from europi_script import EuroPiScript
 
 HEADER_DURATION = 2000  # 2 seconds in ms
 
@@ -57,24 +58,31 @@ cv_mapping = [cv1, cv2, cv3, cv4, cv5, cv6]
 knob_mapping = 0 #0 = not used, 1 = knob 1, 2 = knob 2
 knob_mapping_text = ['Off', 'Knob 1', 'Knob 2']
 
-b1.handler(rotate_cvs)
-din.handler(rotate_cvs)
-b2.handler(remap_knob)
 
-while True:
+class RadioScanner(EuroPiScript):
+    def main(self):
+        
+        b1.handler(rotate_cvs)
+        din.handler(rotate_cvs)
+        b2.handler(remap_knob)
 
-    if knob_mapping != 1:
-        x = k1.percent()
-    else:
-        x = clamp(ain.percent() + k1.percent(), 0, 1)
+        while True:
 
-    if knob_mapping != 2:
-        y = k2.percent()
-    else:
-        y = clamp(ain.percent() + k2.percent(), 0, 1)
+            if knob_mapping != 1:
+                x = k1.percent()
+            else:
+                x = clamp(ain.percent() + k1.percent(), 0, 1)
 
-    do_step(x, y)
+            if knob_mapping != 2:
+                y = k2.percent()
+            else:
+                y = clamp(ain.percent() + k2.percent(), 0, 1)
 
-    if ticks_diff(ticks_ms(), b2.last_pressed()) < HEADER_DURATION:
-        display_mapping(knob_mapping)
-    oled.show()
+            do_step(x, y)
+
+            if ticks_diff(ticks_ms(), b2.last_pressed()) < HEADER_DURATION:
+                display_mapping(knob_mapping)
+            oled.show()
+
+if __name__ == "__main__":
+    RadioScanner().main()
