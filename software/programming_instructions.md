@@ -100,7 +100,7 @@ Now you have access to the inputs and outputs using easy methods, which you can 
    3. Click the result named 'micropython-europi-contrib'.
    4. Click 'Install'.
    5. You will now see the new directory 'contrib' inside the 'lib' folder, containing the contrib scripts.
-2. The menu program is called ``main.py`` and can be found in the contrib directory on the Pico. You need to open this file in Thonny by double clicking it, and then press 'Ctrl-Shift-S' to Save As, then save it into the root directory of the Pico (this just means not inside any of the other folders), with the name ``main.py`` *not* ``menu.py`` as it was previously named.
+2. The menu program is called ``main.py`` and can be found in the contrib directory on the Pico. You need to open this file in Thonny by double clicking it, and then press 'Ctrl-Shift-S' to Save As, choose 'Raspberry Pi Pico', then save it into the root directory of the Pico (this just means not inside any of the other folders), with the name ``main.py`` *not* ``menu.py`` as it was previously named.
 
 
 ### Calibrate the module
