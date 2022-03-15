@@ -1,4 +1,7 @@
-from time import sleep
+try:
+    import uasyncio as asyncio
+except ImportError:
+    import asyncio
 
 try:
     # local dev
@@ -64,7 +67,7 @@ def calc_y_pos(max_disp_voltage, a_voltage):
     return Y_PIXELS - int(a_voltage / max_disp_voltage * Y_PIXELS)
 
 
-def run():
+async def main():
     b1.handler(toggle(0))
     b2.handler(toggle(1))
 
@@ -107,10 +110,9 @@ def run():
                 oled.text(f"y scale: {max_disp_voltage:4.1f}v", 2, 23, 1)
                 oled.show()
 
-            sleep(0.001)
+            await asyncio.sleep(0)
 
         oled.show()
 
-
-if __name__ == "__main__":
-    run()
+if __name__ in ["__main__", "contrib.scope"]:
+    asyncio.run(main())
