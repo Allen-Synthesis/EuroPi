@@ -35,7 +35,7 @@ class Menu:
 
     def _inverted_text(self, s, x, y):
         """displays the given text with an inverted background"""
-        oled.fill_rect(x, y, CHAR_WIDTH * len(s), CHAR_HEIGHT, 1)
+        oled.fill_rect(x, y-1, CHAR_WIDTH * len(s), CHAR_HEIGHT+2, 1)
         oled.text(s, x, y, 0)
 
     def draw_menu(self):
