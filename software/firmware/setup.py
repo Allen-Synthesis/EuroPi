@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="micropython-europi",
-    version="0.1.0",
+    version="0.2.0.dev0",
     description="EuroPi module for MicroPython",
     long_description="""The EuroPi is a fully user reprogrammable EuroRack module based on the Raspberry Pi Pico, which allows users to process inputs and controls to produce outputs based on code written in Python.""",
     url="https://github.com/Allen-Synthesis/EuroPi",

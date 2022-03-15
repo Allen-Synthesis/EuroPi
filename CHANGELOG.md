@@ -2,6 +2,10 @@
 
 ### 2022-03-XX
 
+- release version 0.2.0
+
+### 2022-03-XX
+
 - add bootloader menu allowing the user to choose a script to run
 - update all existing scripts to work with the menu
 - add new firmware module 'europi_script' containing a base class to support menu inclusion
