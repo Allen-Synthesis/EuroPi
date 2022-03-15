@@ -36,7 +36,7 @@ if __name__ == "__main__":  #4
 1. **Import ``EuroPiScript``:** Import the ``EuroPiScript`` base class so that we can implement it below.
 2. **Define a class that extends ``EuroPiScript``:** This defines your script as one that adheres to the menu's requirements.
 3. **A ``main()`` method:** The main code of the script should be encapsulated in an 'main()' method. The menu will initialize your class and then call this function to launch your script.
-4. **a ``__name__`` guard around the ``main()`` call site:** This allows your code to work correctly when it itself is the ``main.py``
+4. **a ``__name__`` guard around the ``main()`` call site:** This allows your code to work correctly when it itself is the ``main.py``. To read more about name guarding, see the [Python Documentation](https://docs.python.org/3/library/__main__.html), or alternatively just copy and paste the example above, using your own script's name in place of 'HelloWorld'.
 
 ## Menu Inclusion
 

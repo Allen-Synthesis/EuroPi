@@ -39,7 +39,7 @@ class Menu:
         oled.text(s, x, y, 0)
 
     def draw_menu(self):
-        """This funciton should be called by your script's main loop in order to display and refresh the menu."""
+        """This function should be called by your script's main loop in order to display and refresh the menu."""
         current = self.selected
         oled.fill(0)
         oled.text(f"{self.items[current - 1]}", 2, 3, 1)

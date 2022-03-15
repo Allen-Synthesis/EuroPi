@@ -57,7 +57,7 @@ Now that you have installed the europi.py and ssd1306 libraries, you are ready t
 
 * [Option 1](#write-your-own-program-from-scratch): Start writing your own program from scratch
 * [Option 2](#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/software/contrib/)
-* [OPtion 3](#install-the-contrib-scripts-and-setup-the-menu): Install all of the contrib scripts and use the bootloader menu
+* [Option 3](#install-the-contrib-scripts-and-setup-the-menu): Install all of the contrib scripts and use the bootloader menu
 * [Option 4](#calibrate-the-module): Calibrate the module for higher accuracy
 
 
@@ -95,12 +95,12 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 ### Install the contrib scripts and setup the menu
 
 1. Use the exact same process as for the ssd1306 and europi libraries to install the europi-contrib library:
-   1. In Thony, click Tools -> Manage Packages to open the package manager.
+   1. In Thonny, click Tools -> Manage Packages to open the package manager.
    2. Type 'europi' into the search box and click 'Search on PyPi'
    3. Click the result named 'micropython-europi-contrib'.
    4. Click 'Install'.
    5. You will now see the new directory 'contrib' inside the 'lib' folder, containing the contrib scripts.
-2. The menu program is called ``bootloader.py`` and can be found in the lib directory on the pico or in the [``software/firmware``](/software/firmware/bootloader.py) directory on github. Copy this file as your ``main.py`` as described in 
+2. The menu program is called ``main.py`` and can be found in the lib directory on the Pico or in the [``software/contrib``](/software/contrib/menu.py) directory on github. Copy this file as your ``main.py`` as described in 
  [Option 2](#copy-someone-elses-program-to-run-on-your-module) above.
 
 
