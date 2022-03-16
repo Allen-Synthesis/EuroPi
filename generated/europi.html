@@ -298,22 +298,13 @@ updates the physical display when <code class="docutils literal notranslate"><sp
 you to perform more complicated graphics without slowing your program, or
 to perform the calculations for other functions, but only update the
 display every few steps to prevent lag.</p>
+<p>To clear the display, simply fill the display with the colour black by using <code class="docutils literal notranslate"><span class="pre">oled.fill(0)</span></code></p>
 <p>More explanations and tips about the the display can be found in the oled_tips file
 <a class="reference external" href="https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md">oled_tips.md</a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.Display.centre_text">
 <span class="sig-name descname"><span class="pre">centre_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Display.centre_text" title="Permalink to this definition"></a></dt>
 <dd><p>Split the provided text across 3 lines of display.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Display.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Display.clear" title="Permalink to this definition"></a></dt>
-<dd><p>Clear the display upon call.</p>
-<p>Note, this is meant to be a standalone call to clear the screen because
-it also calls <code class="docutils literal notranslate"><span class="pre">show()</span></code>. Using this in a loop with other oled 
-functions will cause the screen to flicker. Instead you want to start
-your loops with <code class="docutils literal notranslate"><span class="pre">oled.fill(0)</span></code> to clear the FrameBuffer.</p>
 </dd></dl>
 
 </dd></dl>

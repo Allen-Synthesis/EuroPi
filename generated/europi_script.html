@@ -104,6 +104,12 @@
 </pre></div>
 </div>
 <p>To include your script in the menu it must be added to the <code class="docutils literal notranslate"><span class="pre">EUROPI_SCRIPT_CLASSES</span></code> list in <code class="docutils literal notranslate"><span class="pre">contrib/menu.py</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>EuroPiScripts should not call <code class="docutils literal notranslate"><span class="pre">europi.reset_state()</span></code> as this call would remove the button handlers that
+allow the user to exit the program and return to the menu. Similarly, EuroPiScripts should not override the
+handlers that provide this functionality.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_script.EuroPiScript.display_name">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.display_name" title="Permalink to this definition"></a></dt>
