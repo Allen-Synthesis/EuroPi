@@ -2,6 +2,7 @@
 
 clean_docs:
 	$(MAKE) -C docs clean
+	rm -r docs/generated/*
 
 docs:
 	$(MAKE) -C docs html SPHINXOPTS="-W -n"
