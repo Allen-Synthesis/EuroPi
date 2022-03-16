@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="micropython-europi-contrib",
-    version="0.2.0.dev0",
+    version="0.2.0",
     description="Community Contributions to EuroPi module for MicroPython",
     long_description="Community Contributions to EuroPi module for MicroPython",
     url="https://github.com/Allen-Synthesis/EuroPi",
