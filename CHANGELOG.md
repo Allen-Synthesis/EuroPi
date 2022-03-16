@@ -1,10 +1,10 @@
 # Change Log
 
-### 2022-03-XX
+### 2022-03-16
 
 - release version 0.2.0
 
-### 2022-03-XX
+### 2022-03-16
 
 - add bootloader menu allowing the user to choose a script to run
 - update all existing scripts to work with the menu
