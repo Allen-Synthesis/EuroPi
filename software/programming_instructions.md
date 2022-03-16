@@ -61,7 +61,7 @@ Now that you have installed the europi.py and ssd1306 libraries, you are ready t
 * [Option 4](#calibrate-the-module): Calibrate the module for higher accuracy
 
 
-### Write your own program from scratch
+### Option 1 - Write your own program from scratch
 
 To program the module, just create a new Python file, and then press Ctrl-Shift-S to save as to the Raspberry Pi Pico, and name it 'main.py'.  
 Do not save files to the 'lib' folder, as this is just for libraries to be imported rather than programs that you will write.  
@@ -72,7 +72,7 @@ Now import the entire europi library by simply adding the line 'from europi impo
 Now you have access to the inputs and outputs using easy methods, which you can read about more in the [README.md](/software/README.md) of the software folder.
 
 
-### Copy someone else's program to run on your module
+### Option 2 - Copy someone else's program to run on your module
 
 1. Use the exact same process as for the ssd1306 and europi libraries to install the europi-contrib library:
    1. In Thonny, click Tools -> Manage Packages to open the package manager.
@@ -90,18 +90,18 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 6. Now you can disconnect the module from your computer, connect it to rack power, and the your chosen script will run automatically.
   
   
-### Install the contrib scripts and setup the menu
+### Option 3 - Install the contrib scripts and setup the menu
 
 1. Complete all of the steps for [Option 2](https://github.com/Allen-Synthesis/EuroPi/edit/release_prep/0.2.0/software/programming_instructions.md#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
 2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically. After you choose a program that will become the default program that runs when the module is connected to power, but you can still go back to the menu at any time by pressing and holding both buttons for >0.5s and then releasing.
 
 
-### Calibrate the module
+### Option 4 - Calibrate the module
 
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
 
-1. To begin, you need to copy the `calibrate.py` file and name it `/main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/calibrate.py).
+1. To begin, you need to choose the `calibrate.py` file and save it as `main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/calibrate.py).
 2. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
 3. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).  
 4. There are 2 options for calibration:
