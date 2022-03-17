@@ -25,15 +25,10 @@ class EuroPiScript:
            HelloWorld().main()
     
     To include your script in the menu it must be added to the ``EUROPI_SCRIPT_CLASSES`` list in ``contrib/menu.py``.
-
-    .. note::
-       EuroPiScripts should not call ``europi.reset_state()`` as this call would remove the button handlers that
-       allow the user to exit the program and return to the menu. Similarly, EuroPiScripts should not override the
-       handlers that provide this functionality.
     """
 
     def __init__(self) -> None:
-        self._state_filename = f"saved_state_{self.__class__.__qualname__}.txt"
+        self._state_filename = f"saved_state_{self.__qualname__}.txt"
 
     def main(self) -> None:
         """Override this method with your script's main loop method."""
@@ -56,19 +51,20 @@ class EuroPiScript:
     # private functions for now, with the intention that they are eventually added to the public API
     #
 
-    def _save_state(self, state: str):
-        with open(self._state_filename, 'w') as file:
+    def _save_state(self, state: str, mode: str ='w'):
+        with open(self._state_filename, mode) as file:
             file.write(state)
 
-    def _load_state(self) -> str:
+    def _load_state(self, mode: str ='r') -> str:
         try:
-            with open(self._state_filename, 'r') as file:
+            with open(self._state_filename, mode) as file:
                 return file.read()
         except OSError as e:
             return ""
     
-    def _reset_state(self):  # TODO this name clashes with europi.reset_state()
+    def _reset_state(self):
         try: 
             os.remove(self._state_filename)
         except OSError:
             pass
+
