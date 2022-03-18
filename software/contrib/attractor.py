@@ -107,44 +107,6 @@ class PanXuZhou(Attractor):
         self.y += y_dot * self.dt
         self.z += z_dot * self.dt
 
-        # Something odd here with the Rossler. It's converging on 0. 
-class Rossler(Attractor):
-    def __init__(self, point=(5.,5.,5.), params=(0.2,0.2,5.7), dt=0.01):
-        super().__init__(point,dt, "Rossler")
-        self.a = params[0]
-        self.b = params[1]
-        self.c = params[2]
-    
-    def step(self):
-        '''
-        Update the point.
-        '''
-        x_dot = - self.y - self.x
-        y_dot = self.x + self.a*self.y
-        z_dot = self.b + self.z*(self.x - self.c)
-        self.x += x_dot * self.dt
-        self.y += y_dot * self.dt
-        self.z += z_dot * self.dt
-
-# Something odd here with the Chen. It's converging on 0. 
-class Chen(Attractor):
-    def __init__(self, point=(-0.1,0.5,-0.6), params=(40.0,28.0,3.0), dt=0.01):
-        super().__init__(point,dt, "Chen")
-        self.a = params[0]
-        self.b = params[1]
-        self.c = params[2]
-
-    def step(self):
-        '''
-        Update the point.
-        '''
-        x_dot = self.a*(self.y - self.x)
-        y_dot = (self.c - self.a)*self.x - self.x*self.z + self.c*self.y
-        z_dot = self.x*self.y - self.b*self.z
-        self.x += x_dot * self.dt
-        self.y += y_dot * self.dt
-        self.z += z_dot * self.dt
- 
 def main():
     for a in [Lorenz(), PanXuZhou()]:
         print(a)
