@@ -1,6 +1,5 @@
 from europi import *
 from time import ticks_diff, ticks_ms
-from random import randint, uniform
 from math import fabs, floor
 from attractor import attractor
 
@@ -51,16 +50,16 @@ class lorenz:
         # Initialize variables
         self.checkpoint = 0
         # time before update
-        self.period = 10
+        self.period = 100
         # output range.
         self.range = MAX_OUTPUT
-        # threshold for gates
+        # initial threshold for gates
         self.threshold = 20
         # freeze motion
         self.freeze = False
 
         # Triggered when button 1 is released
-        # Short press: increase range
+        # Short press: decrease range
         # Long press: 
         @b1.handler_falling
         def b1Pressed():
@@ -74,7 +73,7 @@ class lorenz:
                     self.range = 1
 
         # Triggered when button 2 is released.
-        # Short press: decrease range
+        # Short press: increase range
         # Long press: 
         @b2.handler_falling
         def b2Pressed():
@@ -88,7 +87,7 @@ class lorenz:
                 if self.range > MAX_OUTPUT:
                     self.range = MAX_OUTPUT
 
-        # Triggered when din goes HIGH.
+        # Freeze is triggered when din goes HIGH.
         @din.handler
         def dinTrigger():
             # Pause
