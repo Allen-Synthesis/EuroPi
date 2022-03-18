@@ -1,5 +1,16 @@
 # Change Log
 
+### 2022-03-16
+
+- release version 0.2.0
+
+### 2022-03-16
+
+- add bootloader menu allowing the user to choose a script to run
+- update all existing scripts to work with the menu
+- add new firmware module 'europi_script' containing a base class to support menu inclusion
+- add new firmware module 'ui' as a place to hold reusable UI components
+
 ### 2022-03-10
 
 - release version 0.1.0

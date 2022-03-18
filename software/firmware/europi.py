@@ -69,7 +69,7 @@ def clamp(value, low, high):
 def reset_state():
     """Return device to initial state with all components off and handlers reset."""
     if not TEST_ENV:
-        oled.clear()
+        oled.fill(0)
     [cv.off() for cv in cvs]
     [d.reset_handler() for d in (b1, b2, din)]
 
@@ -236,6 +236,10 @@ class DigitalReader:
         self._rising_handler = lambda: None
         self._falling_handler = lambda: None
 
+        # Both high handler
+        self._both_handler = lambda: None
+        self._other = None
+
         # IRQ event timestamps
         self.last_rising_ms = 0
         self.last_falling_ms = 0
@@ -252,6 +256,11 @@ class DigitalReader:
             if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
                 return
             self.last_falling_ms = time.ticks_ms()
+
+            # Check if 'other' pin is set and if 'other' pins is high and if this pin has been high for long enough.
+            if self._other and self._other.value() and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500:
+                return self._both_handler()
+
             return self._falling_handler()
 
     def value(self):
@@ -277,6 +286,14 @@ class DigitalReader:
 
     def reset_handler(self):
         self.pin.irq(handler=None)
+
+    def _handler_both(self, other, func):
+        """When this and other are high, execute the both func."""
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self._other = other
+        self._both_handler = func
+        self.pin.irq(handler=self._bounce_wrapper)
 
 
 class DigitalInput(DigitalReader):
@@ -363,6 +380,8 @@ class Display(SSD1306_I2C):
     you to perform more complicated graphics without slowing your program, or
     to perform the calculations for other functions, but only update the
     display every few steps to prevent lag.
+    
+    To clear the display, simply fill the display with the colour black by using ``oled.fill(0)``
 
     More explanations and tips about the the display can be found in the oled_tips file
     `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
@@ -378,17 +397,6 @@ class Display(SSD1306_I2C):
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
 
         super().__init__(self.width, self.height, i2c)
-
-    def clear(self):
-        """Clear the display upon call.
-
-        Note, this is meant to be a standalone call to clear the screen because
-        it also calls ``show()``. Using this in a loop with other oled 
-        functions will cause the screen to flicker. Instead you want to start
-        your loops with ``oled.fill(0)`` to clear the FrameBuffer.
-        """
-        self.fill(0)
-        self.show()
 
     def centre_text(self, text):
         """Split the provided text across 3 lines of display."""

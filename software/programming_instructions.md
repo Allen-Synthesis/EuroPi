@@ -49,7 +49,7 @@ Use the exact same process as for the ssd1306 library to install the europi libr
     ![image](https://user-images.githubusercontent.com/79809962/156630180-7f727567-89b1-4b8a-a3e0-63f2da3ea30c.png)
 
 3. Click 'Install'.
-4. You will now see the new file 'europi.py' alongside the 'ssd1306.py' inside the 'lib' folder.
+4. You will now see several new files, including 'europi.py' alongside the 'ssd1306.py' inside the 'lib' folder.
 
 ## Next Steps
 
@@ -57,7 +57,8 @@ Now that you have installed the europi.py and ssd1306 libraries, you are ready t
 
 * [Option 1](#write-your-own-program-from-scratch): Start writing your own program from scratch
 * [Option 2](#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/software/contrib/)
-* [Option 3](#calibrate-the-module): Calibrate the module for higher accuracy
+* [Option 3](#install-the-contrib-scripts-and-setup-the-menu): Install all of the contrib scripts and use the bootloader menu
+* [Option 4](#calibrate-the-module): Calibrate the module for higher accuracy
 
 
 ### Write your own program from scratch
@@ -73,31 +74,34 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 
 ### Copy someone else's program to run on your module
 
-1. Open the [contrib folder](/software/contrib/) and decide which program you would like to run. Each program will have an identically named '.md' file describing how to use it.
-2. Once you have chosen a program, click the '.py' file with the same name as the explanatory '.md' file to open it in GitHub.
-3. Click the pencil icon to 'Edit this file' in the top right  
-  
-  ![image](https://user-images.githubusercontent.com/79809962/151053257-44d4be25-e959-4781-9ff8-49348ff5e2b4.png)  
-4. Highlight the entire contents of the file  
-  
-  ![image](https://user-images.githubusercontent.com/79809962/151053508-24c9d5f7-fbf7-43c4-95ac-867b48ef924d.png)  
-5. Press Ctrl-C to copy the contents of the file
-6. Open Thonny, make sure your module is connected, and then press Ctrl-N to create a new blank file
-7. Press Ctrl-V in the file to paste the contents of the file you copied
-8. Press Ctrl-S to save the file, then choose 'Raspberry Pi Pico'  
+1. Use the exact same process as for the ssd1306 and europi libraries to install the europi-contrib library:
+   1. In Thonny, click Tools -> Manage Packages to open the package manager.
+   2. Type 'europi' into the search box and click 'Search on PyPi'
+   3. Click the result named 'micropython-europi-contrib'.
+   4. Click 'Install'.
+2. You will now see the new directory 'contrib' inside the 'lib' folder, containing the contrib scripts. 
+3. You can now choose any script from inside this contrib folder to run on your module. When you've chosen, double click the file on the Pico to open it.
+4. Press 'Ctrl-Shift-S' to Save As, and choose 'Raspberry Pi Pico'
   
   ![image](https://user-images.githubusercontent.com/79809962/151053911-7145ddb6-12e9-4606-909c-e1f888e3b4b9.png)  
-9. Name the file 'main.py', being careful to include the '.py' so the module knows it is a Python file. If you do not name it 'main.py', the module will not know to automatically run your program whenever it is connected to power.  
+5. Name the file ``main.py``, being careful to include the '.py' so the module knows it is a Python file. If you do not name it ``main.py``, the module will not know to automatically run your program whenever it is connected to power. Save the file to the root directory of the Pico (not inside any folders)  
   
   ![image](https://user-images.githubusercontent.com/79809962/151054018-0f495bb5-067e-4cd6-9640-c38e44a216de.png)  
+6. Now you can disconnect the module from your computer, connect it to rack power, and the your chosen script will run automatically.
   
   
+### Install the contrib scripts and setup the menu
+
+1. Complete all of the steps for [Option 2](https://github.com/Allen-Synthesis/EuroPi/edit/release_prep/0.2.0/software/programming_instructions.md#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
+2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically. After you choose a program that will become the default program that runs when the module is connected to power, but you can still go back to the menu at any time by pressing and holding both buttons for >0.5s and then releasing.
+
+
 ### Calibrate the module
 
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
 
-1. To begin, you need to copy the `calibrate.py` file and name it `/main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/calibrate.py).
+1. To begin, you need to choose the `calibrate.py` file and save it as `main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/calibrate.py).
 2. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
 3. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).  
 4. There are 2 options for calibration:
