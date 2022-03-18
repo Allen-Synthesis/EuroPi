@@ -1,7 +1,6 @@
 '''
 Generic attractor code. 
 
-
 '''
 
 class Attractor:

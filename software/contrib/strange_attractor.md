@@ -4,12 +4,10 @@ author: Sean Bechhofer (github.com/seanbechhofer)
 date: 2022-03-15  
 labels: gates, triggers, randomness  
 
-Strange Attractor is a source of chaotic modulation based on Lorenz and Rossler
-Attractors:
+Strange Attractor is a source of chaotic modulation using systems
+of differential equations such as the Lorenz System: 
 
 https://en.wikipedia.org/wiki/Lorenz_system
-
-https://en.wikipedia.org/wiki/R%C3%B6ssler_attractor
 
 ![Lorenz System](https://upload.wikimedia.org/wikipedia/commons/1/13/A_Trajectory_Through_Phase_Space_in_a_Lorenz_Attractor.gif)
 
@@ -18,7 +16,6 @@ attractor.
 
 Outputs 4, 5 and 6 are gates based on the values of *x*, *y* and *z* and
 relationships between them.
-
 
 Credits:
 - The Europi hardware and firmware was designed by Allen Synthesis: https://github.com/Allen-Synthesis/EuroPi
@@ -47,8 +44,9 @@ Outputs 1-3 provide chaotic shifting voltages.
 Outputs 4-6 provide gates/triggers. 
 
 ## Basic Usage
-1. Connect outputs to modules
-2. Enjoy randomness
+1. Switch on
+2. Connect outputs to modules
+3. Enjoy randomness
 
 ## Controls
 1. Knob 1 controls the speed. The sensitivity changes at noon,
@@ -66,13 +64,15 @@ space. Three parameters, *r*,*s* and *b* are given: the defaults are
 coordinates are then be used to generate control voltages and
 triggers.
 
-The Rossler Attractor is similar, but with a different set of
+The Pan-Xu-Zhou Attractor is similar, but with a different set of
 equations and parameters. 
 
-On start up, the code runs through a number of iterations in order to
+On start up, the code tosses a coin to select the system of equations
+to use. It then runs through a number of iterations in order to
 calculate the possible output ranges of the system. This process takes
-around 30 seconds. This is then used to normalise *x*, *y* and *z* values to
-the range 0-100 for calculation of voltages on outputs 1, 2 and 3.
+around 30 seconds. This is then used to normalise *x*, *y* and *z*
+values to the range 0-100 for calculation of voltages on outputs 1, 2
+and 3.
 
 Outputs 4, 5 and 6 are triggers, with 4 giving more frequent triggers
 than 5 and 6. Output 4 takes the normalised value of output 1 and sets

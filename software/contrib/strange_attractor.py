@@ -1,7 +1,7 @@
 from europi import *
 from time import ticks_diff, ticks_ms
 from math import fabs, floor
-from attractor import lorenz, rossler
+from attractor import Lorenz, PanXuZhou
 
 '''
 Strange Attractor
@@ -40,11 +40,11 @@ machine.freq(250_000_000)
 MAX_OUTPUT = 5
 
 class StrangeAttractor:
-    def __init__(self):
+    def __init__(self, _attractor):
         # create the attractor and initialise.
         # This will take around 30 seconds.
         # Use Lorenz
-        self.a = lorenz()
+        self.a = _attractor
         self.initialise_message()
         self.a.estimate_ranges()
             
@@ -186,6 +186,8 @@ class StrangeAttractor:
 
 # Reset module display state.
 reset_state()
-att = StrangeAttractor()
-att.main()
+# Toss a coin to decide on the system of equations. 
+att = random.choice([Lorenz(), PanXuZhou()])
+sa = StrangeAttractor(att)
+sa.main()
 
