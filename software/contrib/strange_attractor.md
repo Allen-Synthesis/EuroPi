@@ -1,11 +1,15 @@
-# EuroPi Lorenz Attractor. 
+# EuroPi Strange Attractor. 
 
 author: Sean Bechhofer (github.com/seanbechhofer)  
 date: 2022-03-15  
 labels: gates, triggers, randomness  
 
-Lorenz is a source of chaotic modulation based on a Lorenz Attractor:
+Strange Attractor is a source of chaotic modulation based on Lorenz and Rossler
+Attractors:
+
 https://en.wikipedia.org/wiki/Lorenz_system
+
+https://en.wikipedia.org/wiki/R%C3%B6ssler_attractor
 
 ![Lorenz System](https://upload.wikimedia.org/wikipedia/commons/1/13/A_Trajectory_Through_Phase_Space_in_a_Lorenz_Attractor.gif)
 
@@ -60,7 +64,10 @@ The Lorenz System can be used to describe a point moving in 3-D
 space. Three parameters, *r*,*s* and *b* are given: the defaults are
 10, 8/3 and 28, values known to produce chaotic behavious. The *x*, *y*, *z*
 coordinates are then be used to generate control voltages and
-triggers. 
+triggers.
+
+The Rossler Attractor is similar, but with a different set of
+equations and parameters. 
 
 On start up, the code runs through a number of iterations in order to
 calculate the possible output ranges of the system. This process takes
