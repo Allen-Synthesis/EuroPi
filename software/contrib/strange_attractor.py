@@ -180,6 +180,8 @@ class StrangeAttractor:
         if self.freeze:
             oled.text('FREEZE',0,24,1)
             
+        oled.text(self.a.name,80,24,1)
+            
         oled.show()
 
 # Reset module display state.

@@ -75,9 +75,6 @@ class Lorenz(Attractor):
         self.r = params[1]
         self.b = params[2]
 
-#    def __str__(self):
-#        return (f"{self.name}\n\t({self.x:2.2f},{self.y:2.2f},{self.z:2.2f})({self.s},{self.r},{self.b})")
-
     def step(self):
         '''
         Update the point.
@@ -88,8 +85,30 @@ class Lorenz(Attractor):
         self.x += x_dot * self.dt
         self.y += y_dot * self.dt
         self.z += z_dot * self.dt
+        
+# Pan-Xu-Zhou
+'''
+Implementation of Pan-Xu-Zhou
+'''
+class PanXuZhou(Attractor):
+    def __init__(self, point=(1.,1.,1.), params=(10.0,2.667,16.0), dt=0.01):
+        super().__init__(point,dt, "Pan-Xu-Zhou")
+        self.a = params[0]
+        self.b = params[1]
+        self.c = params[2]
 
-# Something odd here with the Rossler. It's converging on 0. 
+    def step(self):
+        '''
+        Update the point.
+        '''
+        x_dot = self.a*(self.y - self.x)
+        y_dot = self.c*self.x - self.x*self.z
+        z_dot = self.x*self.y - self.b*self.z
+        self.x += x_dot * self.dt
+        self.y += y_dot * self.dt
+        self.z += z_dot * self.dt
+
+        # Something odd here with the Rossler. It's converging on 0. 
 class Rossler(Attractor):
     def __init__(self, point=(5.,5.,5.), params=(0.2,0.2,5.7), dt=0.01):
         super().__init__(point,dt, "Rossler")
@@ -97,9 +116,6 @@ class Rossler(Attractor):
         self.b = params[1]
         self.c = params[2]
     
-#    def __str__(self):
-#        return (f"{self.name}\n\t({self.x:2.2f},{self.y:2.2f},{self.z:2.2f})({self.a},{self.b},{self.c})")
-
     def step(self):
         '''
         Update the point.
@@ -118,9 +134,6 @@ class Chen(Attractor):
         self.a = params[0]
         self.b = params[1]
         self.c = params[2]
-    
-#    def __str__(self):
-#        return (f"{self.name}\n\t({self.x:2.2f},{self.y:2.2f},{self.z:2.2f})({self.a},{self.b},{self.c})")
 
     def step(self):
         '''
@@ -132,42 +145,8 @@ class Chen(Attractor):
         self.x += x_dot * self.dt
         self.y += y_dot * self.dt
         self.z += z_dot * self.dt
-
-        
-# Something odd here with the Rossler. It's converging on 0. 
-class PanXuZhou(Attractor):
-    def __init__(self, point=(1.,1.,1.), params=(10.0,2.667,16.0), dt=0.01):
-        super().__init__(point,dt, "Pan-Xu-Zhou")
-        self.a = params[0]
-        self.b = params[1]
-        self.c = params[2]
-    
-#    def __str__(self):
-#        return (f"{self.name}\n\t({self.x:2.2f},{self.y:2.2f},{self.z:2.2f})({self.a},{self.b},{self.c})")
-
-    def step(self):
-        '''
-        Update the point.
-        '''
-        x_dot = self.a*(self.y - self.x)
-        y_dot = self.c*self.x - self.x*self.z
-        z_dot = self.x*self.y - self.b*self.z
-        self.x += x_dot * self.dt
-        self.y += y_dot * self.dt
-        self.z += z_dot * self.dt
  
 def main():
-    # print("Lorenz")
-    # l = Lorenz()
-    # l.estimateRanges()
-    # print(l)
-    # print(f"Min x:{l.x_min:8.2f} y:{l.y_min:8.2f} z:{l.z_min:8.2f}")
-    # print(f"Max x:{l.x_max:8.2f} y:{l.y_max:8.2f} z:{l.z_max:8.2f}")
-    # print(f"Ran x:{l.x_range:8.2f} y:{l.y_range:8.2f} z:{l.z_range:8.2f}")
-    # for i in range(1,10):
-    #     print(l)
-    #     l.step()
-
     for a in [Lorenz(), PanXuZhou()]:
         print(a)
         a.estimate_ranges()
