@@ -1,6 +1,7 @@
 name: Publish Python distributions to PyPI and TestPyPI
 
-on: push
+on:
+  workflow_call
 
 jobs:
   build-n-publish:
