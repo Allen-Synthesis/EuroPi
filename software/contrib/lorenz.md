@@ -1,8 +1,8 @@
 # EuroPi Lorenz Attractor. 
 
-author: Sean Bechhofer (github.com/seanbechhofer)
-date: 2022-03-15
-labels: gates, triggers, randomness
+author: Sean Bechhofer (github.com/seanbechhofer)  
+date: 2022-03-15  
+labels: gates, triggers, randomness  
 
 Lorenz is a source of chaotic modulation based on a Lorenz Attractor:
 https://en.wikipedia.org/wiki/Lorenz_system
