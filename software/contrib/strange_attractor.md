@@ -28,8 +28,8 @@ Credits:
 - knob_1: Adjust speed
 - knob_2: Adjust threshold for triggers
 
-- button_1: Decrease output voltage range
-- button_2: Increase output voltage range
+- button_1: Decrease output voltage range; change equation system
+- button_2: Increase output voltage range; change display
 
 - output_1: x 
 - output_2: y
@@ -50,11 +50,13 @@ Outputs 4-6 provide gates/triggers.
 
 ## Controls
 1. Knob 1 controls the speed. The sensitivity changes at noon,
-allowing for very slow or very fast modulatiom.
+allowing for very slow or very fast modulation.
 2. Knob 2 adjusts the threshold used for triggers.
-3. Buttons 1/2 reduce/increase the max output voltage of the CV outputs,
+3. Short presses on buttons 1/2 reduce/increase the max output voltage of the CV outputs,
 from 1V to 5V.
-4. If the digital input is `HIGH`, change is paused.
+4. Long press on button 1 changes the equation system
+5. Long press on button 2 changes the display between detail and graphical
+6. If the digital input is `HIGH`, change is paused.
 
 ## Details
 
@@ -83,5 +85,11 @@ output 6 and *(z+x - 2\*y)*.
 The display will show current values for outputs 1, 2, 3, speed,
 threshold, voltage range, triggers 4, 5 and 6 when `HIGH` and if the
 movement is frozen.
+
+A long press on button 1 changes the equation system. Note that this
+may cause a discontinuity in the x, y and z values.
+
+A long press on button 2 toggles between a numerical and graphical
+display
 
 If the digital input is set to `HIGH`, the system will pause.

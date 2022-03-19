@@ -5,6 +5,7 @@ Generic attractor code.
 
 class Attractor:
     def __init__(self, point=(0.,1.,1.05), dt=0.01, name="Attractor"):
+        self.initial_state = point
         self.x = point[0]
         self.y = point[1]
         self.z = point[2]
@@ -41,6 +42,12 @@ class Attractor:
         self.x_range = self.x_max-self.x_min
         self.y_range = self.y_max-self.y_min
         self.z_range = self.z_max-self.z_min
+        
+        # Reset to initial parameters
+        self.x = self.initial_state[0]
+        self.y = self.initial_state[1]
+        self.z = self.initial_state[2]
+        
 
     def x_scaled(self):
         return (100.0 * (self.x - self.x_min))/self.x_range
@@ -107,8 +114,35 @@ class PanXuZhou(Attractor):
         self.y += y_dot * self.dt
         self.z += z_dot * self.dt
 
+'''
+Implementation of Rossler. This seems to end up with z as zero aftera number of iterations,
+so use with caution.
+'''
+class Rossler(Attractor):
+#    def __init__(self, point=(0.1,0.0,-0.1), params=(0.2,0.2,5.7), dt=0.01):
+    def __init__(self, point=(0.1,0.0,-0.1), params=(0.13,0.2,6.5), dt=0.01):
+        super().__init__(point,dt, "Rossler")
+        self.a = params[0]
+        self.b = params[1]
+        self.c = params[2]
+
+    def step(self):
+        '''
+        Update the point.
+        '''
+        x_dot = -(self.y + self.z)
+        y_dot = self.x + self.a*self.y
+        z_dot = self.b + self.z*(self.x - self.c)
+        self.x += x_dot * self.dt
+        self.y += y_dot * self.dt
+        self.z += z_dot * self.dt
+
+def get_attractors():
+    return [Lorenz(), PanXuZhou(), Rossler()]
+
+
 def main():
-    for a in [Lorenz(), PanXuZhou()]:
+    for a in get_attractors():
         print(a)
         a.estimate_ranges()
         print(f"Min x:{a.x_min:8.2f} y:{a.y_min:8.2f} z:{a.z_min:8.2f}")
@@ -118,6 +152,15 @@ def main():
         for i in range(1,10):
             a.step()
             print(a)
+        for i in range(0,4):
+            print('---')
+            for i in range(1,100000):
+                a.step()
+            for i in range(1,10):
+                a.step()
+                print(a)
 
+            
 if __name__ == "__main__":
     main()
+

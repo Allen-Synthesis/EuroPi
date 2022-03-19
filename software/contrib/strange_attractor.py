@@ -1,7 +1,8 @@
 from europi import *
 from time import ticks_diff, ticks_ms
 from math import fabs, floor
-from attractor import Lorenz, PanXuZhou
+from attractor import get_attractors
+from random import choice
 
 '''
 Strange Attractor
@@ -21,7 +22,7 @@ analog_in:
 knob_1: Adjust speed
 knob_2: Adjust threshold for triggers
 
-button_1: Decrease output voltage range
+button_1: Decrease output voltage range, change equation system
 button_2: Increase output voltage range
 
 output_1: x 
@@ -40,14 +41,17 @@ machine.freq(250_000_000)
 MAX_OUTPUT = 5
 
 class StrangeAttractor:
-    def __init__(self, _attractor):
-        # create the attractor and initialise.
-        # This will take around 30 seconds.
-        # Use Lorenz
-        self.a = _attractor
-        self.initialise_message()
-        self.a.estimate_ranges()
-            
+    def __init__(self, _attractors):
+        # Initialise and calculate ranges. 
+        # This will take around 30 seconds per attractor.
+        self.attractors = _attractors
+        for att in self.attractors:
+            self.initialise_message(att.name)
+            att.estimate_ranges()
+            self.done_message()
+        # select a random attractor
+        self.selected_attractor = choice(range(0,len(self.attractors)))
+        self.a = self.attractors[self.selected_attractor]
         # Initialize variables
         self.checkpoint = 0
         # time before update
@@ -58,15 +62,21 @@ class StrangeAttractor:
         self.threshold = 20
         # freeze motion
         self.freeze = False
+        # Display details
+        self.show_detail = True
 
         # Triggered when button 1 is released
         # Short press: decrease range
-        # Long press: 
+        # Long press: change equation system
         @b1.handler_falling
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
-                # long press
-                pass
+                # long press This will result in a jump in parameters
+                # as each attractor has its own x,y,z
+                # coordinates. Possible improvement is to share or set
+                # coordinates on change.
+                self.selected_attractor = (self.selected_attractor + 1) % len(self.attractors)
+                self.a = self.attractors[self.selected_attractor]
             else:
                 # short press
                 self.range -= 1
@@ -75,13 +85,13 @@ class StrangeAttractor:
 
         # Triggered when button 2 is released.
         # Short press: increase range
-        # Long press: 
+        # Long press: toggle display
         @b2.handler_falling
         def b2Pressed():
             
             if ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
                 # long press
-                pass
+                self.show_detail = not self.show_detail
             else:
                 # short press
                 self.range += 1
@@ -157,20 +167,38 @@ class StrangeAttractor:
             if ticks_diff(ticks_ms(), self.checkpoint) > self.period:
                 self.update()
 
-    def initialise_message(self):
+    def initialise_message(self, att_name):
         oled.fill(0)
-        oled.text('Initialising...',0,0,1)
+        oled.text(att_name,0,0,1)
+        oled.text('Initialising...',0,8,1)
+        oled.show()
+        
+    def done_message(self):
+        oled.fill(0)
+        oled.text('Done',0,0,1)
         oled.show()
         
     def update_screen(self):
         #oled.clear() - dont use this, it causes the screen to flicker!
         oled.fill(0)
-        oled.text('1:' + str(int(self.a.x_scaled())),0,0,1)
-        oled.text('2:' + str(int(self.a.y_scaled())),0,8,1)
-        oled.text('3:' + str(int(self.a.z_scaled())),0,16,1)
-        oled.text('S:' + str(int(self.period)),40,0,1)
-        oled.text('T:' + str(int(self.threshold)),40,8,1)
-        oled.text('R:' + str(int(self.range)),40,16,1)
+        if self.show_detail:
+            oled.text('1:' + str(int(self.a.x_scaled())),0,0,1)
+            oled.text('2:' + str(int(self.a.y_scaled())),0,8,1)
+            oled.text('3:' + str(int(self.a.z_scaled())),0,16,1)
+            oled.text('S:' + str(int(self.period)),40,0,1)
+            oled.text('T:' + str(int(self.threshold)),40,8,1)
+            oled.text('R:' + str(int(self.range)),40,16,1)
+        else:
+            oled.text('1:',0,0,1)
+            oled.fill_rect(20,0,int(0.75*self.a.x_scaled()),6,1)
+            oled.rect(20,0,75,6,1)
+            oled.text('2:',0,8,1)
+            oled.fill_rect(20,8,int(0.75*self.a.y_scaled()/2),6,1)
+            oled.rect(20,8,75,6,1)
+            oled.text('3:',0,16,1)
+            oled.fill_rect(20,16,int(0.75*self.a.z_scaled()/2),6,1)
+            oled.rect(20,16,75,6,1)
+
         if self.gate4:
             oled.text('4',100,0,1)
         if self.gate5:
@@ -179,15 +207,13 @@ class StrangeAttractor:
             oled.text('6',100,16,1)
         if self.freeze:
             oled.text('FREEZE',0,24,1)
-            
         oled.text(self.a.name,80,24,1)
             
         oled.show()
 
 # Reset module display state.
 reset_state()
-# Toss a coin to decide on the system of equations. 
-att = random.choice([Lorenz(), PanXuZhou()])
-sa = StrangeAttractor(att)
+sa = StrangeAttractor(get_attractors())
 sa.main()
+
 
