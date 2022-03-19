@@ -115,7 +115,7 @@ class PanXuZhou(Attractor):
         self.z += z_dot * self.dt
 
 '''
-Implementation of Rossler. This seems to end up with z as zero aftera number of iterations,
+Implementation of Rossler. The z co-ord seems to converge to zero after a number of iterations,
 so use with caution.
 '''
 class Rossler(Attractor):
@@ -138,7 +138,7 @@ class Rossler(Attractor):
         self.z += z_dot * self.dt
 
 def get_attractors():
-    return [Lorenz(), PanXuZhou(), Rossler()]
+    return [Lorenz(), PanXuZhou()] # Commented out as Rossler appears problematic, Rossler()]
 
 
 def main():
