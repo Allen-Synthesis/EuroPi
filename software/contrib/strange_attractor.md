@@ -60,21 +60,21 @@ from 1V to 5V.
 
 ## Details
 
-The Lorenz System can be used to describe a point moving in 3-D
-space. Three parameters, *r*,*s* and *b* are given: the defaults are
-10, 8/3 and 28, values known to produce chaotic behavious. The *x*, *y*, *z*
-coordinates are then be used to generate control voltages and
-triggers.
+The attractors can be used to desribe a point moving in 3-D space. The
+*x*, *y*, *z* coordinates are then be used to generate control
+voltages and triggers.
 
-The Pan-Xu-Zhou Attractor is similar, but with a different set of
-equations and parameters. 
+A selection of equation systems are available, currently including
+Lorzez, Rossler, Pan-X-Zhou and Rikitake -- see ```attractor.py``` for
+details. Each has a set of parameters and defaults. 
 
-On start up, the code tosses a coin to select the system of equations
-to use. It then runs through a number of iterations in order to
-calculate the possible output ranges of the system. This process takes
-around 30 seconds. This is then used to normalise *x*, *y* and *z*
+On startup, code runs through a number of iterations in order to
+calculate the possible output ranges. This process takes
+around 30 seconds per system. This is then used to normalise *x*, *y* and *z*
 values to the range 0-100 for calculation of voltages on outputs 1, 2
 and 3.
+
+A system is then chosen at random. 
 
 Outputs 4, 5 and 6 are triggers, with 4 giving more frequent triggers
 than 5 and 6. Output 4 takes the normalised value of output 1 and sets

@@ -116,16 +116,20 @@ class StrangeAttractor:
     def get_speed(self):
         # Set speed based on the knob.
         # The range is piecewise linear from fully CCW to noon and noon to fully CW.
+        # TODO: allow speed adjustment via CV. 
         val = k1.read_position()
         low = 1000 # CCW
         mid = 100 # noon
         high = 10 # CW
+
+        On start up, the code chooses a system at random.
         if val == 0:
             self.period = low
         elif val < 50:
             self.period = low - ((low-mid) * (val/50))
         else:
             self.period = mid - ((mid-high) * (val-50)/50)
+        
 
     def get_threshold(self):
         val = k2.read_position()
@@ -169,8 +173,9 @@ class StrangeAttractor:
 
     def initialise_message(self, att_name):
         oled.fill(0)
-        oled.text(att_name,0,0,1)
-        oled.text('Initialising...',0,8,1)
+        oled.text('Strange Attractors',0,0,1)
+        oled.text(att_name,10,8,1)
+        oled.text('Initialising...',10,16,1)
         oled.show()
         
     def done_message(self):
