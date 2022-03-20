@@ -122,7 +122,6 @@ class StrangeAttractor:
         mid = 100 # noon
         high = 10 # CW
 
-        On start up, the code chooses a system at random.
         if val == 0:
             self.period = low
         elif val < 50:
@@ -173,9 +172,10 @@ class StrangeAttractor:
 
     def initialise_message(self, att_name):
         oled.fill(0)
-        oled.text('Strange Attractors',0,0,1)
-        oled.text(att_name,10,8,1)
-        oled.text('Initialising...',10,16,1)
+        oled.text('Strange',0,0,1)
+        oled.text('Attractor',0,8,1)
+        oled.text('Initialising...',0,16,1)
+        oled.text(att_name,10,24,1)
         oled.show()
         
     def done_message(self):
@@ -212,7 +212,7 @@ class StrangeAttractor:
             oled.text('6',100,16,1)
         if self.freeze:
             oled.text('FREEZE',0,24,1)
-        oled.text(self.a.name,80,24,1)
+        oled.text(self.a.name,60,24,1)
             
         oled.show()
 
@@ -220,5 +220,6 @@ class StrangeAttractor:
 reset_state()
 sa = StrangeAttractor(get_attractors())
 sa.main()
+
 
 
