@@ -1,6 +1,14 @@
 '''
-Generic attractor code. 
+Implementation of strange attractors, providing chaotic values for modulation.
 
+* Lorenz. Well known system of equations giving chaotic behaviour. 
+  See https://en.wikipedia.org/wiki/Lorenz_system
+* Pan-Xu-Zhou. 
+  See https://www.semanticscholar.org/paper/Controlling-a-Novel-Chaotic-Attractor-using-Linear-Pan-Xu/72f9c1b1f892b3aeea26af330d44011a20250f32
+* Rikitake. Used to model the earth's geomagnetic field and explain the irregular switch in polarity. 
+  See Llibre, Jaume & Messias, Marcelo. (2009). Global dynamics of the Rikitake system. Physica D: Nonlinear Phenomena. 238. 241-252. 10.1016/j.physd.2008.10.011. 
+* Rossler. Use with caution. The z co-ord sits around zero for long periods. 
+  See https://en.wikipedia.org/wiki/R%C3%B6ssler_attractor
 '''
 
 class Attractor:
@@ -59,7 +67,7 @@ class Attractor:
         return (100.0 * (self.z - self.z_min))/self.z_range
 
     def __str__(self):
-        return (f"{self.name:>16} ({self.x:2.2f},{self.y:2.2f},{self.z:2.2f})")
+        return (f"{self.name:>16} ({self.x:2.2f},{self.y:2.2f},{self.z:2.2f})({self.x_scaled():2.2f},{self.y_scaled():2.2f},{self.z_scaled():2.2f})")
     
     def step(self):
         '''
@@ -115,11 +123,9 @@ class PanXuZhou(Attractor):
         self.z += z_dot * self.dt
 
 '''
-Implementation of Rossler. The z co-ord seems to converge to zero after a number of iterations,
-so use with caution.
+Implementation of Rossler. The z co-rd spends a lot of time around zero, so use with caution.
 '''
 class Rossler(Attractor):
-#    def __init__(self, point=(0.1,0.0,-0.1), params=(0.2,0.2,5.7), dt=0.01):
     def __init__(self, point=(0.1,0.0,-0.1), params=(0.13,0.2,6.5), dt=0.01):
         super().__init__(point,dt, "Rossler")
         self.a = params[0]
@@ -137,8 +143,29 @@ class Rossler(Attractor):
         self.y += y_dot * self.dt
         self.z += z_dot * self.dt
 
+'''
+Implementation of Rikitake. 
+'''
+class Rikitake(Attractor):
+    def __init__(self, point=(0.1,0.0,-0.1), params=(5.0,2.0), dt=0.01):
+        super().__init__(point,dt, "Rikitake")
+        self.a = params[0]
+        self.mu = params[1]
+
+    def step(self):
+        '''
+        Update the point.
+        '''
+        x_dot = -(self.mu * self.x) + (self.z*self.y)
+        y_dot = -(self.mu * self.y) + self.x*(self.z - self.a)
+        z_dot = 1 - (self.x * self.y)
+        self.x += x_dot * self.dt
+        self.y += y_dot * self.dt
+        self.z += z_dot * self.dt
+
+
 def get_attractors():
-    return [Lorenz(), PanXuZhou()] # Commented out as Rossler appears problematic, Rossler()]
+    return [Lorenz(), PanXuZhou(), Rikitake(), Rossler()]
 
 
 def main():
@@ -152,11 +179,11 @@ def main():
         for i in range(1,10):
             a.step()
             print(a)
-        for i in range(0,4):
+        for i in range(0,10):
             print('---')
             for i in range(1,100000):
                 a.step()
-            for i in range(1,10):
+            for i in range(1,2):
                 a.step()
                 print(a)
 
