@@ -1,6 +1,8 @@
 """See menu.md for details."""
 from bootloader import BootloaderMenu
 
+from contrib.bernoulli_gates import BernoulliGates
+from contrib.euclidean_rhythm import EuclideanRhythm
 from contrib.coin_toss import CoinToss
 from contrib.consequencer import Consequencer
 from contrib.diagnostic import Diagnostic
@@ -13,6 +15,8 @@ from calibrate import Calibrate
 
 # Scripts that are included in the menu
 EUROPI_SCRIPT_CLASSES = [
+    BernoulliGates,
+    EuclideanRhythm,
     CoinToss,
     Consequencer,
     Diagnostic,
