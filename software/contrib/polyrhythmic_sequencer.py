@@ -212,7 +212,7 @@ class PolyrhythmSeq(EuroPiScript):
 
     def load_state(self):
         """Load state from previous run."""
-        state = super()._load_state('rb')
+        state = super().load_state_bytes()
         if state == "":
             return
         self.set_state(state)
@@ -222,7 +222,7 @@ class PolyrhythmSeq(EuroPiScript):
         if self._dirty:
             self._dirty = False  # TODO: shoud there also be a time delay between saves?
             state = self.get_state()
-            super()._save_state(state, 'wb+')
+            super().save_state_bytes(state)
 
     def get_state(self):
         """Get state as a byte string."""

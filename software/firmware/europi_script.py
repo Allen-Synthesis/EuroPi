@@ -1,7 +1,69 @@
 """Provides a base class for scripts which wish to participate in the bootloader menu."""
 import os
+import json
 
-class EuroPiScript:
+
+class SaveState:
+    """TODO: write docs and examples."""
+    def save_state(self, state: str):
+        """Take state in persistence format as a string and write to disk."""
+        return self._save_state(state)
+    
+    def save_state_bytes(self, state: bytes):
+        """Take state in persistence format as bytes and write to disk."""
+        return self._save_state(state, mode='wb')
+    
+    def save_state_json(self, state: dict):
+        """Take state as a dict and write to disk as a json string."""
+        json_str = json.dumps(state)
+        return self._save_state(json_str)
+
+    def _save_state(self, state: str, mode: str ='w'):
+        with open(self._state_filename, mode) as file:
+            file.write(state)
+    
+    def load_state(self) -> str:
+        """Check disk for saved state, if it exists, return the raw state value."""
+        return self._load_state()
+    
+    def load_state_bytes(self) -> bytes:
+        """Check disk for saved state, if it exists, return the raw state value as bytes."""
+        return self._load_state(mode="rb")
+    
+    def load_state_json(self) -> dict:
+        """Check disk for saved state, if it exists, return state as a dict."""
+        json_str = self._load_state()
+        return json.loads(json_str)
+
+    def _load_state(self, mode: str ='r') -> any:
+        try:
+            with open(self._state_filename, mode) as file:
+                return file.read()
+        except OSError as e:
+            return ""
+    
+    def remove_state(self):
+        """Remove the state file for this script."""
+        try: 
+            os.remove(self._state_filename)
+        except OSError:
+            pass
+    
+    def get_state(self):
+        """
+        Get current state variables in persistance format.
+        
+        Gather the current values of instance variables that represent state of
+        the script and convert into the persistence format.
+        """
+        raise NotImplemented
+    
+    def set_state(self):
+        """Given state in the persistence format, parse and update the instance variables."""
+        raise NotImplemented
+
+
+class EuroPiScript(SaveState):
     """A base class for scripts which wish to participate in the bootloader menu.
      
     To make your script compatible with the menu, you must:
@@ -32,10 +94,10 @@ class EuroPiScript:
        handlers that provide this functionality.
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         self._state_filename = f"saved_state_{self.__class__.__qualname__}.txt"
 
-    def main(self) -> None:
+    def main(self):
         """Override this method with your script's main loop method."""
         raise NotImplementedError
 
@@ -51,24 +113,3 @@ class EuroPiScript:
         Note that the screen is only 16 characters wide. Anything longer will be cut off.
         """
         return cls.__qualname__
-
-    #
-    # private functions for now, with the intention that they are eventually added to the public API
-    #
-
-    def _save_state(self, state: str, mode: str ='w'):
-        with open(self._state_filename, mode) as file:
-            file.write(state)
-
-    def _load_state(self, mode: str ='r') -> str:
-        try:
-            with open(self._state_filename, mode) as file:
-                return file.read()
-        except OSError as e:
-            return ""
-    
-    def _reset_state(self):  # TODO this name clashes with europi.reset_state()
-        try: 
-            os.remove(self._state_filename)
-        except OSError:
-            pass
