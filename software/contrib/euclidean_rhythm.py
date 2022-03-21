@@ -18,14 +18,10 @@ box_size = [int(OLED_WIDTH/3), int(OLED_HEIGHT/2)]
 bar_length_on = 8
 bar_length_off = 2
 
-# Number of sequential reads for smoothing analog read values.
-k1.set_samples(32)
-k2.set_samples(32)
-
 # Overclock the Pico for improved performance.
 machine.freq(250_000_000)
 
-class notes_plot():
+class NotesPlot():
     def __init__(self, position, notes_list):
         self.position = position
         self.notes_list = notes_list
@@ -296,8 +292,8 @@ class EuclideanRhythm(EuroPiScript):
                 # Add Offset
                 notes_list[i] = notes_list[i][self.notes_para_final[i][2]:] + notes_list[i][:self.notes_para_final[i][2]]
  
-            # Instantiate notes_plot
-            notes_plot_list = [notes_plot(i, notes_list[i]) for i in range(6)]
+            # Instantiate NotesPlot
+            notes_plot_list = [NotesPlot(i, notes_list[i]) for i in range(6)]
             
             # Draw and Change Outputs
             oled.fill(0)
@@ -352,5 +348,9 @@ class EuclideanRhythm(EuroPiScript):
     
                     
 if __name__ == "__main__":
+    # Number of sequential reads for smoothing analog read values.
+    k1.set_samples(32)
+    k2.set_samples(32)
+
     euclidean_rhythm = EuclideanRhythm()
     euclidean_rhythm.main()

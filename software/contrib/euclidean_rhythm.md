@@ -21,7 +21,7 @@ In general, for each Euclidean gate generator, you have three parameters to play
 
 **Offset** moves your pattern around.
 
-For example E(length, fill, offset) = E(4, 9, 0) = E(4, 9) = [1, 0, 1, 0, 1, 0, 1, 0, 0], the 1st, 3rd, 5th, and 7th notes will be triggered. Then, E(4, 9, 1) = [0, 1, 0, 1, 0, 1, 0, 1, 0], where the  2st, 4rd, 6th, and 8th notes will be triggered.
+For example E(length, fill, offset) = E(4, 9, 0) = E(4, 9) = [1, 0, 1, 0, 1, 0, 1, 0, 0], the 1st, 3rd, 5th, and 7th notes will be triggered. Then, E(4, 9, 1) = [0, 1, 0, 1, 0, 1, 0, 1, 0], where the  2nd, 4th, 6th, and 8th notes will be triggered.
 
 The algorithm for generating the Euclidean pattern is called Björklund's Algorithm, and can be found here:
 

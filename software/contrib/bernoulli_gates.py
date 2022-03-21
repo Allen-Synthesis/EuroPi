@@ -4,12 +4,6 @@ from random import random
 from europi_script import EuroPiScript
 import machine
 
-'''
-03/13 first version finished
-03/17 fixed undefined coin and sampled probability if not receiving trigger and change mode
-03/20 change the code structure to cooperate with the new menu function
-'''
-
 # Constant values for display
 BAR_LEN = 50
 BAR_WID = 6
@@ -18,24 +12,120 @@ INDI_WID = 5
 # Trigger Time (some module may not be able to catch up the trigger if it is too short)
 TRG_T = 20
 
-# Number of sequential reads for smoothing analog read values.
-k1.set_samples(32)
-k2.set_samples(32)
-
 # Overclock the Pico for improved performance.
 machine.freq(250_000_000)
+
+class SingleBernoulliGate():
+    def __init__(self, id):
+        self.mode_flg = 0 # mode 0: Trigger, mode 1: Gate, mode 2: Toggle
+        self.coin = 0 # probability
+        self.right_possibility = 0 # change every iteration
+        self.left_possibility = 0
+        self.right_possibility_sampled = 0 # only change when triggered
+        self.left_possibility_sampled = 0
+        self.id = id
+        if self.id == 0:
+            self.knob_control = k1
+            self.text = 'P1'
+            self.text_pos = (0, 0)
+            self.text1_pos = 0
+            self.bar_pos_offset = -3
+            self.left_port = cv1
+            self.right_port = cv2
+            self.function_port = cv3
+        else:
+            self.knob_control = k2
+            self.text = 'P2'
+            self.text_pos = (int(OLED_WIDTH / 2) + 8, 0)
+            self.text1_pos = 110
+            self.bar_pos_offset = BAR_WID - 1
+            self.left_port = cv4
+            self.right_port = cv5
+            self.function_port = cv6
+        
+    def get_prob(self):
+        if self.id == 0:
+            self.right_possibility = self.knob_control.percent() + ain.read_voltage()/12
+            self.left_possibility = 1 - self.right_possibility
+        else:
+            self.right_possibility = self.knob_control.percent()
+            self.left_possibility = 1 - self.right_possibility
+            
+    def bar_visualization(self):
+        oled.text(self.text + f':{self.right_possibility:.2f}', self.text_pos[0], self.text_pos[1], 1)
+        oled.rect(int(OLED_WIDTH / 2), 
+                  int((OLED_HEIGHT - BAR_WID) / 2) + self.bar_pos_offset, 
+                  int(self.right_possibility * BAR_LEN), 
+                  BAR_WID, 1) # right
+        oled.fill_rect(int(OLED_WIDTH / 2 - self.left_possibility * BAR_LEN), 
+                       int((OLED_HEIGHT - BAR_WID) / 2) + self.bar_pos_offset, 
+                       int(self.left_possibility * BAR_LEN), 
+                       BAR_WID, 1) # left
+                       
+    def probability_sample(self):
+        self.right_possibility_sampled = self.right_possibility
+        self.left_possibility_sampled = self.left_possibility
+    
+    def triggered_maneuver(self):
+        self.coin = random()
+        if self.mode_flg == 0 or self.mode_flg == 1:
+            if self.coin < (self.right_possibility_sampled):
+                self.left_port.off()
+                self.right_port.on()
+                if self.mode_flg == 0:
+                    # Draw right indicator
+                    oled.fill_rect(int(OLED_WIDTH / 2 + self.right_possibility * BAR_LEN) + 2, 
+                                   int((OLED_HEIGHT - BAR_WID) / 2) + self.bar_pos_offset, 
+                                   INDI_WID, 
+                                   BAR_WID, 1)
+            else:
+                self.left_port.on()
+                self.right_port.off()
+                if self.mode_flg == 0:
+                    # Draw left indicator
+                    oled.rect(int(OLED_WIDTH / 2 - self.left_possibility * BAR_LEN) - INDI_WID - 2, 
+                              int((OLED_HEIGHT - BAR_WID) / 2) + self.bar_pos_offset, 
+                              INDI_WID, 
+                              BAR_WID, 1)
+        else:
+            if self.coin < (self.right_possibility_sampled):
+                self.left_port.toggle()
+                self.right_port.value(self.left_port._duty == 0)
+                 
+        if self.id == 1: self.function_port.value((cv1._duty and cv4._duty) != 0)
+
+    def regular_maneuver(self):
+        if self.mode_flg == 0:
+            oled.text('Tr', self.text1_pos, OLED_HEIGHT-8, 1)
+            sleep_ms(TRG_T)
+            self.left_port.off()
+            self.right_port.off()
+            self.function_port.off()
+        elif self.mode_flg == 1:
+            oled.text('G', self.text1_pos, OLED_HEIGHT-8, 1)
+            # Draw indicator
+            if self.coin < (self.right_possibility_sampled):
+                oled.fill_rect(int(OLED_WIDTH / 2 + self.right_possibility * BAR_LEN) + 2, 
+                               int((OLED_HEIGHT - BAR_WID) / 2) + self.bar_pos_offset, 
+                               INDI_WID, 
+                               BAR_WID, 1)                
+            else:
+                oled.rect(int(OLED_WIDTH / 2 - self.left_possibility * BAR_LEN) - INDI_WID - 2, 
+                          int((OLED_HEIGHT - BAR_WID) / 2) + self.bar_pos_offset, 
+                          INDI_WID, 
+                          BAR_WID, 1)   
+            sleep_ms(TRG_T)
+            if self.id == 0: self.function_port.off()
+        elif self.mode_flg == 2:
+            oled.text('Tg', self.text1_pos, OLED_HEIGHT-8, 1)
+            sleep_ms(TRG_T)
+            self.function_port.off()
 
 class BernoulliGates(EuroPiScript):
     def __init__(self):
         self.toss_flg = 0
-        self.mode_flg_1 = 0 # First gate: (mode 0: Trigger, mode 1: Gate, mode 2: Toggle)
-        self.mode_flg_2 = 0 # Second gate
-        self.coin_1 = 0
-        self.coin_2 = 0
-        self.right_possibility_1_sampled = 0
-        self.left_possibility_1_sampled = 0
-        self.right_possibility_2_sampled = 0
-        self.left_possibility_2_sampled = 0
+        self.first_gate = SingleBernoulliGate(0)
+        self.second_gate = SingleBernoulliGate(1)
 
         @din.handler
         def digital_trigger():
@@ -43,163 +133,48 @@ class BernoulliGates(EuroPiScript):
 
         @b1.handler
         def mode_switch_1():
-            self.mode_flg_1 += 1
-            if self.mode_flg_1 == 3:
-                self.mode_flg_1 = 0
+            self.first_gate.mode_flg += 1
+            if self.first_gate.mode_flg == 3:
+                self.first_gate.mode_flg = 0
 
         @b2.handler
         def mode_switch_2():
-            self.mode_flg_2 += 1
-            if self.mode_flg_2 == 3:
-                self.mode_flg_2 = 0
+            self.second_gate.mode_flg += 1
+            if self.second_gate.mode_flg == 3:
+                self.second_gate.mode_flg = 0
 
     def main(self):
         while True:
             # Get Possibility
-            right_possibility_1 = k1.percent() + ain.read_voltage()/12
-            left_possibility_1 = 1 - right_possibility_1
-            
-            right_possibility_2 = k2.percent()
-            left_possibility_2 = 1 - right_possibility_2
+            self.first_gate.get_prob()
+            self.second_gate.get_prob()
 
             # OLED Show Possibility Bar
             oled.fill(0)
-            # First Gate
-            oled.text(f"P1:{right_possibility_1:.2f}", 0, 0, 1)
-            oled.rect(int(OLED_WIDTH / 2), 
-                        int((OLED_HEIGHT - BAR_WID) / 2) - 3, 
-                        int(right_possibility_1 * BAR_LEN), 
-                        BAR_WID, 1) # right
-            oled.fill_rect(int(OLED_WIDTH / 2 - left_possibility_1 * BAR_LEN), 
-                        int((OLED_HEIGHT - BAR_WID) / 2) - 3, 
-                        int(left_possibility_1 * BAR_LEN), 
-                        BAR_WID, 1) # left
-            # Second Gate
-            oled.text(f"P2:{right_possibility_2:.2f}", int(OLED_WIDTH / 2) + 8, 0, 1)
-            oled.rect(int(OLED_WIDTH / 2), 
-                    int((OLED_HEIGHT - BAR_WID) / 2) + BAR_WID - 1, 
-                    int(right_possibility_2 * BAR_LEN), 
-                    BAR_WID, 1) # right
-            oled.fill_rect(int(OLED_WIDTH / 2 - left_possibility_2 * BAR_LEN), 
-                        int((OLED_HEIGHT - BAR_WID) / 2) + BAR_WID - 1, 
-                        int(left_possibility_2 * BAR_LEN), 
-                        BAR_WID, 1) # left
+            self.first_gate.bar_visualization()
+            self.second_gate.bar_visualization()
             
-            # Triggered
+            # Triggered maneuver
             if self.toss_flg == 1:
-                self.right_possibility_1_sampled = right_possibility_1
-                self.left_possibility_1_sampled = left_possibility_1
-                self.right_possibility_2_sampled = right_possibility_2
-                self.left_possibility_2_sampled = left_possibility_2
+                self.first_gate.probability_sample()
+                self.second_gate.probability_sample()
                 cv3.on()
-
-                ################ coin 1 #################
-                self.coin_1 = random()
-                if self.mode_flg_1 == 0 or self.mode_flg_1 == 1:
-                    if self.coin_1 < (self.right_possibility_1_sampled):
-                        cv1.off() 
-                        cv2.on()
-                        if self.mode_flg_1 == 0: 
-                            oled.fill_rect(int(OLED_WIDTH / 2 + right_possibility_1 * BAR_LEN) + 2, 
-                                        int((OLED_HEIGHT - BAR_WID) / 2) - 3, 
-                                        INDI_WID, 
-                                        BAR_WID, 1)               
-                    else:
-                        cv2.off()
-                        cv1.on()
-                        if self.mode_flg_1 == 0: 
-                            oled.rect(int(OLED_WIDTH / 2 - left_possibility_1 * BAR_LEN) - INDI_WID - 2, 
-                                        int((OLED_HEIGHT - BAR_WID) / 2) - 3, 
-                                        INDI_WID, 
-                                        BAR_WID, 1)
-                else:
-                    if self.coin_1 < (self.right_possibility_1_sampled):
-                        cv1.toggle()
-                        cv2.value(cv1._duty == 0)
-                        
-                ################ coin 2 #################
-                self.coin_2 = random()
-                if self.mode_flg_2 == 0 or self.mode_flg_2 == 1:
-                    if self.coin_2 < (self.right_possibility_2_sampled):
-                        cv4.off() 
-                        cv5.on()
-                        if self.mode_flg_2 == 0: 
-                            oled.fill_rect(int(OLED_WIDTH / 2 + right_possibility_2 * BAR_LEN) + 2, 
-                                        int((OLED_HEIGHT - BAR_WID) / 2)  + BAR_WID - 1, 
-                                        INDI_WID, 
-                                        BAR_WID, 1)               
-                    else:
-                        cv5.off()
-                        cv4.on()
-                        if self.mode_flg_2 == 0: 
-                            oled.rect(int(OLED_WIDTH / 2 - left_possibility_2 * BAR_LEN) - INDI_WID - 2, 
-                                    int((OLED_HEIGHT - BAR_WID) / 2)  + BAR_WID - 1, 
-                                    INDI_WID, 
-                                    BAR_WID, 1)
-                else:
-                    if self.coin_2 < (self.right_possibility_2_sampled):
-                        cv4.toggle()
-                        cv5.value(cv4._duty == 0)
-
-                ################ CV6 ################    
-                cv6.value((cv1._duty and cv4._duty) != 0)
+                
+                self.first_gate.triggered_maneuver()
+                self.second_gate.triggered_maneuver()
+                
                 self.toss_flg = 0
-
-            # Not Triggered --> Reset CV, OLED show mode
-            ################ coin 1 #################
-            # mode 0: Trigger, mode 1: Gate, mode 2: Toggle
-            if self.mode_flg_1 == 0:
-                oled.text('Tr', 0, OLED_HEIGHT-8, 1)
                 
-                sleep_ms(TRG_T)
-                cv1.off()
-                cv2.off()
-                cv3.off()
-            elif self.mode_flg_1 == 1:
-                oled.text('G', 0, OLED_HEIGHT-8, 1)
-                if self.coin_1 < (self.right_possibility_1_sampled):
-                    oled.fill_rect(int(OLED_WIDTH / 2 + right_possibility_1 * BAR_LEN) + 2, 
-                                int((OLED_HEIGHT - BAR_WID) / 2) - 3, 
-                                INDI_WID, 
-                                BAR_WID, 1)                
-                else:
-                    oled.rect(int(OLED_WIDTH / 2 - left_possibility_1 * BAR_LEN) - INDI_WID - 2, 
-                            int((OLED_HEIGHT - BAR_WID) / 2) - 3, 
-                            INDI_WID, 
-                            BAR_WID, 1)   
-                sleep_ms(TRG_T)
-                cv3.off()
-            elif self.mode_flg_1 == 2:
-                oled.text('Tg', 0, OLED_HEIGHT-8, 1)
-                sleep_ms(TRG_T)
-                cv3.off()
-                
-            ################ coin 2 #################
-            if self.mode_flg_2 == 0:
-                oled.text('Tr', 110, OLED_HEIGHT-8, 1)
-                
-                sleep_ms(TRG_T)
-                cv4.off()
-                cv5.off()
-                cv6.off()
-            elif self.mode_flg_2 == 1:
-                oled.text('G', 110, OLED_HEIGHT-8, 1)
-                if self.coin_2 < (self.right_possibility_2_sampled):
-                    oled.fill_rect(int(OLED_WIDTH / 2 + right_possibility_2 * BAR_LEN) + 2, 
-                                int((OLED_HEIGHT - BAR_WID) / 2)  + BAR_WID - 1, 
-                                INDI_WID, 
-                                BAR_WID, 1)                
-                else:
-                    oled.rect(int(OLED_WIDTH / 2 - left_possibility_2 * BAR_LEN) - INDI_WID - 2, 
-                            int((OLED_HEIGHT - BAR_WID) / 2)  + BAR_WID - 1, 
-                            INDI_WID, 
-                            BAR_WID, 1)
-                sleep_ms(TRG_T)
-            elif self.mode_flg_2 == 2:
-                oled.text('Tg', 110, OLED_HEIGHT-8, 1)
+            # Regular maneuver
+            self.first_gate.regular_maneuver()
+            self.second_gate.regular_maneuver()
                 
             oled.show()
     
 if __name__ == "__main__":
+    # Number of sequential reads for smoothing analog read values.
+    k1.set_samples(32)
+    k2.set_samples(32)
+    
     bernoulli_gates = BernoulliGates()
     bernoulli_gates.main()
