@@ -84,7 +84,7 @@ class EuclideanRhythm(EuroPiScript):
         self.selection_idx = 0 # change editing gates
         self.editing_idx = 0 # change editing parameters
         self.blink_flg = 0 # blink selection with tempo
-        self.clock_flg = 0 # 0: internal clock, 1: external clock (from digital in)
+        self.external_clock = False
         self.steps_idx = [0 for i in range(6)] # step of each sequencer
         self.tempo = 60 # current tempo
         self.deadline = 0  # internal clock parameter
@@ -94,14 +94,7 @@ class EuclideanRhythm(EuroPiScript):
         @b1.handler_falling
         def para_sub():
             if self.selection_idx <= 5:
-                if self.editing_idx == 0:
-                    self.notes_para[self.selection_idx][0] -= 1 # length
-                elif self.editing_idx == 1:
-                    self.notes_para[self.selection_idx][1] -= 1 # fill
-                elif self.editing_idx == 2:
-                    self.notes_para[self.selection_idx][2] -= 1 # offset
-                elif self.editing_idx == 3:
-                    self.notes_para[self.selection_idx][3] -= 1 # CV
+                self.notes_para[self.selection_idx][self.editing_idx] -= 1
                     
                 # Bound
                 if self.notes_para[self.selection_idx][0] > 19: self.notes_para[self.selection_idx][0] = 19
@@ -117,19 +110,12 @@ class EuclideanRhythm(EuroPiScript):
                 if self.notes_para[self.selection_idx][3] < 0: self.notes_para[self.selection_idx][3] = 0
                 #print(self.selection_idx, self.notes_para[self.selection_idx])
             else:
-                self.clock_flg = 0
+                self.external_clock = False
         
         @b2.handler_falling
         def para_add():
             if self.selection_idx <= 5:
-                if self.editing_idx == 0:
-                    self.notes_para[self.selection_idx][0] += 1 # length
-                elif self.editing_idx == 1:
-                    self.notes_para[self.selection_idx][1] += 1 # fill
-                elif self.editing_idx == 2:
-                    self.notes_para[self.selection_idx][2] += 1 # offset
-                elif self.editing_idx == 3:
-                    self.notes_para[self.selection_idx][3] += 1 # CV
+                self.notes_para[self.selection_idx][self.editing_idx] += 1
                 
                 # Bound
                 if self.notes_para[self.selection_idx][0] > 19: self.notes_para[self.selection_idx][0] = 19
@@ -145,14 +131,11 @@ class EuclideanRhythm(EuroPiScript):
                 if self.notes_para[self.selection_idx][3] < 0: self.notes_para[self.selection_idx][3] = 0
                 #print(self.selection_idx, self.notes_para[self.selection_idx])
             else:
-                self.clock_flg = 1
+                self.external_clock = True
 
     def bjorklund(self, steps, pulses):
         steps = int(steps)
-        pulses = int(pulses)
-        
-        if pulses > steps:
-            raise ValueError    
+        pulses = int(pulses)   
         
         pattern = []    
         counts = []
@@ -217,14 +200,14 @@ class EuclideanRhythm(EuroPiScript):
         return ticks_add(ticks_ms(), wait_ms)
 
     def wait(self):
-        if self.clock_flg == 0:
+        if self.external_clock == False:
             while True:
                 if ticks_diff(self.deadline, ticks_ms()) <= 0:
                     self.deadline = self.get_next_deadline()
                     return
         else:  # External clock
             # Loop until digital in goes high (clock pulse received).
-            while self.clock_flg == 1:
+            while self.external_clock == True:
                 if din.value() != self.prev_clock:
                     self.prev_clock = 1 if self.prev_clock == 0 else 0
                     if self.prev_clock == 0:
@@ -271,7 +254,7 @@ class EuclideanRhythm(EuroPiScript):
                 self.tempo = round(k1.read_position(MAX_BPM - MIN_BPM) + MIN_BPM)
             
             self.blink_flg += 1
-            if self.clock_flg == 0:
+            if self.external_clock == False:
                 # blink every four note
                 if self.blink_flg > 3:
                     self.blink_flg = 0
@@ -337,9 +320,9 @@ class EuclideanRhythm(EuroPiScript):
                 oled.text(str(self.tempo), 8, 12, 1)
                 oled.text('Ext', int(OLED_WIDTH/2) + 8, 12, 1)
                 
-                if self.clock_flg == 0 and self.blink_flg == 0:
+                if self.external_clock == False and self.blink_flg == 0:
                     oled.rect(5, 7, 33, 20, 1)
-                if self.clock_flg == 1 and self.blink_flg == 0:
+                if self.external_clock == True and self.blink_flg == 0:
                     oled.rect(int(OLED_WIDTH/2) + 5, 7, 33, 20, 1)
                     
             
