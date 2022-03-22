@@ -65,7 +65,7 @@ The attractors can be used to desribe a point moving in 3-D space. The
 voltages and triggers.
 
 A selection of equation systems are available, currently including
-Lorzez, Rossler, Pan-X-Zhou and Rikitake -- see ```attractor.py``` for
+Lorzez, Rossler, Pan-X-Zhou and Rikitake -- see code for
 details. Each has a set of parameters and defaults. 
 
 On startup, code runs through a number of iterations in order to
