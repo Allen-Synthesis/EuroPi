@@ -1,9 +1,15 @@
-from europi import *
+
+try:
+    # Local development
+    from software.firmware.europi import ain, b1, b2, clamp, cvs, din, k1, k2, oled
+    from software.firmware.europi import MAX_OUTPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH
+    from software.firmware.europi_script import EuroPiScript
+except ImportError:
+    # Device import path
+    from europi import *
+    from europi_script import EuroPiScript
+
 from time import sleep_ms, ticks_diff, ticks_ms
-from europi_script import EuroPiScript
-
-HEADER_DURATION = 2000  # 2 seconds in ms
-
 
 class RadioScanner(EuroPiScript):
     def __init__(self):
@@ -34,7 +40,7 @@ class RadioScanner(EuroPiScript):
         b2.handler(remap_knob)
 
     def save_state(self):
-        """Save state if it has changed since last call."""
+        """Save the current state variables as JSON."""
         state = {
             "knob_mapping": self.knob_mapping,
             "cv_mapping": self.cv_mapping,
