@@ -2,6 +2,11 @@
 
 This repository performs various jobs when actions are taken against this GIT repository. These jobs are documented below.
 
+## Continuous Integration
+
+This is an encompassing workflow for the workflows that make up our continuous integration process. Currently it runs
+[PyTest workflow](#pytest), and then, if that passed, runs the [Publish to PyPI workflow](#publish-to-pypi).
+
 ## Publish Docs
 
 To be completed.
