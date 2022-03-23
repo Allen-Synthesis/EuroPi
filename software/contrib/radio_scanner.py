@@ -13,7 +13,7 @@ from time import sleep_ms, ticks_diff, ticks_ms
 
 class RadioScanner(EuroPiScript):
     def __init__(self):
-        # State variables
+        # Load state if previous state exists.
         state = super().load_state_json()
         # Set state variables with default fallback values if not found in the
         # json save state.
@@ -21,9 +21,6 @@ class RadioScanner(EuroPiScript):
         self.cv_mapping = state.get("cv_mapping", [0, 1, 2, 3, 4, 5])
 
         self.knob_mapping_text = ['Off', 'Knob 1', 'Knob 2']
-
-        # Load state if previous state exists.
-        self.load_state()
 
         def remap_knob():
             self.knob_mapping += 1
