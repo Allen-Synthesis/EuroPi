@@ -11,14 +11,6 @@ MIN_BPM = 20
 # Constant values for display.
 FRAME_WIDTH = int(OLED_WIDTH / 8)
 
-# Number of sequential reads for smoothing analog read values.
-k1.set_samples(32)
-k2.set_samples(32)
-
-# Overclock the Pico for improved performance.
-machine.freq(250_000_000)
-# machine.freq(125_000_000)  # Default clock speed.
-
 
 class CoinToss(EuroPiScript):
     def __init__(self):
@@ -27,6 +19,11 @@ class CoinToss(EuroPiScript):
         self._prev_clock = 0
         self._tempo = 0
         self._deadline = 0
+
+        # Overclock the Pico for improved performance.
+        machine.freq(250_000_000)
+        # machine.freq(125_000_000)  # Default clock speed.
+
 
         @b1.handler
         def toggle_clock():
