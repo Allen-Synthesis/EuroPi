@@ -1,6 +1,7 @@
 """Provides a base class for scripts which wish to participate in the bootloader menu."""
 import os
 import json
+from json.decoder import JSONDecodeError
 
 
 class EuroPiScript:
@@ -64,6 +65,12 @@ class EuroPiScript:
     def save_state_bytes(self, state: bytes):
         """Take state in persistence format as bytes and write to disk.
 
+        .. note::
+            Be mindful of how often `save_state_bytes()` is called because
+            writing to disk too often can slow down the performance of your
+            script. Only call save state when state has changed and consider
+            adding a time since last save check to reduce save frequency.
+
         ::
 
             # https://docs.python.org/3/library/struct.html#format-characters
@@ -75,6 +82,12 @@ class EuroPiScript:
 
     def save_state_json(self, state: dict):
         """Take state as a dict and save as a json string.
+
+        .. note::
+            Be mindful of how often `save_state_json()` is called because
+            writing to disk too often can slow down the performance of your
+            script. Only call save state when state has changed and consider
+            adding a time since last save check to reduce save frequency.
 
         ::
 
@@ -128,7 +141,11 @@ class EuroPiScript:
         json_str = self._load_state()
         if json_str == "":
             return {}
-        return json.loads(json_str)
+        try:
+            return json.loads(json_str)
+        except JSONDecodeError as e:
+            print(f"Unable to decode {json_str}: {e}")
+            return {}
 
     def _load_state(self, mode: str ='r') -> any:
         try:

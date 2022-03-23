@@ -126,6 +126,7 @@ class PolyrhythmSeq(EuroPiScript):
 
     # Used to indicates if state has changed and not yet saved.
     _dirty = False
+    _last_saved = time.ticks_ms()
 
     def __init__(self):
         super().__init__()
@@ -219,10 +220,16 @@ class PolyrhythmSeq(EuroPiScript):
 
     def save_state(self):
         """Save state if it has changed since last call."""
-        if self._dirty:
-            self._dirty = False  # TODO: shoud there also be a time delay between saves?
+        if self._ready_to_save():
             state = self.get_state()
             super().save_state_bytes(state)
+            self._dirty = False
+            self._last_saved = time.ticks_ms()
+    
+    def _ready_to_save(self):
+        if self._dirty:
+            return time.ticks_diff(time.ticks_ms(), self._last_saved) > 1000
+        return False
 
     def get_state(self):
         """Get state as a byte string."""

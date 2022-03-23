@@ -29,45 +29,6 @@ In order to be included in the menu a program needs to meet a few additional req
 [menu.md](/software/contrib/menu.md) for details. Programs are not required to participate in the menu in order to be 
 accepted, but it is nice.
 
-### Save/Load Script State
-
-You can add a bit of code to enable your script to save state upon change, and load previous state at startup.
-
-```python
-
-class BeatCounter(EuroPiScript):
-
-    def __init__(self):
-        # The EuroPiScript base class has the method `load_state_json()` to
-        # check for a previously saved state. If no state is found, an empty
-        # dictionary will be returned.
-        state = super().load_state_json()
-
-        # Set state variables with default fallback values if not found in the
-        # json save state.
-        self.counter = state.get("counter", 0)
-        self.enabled = state.get("enabled", True)
-
-        @din.handler
-        def increment_beat():
-            if self.enabled:
-                self.counter += 1
-                self.save_state()
-        
-        @b1.handler
-        def toggle_enablement():
-            self.enabled = not self.enabled
-            self.save_state()
-
-    def save_state(self):
-        """Save the current state variables as JSON."""
-        state = {
-            "counter": self.counter,
-            "enabled": self.enabled,
-        }
-        super().save_state_json(state)
-```
-
 See https://github.com/Allen-Synthesis/EuroPi/issues/102 for details.
 
 ### If you are unsure
