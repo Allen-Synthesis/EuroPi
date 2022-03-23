@@ -11,6 +11,9 @@ except ImportError:
 
 from time import sleep_ms, ticks_diff, ticks_ms
 
+HEADER_DURATION = 2000  # 2 seconds in ms
+
+
 class RadioScanner(EuroPiScript):
     def __init__(self):
         # Load state if previous state exists.
