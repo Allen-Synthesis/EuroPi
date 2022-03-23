@@ -37,8 +37,6 @@ You can add a bit of code to enable your script to save state upon change, and l
 
 class BeatCounter(EuroPiScript):
 
-    beats = 0
-
     def __init__(self):
         # The EuroPiScript base class has the method `load_state_json()` to
         # check for a previously saved state. If no state is found, an empty
@@ -47,17 +45,25 @@ class BeatCounter(EuroPiScript):
 
         # Set state variables with default fallback values if not found in the
         # json save state.
-        self.beats = state.get("beat_count", 0)
+        self.counter = state.get("counter", 0)
+        self.enabled = state.get("enabled", True)
 
         @din.handler
-        def increment_beat()
-            self.beats += 1
+        def increment_beat():
+            if self.enabled:
+                self.counter += 1
+                self.save_state()
+        
+        @b1.handler
+        def toggle_enablement():
+            self.enabled = not self.enabled
             self.save_state()
 
     def save_state(self):
         """Save the current state variables as JSON."""
         state = {
-            "beat_count": self.beats,
+            "counter": self.counter,
+            "enabled": self.enabled,
         }
         super().save_state_json(state)
 ```
