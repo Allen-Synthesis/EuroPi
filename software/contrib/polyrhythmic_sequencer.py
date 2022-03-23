@@ -149,7 +149,7 @@ class PolyrhythmSeq(EuroPiScript):
         self.param_index = 0
         self.counter = 0
         self._prev_k2 = None
-        
+
         # Load state if previous state exists.
         self.load_state()
 
