@@ -50,6 +50,12 @@ Note that the scripts are sorted before being displayed, so order in this file d
 
 You can add a bit of code to enable your script to save state upon change, and load previous state at startup.
 
+When adding save state functionality to your script, there are a few important considerations to keep in mind:
+
+1. Frequency of saves - scripts should only save state to disk when state changes, and should not save too frequently because os write operations are expensive in terms of time. Saving too frequently will affect the performance of a script.
+1. Save state file size - The pico only has about 1MB of free space available so save state storage format is important to keep as minimal as possible.
+1. No externally influenced input - The instance variables your script saves should not be externally influenced, meaning you should not save the current knob position, current analog input value or current digital input value.
+
 Here is an extension of the script above with some added trivial features that incorporate saveing and loading script state.
 
 ```python
