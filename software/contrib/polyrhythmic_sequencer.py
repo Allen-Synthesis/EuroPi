@@ -87,7 +87,7 @@ class Sequence:
         return NOTES.index(note) * VOLT_PER_OCT
 
     def _set_pitch(self):
-        pitch =  self._pitch_cv(self.current_note())
+        pitch = self._pitch_cv(self.current_note())
         self.pitch_cv.voltage(pitch)
 
     def current_note(self) -> str:
@@ -126,7 +126,7 @@ class PolyrhythmSeq(EuroPiScript):
 
     # Used to indicates if state has changed and not yet saved.
     _dirty = False
-    _last_saved = time.ticks_ms()
+    _last_saved = 0
 
     def __init__(self):
         super().__init__()
@@ -139,10 +139,6 @@ class PolyrhythmSeq(EuroPiScript):
         b2.debounce_delay = 200
         oled.contrast(0)  # dim the oled
 
-        # Save state struct
-        self.format_string = "12s12s4s4s"
-        self.State = namedtuple("State", "seq1 seq2 polys seq_poly")
-
         # Current editable sequence.
         self.seq = self.seqs[0]
 
@@ -150,6 +146,10 @@ class PolyrhythmSeq(EuroPiScript):
         self.param_index = 0
         self.counter = 0
         self._prev_k2 = None
+
+        # Save state struct
+        self.format_string = "12s12s4s4s"
+        self.State = namedtuple("State", "seq1 seq2 polys seq_poly")
 
         # Load state if previous state exists.
         self.load_state()
@@ -214,9 +214,8 @@ class PolyrhythmSeq(EuroPiScript):
     def load_state(self):
         """Load state from previous run."""
         state = super().load_state_bytes()
-        if state == "":
-            return
-        self.set_state(state)
+        if state:
+            self.set_state(state)
 
     def save_state(self):
         """Save state if it has changed since last call."""
@@ -225,19 +224,17 @@ class PolyrhythmSeq(EuroPiScript):
             super().save_state_bytes(state)
             self._dirty = False
             self._last_saved = time.ticks_ms()
-    
+
     def _ready_to_save(self):
-        if self._dirty:
-            return time.ticks_diff(time.ticks_ms(), self._last_saved) > 1000
-        return False
+        return self._dirty and time.ticks_diff(time.ticks_ms(), self._last_saved) > 1000
 
     def get_state(self):
         """Get state as a byte string."""
         return struct.pack(self.format_string,
-                self.seqs[0].get_state(),
-                self.seqs[1].get_state(),
-                bytes(self.polys),
-                bytes(self.seq_poly))
+                           self.seqs[0].get_state(),
+                           self.seqs[1].get_state(),
+                           bytes(self.polys),
+                           bytes(self.seq_poly))
 
     def set_state(self, state):
         """Update instance variables with given state bytestring."""

@@ -59,7 +59,14 @@ class EuroPiScript:
         return f"saved_state_{self.__class__.__qualname__}.txt"
 
     def save_state(self, state: str):
-        """Take state in persistence format as a string and write to disk."""
+        """Take state in persistence format as a string and write to disk.
+        
+        .. note::
+            Be mindful of how often `save_state_bytes()` is called because
+            writing to disk too often can slow down the performance of your
+            script. Only call save state when state has changed and consider
+            adding a time since last save check to reduce save frequency.
+        """
         return self._save_state(state)
 
     def save_state_bytes(self, state: bytes):
@@ -76,7 +83,7 @@ class EuroPiScript:
             # https://docs.python.org/3/library/struct.html#format-characters
             format_string = "b?"
             state = pack(format_string, 2, True)
-            super().save_state_json(state)
+            super().save_state_bytes(state)
         """
         return self._save_state(state, mode='wb')
 
