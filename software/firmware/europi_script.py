@@ -79,13 +79,6 @@ class EuroPiScript:
             writing to disk too often can slow down the performance of your
             script. Only call save state when state has changed and consider
             adding a time since last save check to reduce save frequency.
-
-        ::
-
-            # https://docs.python.org/3/library/struct.html#format-characters
-            format_string = "b?"
-            state = pack(format_string, 2, True)
-            super().save_state_bytes(state)
         """
         return self._save_state(state, mode='wb')
 
@@ -97,15 +90,6 @@ class EuroPiScript:
             writing to disk too often can slow down the performance of your
             script. Only call save state when state has changed and consider
             adding a time since last save check to reduce save frequency.
-
-        ::
-
-            # Save the current state variables as JSON.
-            state = {
-                "counter": self.counter,  # int
-                "enabled": self.enabled,  # bool
-            }
-            super().save_state_json(state)
         """
         json_str = json.dumps(state)
         return self._save_state(json_str)
@@ -122,31 +106,16 @@ class EuroPiScript:
     def load_state_bytes(self) -> bytes:
         """Check disk for saved state, if it exists, return the raw state value as bytes.
         
-        ::
-
-            # Check for a previously saved state. If it exists, return state as a
-            # byte string. If no state is found, an empty string will be returned.
-            state = super().load_state_bytes()
-
-            # Unpack the state bytes using the given format string, which in our
-            # example unpacks an integer and bool.
-            self.count, self.enabled = unpack(format_string, state)
+        Check for a previously saved state. If it exists, return state as a
+        byte string. If no state is found, an empty string will be returned.
         """
         return self._load_state(mode="rb")
 
     def load_state_json(self) -> dict:
         """Load previously saved state as a dict.
 
-        ::
-
-            # Check for a previously saved state. If it exists, return state as a
-            # dict. If no state is found, an empty dictionary will be returned.
-            state = super().load_state_json()
-
-            # Set state variables with default fallback values if not found in the
-            # json save state.
-            self.counter = state.get("counter", 0)
-            self.enabled = state.get("enabled", True)
+        Check for a previously saved state. If it exists, return state as a
+        dict. If no state is found, an empty dictionary will be returned.
         """
         json_str = self._load_state()
         if json_str == "":
