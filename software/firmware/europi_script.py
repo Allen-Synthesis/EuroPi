@@ -1,7 +1,7 @@
 """Provides a base class for scripts which wish to participate in the bootloader menu."""
 import os
 import json
-from json.decoder import JSONDecodeError
+import time
 
 
 class EuroPiScript:
@@ -34,6 +34,8 @@ class EuroPiScript:
        allow the user to exit the program and return to the menu. Similarly, EuroPiScripts should not override the
        handlers that provide this functionality.
     """
+
+    _last_saved = 0
 
     def main(self):
         """Override this method with your script's main loop method."""
@@ -111,6 +113,7 @@ class EuroPiScript:
     def _save_state(self, state: str, mode: str ='w'):
         with open(self._state_filename, mode) as file:
             file.write(state)
+        self._last_saved = time.ticks_ms()
 
     def load_state(self) -> str:
         """Check disk for saved state, if it exists, return the raw state value as a string."""
@@ -150,7 +153,7 @@ class EuroPiScript:
             return {}
         try:
             return json.loads(json_str)
-        except JSONDecodeError as e:
+        except ValueError as e:
             print(f"Unable to decode {json_str}: {e}")
             return {}
 
@@ -167,3 +170,7 @@ class EuroPiScript:
             os.remove(self._state_filename)
         except OSError:
             pass
+    
+    def last_saved(self):
+        """Return the ticks since last save."""
+        return time.ticks_diff(time.ticks_ms(), self._last_saved)

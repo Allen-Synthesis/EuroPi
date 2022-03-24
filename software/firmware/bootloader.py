@@ -35,7 +35,6 @@ class BootloaderMenu(EuroPiScript):
     """
 
     def __init__(self, script_classes):
-        super().__init__()
         self.scripts_config = BootloaderMenu._build_scripts_config(script_classes)
         self.menu = Menu(
             items=list(sorted(self.scripts_config.keys())),
@@ -57,7 +56,7 @@ class BootloaderMenu(EuroPiScript):
         self.run_request = selected_item
 
     def exit_to_menu(self):
-        self._reset_state()
+        self.remove_state()
         machine.reset()  # why doesn't machine.soft_reset() work anymore?
 
     def main(self):

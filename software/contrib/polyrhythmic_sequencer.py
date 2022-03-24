@@ -219,14 +219,11 @@ class PolyrhythmSeq(EuroPiScript):
 
     def save_state(self):
         """Save state if it has changed since last call."""
-        if self._ready_to_save():
+        if self._dirty and self.last_saved() > 1000:
             state = self.get_state()
             super().save_state_bytes(state)
             self._dirty = False
             self._last_saved = time.ticks_ms()
-
-    def _ready_to_save(self):
-        return self._dirty and time.ticks_diff(time.ticks_ms(), self._last_saved) > 1000
 
     def get_state(self):
         """Get state as a byte string."""
