@@ -45,8 +45,9 @@ except ImportError:
 
 from collections import namedtuple
 import struct
-import time
 import machine
+from utime import ticks_diff, ticks_ms
+
 
 # Script Constants
 MENU_DURATION = 1200
@@ -223,7 +224,7 @@ class PolyrhythmSeq(EuroPiScript):
             state = self.get_state()
             super().save_state_bytes(state)
             self._dirty = False
-            self._last_saved = time.ticks_ms()
+            self._last_saved = ticks_ms()
 
     def get_state(self):
         """Get state as a byte string."""
@@ -246,7 +247,7 @@ class PolyrhythmSeq(EuroPiScript):
         self.seq_poly = list(_state.seq_poly)
 
     def show_menu_header(self):
-        if time.ticks_diff(time.ticks_ms(), b1.last_pressed()) < MENU_DURATION:
+        if ticks_diff(ticks_ms(), b1.last_pressed()) < MENU_DURATION:
             oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
             oled.text(f"{self.pages[self.page]}", 0, 0, 0)
 

@@ -1,7 +1,7 @@
 """Provides a base class for scripts which wish to participate in the bootloader menu."""
 import os
 import json
-import time
+from utime import ticks_diff, ticks_ms
 
 
 class EuroPiScript:
@@ -97,7 +97,7 @@ class EuroPiScript:
     def _save_state(self, state: str, mode: str ='w'):
         with open(self._state_filename, mode) as file:
             file.write(state)
-        self._last_saved = time.ticks_ms()
+        self._last_saved = ticks_ms()
 
     def load_state(self) -> str:
         """Check disk for saved state, if it exists, return the raw state value as a string."""
@@ -142,4 +142,4 @@ class EuroPiScript:
     
     def last_saved(self):
         """Return the ticks since last save."""
-        return time.ticks_diff(time.ticks_ms(), self._last_saved)
+        return ticks_diff(ticks_ms(), self._last_saved)
