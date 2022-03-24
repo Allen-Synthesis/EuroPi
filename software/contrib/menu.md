@@ -50,40 +50,55 @@ Note that the scripts are sorted before being displayed, so order in this file d
 
 You can add a bit of code to enable your script to save state upon change, and load previous state at startup.
 
+Here is an extension of the script above with some added trivial features that incorporate saveing and loading script state.
+
 ```python
+from europi import oled
+from europi_script import EuroPiScript
 
-class BeatCounter(EuroPiScript):
-
+class HelloWorld(EuroPiScript):
     def __init__(self):
-        # The EuroPiScript base class has the method `load_state_json()` to
-        # check for a previously saved state. If no state is found, an empty
-        # dictionary will be returned.
-        state = super().load_state_json()
+        state = super().load_state_json()  # 1
 
-        # Set state variables with default fallback values if not found in the
-        # json save state.
-        self.counter = state.get("counter", 0)
+        self.counter = state.get("counter", 0)  # 2
         self.enabled = state.get("enabled", True)
 
         @din.handler
-        def increment_beat():
+        def increment_counter():
             if self.enabled:
                 self.counter += 1
-                self.save_state()
+                self.save_state()  # 3
         
         @b1.handler
         def toggle_enablement():
             self.enabled = not self.enabled
-            self.save_state()
+            self.save_state()  # 3
 
-    def save_state(self):
+    def save_state(self):  # 4
         """Save the current state variables as JSON."""
+        # Don't save if it has been less than 5 seconds since last save.
+        if super().last_saved() < 5000:  # 5
+            return
+
         state = {
             "counter": self.counter,
             "enabled": self.enabled,
         }
         super().save_state_json(state)
+    
+    def main():
+        oled.centre_text("Hello world")
 ```
+
+1. **Call the inherited `EuroPiScript` method `load_state_json()`.** The `EuroPiScript` base class has the method `load_state_json()` to check for a previously saved state. When initializing your script, call `load_X_state()` where `X` is the persistance format of choice. If no state is found, an empty value will be returned.
+
+2. **Apply saved state variables to this instance.** Set state variables with default fallback values if not found in the json save state.
+
+3. **Save state upon state change.** When a state variable changes, call the save state function.
+
+4. **Script save state method.** Provide a helper method to serialize the state variables into a string, JSON, or bytes an call the appropriate save state method.
+
+5. **Throttle the frequency of saves.** Saving state too often could negatively impact the performance of your script, so it is advised to add some checks in your code to ensure it doesn't save too frequently.
 
 ## Support testing
 
