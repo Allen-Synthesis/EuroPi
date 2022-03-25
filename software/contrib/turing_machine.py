@@ -14,6 +14,7 @@ cv5 - pulse
 cv6 - pulse
 """
 from random import getrandbits, randint
+from time import sleep
 
 try:
     from firmware import europi
@@ -22,10 +23,7 @@ except ImportError:
     import europi
     from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
 
-try:
-    import uasyncio as asyncio
-except ImportError:
-    import asyncio
+from europi_script import EuroPiScript
 
 
 INT_MAX_8 = 0xFF
@@ -50,14 +48,17 @@ class TuringMachine:
         self._length = bit_count
         self._write = False
 
+        self.flip_probability_getter = lambda: self._flip_probability
+        self.scale_getter = lambda: self._scale
+        self.length_getter = lambda: self._length
+        self.write_getter = lambda: self._write
+        self.step_handler = lambda: None
+
     def get_bit_string(self):
         return f"{self.bits:0{self.bit_count}b}"
 
     def rotate_bits(self):
         self.bits = ((self.bits << 1) % (1 << self.bit_count)) | ((self.bits >> (self.length - 1)) & 1)
-
-    def step_handler(self):
-        pass
 
     def step(self):
         self.rotate_bits()
@@ -75,7 +76,7 @@ class TuringMachine:
 
     @property
     def flip_probability(self):
-        return self._flip_probability
+        return self.flip_probability_getter()
 
     @flip_probability.setter
     def flip_probability(self, probability: int):
@@ -85,17 +86,17 @@ class TuringMachine:
 
     @property
     def scale(self):
-        return self._scale
+        return self.scale_getter()
 
     @scale.setter
-    def scale(self, scale: float):
+    def scale(self, scale):
         if scale < 0 or scale > self.max_output_voltage:
             raise ValueError(f"Scale of {scale} is outside the expected range of [0,{self.max_output_voltage}]")
         self._scale = scale
 
     @property
     def length(self):
-        return self._length
+        return self.length_getter()
 
     @length.setter
     def length(self, length):
@@ -105,103 +106,86 @@ class TuringMachine:
 
     @property
     def write(self):
-        return self._write
+        return self.write_getter()
 
     @write.setter
     def write(self, value: bool):
         self._write = value
 
 
-# code to tie it to the EuroPi's interface
-class EuroPiTuringMachine(TuringMachine):
+class EuroPiTuringMachine(EuroPiScript):
     def __init__(self):
-        super().__init__(bit_count=DEFAULT_BIT_COUNT, max_output_voltage=europi.MAX_OUTPUT_VOLTAGE)
-        self.k2_scale_mode = True  # if it's not scale, it's length
+        self.tm = TuringMachine(bit_count=DEFAULT_BIT_COUNT, max_output_voltage=europi.MAX_OUTPUT_VOLTAGE)
+        self.tm.flip_probability_getter = self.flip_probability
+        self.tm.scale_getter = self.scale
+        self.tm.length_getter = self.length
+        self.tm.write_getter = self.write
+        self.tm.step_handler = self.step_handler
+        self.k2_scale_mode = True  # scale mode or length mode
 
         @din.handler
         def clock():
-            self.step()
+            self.tm.step()
 
         @b2.handler_falling
         def mode_toggle():
             if self.k2_scale_mode:
-                self._scale = self.scale
+                self.tm.scale = self.scale()
             else:
-                self._length = self.length
+                self.tm.length = self.length()
             self.k2_scale_mode = not self.k2_scale_mode
 
     def step_handler(self):
-        cv1.voltage(self.get_voltage())
+        cv1.voltage(self.tm.get_voltage())
 
-    @TuringMachine.flip_probability.getter
     def flip_probability(self):
         return round((1 - k1.percent()) * 100)
 
-    @flip_probability.setter
-    def flip_probability(self):
-        raise NotImplementedError("Setting the flip_probability is done via a knob.")
-
-    @TuringMachine.scale.getter
     def scale(self):
         if self.k2_scale_mode:
-            return k2.percent() * self.max_output_voltage
+            return k2.percent() * self.tm.max_output_voltage
         else:
-            return self._scale
+            return self.tm._scale
 
-    @scale.setter
-    def scale(self):
-        raise NotImplementedError("Setting the scale is done via a knob.")
-
-    @TuringMachine.length.getter
     def length(self):
         if self.k2_scale_mode:
-            return self._length
+            return self.tm._length
         else:
             return k2.choice([2, 3, 4, 5, 6, 8, 12, 16])  # TODO: vary based on bit_count?
 
-    @length.setter
-    def length(self):
-        raise NotImplementedError("Setting the length is done via a knob.")
-
-    @TuringMachine.write.getter
     def write(self):
         return b1.value()
 
-    @write.setter
-    def write(self):
-        raise NotImplementedError("Setting the write flag is done via a button.")
+    @staticmethod
+    def bits_as_led_line(oled, bits):
+        bit_str = f"{bits:08b}"
+        x_pos = 0
+        width = int(europi.OLED_WIDTH / 8)
+        for c in bit_str:
+            if c == "1":
+                oled.hline(x_pos, 0, width - 1, 1)
+            x_pos += width
+
+    def main(self):
+        line1_y = 11
+        line2_y = 23
+        while True:
+            oled.fill(0)
+            prob = self.tm.flip_probability
+            prob_2 = "locked" if self.tm.flip_probability == 0 or self.tm.flip_probability == 100 else ""
+            scale_str = f"{'*' if self.k2_scale_mode else ''}scale:{self.tm.scale:3.1f}"
+            len_str = f"{'' if self.k2_scale_mode else '*'}{self.tm.length:2} steps"
+
+            self.bits_as_led_line(oled, self.tm.get_8_bits())
+
+            oled.text(f"  {prob}", 0, line1_y, 1)
+            oled.text(f"{scale_str}", 48, line1_y, 1)
+
+            oled.text(f"{prob_2}", 0, line2_y, 1)
+            oled.text(f"{len_str}", 64, line2_y, 1)
+            oled.show()
+            sleep(0.1)
 
 
-def bits_as_led_line(oled, bits):
-    bit_str = f"{bits:08b}"
-    x_pos = 0
-    width = int(europi.OLED_WIDTH / 8)
-    for c in bit_str:
-        if c == "1":
-            oled.hline(x_pos, 0, width - 1, 1)
-        x_pos += width
-
-async def main():
-    tm = EuroPiTuringMachine()
-    line1_y = 11
-    line2_y = 23
-    while True:
-        oled.fill(0)
-        prob = tm.flip_probability
-        prob_2 = "locked" if tm.flip_probability == 0 or tm.flip_probability == 100 else ""
-        scale_str = f"{'*' if tm.k2_scale_mode else ''}scale:{tm.scale:3.1f}"
-        len_str = f"{'' if tm.k2_scale_mode else '*'}{tm.length:2} steps"
-
-        bits_as_led_line(oled, tm.get_8_bits())
-
-        oled.text(f"  {prob}", 0, line1_y, 1)
-        oled.text(f"{scale_str}", 48, line1_y, 1)
-
-        oled.text(f"{prob_2}", 0, line2_y, 1)
-        oled.text(f"{len_str}", 64, line2_y, 1)
-        oled.show()
-        await asyncio.sleep(0.1)
-
-
-if __name__ in ["__main__", "contrib.turing_machine"]:
-    asyncio.run(main())
+if __name__ == "__main__":
+    EuroPiTuringMachine().main()
