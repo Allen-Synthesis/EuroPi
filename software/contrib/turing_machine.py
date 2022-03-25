@@ -166,6 +166,10 @@ class EuroPiTuringMachine(EuroPiScript):
                 oled.hline(x_pos, 0, width - 1, 1)
             x_pos += width
 
+    @classmethod
+    def display_name(cls):
+        return "Turing Machine"
+
     def main(self):
         line1_y = 11
         line2_y = 23
