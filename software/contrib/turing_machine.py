@@ -176,9 +176,9 @@ class EuroPiTuringMachine(EuroPiScript):
         while True:
             oled.fill(0)
             prob = self.tm.flip_probability
-            prob_2 = "locked" if self.tm.flip_probability == 0 or self.tm.flip_probability == 100 else ""
-            scale_str = f"{'*' if self.k2_scale_mode else ''}scale:{self.tm.scale:3.1f}"
-            len_str = f"{'' if self.k2_scale_mode else '*'}{self.tm.length:2} steps"
+            prob_2 = "locked" if self.tm.flip_probability == 0 else "looped" if self.tm.flip_probability == 100 else ""
+            scale_str = f"{'*' if self.k2_scale_mode else ' '}scale:{self.tm.scale:3.1f}"
+            len_str = f"{' ' if self.k2_scale_mode else '*'}{self.tm.length:2} steps"
 
             self.bits_as_led_line(oled, self.tm.get_8_bits())
 
@@ -186,7 +186,7 @@ class EuroPiTuringMachine(EuroPiScript):
             oled.text(f"{scale_str}", 48, line1_y, 1)
 
             oled.text(f"{prob_2}", 0, line2_y, 1)
-            oled.text(f"{len_str}", 64, line2_y, 1)
+            oled.text(f"{len_str}", 63, line2_y, 1)
             oled.show()
             sleep(0.1)
 
