@@ -1,4 +1,6 @@
 from europi import *
+import machine
+from europi_script import EuroPiScript
 from time import ticks_diff, ticks_ms
 from math import fabs, floor
 from random import choice
@@ -39,8 +41,8 @@ VERSION="1.0"
 # Overclock the Pico for improved performance.
 machine.freq(250_000_000)
 
-# Maximum voltage output. Cranking this up may cause issues with some modules. 
-MAX_OUTPUT = 5
+# Maximum voltage output. Cranking this up may cause issues with some modules.
+MAX_OUTPUT = MAX_OUTPUT_VOLTAGE
 
 '''
 Implementation of strange attractors, providing chaotic values for modulation.
@@ -211,11 +213,11 @@ class Rikitake(Attractor):
 def get_attractors():
     return [Lorenz(), PanXuZhou(), Rikitake(), Rossler()]
 
-class StrangeAttractor:
-    def __init__(self, _attractors):
+class StrangeAttractor(EuroPiScript):
+    def __init__(self):
         # Initialise and calculate ranges. 
         # This will take around 30 seconds per attractor.
-        self.attractors = _attractors
+        self.attractors = get_attractors()
         for att in self.attractors:
             self.initialise_message(att.name)
             att.estimate_ranges()
@@ -377,8 +379,5 @@ class StrangeAttractor:
             
         oled.show()
 
-# Reset module display state.
-reset_state()
-sa = StrangeAttractor(get_attractors())
-sa.main()
-
+if __name__ == "__main__":
+    StrangeAttractor().main()
