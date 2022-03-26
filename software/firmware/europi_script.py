@@ -60,7 +60,7 @@ class EuroPiScript:
     def _state_filename(self):
         return f"saved_state_{self.__class__.__qualname__}.txt"
 
-    def save_state(self, state: str):
+    def save_state_str(self, state: str):
         """Take state in persistence format as a string and write to disk.
         
         .. note::
@@ -99,7 +99,7 @@ class EuroPiScript:
             file.write(state)
         self._last_saved = ticks_ms()
 
-    def load_state(self) -> str:
+    def load_state_str(self) -> str:
         """Check disk for saved state, if it exists, return the raw state value as a string."""
         return self._load_state()
 

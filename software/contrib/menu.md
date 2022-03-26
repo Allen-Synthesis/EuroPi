@@ -56,7 +56,7 @@ When adding save state functionality to your script, there are a few important c
 1. Save state file size - The pico only has about 1MB of free space available so save state storage format is important to keep as minimal as possible.
 1. No externally influenced input - The instance variables your script saves should not be externally influenced, meaning you should not save the current knob position, current analog input value or current digital input value.
 
-Here is an extension of the script above with some added trivial features that incorporate saveing and loading script state.
+Here is an extension of the script above with some added trivial features that incorporate saving and loading script state.
 
 ```python
 from europi import oled
