@@ -92,7 +92,7 @@ class HelloWorld(EuroPiScript):
         }
         super().save_state_json(state)
     
-    def main():
+    def main(self):
         oled.centre_text("Hello world")
 ```
 
