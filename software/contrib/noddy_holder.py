@@ -54,31 +54,6 @@ class NoddyHolder(EuroPiScript):
         self.channel_1 = [0,-1]
         self.channel_2 = [0,-1]
         
-        # Triggered when button 1 is released
-        # Short press: 
-        # Long press: 
-        @b1.handler_falling
-        def b1Pressed():
-            if ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
-                # long press
-                pass
-            else:
-                # short press
-                pass
-
-        # Triggered when button 2 is released.
-        # Short press: 
-        # Long press: 
-        @b2.handler_falling
-        def b2Pressed():
-            
-            if ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
-                # long press
-                pass
-            else:
-                # short press
-                pass
-
         # Triggered when din goes HIGH.
         @din.handler
         def dinTrigger():
@@ -133,6 +108,7 @@ class NoddyHolder(EuroPiScript):
             cv6.voltage(sample)
 
     def main(self):
+        self.update_screen()
         while True:
             self.update()
             
