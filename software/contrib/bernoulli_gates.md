@@ -13,13 +13,13 @@ A Bernoulli gate takes a logic signal (trigger or gate) as an input, and routes 
 
 Knob 1 adjusts the probability of the Bernoulli gate 1, and Knob 2 adjusts the probability of the Bernoulli gate 2. 
 
-Button 1 switches the mode of gate 1 between trigger mode, toggle mode, and latch mode (gate mode), and Button 2 switches the mode of gate 2 between trigger mode, toggle mode, and latch mode (gate mode).
+Button 1 switches the mode of gate 1 between trigger mode, toggle mode, and gate mode (latch mode), and Button 2 switches the mode of gate 2 between trigger mode, toggle mode, and gate mode (latch mode).
 
 ### Tigger mode (Tr)
 
 When the **trigger mode** is enabled, an output A/B changes to +5V for 10ms every time they are activated by the corresponding Bernoulli gate.
 
-### Gate mode/Latch mode (L)
+### Gate mode/Latch mode (G)
 
 When the **gate mode** is enabled, an output A/B stays at +5V until the other output gets activated.
 
