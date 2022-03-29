@@ -18,10 +18,10 @@ from time import sleep
 
 try:
     from firmware import europi
-    from firmware.europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
+    from firmware.europi import clamp, din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
 except ImportError:
     import europi
-    from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
+    from europi import clamp, din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
 
 from europi_script import EuroPiScript
 
@@ -139,7 +139,7 @@ class EuroPiTuringMachine(EuroPiScript):
         cv1.voltage(self.tm.get_voltage())
 
     def flip_probability(self):
-        return round((1 - k1.percent()) * 100)
+        return clamp(int((round(1 - k1.percent() - ain.percent(), 2)) * 100), 0, 100)
 
     def scale(self):
         if self.k2_scale_mode:
@@ -182,8 +182,8 @@ class EuroPiTuringMachine(EuroPiScript):
 
             self.bits_as_led_line(oled, self.tm.get_8_bits())
 
-            oled.text(f"  {prob}", 0, line1_y, 1)
-            oled.text(f"{scale_str}", 48, line1_y, 1)
+            oled.text(f" {prob}", 0, line1_y, 1)
+            oled.text(f"{scale_str}", 40, line1_y, 1)
 
             oled.text(f"{prob_2}", 0, line2_y, 1)
             oled.text(f"{len_str}", 63, line2_y, 1)
