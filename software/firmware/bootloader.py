@@ -66,7 +66,7 @@ class BootloaderMenu(EuroPiScript):
         machine.reset()  # why doesn't machine.soft_reset() work anymore?
 
     def main(self):
-        state = self._load_state()
+        state = self.load_state_str()
 
         if state:
             self.run_request = state
@@ -80,7 +80,7 @@ class BootloaderMenu(EuroPiScript):
                     old_selected = self.menu.selected
                     self.menu.draw_menu()
                 time.sleep(0.1)
-            self._save_state(self.run_request)
+            self.save_state_str(self.run_request)
 
         # setup the exit handlers, and execute the selection
         reset_state()  # remove menu's button handlers
