@@ -99,13 +99,15 @@ class HelloWorld(EuroPiScript):
 ```
 
 1. **Initialize base classes** When implementing the `EuroPiScript` base class, its initialization method must be called to initialize its intance variables.
-1. **Call the inherited `EuroPiScript` method `load_state_json()`.** The `EuroPiScript` base class has the method `load_state_json()` to check for a previously saved state. When initializing your script, call `load_X_state()` where `X` is the persistence format of choice. If no state is found, an empty value will be returned.
+
+1. **Call the inherited `EuroPiScript` method `load_state_json()`.** The `EuroPiScript` base class has the method `load_state_json()` to check for a previously saved state in JSON format. When initializing your script, call `load_X_state()` where `X` is the persistence format of choice. If no state is found, an empty value will be returned.
 
 1. **Apply saved state variables to this instance.** Set state variables with default fallback values if not found in the json save state.
 
 1. **Save state upon state change.** When a state variable changes, call the save state function.
 
-1. **Script save state method.** Provide a helper method to serialize the state variables into a string, JSON, or bytes and call the appropriate save state method.
+1. **Implement `save_state()` method.** Provide an implementation to serialize the state variables into a string, JSON, or bytes an call the appropriate save state method.
+
 
 1. **Throttle the frequency of saves.** Saving state too often could negatively impact the performance of your script, so it is advised to add some checks in your code to ensure it doesn't save too frequently.
 
