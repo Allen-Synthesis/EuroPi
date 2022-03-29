@@ -212,7 +212,7 @@ class EuroPiScript:
             pass
     
     def last_saved(self):
-        """Return the ticks since last save."""
+        """Return the ticks in milliseconds since last save."""
         try:
             return ticks_diff(ticks_ms(), self._last_saved)
         except AttributeError:
