@@ -33,13 +33,13 @@ class EuroPiScript:
 
     **Save/Load Script State**
 
-    Optionally, you can add a bit of code to enable your script to save state upon change, and load previous state at startup.
+    Optionally, you can add a bit of code to enable your script to save state, and load previous state at startup. By default, when exiting the script to menu selection, ``save_state()`` will be called. Additionally, you can add calls to ``save_state()`` whenever state changes.
 
-    When adding save state functionality to your script, there are a few important considerations to keep in mind:
+    When adding ``save_state()`` calls to your script, there are a few important considerations to keep in mind:
 
-        1. Frequency of saves - scripts should only save state to disk when state changes, and should not save too frequently because os write operations are expensive in terms of time. Saving too frequently will affect the performance of a script.
-        2. Save state file size - The pico only has about 1MB of free space available so save state storage format is important to keep as minimal as possible.
-        3. No externally influenced input - The instance variables your script saves should not be externally influenced, meaning you should not save the current knob position, current analog input value or current digital input value.
+        * Frequency of saves - scripts should only save state to disk when state changes, and should not save too frequently because os write operations are expensive in terms of time. Saving too frequently will affect the performance of a script.
+        * Save state file size - The pico only has about 1MB of free space available so save state storage format is important to keep as minimal as possible.
+        * No externally influenced input - The instance variables your script saves should not be externally influenced, meaning you should not save the current knob position, current analog input value or current digital input value.
 
     To add the ability to save and load state, you must:
         
@@ -82,14 +82,14 @@ class EuroPiScript:
 
             def save_state(self):  # 5
                 # Don't save if it has been less than 5 seconds since last save.
-                if super().last_saved() < 5000:  # 6
+                if self.last_saved() < 5000:  # 6
                     return
 
                 state = {
                     "counter": self.counter,
                     "enabled": self.enabled,
                 }
-                super().save_state_json(state)
+                self.save_state_json(state)
             
             def main(self):
                 oled.centre_text("Hello world")
@@ -126,6 +126,16 @@ class EuroPiScript:
     @property
     def _state_filename(self):
         return f"saved_state_{self.__class__.__qualname__}.txt"
+    
+    def save_state(self):
+        """Encode state and call the appropriate persistence save method.
+        
+        Override this class with the script specific encoding of state into
+        the persistence format that best matches its use case. Then call the
+        appropriate save method, such as `save_state_json(state)`. See the
+        class documentation for a full example.
+        """
+        raise NotImplementedError
 
     def save_state_str(self, state: str):
         """Take state in persistence format as a string and write to disk.

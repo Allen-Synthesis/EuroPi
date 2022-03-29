@@ -57,6 +57,12 @@ class BootloaderMenu(EuroPiScript):
 
     def exit_to_menu(self):
         self.remove_state()
+        # Attempt to save the state of this script. If save_state hasn't been
+        # implemented, ignore this exception.
+        try:
+            self.save_state()
+        except NotImplementedError:
+            pass
         machine.reset()  # why doesn't machine.soft_reset() work anymore?
 
     def main(self):

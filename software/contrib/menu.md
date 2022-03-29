@@ -85,14 +85,14 @@ class HelloWorld(EuroPiScript):
     def save_state(self):  # 5
         """Save the current state variables as JSON."""
         # Don't save if it has been less than 5 seconds since last save.
-        if super().last_saved() < 5000:  # 6
+        if self.last_saved() < 5000:  # 6
             return
 
         state = {
             "counter": self.counter,
             "enabled": self.enabled,
         }
-        super().save_state_json(state)
+        self.save_state_json(state)
     
     def main(self):
         oled.centre_text("Hello world")
