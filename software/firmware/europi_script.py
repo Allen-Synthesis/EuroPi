@@ -44,7 +44,7 @@ class EuroPiScript:
     To add the ability to save and load state, you must:
         
         1. **Initialize base classes** When implementing the ``EuroPiScript`` base class, its initialization method must be called to initialize its intance variables.
-        2. **Call the inherited ``EuroPiScript`` method ``load_state_json()``.** The ``EuroPiScript`` base class has the method ``load_state_json()`` to check for a previously saved state. When initializing your script, call ``load_X_state()`` where ``X`` is the persistance format of choice. If no state is found, an empty value will be returned.
+        2. **Call the inherited EuroPiScript method load_state_json().** The ``EuroPiScript`` base class has the method ``load_state_json()`` to check for a previously saved state. When initializing your script, call ``load_X_state()`` where ``X`` is the persistance format of choice. If no state is found, an empty value will be returned.
 
         3. **Apply saved state variables to this instance.** Set state variables with default fallback values if not found in the json save state.
 
