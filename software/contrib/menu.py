@@ -6,6 +6,7 @@ from contrib.consequencer import Consequencer
 from contrib.diagnostic import Diagnostic
 from contrib.harmonic_lfos import HarmonicLFOs
 from contrib.hello_world import HelloWorld
+from contrib.noddy_holder import NoddyHolder
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
@@ -18,6 +19,7 @@ EUROPI_SCRIPT_CLASSES = [
     Diagnostic,
     HarmonicLFOs,
     HelloWorld,
+    NoddyHolder,
     PolyrhythmSeq,
     RadioScanner,
     Scope,
