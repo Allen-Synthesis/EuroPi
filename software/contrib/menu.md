@@ -64,26 +64,28 @@ from europi_script import EuroPiScript
 
 class HelloWorld(EuroPiScript):
     def __init__(self):
-        state = super().load_state_json()  # 1
+        super().__init__()  # 1
 
-        self.counter = state.get("counter", 0)  # 2
+        state = self.load_state_json()  # 2
+
+        self.counter = state.get("counter", 0)  # 3
         self.enabled = state.get("enabled", True)
 
         @din.handler
         def increment_counter():
             if self.enabled:
                 self.counter += 1
-                self.save_state()  # 3
+                self.save_state()  # 4
         
         @b1.handler
         def toggle_enablement():
             self.enabled = not self.enabled
-            self.save_state()  # 3
+            self.save_state()  # 4
 
-    def save_state(self):  # 4
+    def save_state(self):  # 5
         """Save the current state variables as JSON."""
         # Don't save if it has been less than 5 seconds since last save.
-        if super().last_saved() < 5000:  # 5
+        if super().last_saved() < 5000:  # 6
             return
 
         state = {
@@ -96,15 +98,16 @@ class HelloWorld(EuroPiScript):
         oled.centre_text("Hello world")
 ```
 
+1. **Initialize base classes** When implementing the `EuroPiScript` base class, its initialization method must be called to initialize its intance variables.
 1. **Call the inherited `EuroPiScript` method `load_state_json()`.** The `EuroPiScript` base class has the method `load_state_json()` to check for a previously saved state. When initializing your script, call `load_X_state()` where `X` is the persistance format of choice. If no state is found, an empty value will be returned.
 
-2. **Apply saved state variables to this instance.** Set state variables with default fallback values if not found in the json save state.
+1. **Apply saved state variables to this instance.** Set state variables with default fallback values if not found in the json save state.
 
-3. **Save state upon state change.** When a state variable changes, call the save state function.
+1. **Save state upon state change.** When a state variable changes, call the save state function.
 
-4. **Script save state method.** Provide a helper method to serialize the state variables into a string, JSON, or bytes an call the appropriate save state method.
+1. **Script save state method.** Provide a helper method to serialize the state variables into a string, JSON, or bytes an call the appropriate save state method.
 
-5. **Throttle the frequency of saves.** Saving state too often could negatively impact the performance of your script, so it is advised to add some checks in your code to ensure it doesn't save too frequently.
+1. **Throttle the frequency of saves.** Saving state too often could negatively impact the performance of your script, so it is advised to add some checks in your code to ensure it doesn't save too frequently.
 
 ## Support testing
 

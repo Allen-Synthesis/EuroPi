@@ -16,8 +16,10 @@ HEADER_DURATION = 2000  # 2 seconds in ms
 
 class RadioScanner(EuroPiScript):
     def __init__(self):
+        super().__init__()
+
         # Load state if previous state exists.
-        state = super().load_state_json()
+        state = self.load_state_json()
         # Set state variables with default fallback values if not found in the
         # json save state.
         self.knob_mapping = state.get("knob_mapping", 0)
@@ -45,7 +47,7 @@ class RadioScanner(EuroPiScript):
             "knob_mapping": self.knob_mapping,
             "cv_mapping": self.cv_mapping,
         }
-        super().save_state_json(state)
+        self.save_state_json(state)
 
     def value_to_cv(self, value):
         return value * MAX_OUTPUT_VOLTAGE

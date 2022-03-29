@@ -5,7 +5,8 @@ from europi_script import EuroPiScript
 
 class HelloWorld(EuroPiScript):
     def __init__(self):
-        state = super().load_state_json()
+        super().__init__()
+        state = self.load_state_json()
 
         self.counter = state.get("counter", 0)
         self.enabled = state.get("enabled", True)
@@ -36,7 +37,7 @@ class HelloWorld(EuroPiScript):
             "counter": self.counter,
             "enabled": self.enabled,
         }
-        super().save_state_json(state)
+        self.save_state_json(state)
 
     def main(self):
         while True:

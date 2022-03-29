@@ -214,15 +214,17 @@ class PolyrhythmSeq(EuroPiScript):
 
     def load_state(self):
         """Load state from previous run."""
-        state = super().load_state_bytes()
+        state = self.load_state_bytes()
         if state:
             self.set_state(state)
 
     def save_state(self):
         """Save state if it has changed since last call."""
+        # Only save state if state has changed and more than 1s has elapsed
+        # since last save.
         if self._dirty and self.last_saved() > 1000:
             state = self.get_state()
-            super().save_state_bytes(state)
+            self.save_state_bytes(state)
             self._dirty = False
             self._last_saved = ticks_ms()
 
