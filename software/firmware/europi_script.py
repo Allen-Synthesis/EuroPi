@@ -136,7 +136,7 @@ class EuroPiScript:
         appropriate save method, such as `save_state_json(state)`. See the
         class documentation for a full example.
         """
-        raise NotImplementedError
+        pass
 
     def save_state_str(self, state: str):
         """Take state in persistence format as a string and write to disk.
