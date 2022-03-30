@@ -35,10 +35,6 @@ DEFAULT_BIT_COUNT = 16
 MAX_OUTPUT_VOLTAGE = europi.MAX_OUTPUT_VOLTAGE
 
 
-def _mask(n):
-    return (1 << n) - 1
-
-
 class TuringMachine:
     def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
         """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8."""
@@ -57,9 +53,6 @@ class TuringMachine:
         self.length_getter = lambda: self._length
         self.write_getter = lambda: self._write
         self.step_handler = lambda: None
-
-    def get_bit_string(self):
-        return f"{self.bits:0{self.bit_count}b}"
 
     def rotate_bits(self):
         self.bits = ((self.bits << 1) % (1 << self.bit_count)) | ((self.bits >> (self.length - 1)) & 1)

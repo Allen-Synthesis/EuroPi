@@ -1,16 +1,6 @@
 import pytest
 
-try:
-    from contrib.turing_machine import TuringMachine, MAX_OUTPUT_VOLTAGE, DEFAULT_BIT_COUNT
-except ImportError:
-    from turing_machine import TuringMachine, MAX_OUTPUT_VOLTAGE, DEFAULT_BIT_COUNT
-
-
-@pytest.fixture
-def turing_machine():
-    tm = TuringMachine()
-    tm.bits = 0b1100110011110000  # set the bits to a known value
-    return tm
+from turing_machine import TuringMachine, MAX_OUTPUT_VOLTAGE, DEFAULT_BIT_COUNT
 
 
 def tm(bit_count, starting_bits):
@@ -18,6 +8,13 @@ def tm(bit_count, starting_bits):
     tm.bits = starting_bits  # set the bits to a known value
     return tm
 
+
+@pytest.fixture
+def turing_machine():
+    return tm(16, 0b1100110011110000)  # set the bits to a known value
+
+def get_bit_string(tm):
+    return f"{tm.bits:0{tm.bit_count}b}"
 
 def test_bad_bit_count():
     with pytest.raises(ValueError, match=r"4") as e:
@@ -43,9 +40,9 @@ def test_rotate_bits(bit_count, length, starting_bits, expected1, expected2):
     turing_machine = tm(bit_count, starting_bits)
     turing_machine.length = length
     turing_machine.rotate_bits()
-    assert turing_machine.get_bit_string() == expected1
+    assert get_bit_string(turing_machine) == expected1
     turing_machine.rotate_bits()
-    assert turing_machine.get_bit_string() == expected2
+    assert get_bit_string(turing_machine) == expected2
 
 
 @pytest.mark.parametrize(
@@ -98,7 +95,7 @@ def test_get_voltage(turing_machine):
 def test_locked_loop(turing_machine):
     for i in range(16 * 100):  # step until we're back where we started many times
         turing_machine.step()
-    assert turing_machine.get_bit_string() == "1100110011110000"
+    assert get_bit_string(turing_machine) == "1100110011110000"
 
 
 def test_mobius_loop(turing_machine):
@@ -106,17 +103,17 @@ def test_mobius_loop(turing_machine):
     for _ in range(100):
         for i in range(16):  # step halfway through
             turing_machine.step()
-        assert turing_machine.get_bit_string() == "0011001100001111"  # inverted
+        assert get_bit_string(turing_machine) == "0011001100001111"  # inverted
         for i in range(16):  # step back to the beginning
             turing_machine.step()
-        assert turing_machine.get_bit_string() == "1100110011110000"
+        assert get_bit_string(turing_machine) == "1100110011110000"
 
 
 def test_random_loop(turing_machine):
     turing_machine.flip_probability = 50
     for _ in range(100):
         turing_machine.step()
-        assert turing_machine.get_bit_string() != "1100110011110000"
+        assert get_bit_string(turing_machine) != "1100110011110000"
         # technically, we _could_ randomply end up back at our starting sequence, but probably not in 100 steps
 
 
@@ -188,4 +185,4 @@ def test_write(turing_machine):
     turing_machine.write = True
     for _ in range(16):
         turing_machine.step()
-    assert turing_machine.get_bit_string() == "0000000000000000"
+    assert get_bit_string(turing_machine) == "0000000000000000"
