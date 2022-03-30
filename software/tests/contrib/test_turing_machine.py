@@ -60,6 +60,24 @@ def test_get_8_bits(bit_count, starting_bits, expected):
     eight_bits = turing_machine.get_8_bits()
     assert f"{eight_bits:08b}" == expected
 
+@pytest.mark.parametrize(
+    "bit_count,starting_bits,index,expected",
+    [
+        (16, 0b1100110011110000, 0, 0),
+        (16, 0b1100110011110000, 1, 0),
+        (16, 0b1100110011110000, 2, 0),
+        (16, 0b1100110011110000, 4, 1),
+        (16, 0b1100110011110000, 7, 1),
+        (16, 0b1100110011110000, 8, 0),
+        (16, 0b1100110011110000, 10, 1),
+        (16, 0b1100110011110000, 15, 1),
+    ],
+)
+def test_get_bit(bit_count, starting_bits, index, expected):
+    turing_machine = tm(bit_count, starting_bits)
+    bit = turing_machine.get_bit(index)
+    assert bit == expected
+
 
 def test_get_voltage(turing_machine):
     turing_machine.bits = 0xFFFF  # MAX

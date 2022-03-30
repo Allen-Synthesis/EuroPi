@@ -6,12 +6,12 @@ k1 - the big one
 k2 - scale
 b1 - length cycle
 b2 - write
-cv1 - out
-cv2 - noise
-cv3 - pulse
-cv4 - pulse
-cv5 - pulse
-cv6 - pulse
+cv1 - pulse 1
+cv2 - pulse 2
+cv3 - pulse 4
+cv4 - pulse 1+2
+cv5 - pulse 2+4
+cv6 - sequence out
 """
 from random import getrandbits, randint
 from time import sleep
@@ -25,6 +25,10 @@ except ImportError:
 
 from europi_script import EuroPiScript
 
+# Customize pulses output here
+CV1_PULSE_BIT = 1
+CV2_PULSE_BIT = 2
+CV3_PULSE_BIT = 4
 
 INT_MAX_8 = 0xFF
 DEFAULT_BIT_COUNT = 16
@@ -70,6 +74,12 @@ class TuringMachine:
 
     def get_8_bits(self):
         return self.bits & 0xFF
+
+    def get_bit(self, i):
+        return self.bits >> i & 1
+
+    def get_bit_and(self, i, j):
+        return self.get_bit(i) & self.get_bit(j)
 
     def get_voltage(self):
         return self.get_8_bits() / INT_MAX_8 * self.scale
@@ -136,7 +146,12 @@ class EuroPiTuringMachine(EuroPiScript):
             self.k2_scale_mode = not self.k2_scale_mode
 
     def step_handler(self):
-        cv1.voltage(self.tm.get_voltage())
+        cv1.value(self.tm.get_bit(CV1_PULSE_BIT))
+        cv2.value(self.tm.get_bit(CV2_PULSE_BIT))
+        cv3.value(self.tm.get_bit(CV3_PULSE_BIT))
+        cv4.value(self.tm.get_bit_and(CV1_PULSE_BIT, CV2_PULSE_BIT))
+        cv5.value(self.tm.get_bit_and(CV2_PULSE_BIT, CV3_PULSE_BIT))
+        cv6.voltage(self.tm.get_voltage())
 
     def flip_probability(self):
         return clamp(int((round(1 - k1.percent() - ain.percent(), 2)) * 100), 0, 100)
