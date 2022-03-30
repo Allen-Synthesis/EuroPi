@@ -1,17 +1,21 @@
 """
+ A script meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully as possible on the 
+ EuroPi hardware using bit shift operations to mimic the analog shift register.
 
 din - clock
-ain - cv
-k1 - the big one
-k2 - scale
-b1 - length cycle
-b2 - write
+ain - cv control over the big knob, added to the knobs value
+k1 - the big knob (probability that the sequence changes)
+k2 - output scale (0-10v)  or sequence length (2-16 steps)
+b1 - write (clear bits)
+b2 - change k2 function
 cv1 - pulse 1
 cv2 - pulse 2
 cv3 - pulse 4
-cv4 - pulse 1+2
-cv5 - pulse 2+4
+cv4 - pulse 1 & 2
+cv5 - pulse 2 & 4
 cv6 - sequence out
+
+If you'd like to use different bits for the pulse outputs you can update the ``CVX_PULSE_BIT`` constants below.
 """
 from random import getrandbits, randint
 from time import sleep
@@ -36,8 +40,29 @@ MAX_OUTPUT_VOLTAGE = europi.MAX_OUTPUT_VOLTAGE
 
 
 class TuringMachine:
+    """A class meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully as possible in
+    micropython using bit shift operations to mimic the TM's analog shift register.
+
+    The ``TuringMachine`` class keeps its state in several internal member variables which are accessed via property
+    variables. See ``flip_probability``, ``scale``, ``length`` and ``write``. users of the class can modify these
+    variables in order to configure the TM's behavior. In many cases script authors will want to tie one of these
+    variables to a hardware UI element, for example, assigning the ``flip_probability`` to a knob. In this case clients
+    can override the corresponding ``*_getter`` function. For example, to tie the write switch to button 1::
+
+        tm = TuringMachine()
+
+        def write(self):
+          return b1.value()
+
+        tm.write_getter = write
+
+    This form allows clients to override where the ``TuringMachine`` obtains some of its state variables without
+    explicitly sub-classing the ``TuringMachine`` class. See ``EuroPiTuringMachine`` for a more detailed example.
+    """
+
     def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
-        """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8."""
+        """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8.
+        The maximum output voltage is also configurable and defaults to ``europi.MAX_OUTPUT_VOLTAGE``"""
         if bit_count < 8:
             raise ValueError(f"Specified bit_count ({bit_count}) is less than the minimum (8).")
         self.bit_count = bit_count
@@ -54,11 +79,16 @@ class TuringMachine:
         self.write_getter = lambda: self._write
         self.step_handler = lambda: None
 
-    def rotate_bits(self):
+    def _rotate_bits(self):
         self.bits = ((self.bits << 1) % (1 << self.bit_count)) | ((self.bits >> (self.length - 1)) & 1)
 
     def step(self):
-        self.rotate_bits()
+        """Move the turing machine to its next state based on its current state. Parameters that affect the next state
+        include: ``flip_probability``, ``length``, ``write``, and, the internal bit register.
+
+        Typically this method would be called in response to a clock tick.
+        """
+        self._rotate_bits()
         if self.write:
             self.bits = self.bits & ~1
         if randint(0, 99) < self.flip_probability:
@@ -66,53 +96,74 @@ class TuringMachine:
         self.step_handler()
 
     def get_8_bits(self):
+        """Returns the least significant eight bits from the internal bit register, which are the same bits used to
+        determine the voltage returned by ``get_voltage()``. This method is useful when diplaying the current state in a
+        UI."""
         return self.bits & 0xFF
 
     def get_bit(self, i):
+        """Returns the bit at the specified index. This method exists to support the Pulses Expander functionality."""
         return self.bits >> i & 1
 
     def get_bit_and(self, i, j):
+        """Returns the result of a bitwise and of the bits at the specified indexes. This method exists to support the
+        Pulses Expander functionality."""
         return self.get_bit(i) & self.get_bit(j)
 
     def get_voltage(self):
+        """Returns the voltage described by the eight least significant bits of the internal bit register, scaled by the
+        current ``scale`` factor."""
         return self.get_8_bits() / INT_MAX_8 * self.scale
 
     @property
     def flip_probability(self):
+        """Returns the probability that the most significant bit will be flipped when it is rotated into the least
+        significant bit's position. This translates to the probability that the sequence will change. The
+        flip_probability is represented as an integer in the range [0, 100].
+        """
         return self.flip_probability_getter()
 
     @flip_probability.setter
     def flip_probability(self, probability: int):
+        """Set the flip probability as an integer in the range [0, 100]."""
         if probability < 0 or probability > 100:
             raise ValueError(f"Probability of {probability} is outside the expected range of [0,100]")
         self._flip_probability = probability
 
     @property
     def scale(self):
+        """Returns the current scaling factor, used to reduce the range of the output voltage to something lower than
+        the ``max_output_voltage``. Represented by a float in the range [0, ``max_output_voltage``]"""
         return self.scale_getter()
 
     @scale.setter
     def scale(self, scale):
+        """Set the scale factor as a float in the range [0, ``max_output_voltage``]"""
         if scale < 0 or scale > self.max_output_voltage:
             raise ValueError(f"Scale of {scale} is outside the expected range of [0,{self.max_output_voltage}]")
         self._scale = scale
 
     @property
     def length(self):
+        """Returns the length of the current sequence as an integer in the range of [2, ``bit_count``]"""
         return self.length_getter()
 
     @length.setter
     def length(self, length):
+        """Sets the length of the current sequence as an integer in the range of [2, ``bit_count``]"""
         if length < 2 or length > self.bit_count:
             raise ValueError(f"Length of {length} is outside the expected range of [2,{self.bit_count}]")
         self._length = length
 
     @property
     def write(self):
+        """returns the current value of the 'write switch'. When true the least significant bit will be cleared during
+        rotation, regardless of the ``flip_probability``. This allows for real-time user manipulation of the sequence."""
         return self.write_getter()
 
     @write.setter
     def write(self, value: bool):
+        """Set the state of the 'write switch'. ``True`` means that the least significant bit will be cleared."""
         self._write = value
 
 

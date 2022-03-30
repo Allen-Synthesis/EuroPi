@@ -39,9 +39,9 @@ def test_bad_bit_count():
 def test_rotate_bits(bit_count, length, starting_bits, expected1, expected2):
     turing_machine = tm(bit_count, starting_bits)
     turing_machine.length = length
-    turing_machine.rotate_bits()
+    turing_machine._rotate_bits()
     assert get_bit_string(turing_machine) == expected1
-    turing_machine.rotate_bits()
+    turing_machine._rotate_bits()
     assert get_bit_string(turing_machine) == expected2
 
 
