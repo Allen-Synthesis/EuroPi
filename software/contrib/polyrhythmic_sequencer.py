@@ -135,8 +135,6 @@ class PolyrhythmSeq(EuroPiScript):
         machine.freq(250000000)
 
         # Configure EuroPi options to improve performance.
-        k1.set_samples(32)
-        k2.set_samples(32)
         b2.debounce_delay = 200
         oled.contrast(0)  # dim the oled
 

@@ -53,8 +53,8 @@ class Diagnostic(EuroPiScript):
 
     def main(self):
 
-        # b1.handler(self.rotate_l)
-        # b2.handler(self.rotate_r)
+        b1.handler(self.rotate_l)
+        b2.handler(self.rotate_r)
 
         while True:
 
