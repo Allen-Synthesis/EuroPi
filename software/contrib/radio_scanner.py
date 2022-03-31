@@ -16,21 +16,38 @@ HEADER_DURATION = 2000  # 2 seconds in ms
 
 class RadioScanner(EuroPiScript):
     def __init__(self):
-        self.knob_mapping = 0
-        self.cv_mapping = [0, 1, 2, 3, 4, 5]
+        super().__init__()
+
+        # Load state if previous state exists.
+        state = self.load_state_json()
+        # Set state variables with default fallback values if not found in the
+        # json save state.
+        self.knob_mapping = state.get("knob_mapping", 0)
+        self.cv_mapping = state.get("cv_mapping", [0, 1, 2, 3, 4, 5])
+
         self.knob_mapping_text = ['Off', 'Knob 1', 'Knob 2']
 
         def remap_knob():
             self.knob_mapping += 1
             if self.knob_mapping == 3:
                 self.knob_mapping = 0
+            self.save_state()
 
         def rotate_cvs():
             self.cv_mapping = self.cv_mapping[1:] + [self.cv_mapping[0]]
+            self.save_state()
 
         b1.handler(rotate_cvs)
         din.handler(rotate_cvs)
         b2.handler(remap_knob)
+
+    def save_state(self):
+        """Save the current state variables as JSON."""
+        state = {
+            "knob_mapping": self.knob_mapping,
+            "cv_mapping": self.cv_mapping,
+        }
+        self.save_state_json(state)
 
     def value_to_cv(self, value):
         return value * MAX_OUTPUT_VOLTAGE

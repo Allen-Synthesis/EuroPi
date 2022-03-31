@@ -29,6 +29,5 @@ In order to be included in the menu a program needs to meet a few additional req
 [menu.md](/software/contrib/menu.md) for details. Programs are not required to participate in the menu in order to be 
 accepted, but it is nice.
 
-
 ### If you are unsure
 Take a look at other submitted programs to see how to format yours if you are unsure, and feel free to send me any questions at either [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk)
