@@ -80,7 +80,8 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="europi_script.EuroPiScript">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi_script.</span></span><span class="sig-name descname"><span class="pre">EuroPiScript</span></span><a class="headerlink" href="#europi_script.EuroPiScript" title="Permalink to this definition"></a></dt>
-<dd><p>A base class for scripts which wish to participate in the bootloader menu.</p>
+<dd><p>A base class for scripts which wish to participate in the bootloader menu and add save state functionality.</p>
+<p><strong>Menu Inclusion</strong></p>
 <p>To make your script compatible with the menu, you must:</p>
 <blockquote>
 <div><ol class="arabic simple">
@@ -104,6 +105,66 @@
 </pre></div>
 </div>
 <p>To include your script in the menu it must be added to the <code class="docutils literal notranslate"><span class="pre">EUROPI_SCRIPT_CLASSES</span></code> list in <code class="docutils literal notranslate"><span class="pre">contrib/menu.py</span></code>.</p>
+<p><strong>Save/Load Script State</strong></p>
+<p>Optionally, you can add a bit of code to enable your script to save state, and load previous state at startup. By default, when exiting the script to menu selection, <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> will be called. Additionally, you can add calls to <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> whenever state changes.</p>
+<p>When adding <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> calls to your script, there are a few important considerations to keep in mind:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Frequency of saves - scripts should only save state to disk when state changes, and should not save too frequently because os write operations are expensive in terms of time. Saving too frequently will affect the performance of a script.</p></li>
+<li><p>Save state file size - The pico only has about 1MB of free space available so save state storage format is important to keep as minimal as possible.</p></li>
+<li><p>No externally influenced input - The instance variables your script saves should not be externally influenced, meaning you should not save the current knob position, current analog input value or current digital input value.</p></li>
+</ul>
+</div></blockquote>
+<p>To add the ability to save and load state, you must:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><strong>Initialize base classes</strong> When implementing the <code class="docutils literal notranslate"><span class="pre">EuroPiScript</span></code> base class, its initialization method must be called to initialize its intance variables.</p></li>
+<li><p><strong>Call the inherited EuroPiScript method load_state_X().</strong> The <code class="docutils literal notranslate"><span class="pre">EuroPiScript</span></code> base class has <code class="docutils literal notranslate"><span class="pre">load_state_X()</span></code> methods to check for a previously saved state of a specific format. When initializing your script, call <code class="docutils literal notranslate"><span class="pre">load_state_X()</span></code> where <code class="docutils literal notranslate"><span class="pre">X</span></code> is the persistance format of choice. If no state is found, an empty value will be returned.</p></li>
+<li><p><strong>Apply saved state variables to this instance.</strong> Set state variables with default fallback values if not found in the json save state.</p></li>
+<li><p><strong>Save state upon state change.</strong> When a state variable changes, call the save state function.</p></li>
+<li><p><strong>Implement save_state() method.</strong> Provide an implementation to serialize the state variables into a string, JSON, or bytes an call the appropriate save state method.</p></li>
+<li><p><strong>Throttle the frequency of saves.</strong> Saving state too often could negatively impact the performance of your script, so it is advised to add some checks in your code to ensure it doesn’t save too frequently.</p></li>
+</ol>
+</div></blockquote>
+<p>Here is an extension of the script above with some added trivial features that incorporate saving and loading script state:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">europi</span> <span class="kn">import</span> <span class="n">oled</span>
+<span class="kn">from</span> <span class="nn">europi_script</span> <span class="kn">import</span> <span class="n">EuroPiScript</span>
+
+<span class="k">class</span> <span class="nc">HelloWorld</span><span class="p">(</span><span class="n">EuroPiScript</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>  <span class="c1"># 1</span>
+
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_state_json</span><span class="p">()</span>  <span class="c1"># 2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="nd">@din</span><span class="o">.</span><span class="n">handler</span>
+        <span class="k">def</span> <span class="nf">increment_counter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_state</span><span class="p">()</span>  <span class="c1"># 4</span>
+
+        <span class="nd">@b1</span><span class="o">.</span><span class="n">handler</span>
+        <span class="k">def</span> <span class="nf">toggle_enablement</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_state</span><span class="p">()</span>  <span class="c1"># 4</span>
+
+    <span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># 5</span>
+        <span class="c1"># Don&#39;t save if it has been less than 5 seconds since last save.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_saved</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">5000</span><span class="p">:</span>  <span class="c1"># 6</span>
+            <span class="k">return</span>
+
+        <span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;counter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">,</span>
+            <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_state_json</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">oled</span><span class="o">.</span><span class="n">centre_text</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>EuroPiScripts should not call <code class="docutils literal notranslate"><span class="pre">europi.reset_state()</span></code> as this call would remove the button handlers that
@@ -113,7 +174,7 @@ handlers that provide this functionality.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_script.EuroPiScript.display_name">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.display_name" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the string used to identify this script in the Menu. Defaults to the class name. Override it if you 
+<dd><p>Returns the string used to identify this script in the Menu. Defaults to the class name. Override it if you
 would like to use a different name:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">display_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -124,9 +185,94 @@ would like to use a different name:</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.last_saved">
+<span class="sig-name descname"><span class="pre">last_saved</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.last_saved" title="Permalink to this definition"></a></dt>
+<dd><p>Return the ticks in milliseconds since last save.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.load_state_bytes">
+<span class="sig-name descname"><span class="pre">load_state_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.load_state_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Check disk for saved state, if it exists, return the raw state value as bytes.</p>
+<p>Check for a previously saved state. If it exists, return state as a
+byte string. If no state is found, an empty string will be returned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.load_state_json">
+<span class="sig-name descname"><span class="pre">load_state_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.load_state_json" title="Permalink to this definition"></a></dt>
+<dd><p>Load previously saved state as a dict.</p>
+<p>Check for a previously saved state. If it exists, return state as a
+dict. If no state is found, an empty dictionary will be returned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.load_state_str">
+<span class="sig-name descname"><span class="pre">load_state_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.load_state_str" title="Permalink to this definition"></a></dt>
+<dd><p>Check disk for saved state, if it exists, return the raw state value as a string.</p>
+<p>Check for a previously saved state. If it exists, return state as a
+string. If no state is found, an empty string will be returned.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="europi_script.EuroPiScript.main">
-<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.main" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.main" title="Permalink to this definition"></a></dt>
 <dd><p>Override this method with your script’s main loop method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.remove_state">
+<span class="sig-name descname"><span class="pre">remove_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.remove_state" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the state file for this script.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.save_state">
+<span class="sig-name descname"><span class="pre">save_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.save_state" title="Permalink to this definition"></a></dt>
+<dd><p>Encode state and call the appropriate persistence save method.</p>
+<p>Override this class with the script specific encoding of state into
+the persistence format that best matches its use case. Then call the
+appropriate save method, such as <cite>save_state_json(state)</cite>. See the
+class documentation for a full example.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.save_state_bytes">
+<span class="sig-name descname"><span class="pre">save_state_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.save_state_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Take state in persistence format as bytes and write to disk.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be mindful of how often <cite>save_state_bytes()</cite> is called because
+writing to disk too often can slow down the performance of your
+script. Only call save state when state has changed and consider
+adding a time since last save check to reduce save frequency.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.save_state_json">
+<span class="sig-name descname"><span class="pre">save_state_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.save_state_json" title="Permalink to this definition"></a></dt>
+<dd><p>Take state as a dict and save as a json string.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be mindful of how often <cite>save_state_json()</cite> is called because
+writing to disk too often can slow down the performance of your
+script. Only call save state when state has changed and consider
+adding a time since last save check to reduce save frequency.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi_script.EuroPiScript.save_state_str">
+<span class="sig-name descname"><span class="pre">save_state_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.save_state_str" title="Permalink to this definition"></a></dt>
+<dd><p>Take state in persistence format as a string and write to disk.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be mindful of how often <cite>save_state_str()</cite> is called because
+writing to disk too often can slow down the performance of your
+script. Only call save state when state has changed and consider
+adding a time since last save check to reduce save frequency.</p>
+</div>
 </dd></dl>
 
 </dd></dl>
