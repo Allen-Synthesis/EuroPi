@@ -15,7 +15,7 @@ cv4 - pulse 1 & 2
 cv5 - pulse 2 & 4
 cv6 - sequence out
 
-If you'd like to use different bits for the pulse outputs you can update the ``CVX_PULSE_BIT`` constants below.
+If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT` constants below.
 """
 from random import getrandbits, randint
 from time import sleep
@@ -43,11 +43,11 @@ class TuringMachine:
     """A class meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully as possible in
     micropython using bit shift operations to mimic the TM's analog shift register.
 
-    The ``TuringMachine`` class keeps its state in several internal member variables which are accessed via property
-    variables. See ``flip_probability``, ``scale``, ``length`` and ``write``. users of the class can modify these
+    The `TuringMachine` class keeps its state in several internal member variables which are accessed via property
+    variables. See `flip_probability`, `scale`, `length` and `write`. users of the class can modify these
     variables in order to configure the TM's behavior. In many cases script authors will want to tie one of these
-    variables to a hardware UI element, for example, assigning the ``flip_probability`` to a knob. In this case clients
-    can override the corresponding ``*_getter`` function. For example, to tie the write switch to button 1::
+    variables to a hardware UI element, for example, assigning the `flip_probability` to a knob. In this case clients
+    can override the corresponding `*_getter` function. For example, to tie the write switch to button 1::
 
         tm = TuringMachine()
 
@@ -56,13 +56,13 @@ class TuringMachine:
 
         tm.write_getter = write
 
-    This form allows clients to override where the ``TuringMachine`` obtains some of its state variables without
-    explicitly sub-classing the ``TuringMachine`` class. See ``EuroPiTuringMachine`` for a more detailed example.
+    This form allows clients to override where the `TuringMachine` obtains some of its state variables without
+    explicitly sub-classing the `TuringMachine` class. See `EuroPiTuringMachine` for a more detailed example.
     """
 
     def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
         """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8.
-        The maximum output voltage is also configurable and defaults to ``europi.MAX_OUTPUT_VOLTAGE``"""
+        The maximum output voltage is also configurable and defaults to `europi.MAX_OUTPUT_VOLTAGE`"""
         if bit_count < 8:
             raise ValueError(f"Specified bit_count ({bit_count}) is less than the minimum (8).")
         self.bit_count = bit_count
@@ -84,7 +84,7 @@ class TuringMachine:
 
     def step(self):
         """Move the turing machine to its next state based on its current state. Parameters that affect the next state
-        include: ``flip_probability``, ``length``, ``write``, and, the internal bit register.
+        include: `flip_probability`, `length`, `write`, and, the internal bit register.
 
         Typically this method would be called in response to a clock tick.
         """
@@ -97,7 +97,7 @@ class TuringMachine:
 
     def get_8_bits(self):
         """Returns the least significant eight bits from the internal bit register, which are the same bits used to
-        determine the voltage returned by ``get_voltage()``. This method is useful when diplaying the current state in a
+        determine the voltage returned by `get_voltage()`. This method is useful when diplaying the current state in a
         UI."""
         return self.bits & 0xFF
 
@@ -112,7 +112,7 @@ class TuringMachine:
 
     def get_voltage(self):
         """Returns the voltage described by the eight least significant bits of the internal bit register, scaled by the
-        current ``scale`` factor."""
+        current `scale` factor."""
         return self.get_8_bits() / INT_MAX_8 * self.scale
 
     @property
@@ -133,37 +133,37 @@ class TuringMachine:
     @property
     def scale(self):
         """Returns the current scaling factor, used to reduce the range of the output voltage to something lower than
-        the ``max_output_voltage``. Represented by a float in the range [0, ``max_output_voltage``]"""
+        the `max_output_voltage`. Represented by a float in the range [0, `max_output_voltage`]"""
         return self.scale_getter()
 
     @scale.setter
     def scale(self, scale):
-        """Set the scale factor as a float in the range [0, ``max_output_voltage``]"""
+        """Set the scale factor as a float in the range [0, `max_output_voltage`]"""
         if scale < 0 or scale > self.max_output_voltage:
             raise ValueError(f"Scale of {scale} is outside the expected range of [0,{self.max_output_voltage}]")
         self._scale = scale
 
     @property
     def length(self):
-        """Returns the length of the current sequence as an integer in the range of [2, ``bit_count``]"""
+        """Returns the length of the current sequence as an integer in the range of [2, `bit_count`]"""
         return self.length_getter()
 
     @length.setter
     def length(self, length):
-        """Sets the length of the current sequence as an integer in the range of [2, ``bit_count``]"""
+        """Sets the length of the current sequence as an integer in the range of [2, `bit_count`]"""
         if length < 2 or length > self.bit_count:
             raise ValueError(f"Length of {length} is outside the expected range of [2,{self.bit_count}]")
         self._length = length
 
     @property
     def write(self):
-        """returns the current value of the 'write switch'. When true the least significant bit will be cleared during
-        rotation, regardless of the ``flip_probability``. This allows for real-time user manipulation of the sequence."""
+        """Returns the current value of the 'write switch'. When true the least significant bit will be cleared during
+        rotation, regardless of the `flip_probability`. This allows for real-time user manipulation of the sequence."""
         return self.write_getter()
 
     @write.setter
     def write(self, value: bool):
-        """Set the state of the 'write switch'. ``True`` means that the least significant bit will be cleared."""
+        """Set the state of the 'write switch'. `True` means that the least significant bit will be cleared."""
         self._write = value
 
 
