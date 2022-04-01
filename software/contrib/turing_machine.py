@@ -168,8 +168,8 @@ class TuringMachine:
 
 
 class EuroPiTuringMachine(EuroPiScript):
-    def __init__(self):
-        self.tm = TuringMachine(bit_count=DEFAULT_BIT_COUNT, max_output_voltage=europi.MAX_OUTPUT_VOLTAGE)
+    def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
+        self.tm = TuringMachine(bit_count, max_output_voltage)
         self.tm.flip_probability_getter = self.flip_probability
         self.tm.scale_getter = self.scale
         self.tm.length_getter = self.length
@@ -251,4 +251,4 @@ class EuroPiTuringMachine(EuroPiScript):
 
 
 if __name__ == "__main__":
-    EuroPiTuringMachine().main()
+    EuroPiTuringMachine(DEFAULT_BIT_COUNT, europi.MAX_OUTPUT_VOLTAGE).main()

@@ -46,12 +46,6 @@ def turing_machine():
     ],
 )
 def test_flip_probability(monkeypatch, turing_machine: EuroPiTuringMachine, k1_value, ain_value, expected):
-    def k1_percent():
-        return k1_value
-
-    def ain_percent():
-        return ain_value
-
-    monkeypatch.setattr(ain, "percent", ain_percent)
-    monkeypatch.setattr(k1, "percent", k1_percent)
+    monkeypatch.setattr(ain, "percent", lambda: ain_value)
+    monkeypatch.setattr(k1, "percent", lambda: k1_value)
     assert turing_machine.flip_probability() == expected
