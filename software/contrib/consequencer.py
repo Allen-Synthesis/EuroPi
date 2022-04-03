@@ -53,6 +53,13 @@ class drumMachine:
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
+
+        # option to always output a clock on output 4
+        # this helps to sync Consequencer with other modules
+        self.output4isClock = True
+        
+        # Calculate the longest pattern length to be used when generating random sequences
+        self.maxStepLength = len(max(self.BD, key=len))
         
         # Generate random CV for cv4-6
         self.random4 = []
@@ -101,7 +108,11 @@ class drumMachine:
                 self.step = 0 
 
             # Set cv4-6 voltage outputs based on previously generated random pattern
-            cv4.voltage(self.random4[self.CvPattern][self.step])
+            if self.output4isClock:
+                cv4.value(1)
+            else:
+                cv4.voltage(self.random4[self.CvPattern][self.step])
+            
             cv5.voltage(self.random5[self.CvPattern][self.step])
             cv6.voltage(self.random6[self.CvPattern][self.step])
 
@@ -139,12 +150,13 @@ class drumMachine:
             cv1.off()
             cv2.off()
             cv3.off()
+            if self.output4isClock:
+                cv4.off()
 
     def generateNewRandomCVPattern(self):
-        self.step_length = len(self.BD[self.pattern])
-        self.random4.append(self.generateRandomPattern(16, 0, 9))
-        self.random5.append(self.generateRandomPattern(16, 0, 9))
-        self.random6.append(self.generateRandomPattern(16, 0, 9))
+        self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
+        self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
+        self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
 
     def getPattern(self):
         # If mode 2 and there is CV on the analogue input use it, if not use the knob position
@@ -232,6 +244,24 @@ class pattern:
     BD=[]
     SN=[]
     HH=[]
+
+    # African Patterns
+    BD.append("10110000001100001011000000110000")
+    SN.append("10001000100010001010100001001010")
+    HH.append("00001011000010110000101100001011")
+
+    BD.append("10101010101010101010101010101010")
+    SN.append("00001000000010000000100000001001")
+    HH.append("10100010101000101010001010100000")
+
+    BD.append("11000000101000001100000010100000")
+    SN.append("00001000000010000000100000001010")
+    HH.append("10111001101110011011100110111001")
+
+    # 0,1,1,2,3,5,8,12
+    BD.append("0101011011101111")
+    SN.append("1010100100010000")
+    HH.append("1110100100010000")
 
     # Add patterns
     BD.append("1000100010001000")
@@ -403,3 +433,4 @@ class pattern:
 reset_state()
 dm = drumMachine()
 dm.main()
+

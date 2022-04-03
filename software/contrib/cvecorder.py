@@ -50,12 +50,12 @@ class cvecorder:
         self.resetTimeout = 500
         self.debug = True
         self.CvIn = 0
+        self.random_HH = False
 
         # Initialize CV recorder and control channels
-        self.numCVR = 2  # Number of CV recorder channels
-        self.CVR=[]  # CV recorder channels
+        self.numCVR = 2  # Number of CV recorder channels - zero based
+        self.CVR = []  # CV recorder channels
         self.CvRecording = []  # CV recorder flags
-        self.Visualization = []  # Visualization
 
         for i in range(self.numCVR+1):
             self.CVR.append([])
@@ -65,11 +65,6 @@ class cvecorder:
 
         @din.handler
         def dInput():
-
-            # Send out clocks
-            cv4.on()
-            cv5.on() if self.clockStep % 2 == 0 else 0
-            cv6.on() if self.clockStep % 4 == 0 else 0
 
             # Sample input
             self.CvIn = 20 * ain.percent()
@@ -98,6 +93,19 @@ class cvecorder:
                 # Reset step to zero and stop recording
                 self.step = 0
                 self.CvRecording[self.ActiveCvr] = False
+
+            # Send out gates
+            # clock
+            cv4.on()
+            
+            # Random pattern or /2
+            if self.random_HH:
+                cv5.value(randint(0, 1))
+            else:
+                cv5.on() if self.clockStep % 2 == 0 else 0
+            
+            # / 4
+            cv6.on() if self.clockStep % 4 == 0 else 0
 
         @din.handler_falling
         def endClock():
@@ -148,7 +156,7 @@ class cvecorder:
         if self.CvRecording[self.ActiveCvr]:
             oled.text('Rec', 50, 25, 1)
         oled.text(str(self.ActiveCvr+1), 120, 25, 1)
-        oled.text(str(self.step), 0, 25, 1)
+        oled.text(str(self.step+1), 0, 25, 1)
 
         oled.show()
 
