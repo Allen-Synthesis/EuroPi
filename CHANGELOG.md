@@ -1,6 +1,6 @@
 # Change Log
 
-### 2022-04-03
+### 2022-04-04
 
 - release version 0.3.0
 - add save/load script state behavior via EuroPiScript
