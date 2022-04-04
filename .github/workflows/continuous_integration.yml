@@ -13,6 +13,6 @@ jobs:
   build_and_publish:
     uses: ./.github/workflows/publish_to_pypi.yml
     needs: run_tests
-    with:
+    secrets:
       TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
       PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
