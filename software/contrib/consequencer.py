@@ -53,6 +53,7 @@ class drumMachine:
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
+        self.reset_timeout = 500
 
         # option to always output a clock on output 4
         # this helps to sync Consequencer with other modules
@@ -65,7 +66,6 @@ class drumMachine:
         self.random4 = []
         self.random5 = []
         self.random6 = []
-        
         self.generateNewRandomCVPattern()
 
         # Triggered when button 2 is released.
@@ -132,12 +132,8 @@ class drumMachine:
                 else:
                     cv3.value(int(self.HH[self.pattern][self.step]))
 
-            # Reset clock step at 128 to avoid a HUGE integer if running for a long time
-            # over a really long period of time this would look like a memory leak
-            if self.clock_step < 128:
-                self.clock_step +=1
-            else:
-                self.clock_step = 0
+            # Incremenent the clock step
+            self.clock_step +=1
     
             # Reset step number at step_length -1 as pattern arrays are zero-based
             if self.step < self.step_length - 1:
@@ -202,7 +198,6 @@ class drumMachine:
             self.getRandomness()
             self.getCvPattern()
             self.updateScreen()
-            self.reset_timeout = 500
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
@@ -257,6 +252,26 @@ class pattern:
     BD.append("11000000101000001100000010100000")
     SN.append("00001000000010000000100000001010")
     HH.append("10111001101110011011100110111001")
+
+    BD.append("10001000100010001000100010001010")
+    SN.append("00100100101100000010010010110010")
+    HH.append("10101010101010101010101010101011")
+
+    BD.append("00101011101000111010001110100010")
+    SN.append("00101011101000111010001110100010")
+    HH.append("00001000000010000000100000001000")
+
+    BD.append("10101111101000111010001110101000")
+    SN.append("10101111101000111010001110101000")
+    HH.append("00000000101000001010000010100010")
+
+    BD.append("10110110000011111011011000001111")
+    SN.append("10110110000011111011011000001111")
+    HH.append("11111010001011111010001110101100")
+
+    BD.append("10010100100101001001010010010100")
+    SN.append("00100010001000100010001000100010")
+    HH.append("01010101010101010101010101010101")
 
     # 0,1,1,2,3,5,8,12
     BD.append("0101011011101111")
