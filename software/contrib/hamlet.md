@@ -1,17 +1,19 @@
-# EuroPi Hamlet - A 6-channel open source sequencer and random source power house!
+# EuroPi Hamlet - Sequencing Drums and two voices
 
 author: Sean Bechhofer (github.com/seanbechhofer)
-
 
 date: 2022-04-03
 
 labels: sequencer, gates, triggers, drums, randomness
 
-TB or not TB? Consequencer is a gate and stepped CV sequencer based on
+**TB or not TB?** Hamlet is a drum and voice sequencer based on
 Nik Ansell's Consequencer, which is itself inspired by Grids from
 Mutable Instruments. It includes features inspired by O_C's TB3PO,
 adding two tracks of CV and gates. Density of notes played on the CV
 tracks can be adjusted. 
+
+The app provides two gates for drum patterns and a pair of channels
+giving gate/CV to drive voices. 
 
 Use outputs 1/2 for drum gates. Pairs 3/4 and 5/6 provide gate/CV for
 melody lines. Send a clock to the digital input to start the sequence.
@@ -23,16 +25,16 @@ https://github.com/Allen-Synthesis/EuroPi
 
 # Controls
 
-![Operating Diagram](https://user-images.githubusercontent.com/79809962/154732035-ccc0d8c1-0e4e-4b8c-97e3-ccfa07a4880b.png)
-
 - digital_in: Clock in
-- analog_in: Mode 1: Adjusts sparsity, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
+- analog_in: Mode 1: Not currently used (will be sparsity) Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
 
 - knob_1: Adjust sparsity
 - knob_2: Select pre-loaded gate pattern
 
-- button_1: Short Press: Play previous stepped CV sequence. Long Press: Generate new gate pattern
-- button_2: Short Press: Generate a new random stepped cv sequence for outputs 4 - 6. Long Press: Cycle through analogue input modes
+- button_1: Short Press: Play previous stepped CV sequence. Long
+  Press: Not used
+- button_2: Short Press: Generate a new random stepped cv sequence for
+  tracks 1 and 2. Long Press: Cycle through analogue input modes
 
 - output_1: gate 1 e.g Kick Drum
 - output_2: gate 2 e.g Hi-Hat
@@ -50,7 +52,7 @@ drive voices.
 ## Basic Usage
 1. Connect a clock input to the Digital input
 2. Connect a Bass Drum to output 1, Hi-hat to output 2
-3. Start your clock - a pattern will output gates on outputs 1/2.
+3. Start your clock - the pattern will output gates on outputs 1/2.
 4. Select different patterns manually using knob 2 (right-hand
 knob). The selected pattern is shown visually on the screen.
 
@@ -60,13 +62,13 @@ knob). The selected pattern is shown visually on the screen.
 3. Connect output 5 to gate on voice 2
 4. Connect output 6 to pitch on voice 2, optionally via quantiser/attenuator.
 5. Gates will be output on 3/5 according to the gate pattern
-6. A long-press and release of button 1 regenerates the gate patterns.
+6. The gate pattern for track 1 will be shown on the screen.
 7. Knob 1 increases or decreases the sparsity of the gates sent to
    outputs 3 and 5
 
 ## Selecting analogue input modes
 
-Consequencer can perform 3 different actions when a control voltage input is received at the analogue input.
+Hamlet can perform 3 different actions when a control voltage input is received at the analogue input.
 The current running mode is shown on the bottom right of the screen (e.g. M1, M2, M3)
 Cycle through the modes by long-pressing and releasing button 2. The following modes are available:
 
@@ -83,7 +85,7 @@ A fixed voltage will select a single pattern and varying voltage (e.g. an envelo
 
 ## Adding / Removing / Updating Gate Patterns
 
-1. Update consequencer_patterns.py
+1. Update patterns in the code
 2. Restart the Europi module, or restart the program if using a micropython IDE/CLI
 
 The syntax is like Consequencer, but with only two tracks.
