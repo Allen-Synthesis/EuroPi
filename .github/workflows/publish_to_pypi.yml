@@ -1,7 +1,12 @@
 name: Publish Python distributions to PyPI and TestPyPI
 
 on:
-  workflow_call
+  workflow_call:
+    secrets:
+      TEST_PYPI_API_TOKEN:
+        required: true
+      PYPI_API_TOKEN:
+        required: true
 
 jobs:
   build-n-publish:
