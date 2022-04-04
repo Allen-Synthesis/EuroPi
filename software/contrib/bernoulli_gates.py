@@ -20,8 +20,10 @@ class SingleBernoulliGate():
         2. out_port assigns left, right, and function port accordingly
         out_port shoud have at least 2 ports (port3_func == 'none')
         3. visualization_para = (text, text_pos, tex1_pos, bar_pos_offset)
-        4. port3_func can be 'none', 'clock', 'and', 'or', 'xor'
-        the output of function_port = logic(current left, source), logic can be and, or, xor
+        4. port3_func and port3_source_cv determine the function of port3,
+        where port3_func can be 'none', 'clock', 'and', 'or', 'xor',
+        and port3_source_cv can be None or any other output port
+        the output of function_port = logic(current left, source), or clock(trigger)
         '''
         self.mode_flg = 0 # mode 0: Trigger, mode 1: Gate, mode 2: Toggle
         self.coin = 0 # probability
@@ -156,7 +158,11 @@ class BernoulliGates(EuroPiScript):
         machine.freq(250_000_000)
 
         self.toss_flg = 0
-        self.first_gate = SingleBernoulliGate()
+        self.first_gate = SingleBernoulliGate(control_knob =  k1,
+                                              control_port = ain,
+                                              out_port = (cv1, cv2, cv3),
+                                              visualization_para = ('P1', (0, 0), 0, -3),
+                                              port3_func = 'clock', port3_source_cv = None)
         self.second_gate = SingleBernoulliGate(control_knob =  k2, 
                                                control_port = None, 
                                                out_port = (cv4, cv5, cv6), 
