@@ -12,9 +12,14 @@ date: 2022-04-03
 labels: sequencer, triggers, drums, randomness
 
 A gate and CV sequencer that builds on Nik Ansell's Consequencer. Changes are:
+
 * Slimmed down drum patterns to two instruments, BD/HH
+
 * Two channels of gate and random stepped CV with sparsity control. As
-  the sparsity is turned up, notes will drop out of the pattern.
+ the sparsity is turned up, notes will drop out of the pattern. There
+ is a single gate pattern for each of the two tracks.
+
+* Some adjustments to naming
 
 digital_in: clock in
 analog_in: sparsity CV
@@ -22,7 +27,7 @@ analog_in: sparsity CV
 knob_1: sparsity
 knob_2: select pre-loaded drum pattern
 
-button_1: Short Press: Play previous CV Pattern. Long Press: Not used
+button_1: Short Press: Play previous CV Pattern. Long Press: Generate new gate pattern
 button_2: Short Press: Generate a new random cv pattern for Tracks 1 and 2. Long Press: Cycle through analogue input modes
 output_1: trigger 1 / Bass Drum
 output_2: trigger 2 / Hi-Hat
@@ -60,11 +65,15 @@ class Hamlet(EuroPiScript):
         self.analogInputMode = 1 # 1: Sparsity, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
         
-        # Generate random CV for cv4-6
-        self.track_1 = []
-        self.track_2 = []
+        # CV and gates for melody lines
+        self.cv_track1 = []
+        self.cv_track2 = []
         
-        self.generateNewRandomCVPattern()
+        self.gate_track1 = []
+        self.gate_track2 = []
+        
+        self.generate_new_random_cv_pattern()
+        self.generate_new_random_gate_pattern()
 
         # Triggered when button 2 is released.
         # Short press: Generate random CV for Tracks 1 and 2
@@ -80,16 +89,16 @@ class Hamlet(EuroPiScript):
             else:
                 # Move to next cv pattern if one already exists, otherwise create a new one
                 self.CvPattern += 1
-                if self.CvPattern == len(self.track_1):
-                    self.generateNewRandomCVPattern()
+                if self.CvPattern == len(self.cv_track1):
+                    self.generate_new_random_cv_pattern()
             
         # Triggered when button 1 is released
         # Short press: Play previous CV pattern for cv4-6
-        # Long press: Not used
+        # Long press: Create a new random gate pattern
         @b1.handler_falling
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
-                pass
+                self.generate_new_random_gate_pattern()
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
                 if self.CvPattern != 0:
@@ -109,8 +118,10 @@ class Hamlet(EuroPiScript):
             if self.step >= self.step_length:
                 self.step = 0 
 
-            track_1_cv, track_1_sparsity = self.track_1[self.CvPattern][self.step]
-            track_2_cv, track_2_sparsity = self.track_2[self.CvPattern][self.step]
+            track_1_cv = self.cv_track1[self.CvPattern][self.step]
+            track_1_sparsity = self.gate_track1[self.step]
+            track_2_cv = self.cv_track2[self.CvPattern][self.step]
+            track_2_sparsity = self.gate_track2[self.step]
             
             # Set track 1 and 2 voltage outputs based on previously
             # generated random pattern and sparsity. CV only changed
@@ -149,38 +160,18 @@ class Hamlet(EuroPiScript):
             self.gate_1.off()
             self.gate_2.off()
 
-    def generateNewRandomCVPattern(self):
+    def generate_new_random_cv_pattern(self):
         self.step_length = len(self.BD[self.pattern])
-        self.track_1.append(self.generateRandomPattern(16, 0, 9))
-        self.track_2.append(self.generateRandomPattern(16, 0, 9))
+        # Why 16 and not step_length?
+        self.cv_track1.append(self.generate_random_cv_pattern(16, 0, 9))
+        self.cv_track2.append(self.generate_random_cv_pattern(16, 0, 9))
 
-    def getPattern(self):
-        # If mode 2 and there is CV on the analogue input use it, if not use the knob position
-        val = 100 * ain.percent()
-        if self.analogInputMode == 2 and val > self.minAnalogInputVoltage:
-            self.pattern = int((len(self.BD) / 100) * val)
-        else:
-            self.pattern = k2.read_position(len(self.BD))
+    def generate_new_random_gate_pattern(self):
+        self.step_length = len(self.BD[self.pattern])
+        self.gate_track1 = self.generate_random_gate_pattern(self.step_length))
+        self.gate_track2 = self.generate_random_gate_pattern(self.step_length))
         
-        self.step_length = len(self.BD[self.pattern])
-
-    def getCvPattern(self):
-        # If analogue input mode 3, get the CV pattern from CV input
-        if self.analogInputMode != 3:
-            return
-        else:
-            # Get the analogue input voltage as a percentage
-            CvpVal = 100 * ain.percent()
-            
-            # Is there a voltage on the analogue input and are we configured to use it?
-            if CvpVal > 0.4:
-                # Convert percentage value to a representative index of the pattern array
-                self.CvPattern = int((len(self.track_1) / 100) * CvpVal)
-
-               
-    def generateRandomPattern(self, length, min, max):
-        # Returns a list of pairs of value and a sparsity
-        self.t=[]
+    def generate_random_gate_pattern(self,length):
         # Sparsity values are from 1 to length. This means that notes
         # will progressively drop out as sparsity increases. Using
         # random values would give different behaviour.
@@ -192,13 +183,40 @@ class Hamlet(EuroPiScript):
             chosen = choice(numbers)
             sparsities.append(chosen)
             numbers.remove(chosen)
+
+    def update_pattern(self):
+        # If mode 2 and there is CV on the analogue input use it, if not use the knob position
+        val = 100 * ain.percent()
+        if self.analogInputMode == 2 and val > self.minAnalogInputVoltage:
+            self.pattern = int((len(self.BD) / 100) * val)
+        else:
+            self.pattern = k2.read_position(len(self.BD))
+        
+        self.step_length = len(self.BD[self.pattern])
+
+    def update_cv_pattern(self):
+        # If analogue input mode 3, get the CV pattern from CV input
+        if self.analogInputMode != 3:
+            return
+        else:
+            # Get the analogue input voltage as a percentage
+            CvpVal = 100 * ain.percent()
+            
+            # Is there a voltage on the analogue input and are we configured to use it?
+            if CvpVal > 0.4:
+                # Convert percentage value to a representative index of the pattern array
+                self.CvPattern = int((len(self.cv_track1) / 100) * CvpVal)
+               
+    def generate_random_cv_pattern(self, length, min, max):
+        # Returns a list of pairs of value and a sparsity
+        self.t=[]
         
         for i in range(0, length):
             self.t.append((uniform(0,9),sparsities[i]))
         return self.t
 
 
-    def getSparsity(self):
+    def update_sparsity(self):
         # If mode 1 and there is CV on the analogue input use it, if not use the knob position
         # val = 100 * ain.percent()
         self.sparsity = k1.read_position(steps=len(self.BD[self.pattern])+1)
@@ -210,23 +228,23 @@ class Hamlet(EuroPiScript):
 
     def main(self):
         while True:
-            self.getPattern()
-            self.getSparsity()
-            self.getCvPattern()
-            self.updateScreen()
+            self.update_pattern()
+            self.update_sparsity()
+            self.update_cv_pattern()
+            self.update_screen()
             self.reset_timeout = 500
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
                 self.clock_step = 0
 
-    def visualizePattern(self, pattern):
+    def visualize_pattern(self, pattern):
         self.t = pattern
         self.t = self.t.replace('1','x')
         self.t = self.t.replace('0',' ')
         return self.t
 
-    def visualizeTrack(self, track):
+    def visualize_track(self, track):
         t = ''
         for i in range(0,len(track)):
             track_cv, track_sparsity = track[i]
@@ -236,14 +254,14 @@ class Hamlet(EuroPiScript):
                 t += ' '
         return t
 
-    def updateScreen(self):
+    def update_screen(self):
         #oled.clear() - dont use this, it causes the screen to flicker!
         oled.fill(0)
         
         # Show selected pattern visually
-        oled.text(self.visualizePattern(self.BD[self.pattern]),0,0,1)
-        oled.text(self.visualizePattern(self.HH[self.pattern]),0,8,1)
-        oled.text(self.visualizeTrack(self.track_1[self.CvPattern]),0,16,1)
+        oled.text(self.visualize_pattern(self.BD[self.pattern]),0,0,1)
+        oled.text(self.visualize_pattern(self.HH[self.pattern]),0,8,1)
+        oled.text(self.visualize_track(self.cv_track1),0,16,1)
 
         # Show the analogInputMode
         oled.text('M' + str(self.analogInputMode), 112, 25, 1)
@@ -262,7 +280,9 @@ class pattern:
     BD=[]
     HH=[]
 
-    # Add patterns
+    # Add patterns. This is a smaller number of patterns than in the
+    # original Consequencer.
+    
     BD.append("0000000000000000")
     HH.append("0000000000000000")
 
@@ -281,8 +301,11 @@ class pattern:
     BD.append("1000100010001000")
     HH.append("1111111111111111")
 
+    BD.append("1000001100100000")
+    HH.append("1111111111111111")
+
     BD.append("1000100010010100")
-    HH.append("0010001000100010")
+    HH.append("0010001000100011")
 
     BD.append("1000100010010010")
     HH.append("0000000000000000")
