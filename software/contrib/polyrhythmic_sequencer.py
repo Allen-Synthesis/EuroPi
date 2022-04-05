@@ -36,23 +36,18 @@ output_6: trigger logical XOR
 try:
     # Local development
     from software.firmware.europi import OLED_WIDTH, OLED_HEIGHT, CHAR_HEIGHT
-    from software.firmware.europi import Output
     from software.firmware.europi import din, k1, k2, oled, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6
-    from software.firmware.europi import reset_state
+    from software.firmware.europi_script import EuroPiScript
 except ImportError:
     # Device import path
     from europi import *
-import time
+    from europi_script import EuroPiScript
+
+from collections import namedtuple
+import struct
 import machine
+from utime import ticks_diff, ticks_ms
 
-# Overclock the Pico for improved performance.
-machine.freq(250000000)
-
-# Configure EuroPi options to improve performance.
-k1.set_samples(32)
-k2.set_samples(32)
-b2.debounce_delay = 200
-oled.contrast(0)  # dim the oled
 
 # Script Constants
 MENU_DURATION = 1200
@@ -75,11 +70,25 @@ class Sequence:
         self.trigger_cv = trigger_cv
         self.step_index = 0
 
+        # Save state struct
+        self.format_string = "4s"
+        self.State = namedtuple("State", "note_indexes")
+
+    def set_state(self, state):
+        """Update instance variables with given state bytestring."""
+        state = self.State(*struct.unpack(self.format_string, state))
+        self.notes = [NOTES[n] for n in state.note_indexes]
+
+    def get_state(self):
+        """Return state byte string."""
+        note_indexes = [NOTES.index(n) for n in self.notes]
+        return struct.pack(self.format_string, bytes(note_indexes))
+
     def _pitch_cv(self, note: str) -> float:
         return NOTES.index(note) * VOLT_PER_OCT
 
     def _set_pitch(self):
-        pitch =  self._pitch_cv(self.current_note())
+        pitch = self._pitch_cv(self.current_note())
         self.pitch_cv.voltage(pitch)
 
     def current_note(self) -> str:
@@ -103,7 +112,7 @@ class Sequence:
         self.trigger_cv.on()
 
 
-class PolyrhythmSeq:
+class PolyrhythmSeq(EuroPiScript):
     pages = ['SEQUENCE 1', 'SEQUENCE 2', 'POLYRHYTHM']
     # Two 4-step melodic sequences.
     seqs = [
@@ -116,7 +125,19 @@ class PolyrhythmSeq:
     # 0: none, 1: seq1, 2: seq2, 3: both seq1 and seq2.
     seq_poly = [2, 1, 1, 0]
 
+    # Used to indicates if state has changed and not yet saved.
+    _dirty = False
+    _last_saved = 0
+
     def __init__(self):
+        super().__init__()
+        # Overclock the Pico for improved performance.
+        machine.freq(250000000)
+
+        # Configure EuroPi options to improve performance.
+        b2.debounce_delay = 200
+        oled.contrast(0)  # dim the oled
+
         # Current editable sequence.
         self.seq = self.seqs[0]
 
@@ -124,6 +145,13 @@ class PolyrhythmSeq:
         self.param_index = 0
         self.counter = 0
         self._prev_k2 = None
+
+        # Save state struct
+        self.format_string = "12s12s4s4s"
+        self.State = namedtuple("State", "seq1 seq2 polys seq_poly")
+
+        # Load state if previous state exists.
+        self.load_state()
 
         @b1.handler
         def page_handler():
@@ -134,6 +162,7 @@ class PolyrhythmSeq:
                 self.seq = self.seqs[0]
             if self.page == 1:
                 self.seq = self.seqs[1]
+            self._dirty = True
 
         @b2.handler
         def edit_parameter():
@@ -142,6 +171,7 @@ class PolyrhythmSeq:
                 # Cycles through which sequence this polyrhythm is assigned to.
                 self.seq_poly[self.param_index] = (
                     self.seq_poly[self.param_index] + 1) % len(self.seq_poly)
+                self._dirty = True
 
         @din.handler
         def play_notes():
@@ -180,8 +210,44 @@ class PolyrhythmSeq:
         # Reverse the binary string values to match display.
         return int(status[1]) == 1, int(status[0]) == 1
 
+    def load_state(self):
+        """Load state from previous run."""
+        state = self.load_state_bytes()
+        if state:
+            self.set_state(state)
+
+    def save_state(self):
+        """Save state if it has changed since last call."""
+        # Only save state if state has changed and more than 1s has elapsed
+        # since last save.
+        if self._dirty and self.last_saved() > 1000:
+            state = self.get_state()
+            self.save_state_bytes(state)
+            self._dirty = False
+            self._last_saved = ticks_ms()
+
+    def get_state(self):
+        """Get state as a byte string."""
+        return struct.pack(self.format_string,
+                           self.seqs[0].get_state(),
+                           self.seqs[1].get_state(),
+                           bytes(self.polys),
+                           bytes(self.seq_poly))
+
+    def set_state(self, state):
+        """Update instance variables with given state bytestring."""
+        try:
+            _state = self.State(*struct.unpack(self.format_string, state))
+        except ValueError as e:
+            print(f"Unable to load state: {e}")
+            return
+        self.seqs[0].set_state(_state.seq1)
+        self.seqs[1].set_state(_state.seq2)
+        self.polys = list(_state.polys)
+        self.seq_poly = list(_state.seq_poly)
+
     def show_menu_header(self):
-        if time.ticks_diff(time.ticks_ms(), b1.last_pressed()) < MENU_DURATION:
+        if ticks_diff(ticks_ms(), b1.last_pressed()) < MENU_DURATION:
             oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
             oled.text(f"{self.pages[self.page]}", 0, 0, 0)
 
@@ -193,6 +259,7 @@ class PolyrhythmSeq:
                 selected_note = k2.choice(NOTES)
                 if self._prev_k2 and self._prev_k2 != selected_note:
                     self.seq.edit_step(step, selected_note)
+                    self._dirty = True
                 self._prev_k2 = selected_note
 
             # Display the current step.
@@ -214,6 +281,7 @@ class PolyrhythmSeq:
                 poly = k2.range(16) + 1
                 if self._prev_k2 and self._prev_k2 != poly:
                     self.polys[poly_index] = poly
+                    self._dirty = True
                 self._prev_k2 = poly
 
             # Display the current polyrhythm.
@@ -250,11 +318,10 @@ class PolyrhythmSeq:
             self.show_menu_header()
             oled.show()
 
+            self.save_state()
+
 
 # Main script execution
 if __name__ == '__main__':
-    try:
-        script = PolyrhythmSeq()
-        script.main()
-    finally:
-        reset_state()
+    script = PolyrhythmSeq()
+    script.main()

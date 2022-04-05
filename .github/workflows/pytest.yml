@@ -1,9 +1,7 @@
 name: Run Python Tests
 on:
-  push:
-  pull_request:
-    branches:
-      - main
+  workflow_call
+    
 
 jobs:
   build:

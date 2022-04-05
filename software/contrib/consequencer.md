@@ -22,7 +22,7 @@ Credits:
 
 # Controls
 
-![Operating Diagram](./consequencer.png)
+![Operating Diagram](https://user-images.githubusercontent.com/79809962/154732035-ccc0d8c1-0e4e-4b8c-97e3-ccfa07a4880b.png)
 
 - digital_in: Clock in
 - analog_in: Mode 1: Adjusts randonmess, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
@@ -39,17 +39,6 @@ Credits:
 - output_4: randomly generated stepped CV
 - output_5: randomly generated stepped CV
 - output_6: randomly generated stepped CV
-
-# Building a Consequencer module
-
-Consequencer is software which is loaded onto a Europi module. Europi is an open-source hardware and software project found here: https://github.com/Allen-Synthesis/EuroPi.
-Consequencer is also open-source, all code can be found in this repository and license terms can be found at the bottom of this document.
-
-To build your own Consequencer:
-1. Build a module and load the europi firmware onto the module using the instructions in the above repository
-2. Copy consequencer.py as main.py and consequencer_patterns.py to the Europi
-
-Alternatively, Consequencer Europi modules can be provided built, calibrated and pre-loaded with software and drum patterns by contacting nikansell00@gmail.com.
 
 # Getting Started
 
@@ -119,11 +108,3 @@ The mapping of `BD`, `SN`, `HH` is as follows:
 # Known bugs / Interesting features
 
 A small amount of noise causes the analogue input to vary slightly. This can sometimes cause the randomness, gate pattern or stepped CV pattern to flicker between values. It happens only occassionally, but introduces an interesting and subtle variation to the sequence being played.
-
-# License
-
-Consequencer, like the Europi module, and any documentation included in this repository, is entirely "free" software and hardware, under different licenses depending on the software, hardware, and documentation itself.
-
-* Software: [Apache 2.0](software/LICENSE)
-* Hardware: [CERN OHL-S v2](hardware/LICENSE)
-* Documentation: [CC0 1.0](LICENSE)
