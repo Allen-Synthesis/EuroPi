@@ -318,6 +318,6 @@ if __name__ == '__main__':
     # Reset module display state.
     oled.fill(0)
     [cv.off() for cv in cvs]
-    dm = Hamlet()
-    dm.main()
+    hm = Hamlet()
+    hm.main()
 
