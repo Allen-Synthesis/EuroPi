@@ -10,6 +10,7 @@ from contrib.noddy_holder import NoddyHolder
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
+from contrib.strange_attractor StrangeAttractor
 from calibrate import Calibrate
 
 # Scripts that are included in the menu
@@ -23,6 +24,7 @@ EUROPI_SCRIPT_CLASSES = [
     PolyrhythmSeq,
     RadioScanner,
     Scope,
+    StrangeAttractor,
     Calibrate,
 ]
 
