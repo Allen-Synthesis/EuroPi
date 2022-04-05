@@ -34,7 +34,6 @@ output_6: randomly generated CV (cycled by pushing button 2)
 
 '''
 
-
 class Consequencer(EuroPiScript):
     def __init__(self):
         # Overclock the Pico for improved performance.
@@ -454,4 +453,3 @@ if __name__ == '__main__':
     [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()
-

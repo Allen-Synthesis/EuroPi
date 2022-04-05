@@ -60,6 +60,7 @@ autodoc_mock_imports = [
     'machine',
     'time',
     'ssd1306',
+    'utime',
     # 'micropython',  # note that europi.py currently depends on this module _not_ being mocked in order to set TEST_ENV
 ]
 

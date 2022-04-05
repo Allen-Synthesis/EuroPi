@@ -2,7 +2,7 @@ from europi import *
 from random import random
 from time import sleep_ms, ticks_ms, ticks_add, ticks_diff
 import machine
-
+from europi_script import EuroPiScript
 
 # Internal clock tempo range.
 MAX_BPM = 280
@@ -11,22 +11,19 @@ MIN_BPM = 20
 # Constant values for display.
 FRAME_WIDTH = int(OLED_WIDTH / 8)
 
-# Number of sequential reads for smoothing analog read values.
-k1.set_samples(32)
-k2.set_samples(32)
 
-# Overclock the Pico for improved performance.
-machine.freq(250_000_000)
-# machine.freq(125_000_000)  # Default clock speed.
-
-
-class CoinToss:
+class CoinToss(EuroPiScript):
     def __init__(self):
         self.gate_mode = True
         self.internal_clock = True
         self._prev_clock = 0
         self._tempo = 0
         self._deadline = 0
+
+        # Overclock the Pico for improved performance.
+        machine.freq(250_000_000)
+        # machine.freq(125_000_000)  # Default clock speed.
+
 
         @b1.handler
         def toggle_clock():
@@ -124,7 +121,7 @@ class CoinToss:
             counter += 1
             self.wait()
 
-
-# Reset module display state.
-coin_toss = CoinToss()
-coin_toss.main()
+if __name__ == '__main__':
+    # Reset module display state.
+    coin_toss = CoinToss()
+    coin_toss.main()

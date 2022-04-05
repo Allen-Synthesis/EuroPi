@@ -208,7 +208,7 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 
 ### Small Capacitors
 
-#### Solder the 100nF capacitors to the back (C8, C9). If your board has a polarity marking, ignore it unless you are deliberately using larger polarised capacitors than the BOM calls for, in which case make sure they line up with the PCB marking
+#### Solder the 100nF capacitors to the back (C7, C8). If your board has a polarity marking, ignore it unless you are deliberately using larger polarised capacitors than the BOM calls for, in which case make sure they line up with the PCB marking
 ![_DSC2363](https://user-images.githubusercontent.com/79809962/148646621-f21b893c-dd15-405c-a6d9-2fb33511e9b1.jpg)
 
 ---
