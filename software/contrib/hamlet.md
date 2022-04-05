@@ -31,9 +31,9 @@ https://github.com/Allen-Synthesis/EuroPi
 - knob_1: Adjust sparsity
 - knob_2: Select pre-loaded gate pattern
 
-- button_1: Short Press: Play previous stepped CV sequence. Long
+- button_1: Short Press: Play previous CV sequences. Long
   Press: Not used
-- button_2: Short Press: Generate a new random stepped cv sequence for
+- button_2: Short Press: Generate new random stepped CV sequences for
   tracks 1 and 2. Long Press: Cycle through analogue input modes
 
 - output_1: gate 1 e.g Kick Drum
@@ -64,7 +64,10 @@ knob). The selected pattern is shown visually on the screen.
 5. Gates will be output on 3/5 according to the gate pattern
 6. The gate pattern for track 1 will be shown on the screen.
 7. Knob 1 increases or decreases the sparsity of the gates sent to
-   outputs 3 and 5
+   outputs 3 and 5. Fully CCW all notes are played, as the knob is
+   turned CW, notes will drop out of the sequence. Note that track 1
+   and track 2 have *different* gate patterns, and so different notes
+   will drop out given some nice interplay between the voices. 
 
 ## Selecting analogue input modes
 
@@ -72,7 +75,7 @@ Hamlet can perform 3 different actions when a control voltage input is received 
 The current running mode is shown on the bottom right of the screen (e.g. M1, M2, M3)
 Cycle through the modes by long-pressing and releasing button 2. The following modes are available:
 
-- Mode 1: Sparsity (unimplemented)
+- Mode 1: Randomness
 - Mode 2: Control voltage selects the gate pattern
 - Mode 3: Control voltage selects the stepped CV pattern
 

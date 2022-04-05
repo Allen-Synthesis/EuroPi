@@ -56,8 +56,9 @@ class Hamlet(EuroPiScript):
         self.clock_step = 0
         self.pattern = 0
         self.minAnalogInputVoltage = 0.9
+        self.randomness = 0
         self.sparsity = 0
-        self.analogInputMode = 1 # 1: Sparsity, 2: Pattern, 3: CV Pattern
+        self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
         
         # Generate random CV for cv4-6
@@ -101,9 +102,14 @@ class Hamlet(EuroPiScript):
 
             self.step_length = len(self.BD[self.pattern])
 
-            # Trigger drums
-            self.bd.value(int(self.BD[self.pattern][self.step]))
-            self.hh.value(int(self.HH[self.pattern][self.step]))                    
+            # As the randomness value gets higher, the chance of a randomly selected int being lower gets higher
+            if randint(0,99) < self.randomness:
+                self.bd.value(randint(0, 1))
+                self.bd.value(randint(0, 1))
+            else:
+                # Trigger drums
+                self.bd.value(int(self.BD[self.pattern][self.step]))
+                self.hh.value(int(self.HH[self.pattern][self.step]))                    
             
             # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
             if self.step >= self.step_length:
@@ -197,21 +203,23 @@ class Hamlet(EuroPiScript):
             self.t.append((uniform(0,9),sparsities[i]))
         return self.t
 
-
     def updateSparsity(self):
-        # If mode 1 and there is CV on the analogue input use it, if not use the knob position
-        # val = 100 * ain.percent()
-        self.sparsity = k1.read_position(steps=len(self.BD[self.pattern])+1)
         # Don't use Analog input for now
-        #if self.analogInputMode == 1 and val > self.minAnalogInputVoltage:
-        #    self.sparsity = val
-        #else:
-        #    self.sparsity = k1.range(steps=len(self.BD[self.pattern]))
+        self.sparsity = k1.read_position(steps=len(self.BD[self.pattern])+1)
 
+    def updateRandomness(self):
+        # If mode 1 and there is CV on the analogue input use it, if not use the knob position
+        val = 100 * ain.percent()
+        if self.analogInputMode == 1 and val > self.minAnalogInputVoltage:
+            self.randomness = val
+        else:
+            self.randomness = k1.read_position()
+        
     def main(self):
         while True:
             self.updatePattern()
             self.updateSparsity()
+            self.updateRandomness()
             self.updateCvPattern()
             self.updateScreen()
             self.reset_timeout = 500
@@ -222,7 +230,7 @@ class Hamlet(EuroPiScript):
 
     def visualizePattern(self, pattern):
         self.t = pattern
-        self.t = self.t.replace('1','x')
+        self.t = self.t.replace('1','o')
         self.t = self.t.replace('0',' ')
         return self.t
 
@@ -253,6 +261,9 @@ class Hamlet(EuroPiScript):
         # Show CV pattern
         oled.text('C' + str(self.CvPattern), 76, 25, 1)
 
+        # Show randomness
+        oled.text('R' + str(int(self.randomness)), 4, 25, 1)
+
         oled.show()
 
 class pattern:
@@ -273,14 +284,20 @@ class pattern:
     BD.append("1000100010001000")
     HH.append("0010001000100010")
 
+    BD.append("1000100010001000")
+    HH.append("1111111111111111")
+
     BD.append("0000000000000000")
     HH.append("0010001000100010")
 
     BD.append("1000100010001000")
     HH.append("0000000001111111")
 
-    BD.append("1000100010001000")
-    HH.append("1111111111111111")
+    BD.append("0000000000000000")
+    HH.append("1111111011111110")
+
+    BD.append("1000100010010100")
+    HH.append("1111111011101110")
 
     BD.append("1000001100100000")
     HH.append("1111111111111111")
@@ -290,9 +307,6 @@ class pattern:
 
     BD.append("1000100010010100")
     HH.append("0010001000100011")
-
-    BD.append("1000100010010100")
-    HH.append("1111111011101110")
 
     BD.append("1000100010010010")
     HH.append("0000000000000000")
