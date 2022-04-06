@@ -27,9 +27,9 @@ button_2: Short Press: Generate a new random cv pattern for Tracks 1 and 2. Long
 output_1: trigger 1 / Bass Drum
 output_2: trigger 2 / Hi-Hat
 output_3: gates for track 1 
-output_4: randomly generated track 1 CV (cycled by pushing button 2)
-output_5: gates for track 2
-output_6: randomly generated track 2 CV (cycled by pushing button 2)
+output_4: gates for track 2
+output_5: randomly generated track 2 CV (cycled by pushing button 2)
+output_6: randomly generated track 1 CV (cycled by pushing button 2)
 
 '''
 
@@ -38,9 +38,9 @@ class Hamlet(EuroPiScript):
         self.bd = cv1
         self.hh = cv2
         self.gate_1 = cv3
-        self.cv_1 = cv4
-        self.gate_2 = cv5
-        self.cv_2 = cv6
+        self.cv_1 = cv6
+        self.gate_2 = cv4
+        self.cv_2 = cv5
 
         # Overclock the Pico for improved performance.
         machine.freq(250_000_000)
@@ -212,8 +212,8 @@ class Hamlet(EuroPiScript):
         val = 100 * ain.percent()
         if self.analogInputMode == 1 and val > self.minAnalogInputVoltage:
             self.randomness = val
-        else:
-            self.randomness = k1.read_position()
+        #else:
+        #    self.randomness = k2.read_position()
         
     def main(self):
         while True:
