@@ -38,9 +38,6 @@ output_6: triggers/gates
 
 VERSION="1.0"
 
-# Overclock the Pico for improved performance.
-machine.freq(250_000_000)
-
 # Maximum voltage output. Cranking this up may cause issues with some modules.
 MAX_OUTPUT = MAX_OUTPUT_VOLTAGE
 
@@ -215,6 +212,10 @@ def get_attractors():
 
 class StrangeAttractor(EuroPiScript):
     def __init__(self):
+
+        # Overclock the Pico for improved performance.
+        machine.freq(250_000_000)
+        
         # Initialise and calculate ranges. 
         # This will take around 30 seconds per attractor.
         self.attractors = get_attractors()
