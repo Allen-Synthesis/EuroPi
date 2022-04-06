@@ -1,5 +1,12 @@
 # Change Log
 
+### 2022-04-04
+
+- release version 0.3.0
+- add save/load script state behavior via EuroPiScript
+- add Strange Attractor chaotic modulation script
+- add Noddy Holder sample/track and hold script
+
 ### 2022-03-16
 
 - release version 0.2.0
