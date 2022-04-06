@@ -87,6 +87,8 @@ gates are disabled. Here, `VX` refers to the CV value that was being
 emitted before the pattern started. For example, if the knob sparsity
 is 10 and the pattern is looping, then `VX` will be `V16`.
 
+![hamlet-sparsity](https://user-images.githubusercontent.com/1035997/162011056-9c204891-5e95-4655-8e63-c2441212c90c.png)
+
 Note that every time a CV pattern is created through a right button
 press, that pattern will have a new random set of sparsity
 values. Note also that track 1 and track 2 have *different* gate
