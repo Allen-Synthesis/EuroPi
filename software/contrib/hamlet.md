@@ -1,4 +1,4 @@
-# EuroPi Hamlet - Sequencing Drums and two voices
+# EuroPi Hamlet - Sequencing Drums and Two Voices
 
 author: Sean Bechhofer (github.com/seanbechhofer)
 
@@ -26,15 +26,16 @@ https://github.com/Allen-Synthesis/EuroPi
 # Controls
 
 - digital_in: Clock in
-- analog_in: Mode 1: Not currently used (will be sparsity) Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
+- analog_in: Mode 1: Randomness, Mode 2: Selects gate pattern, Mode 3: Selects voice patterns
 
 - knob_1: Adjust sparsity
 - knob_2: Select pre-loaded gate pattern
 
-- button_1: Short Press: Play previous CV sequences. Long
+- button_1: Short Press: Select previous voice pattern for tracks 1 and 2.. Long
   Press: Not used
-- button_2: Short Press: Generate new random stepped CV sequences for
-  tracks 1 and 2. Long Press: Cycle through analogue input modes
+- button_2: Short Press: Select next voice patterns for tracks 1
+  and 2. Creates a new pattern if we're at the last. Long Press: Cycle
+  through analogue input modes
 
 - output_1: gate 1 e.g Kick Drum
 - output_2: gate 2 e.g Hi-Hat
@@ -65,9 +66,32 @@ knob). The selected pattern is shown visually on the screen.
 6. The gate pattern for track 1 will be shown on the screen.
 7. Knob 1 increases or decreases the sparsity of the gates sent to
    outputs 3 and 5. Fully CCW all notes are played, as the knob is
-   turned CW, notes will drop out of the sequence. Note that track 1
-   and track 2 have *different* gate patterns, and so different notes
-   will drop out given some nice interplay between the voices. 
+   turned CW, notes will drop out of the sequence.
+
+## Sparsity
+
+A key feature of the two voice tracks in Hamlet is *sparsity*
+control. With this set to 0, all events in the track are present. As
+the level of sparsity increases, the number of gates emitted
+reduces. The CV output values will only change when a gate is
+emitted.
+
+This is done as follows. Each track has a number of steps, each with a
+voltage and sparsity value. Sparsities are allocated randomly from 1
+to the length of the track. When the value selected by the left knob
+is greater than the sparsity value, the step is disabled, and no
+change to CV value is made. The figure below shows this, with values
+`V1` up to `V16` being the voltages in the pattern and the sparsity
+values shown in the second row. As the knob value increases, more
+gates are disabled. Here, `VX` refers to the CV value that was being
+emitted before the pattern started. For example, if the knob sparsity
+is 10 and the pattern is looping, then `VX` will be `V16`.
+
+Note that every time a CV pattern is created through a right button
+press, that pattern will have a new random set of sparsity
+values. Note also that track 1 and track 2 have *different* gate
+patterns, thus different notes will drop out giving some nice
+interplay between the voices.
 
 ## Selecting analogue input modes
 
