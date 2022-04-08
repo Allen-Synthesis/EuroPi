@@ -1,6 +1,6 @@
 import pytest
 
-from scope import Scope
+from contrib.scope import Scope
 
 
 @pytest.mark.parametrize(
