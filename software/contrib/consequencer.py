@@ -448,8 +448,6 @@ class pattern:
 
 
 if __name__ == '__main__':
-    # Reset module display state.
-    oled.clear()
     [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()

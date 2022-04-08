@@ -1,11 +1,17 @@
 from europi import *
 from time import ticks_diff, ticks_ms
+from random import randint, uniform
+#from europi_script import EuroPiScript
+import machine
+import json
+import gc
+import micropython
 
 '''
 CVecorder
 author: Nik Ansell (github.com/gamecat69)
 date: 2022-04-04
-labels: sequencer, CV
+labels: sequencer, CV, performance
 
 Multi-channel CV recording and playback.
 
@@ -27,11 +33,24 @@ output_5: CV record / playback
 output_6: CV record / playback
 
 '''
-# Overclock the Pico for improved performance.
-machine.freq(250_000_000)
 
-class cvecorder:
+'''
+To do:
+- Add a morph capability using k2: left reduces CV values, right increases. Don’t adjust all values at once, so odds, then evens with each slight movement
+- Create documentation
+- Create upstream pull request
+'''
+
+# Needed if using europi_script
+#class CVecorder(EuroPiScript):
+class CVecorder():
     def __init__(self):
+        
+        # Needed if using europi_script
+        super().__init__()
+
+        # Overclock the Pico for improved performance.
+        machine.freq(250_000_000)
 
         # Initialize variables
         self.step = 0
@@ -42,15 +61,33 @@ class cvecorder:
         self.resetTimeout = 500
         self.debug = True
         self.CvIn = 0
-        self.random_HH = False
-        self.justBooted = True
+        self.bankToSave = 0
+        self.debugTest = False
 
-        # Initialize CV recorder and control channels
         self.numCVR = 5  # Number of CV recorder channels - zero based
-        self.CVR = []  # CV recorder channels
-        self.CvRecording = []  # CV recorder flags
         self.numCVRBanks = 5  # Number of CV recording channel banks - zero based
-        self.initCvrs()
+
+        #self.CVR = []  # CV recorder channels
+        #self.CvRecording = []  # CV recorder flags
+
+        # Load CV Recordings from a previously stored state on disk or initialize if blank
+        self.loadState()
+
+        # Test routine, pick a random bank n times and save, then load the state
+        if self.debugTest:
+            print(micropython.mem_info("level"))
+            for n in range(3000):
+                # Clear vars
+                #self.CvRecording = []
+                print(f"Running test: {n}")
+                self.ActiveBank = randint(0, self.numCVRBanks)
+                self.ActiveCvr = randint(0, self.numCVR)
+                for i in range(0, self.stepLength-1):
+                    self.CVR[self.ActiveBank][self.ActiveCvr][i] = uniform(0.0, 9.99)
+                    #print(f"[{self.ActiveBank}][{self.ActiveCvr}][{i}] = {self.CVR[self.ActiveBank][self.ActiveCvr][i]}")
+                self.bankToSave = self.ActiveBank
+                self.saveState()
+                self.loadState()
 
         @din.handler
         def dInput():
@@ -75,6 +112,8 @@ class cvecorder:
             # 2000ms press clears all banks
             if ticks_diff(ticks_ms(), b2.last_pressed()) >  2000:
                 self.clearCvrs('all')
+                #self.bankToSave = self.ActiveBank
+                #self.saveState()
                 # reverse the ActiveCvr increment caused by the initial button press
                 if self.ActiveCvr > 0:
                     self.ActiveCvr -= 1
@@ -83,6 +122,8 @@ class cvecorder:
             # 500ms press clears the active bank
             elif ticks_diff(ticks_ms(), b2.last_pressed()) >  500:
                 self.clearCvrs(self.ActiveBank)
+                self.bankToSave = self.ActiveBank
+                self.saveState()
                 # reverse the ActiveCvr increment caused by the initial button press
                 if self.ActiveCvr > 0:
                     self.ActiveCvr -= 1
@@ -100,8 +141,8 @@ class cvecorder:
 
     def handleClock(self):
 
-        # Sample input
-        self.CvIn = 20 * ain.percent()
+        # Sample input to 2 decimal places
+        self.CvIn = round(20 * ain.percent(), 2)
 
         # Start recording if pending and on first step
         if self.step == 0 and self.CvRecording[self.ActiveCvr] == 'pending':
@@ -119,19 +160,24 @@ class cvecorder:
         if self.step < self.stepLength - 1:
             self.step += 1
         else:
-            # Reset step to zero and stop recording
+            # Reset step to zero , stop recording and save recording to local storage
             self.step = 0
             if self.CvRecording[self.ActiveCvr] == 'true':
                 self.CvRecording[self.ActiveCvr] = 'false'
+                self.bankToSave = self.ActiveBank
+                self.saveState()
 
     def clearCvrs(self, bank):
         for b in range(self.numCVRBanks+1):
             if b != bank and bank != 'all':
                 continue
-            print('Clearing bank: ' + str(b))
+            if self.debugTest:
+                print('Clearing bank: ' + str(b))
             for i in range(self.numCVR+1):
                 for n in range (0, self.stepLength):
                     self.CVR[b][i][n] = 0
+            self.bankToSave = b
+            self.saveState()
 
     def initCvrs(self):
         for b in range(self.numCVRBanks+1):
@@ -141,6 +187,114 @@ class cvecorder:
                 self.CvRecording.append('false')
                 for n in range (0, self.stepLength):
                     self.CVR[b][i].append(0)
+
+    def saveState(self):
+        # generate output filename
+        outputFile = f"saved_state_{self.__class__.__qualname__}_{self.bankToSave}.txt"
+
+        # Convert each value to an int by multiplying by 100. This saves of storage and memory a little
+        i=0
+        for channel in self.CVR[self.bankToSave]:
+            self.CVR[self.bankToSave][i] = [int(x * 100) for x in self.CVR[self.bankToSave][i]]
+            i += 1
+
+        if self.debugTest:
+            print('Saving state for bank: ' + str(self.bankToSave))
+
+        # Trigger garbage collection to minimize memory use
+        gc.collect()
+
+        # Show free memory if running a debug test
+        if self.debugTest:
+            print(self.free())
+
+        # Write the value to a the state file
+        maxRetries = 6
+        attempts = 0
+        while attempts < maxRetries:
+            try:
+                attempts += 1
+                # Create json object of current CV bank
+                jsonState = json.dumps(self.CVR[self.bankToSave])
+                with open(outputFile, 'w') as file:
+                    # Attempt write data to state on disk, then break from while loop if the return (num bytes written) > 0
+                    if file.write(jsonState) > 0:
+                        file.close()
+                        break
+            except MemoryError as e:
+                if self.debugTest:
+                    print(f'[{attempts}] Error: Memory allocation failed, retrying: {e}')
+                    print(micropython.mem_info("level"))
+                else:
+                    pass
+
+        # Convert from int back to float
+        i=0
+        for channel in self.CVR[self.bankToSave]:
+            self.CVR[self.bankToSave][i] = [x / 100 for x in self.CVR[self.bankToSave][i]]
+            i += 1
+
+    def loadState(self):
+
+        # For each bank, check if a state file exists, then load it
+        # If not, initialize the bank with zeros
+
+        self.CVR = []  # CV recorder channels
+        self.CvRecording = []  # CV recorder flags
+
+        # init cvRecording list
+        for i in range(self.numCVR+1):
+            self.CvRecording.append('false')
+
+        for b in range(self.numCVRBanks+1):
+            # Create a new array for the bank
+            self.CVR.append([])
+
+            # Check if a state file exists
+            fileName = f"saved_state_{self.__class__.__qualname__}_{b}.txt"
+            try:
+                # save state exists for this bank, load it
+                with open(fileName, 'r') as file:
+                    if self.debugTest:
+                        print('Loading previous state for bank: ' + str(b))
+
+                    # read state from file into json object
+                    jsonData = file.read()
+
+                    # populate CV recording channel with saved json data
+                    self.CVR[b] = json.loads(jsonData)
+
+                    # convert values in the list from int back to float
+                    i=0
+                    for channel in self.CVR[b]:
+                        self.CVR[b][i] = [x / 100 if x > 0 else 0 for x in self.CVR[b][i]]
+                        i += 1
+
+                    file.close()
+
+            except OSError as e:
+                # No state file exists, initialize the array with zeros
+                if self.debugTest:
+                    print('Initializing bank: ' + str(b))
+
+                for i in range(self.numCVR+1):
+                    self.CVR[b].append([])
+                    for n in range (0, self.stepLength):
+                        self.CVR[b][i].append(0)
+
+    def debugDumpCvr(self):
+        for b in range(self.numCVRBanks+1):
+            for i in range(self.numCVR+1):
+                print(str(b) + ':' + str(i) + ':' + str(self.CVR[b][i]))
+
+    def free(self, full=False):
+        #gc.collect()
+        F = gc.mem_free()
+        A = gc.mem_alloc()
+        T = F+A
+        P = '{0:.2f}%'.format(F/T*100)
+        if not full: return P
+        else : return ('Total:{0} Free:{1} ({2})'.format(T,F,P))
 
     def main(self):
         while True:
@@ -153,9 +307,11 @@ class cvecorder:
                 self.clockStep = 0
 
     def getCvBank(self):
+        # Read CV Bank selection from knob 1
         self.ActiveBank = k1.read_position(self.numCVRBanks+1)
 
     def updateScreen(self):
+        # Clear the screen
         oled.fill(0)
                 
         # Visualize each CV channel
@@ -183,5 +339,7 @@ class cvecorder:
 
         oled.show()
 
-cvr = cvecorder()
-cvr.main()  
+if __name__ == '__main__':
+    [cv.off() for cv in cvs]
+    dm = CVecorder()
+    dm.main()
