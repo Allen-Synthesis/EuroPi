@@ -59,9 +59,9 @@ class CoinToss(EuroPiScript):
                 if din.value() != self._prev_clock:
                     # We've detected a new clock value.
                     self._prev_clock = 1 if self._prev_clock == 0 else 0
-                    # If the previous value is 0 then we are seeing a high 
-                    # value for the first time, break wait and return.
-                    if self._prev_clock == 0:
+                    # If the previous value was just set to 1 then we are seeing 
+                    # a high value for the first time, break wait and return.
+                    if self._prev_clock == 1:
                         return
 
     def toss(self, a, b, draw=True):
