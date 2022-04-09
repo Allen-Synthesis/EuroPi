@@ -169,13 +169,16 @@ class CVecorder():
 
     def clearCvrs(self, bank):
         for b in range(self.numCVRBanks+1):
+            # skip bank unless 'all' is passed
             if b != bank and bank != 'all':
                 continue
             if self.debugTest:
                 print('Clearing bank: ' + str(b))
+            # Set all CV values to zero
             for i in range(self.numCVR+1):
                 for n in range (0, self.stepLength):
                     self.CVR[b][i][n] = 0
+            # Save the cleared bank to local storage
             self.bankToSave = b
             self.saveState()
 
