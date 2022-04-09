@@ -59,7 +59,7 @@ class Consequencer(EuroPiScript):
 
         # option to always output a clock on output 4
         # this helps to sync Consequencer with other modules
-        self.output4isClock = True
+        self.output4isClock = False
         
         # Calculate the longest pattern length to be used when generating random sequences
         self.maxStepLength = len(max(self.BD, key=len))
