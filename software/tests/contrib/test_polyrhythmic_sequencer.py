@@ -1,7 +1,7 @@
 import pytest
 
-from polyrhythmic_sequencer import Sequence
-from polyrhythmic_sequencer import PolyrhythmSeq
+from contrib.polyrhythmic_sequencer import Sequence
+from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 
 from europi import cv1, cv2, k2, oled
 

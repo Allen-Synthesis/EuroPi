@@ -1,5 +1,5 @@
 import pytest
-from hello_world import HelloWorld
+from contrib.hello_world import HelloWorld
 
 
 @pytest.fixture
