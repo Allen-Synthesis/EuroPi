@@ -5,7 +5,7 @@ from europi_script import EuroPiScript
 import machine
 import json
 import gc
-import micropython
+#import micropython
 
 '''
 CVecorder
