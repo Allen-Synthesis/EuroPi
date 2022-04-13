@@ -5,7 +5,7 @@ class ADC:
         pass
     
     def read_u16(self, *args):
-        pass
+        return 0
 
 class I2C:
     def __init__(self, channel, sda, scl, freq, *args):
