@@ -1,7 +1,7 @@
 from europi import *
 from time import ticks_diff, ticks_ms
 from random import randint, uniform
-#from europi_script import EuroPiScript
+from europi_script import EuroPiScript
 import machine
 import json
 import gc
@@ -42,8 +42,7 @@ To do:
 '''
 
 # Needed if using europi_script
-#class CVecorder(EuroPiScript):
-class CVecorder():
+class CVecorder(EuroPiScript):
     def __init__(self):
         
         # Needed if using europi_script
@@ -182,6 +181,7 @@ class CVecorder():
             self.bankToSave = b
             self.saveState()
 
+    # Currently not used, but keeping in this script for future use
     def initCvrs(self):
         for b in range(self.numCVRBanks+1):
             self.CVR.append([])
@@ -283,6 +283,7 @@ class CVecorder():
                     for n in range (0, self.stepLength):
                         self.CVR[b][i].append(0)
 
+    # Currently not used, but keeping in this script for future use
     def debugDumpCvr(self):
         for b in range(self.numCVRBanks+1):
             for i in range(self.numCVR+1):

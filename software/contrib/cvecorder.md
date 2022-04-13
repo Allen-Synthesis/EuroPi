@@ -34,7 +34,7 @@ CVecorder records CV using the following format:
 - Each CV channel records a total of 64 CV values (samples).
 - Two CV samples are recorded for each received gate. One sample is captured on the rising edge, another on the falling edge.
 - Each CV channel is looped with every 32nd gate into the Digital input.
-- Each CV sample is captured with a resolution of 0 - 9.99, providing a resolution of 999 potential CV values to record.
+- Each CV sample is captured with a resolution of 0 - 9.99, providing a resolution of 1000 potential CV values to record.
 - Each CV channel relates directly to each output. CV channel 1 sends the recorded CV to output 1, CV channel 2 to output 2 and so on.
 - There are 6 banks of 6 CV channels, allowing you to record 6 variations of CV recordings in each bank and move smoothly between them during a performance.
 
@@ -77,7 +77,7 @@ If your quantizer has a trigger input:
 5. Connect the quantizer output to a VCO
 6. Play around with subtle movements on your CV controller and hear the melodies come out of your VCO!
 
-If your quentizer has no trigger input:
+If your quantizer has no trigger input:
 
 3. Mult / Divide the gate input and connect to a sample and hold trigger/clock input
 4. Connect CVecorder output 1 to a sample and hold CV input
