@@ -41,6 +41,11 @@ class CVecorder(EuroPiScript):
         # Overclock the Pico for improved performance.
         machine.freq(250_000_000)
 
+        # Micropython heap fragmentation notes:
+        # - The pico has very limited memory and in some cases needs to be managed carefully
+        # - In some cases you can get a MemoryError even if there is enough free memory, this is because micropython could not find enough contiguous memory because the heap has become fragmented
+        # - Avoid heap fragmentation as much as possible by initializing and creating variables early, then updating. Rather than created new and destrying old variables.
+
         # Initialize variables
         self.step = 0
         self.stepLength = 64

@@ -34,6 +34,11 @@ output_6: randomly generated CV (cycled by pushing button 2)
 
 '''
 
+'''
+Ideas / To do:
+- Add self.output4isClock to the UI using a > 4 second button 1 press. Need to also show the option on the screen.
+'''
+
 class Consequencer(EuroPiScript):
     def __init__(self):
         # Overclock the Pico for improved performance.
