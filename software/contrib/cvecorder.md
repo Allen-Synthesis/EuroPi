@@ -70,7 +70,7 @@ CV is recorded and played back by the CVecorder, which is quantized to scale and
 1. Connect a 50% duty cycle gate to the Digital input
 2. Connect a CV source to the analogue input (0 to +5V works best) for example a joystick
 
-If your quentizer has a trigger input:
+If your quantizer has a trigger input:
 
 3. Mult / Divide the gate input and connect to the quantizer trigger input. This will sample CV from the CVecorder each time it receives a gate
 4. Connect CVecorder output 1 to the quantizer input
