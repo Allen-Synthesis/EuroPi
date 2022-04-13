@@ -196,10 +196,8 @@ class CVecorder():
         outputFile = f"saved_state_{self.__class__.__qualname__}_{self.bankToSave}.txt"
 
         # Convert each value to an int by multiplying by 100. This saves of storage and memory a little
-        i=0
-        for channel in self.CVR[self.bankToSave]:
+        for i in range(len(self.CVR[self.bankToSave])):
             self.CVR[self.bankToSave][i] = [int(x * 100) for x in self.CVR[self.bankToSave][i]]
-            i += 1
 
         if self.debugTest:
             print('Saving state for bank: ' + str(self.bankToSave))
