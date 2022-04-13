@@ -69,7 +69,7 @@ class CVecorder(EuroPiScript):
 
         # Test routine, pick a random bank n times and save, then load the state
         if self.debugTest:
-            print(micropython.mem_info("level"))
+            #print(micropython.mem_info("level"))
             for n in range(3000):
                 # Clear vars
                 #self.CvRecording = []
@@ -219,7 +219,7 @@ class CVecorder(EuroPiScript):
             except MemoryError as e:
                 if self.debugTest:
                     print(f'[{attempts}] Error: Memory allocation failed, retrying: {e}')
-                    print(micropython.mem_info("level"))
+                    #print(micropython.mem_info("level"))
                 else:
                     pass
 
