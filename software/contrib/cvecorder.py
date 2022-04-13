@@ -210,7 +210,6 @@ class CVecorder(EuroPiScript):
                 with open(outputFile, 'w') as file:
                     # Attempt write data to state on disk, then break from while loop if the return (num bytes written) > 0
                     if file.write(jsonState) > 0:
-                        file.close()
                         break
             except MemoryError as e:
                 if self.debugTest:
@@ -260,8 +259,6 @@ class CVecorder(EuroPiScript):
                     for channel in self.CVR[b]:
                         self.CVR[b][i] = [x / 100 if x > 0 else 0 for x in self.CVR[b][i]]
                         i += 1
-
-                    file.close()
 
             except OSError as e:
                 # No state file exists, initialize the array with zeros
