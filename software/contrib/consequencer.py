@@ -448,6 +448,5 @@ class pattern:
 
 
 if __name__ == '__main__':
-    [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()

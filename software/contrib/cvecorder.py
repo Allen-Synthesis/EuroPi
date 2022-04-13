@@ -329,6 +329,5 @@ class CVecorder(EuroPiScript):
         oled.show()
 
 if __name__ == '__main__':
-    [cv.off() for cv in cvs]
     dm = CVecorder()
     dm.main()
