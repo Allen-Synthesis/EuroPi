@@ -10,14 +10,6 @@ import micropython
 '''
 CVecorder
 author: Nik Ansell (github.com/gamecat69)
-date: 2022-04-04
-labels: sequencer, CV, performance
-
-Multi-channel CV recording and playback.
-
-Note, due to limitations in the RPi, only positive CV can be recorded and played back.
-
-Demo video: https://youtu.be/Crj0P7pr2YA
 
 digital_in: Clock input
 analog_in: Incoming CV
@@ -35,10 +27,8 @@ output_6: CV record / playback
 '''
 
 '''
-To do:
+Ideas / to do:
 - Add a morph capability using k2: left reduces CV values, right increases. Don’t adjust all values at once, so odds, then evens with each slight movement
-- Create documentation
-- Create upstream pull request
 '''
 
 # Needed if using europi_script

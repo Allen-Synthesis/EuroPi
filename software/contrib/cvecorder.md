@@ -4,7 +4,7 @@ CVecorder ("Sveecorder")
 
 author: Nik Ansell (github.com/gamecat69)
 
-date: 2022-04-04
+date: 2022-04-13
 
 labels: sequencer, CV, performance
 
@@ -18,7 +18,7 @@ Demo video: https://youtu.be/Crj0P7pr2YA
 
 # Controls and Display
 
-![Operating Diagram](../../docs/cvecorder.png)
+![Operating Diagram](./cvecorder-docs/cvecorder.png)
 
 # Getting Started
 
