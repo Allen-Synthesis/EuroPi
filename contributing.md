@@ -1,8 +1,86 @@
 # Contributing to the EuroPi Repository
 
-Contributing is welcomed and encouraged for anyone, from programming experts to complete novices.  
+Contributing is welcomed and encouraged for anyone, from programming and/or synth experts to complete novices.  
 This repo is a collection of resources, so if there are any resources that you have created yourself, or found online that you think others would benefit from, then please consider submitting them here!  
-  
+
+## Contents
+1. [Overview]()
+1. [Responsibilities of PR Participants]()
+    1. [Responsibilities of the PR author]()
+    2. [Responsibilities of the PR reviewer]()
+2. [Working with Git](#working-with-git)
+3. [PR guidelines and requirements]()
+   1. [General]()
+   2. [Documentation]()
+   3. [Contrib scripts]()
+      1. Code conventions 
+   4. [Firmware]()
+
+4. [What to expect during the PR process]()
+
+<br>
+<hr>
+Outline
+<hr>
+
+
+## Overview
+  * Who can contribute and what can be contributed (from original doc)
+  * What is a PR and how does the process work in general
+  * ask for help and where to get it (from tips section)
+## Responsibilities of PR Participants
+  * friendly, supportive, respectful
+  * goal to improve the EuroPi project
+### Responsibilities of the PR author
+  * Provide a complete and well described change
+  * follow PR guidelines below
+### Responsibilities of the PR reviewer
+  * guide the PR process towards a merge
+  * ensure that the author is aware of these guidelines
+  * maintain the quality of the project
+  * enforce the guidelines
+  * understand the impact of the PR to the larger project
+  * clearly describe the intention of each comment (requirement or suggestion)
+  * not impose any undue requirements on the author
+## Working with Git
+  * Steps to create a PR (from original doc below) (consider third party docs)
+  * add branch step (allows fork divergence)
+  * add details on how to allow a fork to diverge
+## What to expect during the PR process
+  * Steps
+    1. open
+    2. comments and discussion
+    3. edit
+    4. back to 2
+    5. merge
+  * takes time (from tips section)
+  * comments are meant to be supportive not negative (from tips section)
+  * details on types of comments
+    * required change
+    * optional change
+    * discussion
+## PR guidelines and requirements
+  * PR Description requirements
+### General
+  * Favor small cohesive PRs (from tips section)
+  * respect existing organization
+  * spelling and grammar
+### Documentation
+  * Markdown must render properly on github
+  * Api docs must build successfully
+### Contrib scripts
+  * user documentation
+  * Menu participation requirements
+### Firmware
+  * pep8 
+  * documentation
+  * Testing requirements (automated or otherwise)
+
+<br>
+<hr>
+Original doc is below. It should be incorporated into the above sections.
+<hr>
+
 This process is also what you would use to submit your scripts to the contrib folder; simply complete the steps below, and upload your script and description '.md' file to the contrib folder in your 'fork' in step 3 below.
 
 ### Steps to submit a new file or change existing files
