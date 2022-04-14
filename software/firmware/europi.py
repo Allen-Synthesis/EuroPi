@@ -453,9 +453,8 @@ class Output:
             return self._duty / MAX_UINT16
 
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
-        for index, current_gradient in enumerate(self._gradients):
-            if (voltage // 1) >= index:
-                self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (current_gradient*(voltage%1)))
+        index = int(voltage//1)
+        self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (self._gradients[index]*(voltage%1)))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
