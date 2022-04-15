@@ -6,7 +6,7 @@ from machine import freq
 from europi_script import EuroPiScript
 
 #Define maximum voltage and maximum harmonic (the harmonic value may become hard to choose using the knob if you use too high of a maximum)
-MAX_VOLTAGE = 10
+MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE
 MAX_HARMONIC = 32
 
 #Overclock the Pico for improved performance
