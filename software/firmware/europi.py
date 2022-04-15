@@ -431,7 +431,7 @@ class Output:
     def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
         self.pin = PWM(Pin(pin))
         # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
-        self.pin.freq(1_000_000)
+        self.pin.freq(100_000)
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
