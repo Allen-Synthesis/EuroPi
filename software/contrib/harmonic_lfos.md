@@ -11,7 +11,7 @@ Six harmonically related sine/saw/square wave LFOs
     digital in: Reset all LFOs
     analogue in: Added to master rate
     knob 1: Master rate
-    knob 2: Currently selected LFO's division of the master clock
+    knob 2: Adjusts the master clock division of the currently selected LFO
     button 1: Change mode between sine/saw/square
     button 2: Select the next LFO
     cv1/cv2/cv3/cv4/cv5/cv6: LFO outputs
