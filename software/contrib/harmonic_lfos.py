@@ -17,8 +17,8 @@ class HarmonicLFOs(EuroPiScript):
         state = self.load_state_json()
         
         self.HARMONICS = state.get("HARMONICS", [1, 3, 5, 7, 11, 13])
+        self.MODE = state.get("MODE", 0)
         
-        self.MODE = 0
         self.degree = 0
         self.delay, self.increment_value = self.get_delay_increment_value()
         self.pixel_x = OLED_WIDTH-1
@@ -41,6 +41,8 @@ class HarmonicLFOs(EuroPiScript):
         
         if self.MODE == 3:
             self.MODE = 0
+            
+        self.save_state()
 
     def get_delay_increment_value(self):
         delay = (0.1 - (k1.read_position(100, 1)/1000)) + (ain.read_voltage(1)/100)
@@ -60,6 +62,7 @@ class HarmonicLFOs(EuroPiScript):
         
         state = {
             "HARMONICS": self.HARMONICS,
+            "MODE": self.MODE
         }
         self.save_state_json(state)
 
