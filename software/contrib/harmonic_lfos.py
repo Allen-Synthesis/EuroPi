@@ -3,6 +3,7 @@ from math import cos, radians
 from random import randint
 from time import sleep_ms
 from machine import freq
+from framebuf import FrameBuffer, MONO_HLSB
 from europi_script import EuroPiScript
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE #Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
@@ -29,17 +30,6 @@ class HarmonicLFOs(EuroPiScript):
         self.pixel_y = OLED_HEIGHT-1
         self.selected_lfo = 0
         self.selected_lfo_start_value = self.get_clock_division()
-        self.sine = [
-        [0,0,0,1,1,0,0,0,0,0,0,0,0,1],
-        [0,0,1,0,0,1,0,0,0,0,0,0,0,1],
-        [0,1,0,0,0,0,1,0,0,0,0,0,0,1],
-        [0,1,0,0,0,0,1,0,0,0,0,0,1,0],
-        [0,1,0,0,0,0,1,0,0,0,0,0,1,0],
-        [0,1,0,0,0,0,0,1,0,0,0,0,1,0],
-        [1,0,0,0,0,0,0,1,0,0,0,0,1,0],
-        [1,0,0,0,0,0,0,0,1,0,0,1,0,0],
-        [1,0,0,0,0,0,0,0,0,1,1,0,0,0]
-        ]
         
         #Set the digital input and button handlers
         din.handler(self.reset)
@@ -113,9 +103,33 @@ class HarmonicLFOs(EuroPiScript):
             oled.line(9,31,15,24,1)
             oled.vline(15,24,8,1)
         elif shape == 'sine':
-            for index_y, pixel_y in enumerate(self.sine):
-                for index_x, pixel_x in enumerate(pixel_y):
-                    oled.pixel(index_x + 2, index_y + 23, pixel_x)
+            oled.pixel(3,31,1)
+            oled.pixel(3,30,1)
+            oled.pixel(3,29,1)
+            oled.pixel(4,28,1)
+            oled.pixel(4,27,1)
+            oled.pixel(4,26,1)
+            oled.pixel(4,25,1)
+            oled.pixel(5,24,1)
+            oled.pixel(6,23,1)
+            oled.pixel(7,23,1)
+            oled.pixel(8,24,1)
+            oled.pixel(9,25,1)
+            oled.pixel(9,26,1)
+            oled.pixel(9,27,1)
+            oled.pixel(10,28,1)
+            oled.pixel(10,29,1)
+            oled.pixel(11,30,1)
+            oled.pixel(12,31,1)
+            oled.pixel(13,31,1)
+            oled.pixel(14,30,1)
+            oled.pixel(15,29,1)
+            oled.pixel(15,28,1)
+            oled.pixel(15,27,1)
+            oled.pixel(15,26,1)
+            oled.pixel(16,25,1)
+            oled.pixel(16,24,1)
+            oled.pixel(16,23,1)
         
     def display_selected_lfo(self):
         """Draw the current LFO's number and division to the OLED display"""
