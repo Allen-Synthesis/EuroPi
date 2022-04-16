@@ -20,7 +20,7 @@ class HarmonicLFOs(EuroPiScript):
         
         #Use the saved values for the LFO divisions and mode if found in the save state file, using defaults if not
         self.divisions = state.get("divisions", [1, 3, 5, 7, 11, 13])
-        self.mode = state.get("mode", 0)
+        self.modes = state.get("modes", [0, 0, 0, 0, 0, 0])
         
         #Initialise all the other variables
         self.degree = 0
@@ -29,6 +29,17 @@ class HarmonicLFOs(EuroPiScript):
         self.pixel_y = OLED_HEIGHT-1
         self.selected_lfo = 0
         self.selected_lfo_start_value = self.get_clock_division()
+        self.sine = [
+        [0,0,0,1,1,0,0,0,0,0,0,0,0,1],
+        [0,0,1,0,0,1,0,0,0,0,0,0,0,1],
+        [0,1,0,0,0,0,1,0,0,0,0,0,0,1],
+        [0,1,0,0,0,0,1,0,0,0,0,0,1,0],
+        [0,1,0,0,0,0,1,0,0,0,0,0,1,0],
+        [0,1,0,0,0,0,0,1,0,0,0,0,1,0],
+        [1,0,0,0,0,0,0,1,0,0,0,0,1,0],
+        [1,0,0,0,0,0,0,0,1,0,0,1,0,0],
+        [1,0,0,0,0,0,0,0,0,1,1,0,0,0]
+        ]
         
         #Set the digital input and button handlers
         din.handler(self.reset)
@@ -45,11 +56,13 @@ class HarmonicLFOs(EuroPiScript):
 
     def change_mode(self):
         """Change the mode that controls wave shape"""
-        self.mode += 1
+        old_mode = self.modes[self.selected_lfo]
+        old_mode += 1
         
-        if self.mode == 3:
-            self.mode = 0
+        if old_mode == 3:
+            old_mode = 0
             
+        self.modes[self.selected_lfo] = old_mode
         self.save_state()
 
     def get_delay_increment_value(self):
@@ -71,7 +84,7 @@ class HarmonicLFOs(EuroPiScript):
         
         state = {
             "divisions": self.divisions,
-            "mode": self.mode
+            "modes": self.modes
         }
         self.save_state_json(state)
         
@@ -87,6 +100,23 @@ class HarmonicLFOs(EuroPiScript):
         self.delay, self.increment_value = self.get_delay_increment_value()
         sleep_ms(int(self.delay))
         
+    def draw_wave(self, shape):
+        if shape == 'square':
+            oled.vline(3,24,8,1)
+            oled.hline(3,24,6,1)
+            oled.vline(9,24,8,1)
+            oled.hline(9,31,6,1)
+            oled.vline(15,24,8,1)
+        elif shape == 'saw':
+            oled.line(3,31,9,24,1)
+            oled.vline(9,24,8,1)
+            oled.line(9,31,15,24,1)
+            oled.vline(15,24,8,1)
+        elif shape == 'sine':
+            for index_y, pixel_y in enumerate(self.sine):
+                for index_x, pixel_x in enumerate(pixel_y):
+                    oled.pixel(index_x + 2, index_y + 23, pixel_x)
+        
     def display_selected_lfo(self):
         """Draw the current LFO's number and division to the OLED display"""
         oled.fill_rect(0,0,20,32,0)
@@ -95,17 +125,26 @@ class HarmonicLFOs(EuroPiScript):
         
         number = self.divisions[self.selected_lfo]
         x = 2 if number >= 10 else 6
-        oled.text(str(number),x,20,1)
+        oled.text(str(number),x,12,1)
         
-    def calculate_voltage(self, multiplier):
+        lfo_mode = self.modes[self.selected_lfo]
+        if lfo_mode == 0:
+            self.draw_wave('sine')
+        elif lfo_mode == 1:
+            self.draw_wave('saw')
+        elif lfo_mode == 2:
+            self.draw_wave('square')
+        
+    def calculate_voltage(self, cv, multiplier):
         """Determine the voltage based on current degree, wave shape, and MAX_VOLTAGE"""
         three_sixty = 360*multiplier
         degree_three_sixty = self.degree % three_sixty
-        if self.mode == 0: #Sin
+        lfo_mode = self.modes[cvs.index(cv)]
+        if lfo_mode == 0: #Sin
             voltage = ((0-(cos(self.rad*(1/multiplier)))+1)) * (MAX_VOLTAGE/2)
-        elif self.mode == 1: #Saw
+        elif lfo_mode == 1: #Saw
             voltage = (degree_three_sixty / (three_sixty)) * MAX_VOLTAGE
-        elif self.mode == 2: #Square
+        elif lfo_mode == 2: #Square
             voltage = MAX_VOLTAGE * (int((degree_three_sixty / (three_sixty)) * MAX_VOLTAGE) < (MAX_VOLTAGE/2))
         return voltage
         
@@ -114,7 +153,7 @@ class HarmonicLFOs(EuroPiScript):
         self.rad = radians(self.degree)
         oled.vline(self.pixel_x,0,OLED_HEIGHT,0)
         for cv, multiplier in zip(cvs, self.divisions):
-            volts = self.calculate_voltage(multiplier)
+            volts = self.calculate_voltage(cv, multiplier)
             cv.voltage(volts)
             oled.pixel(self.pixel_x,self.pixel_y-int(volts*(self.pixel_y/10)),1)
 
