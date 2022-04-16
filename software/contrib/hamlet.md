@@ -28,7 +28,7 @@ https://github.com/Allen-Synthesis/EuroPi
 
 # Controls
 
-![hamlet_controls](https://user-images.githubusercontent.com/1035997/162023639-76d70be7-e040-4718-bf42-e834fa02ac8e.png)
+![hamlet_controls](https://user-images.githubusercontent.com/1035997/163685864-8640d144-a394-4f25-a094-b89feb6e0942.png)
 
 - digital_in: Clock in
 - analog_in: Mode 1: Randomness, Mode 2: Selects gate pattern, Mode 3: Selects voice patterns
