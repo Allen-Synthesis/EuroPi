@@ -2,18 +2,21 @@
 
 author: Sean Bechhofer (github.com/seanbechhofer)
 
-date: 2022-04-03
+date: 2022-04-16
 
 labels: sequencer, gates, triggers, drums, randomness
 
-**TB or not TB?** Hamlet is a drum and voice sequencer based on
-Nik Ansell's Consequencer, which is itself inspired by Grids from
-Mutable Instruments. It includes features inspired by O_C's TB3PO,
-adding two tracks of CV and gates. Density of notes played on the CV
-tracks can be adjusted. 
+**TB or not TB?**
+
+Hamlet is a drum and voice sequencer based on Nik Ansell's
+Consequencer, which is itself inspired by Grids from Mutable
+Instruments. It's also influenced by O_C's TB3PO. Hamlet adds two
+tracks of CV and gates to the Consequencer, sacrificing one drum track
+to do so. 
 
 The app provides two gates for drum patterns and a pair of channels
-giving gate/CV to drive voices. 
+giving gate/CV to drive voices. Density of notes played on the CV
+tracks can be adjusted.
 
 Use outputs 1/2 for drum gates. Pairs 3/4 and 5/6 provide gate/CV for
 melody lines. Send a clock to the digital input to start the sequence.
@@ -33,11 +36,11 @@ https://github.com/Allen-Synthesis/EuroPi
 - knob_1: Adjust sparsity
 - knob_2: Select pre-loaded gate pattern
 
-- button_1: Short Press: Select previous voice pattern for tracks 1 and 2.. Long
-  Press: Not used
+- button_1: Short Press: Select previous voice pattern for tracks 1 and 2.  
+  Long Press: Cycle pattern length multiplier
 - button_2: Short Press: Select next voice patterns for tracks 1
-  and 2. Creates a new pattern if we're at the last. Long Press: Cycle
-  through analogue input modes
+  and 2. Creates a new pattern if we're at the last.  
+  Long Press: Cycle through analogue input modes
 
 - output_1: gate 1 e.g Kick Drum
 - output_2: gate 2 e.g Hi-Hat
@@ -57,7 +60,7 @@ drive voices.
 2. Connect a Bass Drum to output 1, Hi-hat to output 2
 3. Start your clock - the pattern will output gates on outputs 1/2.
 4. Select different patterns manually using knob 2 (right-hand
-knob). The selected pattern is shown visually on the screen.
+knob). The first section of the selected pattern is shown visually on the screen.
 
 ## Voices 
 1. Connect output 3 to gate on voice 1
@@ -79,15 +82,16 @@ reduces. The CV output values will only change when a gate is
 emitted.
 
 This is done as follows. Each track has a number of steps, each with a
-voltage and sparsity value. Sparsities are allocated randomly from 1
-to the length of the track. When the value selected by the left knob
-is greater than the sparsity value, the step is disabled, and no
-change to CV value is made. The figure below shows this, with values
-`V1` up to `V16` being the voltages in the pattern and the sparsity
-values shown in the second row. As the knob value increases, more
-gates are disabled. Here, `VX` refers to the CV value that was being
-emitted before the pattern started. For example, if the knob sparsity
-is 10 and the pattern is looping, then `VX` will be `V16`.
+voltage and sparsity value: here we assume 16 as this is a common
+pattern length. Sparsities are allocated randomly from 1 to the length
+of the track. When the value selected by the left knob is greater than
+the sparsity value, the step is disabled, and no change to CV value is
+made. The figure below shows this, with values `V1` up to `V16` being
+the voltages in the pattern and the sparsity values shown in the
+second row. As the knob value increases, more gates are
+disabled. Here, `VX` refers to the CV value that was being emitted
+before the pattern started. For example, if the knob sparsity is 10
+and the pattern is looping, then `VX` will be `V16`.
 
 ![hamlet-sparsity](https://user-images.githubusercontent.com/1035997/162011056-9c204891-5e95-4655-8e63-c2441212c90c.png)
 
@@ -96,6 +100,16 @@ press, that pattern will have a new random set of sparsity
 values. Note also that track 1 and track 2 have *different* gate
 patterns, thus different notes will drop out giving some nice
 interplay between the voices.
+
+## Pattern Length
+
+CV patterns are N, 2xN or 4xN steps, where N is the length of the
+current drum pattern. This can be varied through a long
+press on Button 1, and the display will indicate `1x`, `2x` or `4x`
+respectively. Patterns of length 2xN and 4xN will be made up of two or four
+(different) N step patterns as described above. So when sparsity is
+set to `1` with pattern length `4x`, there will be four notes played
+across the 64 note sequence.
 
 ## Selecting analogue input modes
 

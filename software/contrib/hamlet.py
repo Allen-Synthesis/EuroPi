@@ -8,7 +8,7 @@ from europi_script import EuroPiScript
 '''
 Hamlet
 author: Sean Bechhofer (github.com/seanbechhofer)
-date: 2022-04-03
+date: 2022-04-16
 labels: sequencer, triggers, drums, randomness
 
 A gate and CV sequencer that builds on Nik Ansell's Consequencer. Changes are:
@@ -22,7 +22,7 @@ analog_in: sparsity CV
 knob_1: sparsity
 knob_2: select pre-loaded drum pattern
 
-button_1: Short Press: Play previous CV Pattern. Long Press: Not used
+button_1: Short Press: Play previous CV Pattern. Long Press: Change CV track length multiplier
 button_2: Short Press: Generate a new random cv pattern for Tracks 1 and 2. Long Press: Cycle through analogue input modes
 output_1: trigger 1 / Bass Drum
 output_2: trigger 2 / Hi-Hat
@@ -51,7 +51,9 @@ class Hamlet(EuroPiScript):
         self.HH=p.HH
 
         # Initialize variables
-        self.step = 0
+        self.drum_step = 0
+        self.track_step = 0
+
         self.trigger_duration_ms = 50
         self.clock_step = 0
         self.pattern = 0
@@ -64,6 +66,8 @@ class Hamlet(EuroPiScript):
         # Generate random CV for cv4-6
         self.track_1 = []
         self.track_2 = []
+
+        self.track_multiplier = 1 # multiplies CV pattern length so we can have 16, 32, 64
         
         self.generateNewRandomCVPattern()
 
@@ -90,6 +94,10 @@ class Hamlet(EuroPiScript):
         @b1.handler_falling
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
+                if self.track_multiplier >=4:
+                    self.track_multiplier = 1
+                else:
+                    self.track_multiplier = self.track_multiplier * 2
                 pass
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
@@ -108,15 +116,15 @@ class Hamlet(EuroPiScript):
                 self.bd.value(randint(0, 1))
             else:
                 # Trigger drums
-                self.bd.value(int(self.BD[self.pattern][self.step]))
-                self.hh.value(int(self.HH[self.pattern][self.step]))                    
+                self.bd.value(int(self.BD[self.pattern][self.drum_step]))
+                self.hh.value(int(self.HH[self.pattern][self.drum_step]))                    
             
             # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
-            if self.step >= self.step_length:
-                self.step = 0 
+            if self.drum_step >= self.step_length:
+                self.drum_step = 0 
 
-            track_1_cv, track_1_sparsity = self.track_1[self.CvPattern][self.step]
-            track_2_cv, track_2_sparsity = self.track_2[self.CvPattern][self.step]
+            track_1_cv, track_1_sparsity = self.track_1[self.CvPattern][self.track_step]
+            track_2_cv, track_2_sparsity = self.track_2[self.CvPattern][self.track_step]
             
             # Set track 1 and 2 voltage outputs based on previously
             # generated random pattern and sparsity. CV only changed
@@ -143,11 +151,17 @@ class Hamlet(EuroPiScript):
                 self.clock_step = 0
     
             # Reset step number at step_length -1 as pattern arrays are zero-based
-            if self.step < self.step_length - 1:
-                self.step += 1
+            if self.drum_step < self.step_length - 1:
+                self.drum_step += 1
             else:
-                self.step = 0
+                self.drum_step = 0
 
+            if self.track_step < (self.step_length * self.track_multiplier) - 1:
+                self.track_step += 1
+            else:
+                self.track_step = 0
+
+                
         @din.handler_falling
         def clockTriggerEnd():
             self.bd.off()
@@ -157,11 +171,21 @@ class Hamlet(EuroPiScript):
 
     def generateNewRandomCVPattern(self):
         self.step_length = len(self.BD[self.pattern])
-        self.track_1.append(self.generateRandomPattern(16, 0, 9))
-        self.track_2.append(self.generateRandomPattern(16, 0, 9))
+        # CV patterns are up to 4 times the length of the drum pattern
+        patt = (self.generateRandomPattern(self.step_length, 0, 9) +
+                  self.generateRandomPattern(self.step_length, 0, 9) +
+                  self.generateRandomPattern(self.step_length, 0, 9) +
+                  self.generateRandomPattern(self.step_length, 0, 9))
+        self.track_1.append(patt)
+        patt = (self.generateRandomPattern(self.step_length, 0, 9) +
+                  self.generateRandomPattern(self.step_length, 0, 9) +
+                  self.generateRandomPattern(self.step_length, 0, 9) +
+                  self.generateRandomPattern(self.step_length, 0, 9))
+        self.track_2.append(patt)
 
     def updatePattern(self):
-        # If mode 2 and there is CV on the analogue input use it, if not use the knob position
+        # If mode 2 and there is CV on the analogue input use it, if
+        # not use the knob position
         val = 100 * ain.percent()
         if self.analogInputMode == 2 and val > self.minAnalogInputVoltage:
             self.pattern = int((len(self.BD) / 100) * val)
@@ -192,12 +216,13 @@ class Hamlet(EuroPiScript):
         # random values would give different behaviour.
         # No suffle in micropython random :-(
         # sparsities = random.shuffle(range(1,length+1))
+        count = 0
         sparsities = []
         numbers = list(range(1,length+1))
         while len(numbers) > 0:
-            chosen = choice(numbers)
-            sparsities.append(chosen)
-            numbers.remove(chosen)
+                chosen = choice(numbers)
+                sparsities.append(chosen)
+                numbers.remove(chosen)
         
         for i in range(0, length):
             self.t.append((uniform(0,9),sparsities[i]))
@@ -223,9 +248,10 @@ class Hamlet(EuroPiScript):
             self.updateCvPattern()
             self.updateScreen()
             self.reset_timeout = 500
-            # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
+            # If I have been running, then stopped for longer than
+            # reset_timeout, reset the steps and clock_step to 0
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
-                self.step = 0
+                self.drum_step = 0
                 self.clock_step = 0
 
     def visualizePattern(self, pattern):
@@ -236,7 +262,7 @@ class Hamlet(EuroPiScript):
 
     def visualizeTrack(self, track):
         t = ''
-        for i in range(0,len(track)):
+        for i in range(0, len(track)):
             track_cv, track_sparsity = track[i]
             if track_sparsity > self.sparsity:
                 t += '.'
@@ -256,10 +282,13 @@ class Hamlet(EuroPiScript):
         oled.text('M' + str(self.analogInputMode), 112, 25, 1)
 
         # Show sparsity
-        oled.text('S' + str(int(self.sparsity)), 40, 25, 1)    
+        oled.text('S' + str(int(self.sparsity)), 32, 25, 1)    
 
         # Show CV pattern
-        oled.text('C' + str(self.CvPattern), 76, 25, 1)
+        oled.text('C' + str(self.CvPattern), 60, 25, 1)
+
+        # Show CV pattern
+        oled.text('x' + str(self.track_multiplier), 80, 25, 1)
 
         # Show randomness
         oled.text('R' + str(int(self.randomness)), 4, 25, 1)
@@ -283,6 +312,12 @@ class pattern:
 
     BD.append("1000100010001000")
     HH.append("0010001000100010")
+
+    BD.append("1000100010001000")
+    HH.append("0010001000100011")
+
+    BD.append("1000100010001000")
+    HH.append("0111011101110111")
 
     BD.append("1000100010001000")
     HH.append("1111111111111111")
@@ -320,4 +355,5 @@ if __name__ == '__main__':
     [cv.off() for cv in cvs]
     hm = Hamlet()
     hm.main()
+
 
