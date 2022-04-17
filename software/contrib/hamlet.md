@@ -60,7 +60,7 @@ drive voices.
 2. Connect a Bass Drum to output 1, Hi-hat to output 2
 3. Start your clock - the pattern will output gates on outputs 1/2.
 4. Select different patterns manually using knob 2 (right-hand
-knob). The first section of the selected pattern is shown visually on the screen.
+knob). The first section of the selected gate pattern for track 1 is shown visually on the screen.
 
 ## Voices 
 1. Connect output 3 to gate on voice 1
@@ -108,7 +108,7 @@ current drum pattern. This can be varied through a long
 press on Button 1, and the display will indicate `1x`, `2x` or `4x`
 respectively. Patterns of length 2xN and 4xN will be made up of two or four
 (different) N step patterns as described above. So when sparsity is
-set to `1` with pattern length `4x`, there will be four notes played
+set to `15` with pattern length `4x`, there will be four notes played
 across the 64 note sequence.
 
 ## Selecting analogue input modes
