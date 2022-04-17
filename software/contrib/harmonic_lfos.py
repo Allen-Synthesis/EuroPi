@@ -47,7 +47,7 @@ class HarmonicLFOs(EuroPiScript):
         old_mode = self.modes[self.selected_lfo]
         old_mode += 1
         
-        if old_mode == 3:
+        if old_mode == 5:
             old_mode = 0
             
         self.modes[self.selected_lfo] = old_mode
@@ -128,6 +128,29 @@ class HarmonicLFOs(EuroPiScript):
             oled.pixel(16,25,1)
             oled.pixel(16,24,1)
             oled.pixel(16,23,1)
+        elif shape == 'off':
+            oled.line(3,24,15,31,1)
+            oled.line(15,24,3,31,1)
+        elif shape == 'random':
+            oled.pixel(3,29,1)
+            oled.pixel(4,28,1)
+            oled.pixel(4,27,1)
+            oled.pixel(5,26,1)
+            oled.pixel(6,26,1)
+            oled.pixel(7,27,1)
+            oled.pixel(8,28,1)
+            oled.pixel(9,28,1)
+            oled.pixel(10,27,1)
+            oled.pixel(10,26,1)
+            oled.pixel(10,25,1)
+            oled.pixel(11,24,1)
+            oled.pixel(12,25,1)
+            oled.pixel(13,26,1)
+            oled.pixel(13,27,1)
+            oled.pixel(14,28,1)
+            oled.pixel(14,29,1)
+            oled.pixel(15,30,1)
+            oled.pixel(16,30,1)
         
     def display_selected_lfo(self):
         """Draw the current LFO's number and division to the OLED display"""
@@ -146,6 +169,10 @@ class HarmonicLFOs(EuroPiScript):
             self.draw_wave('saw')
         elif lfo_mode == 2:
             self.draw_wave('square')
+        elif lfo_mode == 3:
+            self.draw_wave('off')
+        elif lfo_mode == 4:
+            self.draw_wave('random')
         
     def calculate_voltage(self, cv, multiplier):
         """Determine the voltage based on current degree, wave shape, and MAX_VOLTAGE"""
@@ -158,6 +185,10 @@ class HarmonicLFOs(EuroPiScript):
             voltage = (degree_three_sixty / (three_sixty)) * MAX_VOLTAGE
         elif lfo_mode == 2: #Square
             voltage = MAX_VOLTAGE * (int((degree_three_sixty / (three_sixty)) * MAX_VOLTAGE) < (MAX_VOLTAGE/2))
+        elif lfo_mode == 3: #Off
+            voltage = 0
+        elif lfo_mode == 4: #Random(ish)
+            voltage = ((((0-(cos(self.rad*(1/multiplier)))+1)) * (MAX_VOLTAGE/2)) / 3) + ((((0-(cos(self.rad*(1/(multiplier*2.3))))+1)) * (MAX_VOLTAGE/2)) / 3) + ((((0-(cos(self.rad*(1/(multiplier*5.6))))+1)) * (MAX_VOLTAGE/2)) / 3)
         return voltage
         
     def display_graphic_lines(self):
