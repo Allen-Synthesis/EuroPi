@@ -1,9 +1,7 @@
 from europi import *
 from math import cos, radians
-from random import randint
 from time import sleep_ms
 from machine import freq
-from framebuf import FrameBuffer, MONO_HLSB
 from europi_script import EuroPiScript
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE #Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
