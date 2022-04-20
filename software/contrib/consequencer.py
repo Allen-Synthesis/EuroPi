@@ -107,7 +107,8 @@ class Consequencer(EuroPiScript):
         @din.handler
         def clockTrigger():
 
-            t = time.ticks_us()
+            # function timing code. Leave in and activate as needed
+            #t = time.ticks_us()
             
             self.step_length = len(self.BD[self.pattern])
             
@@ -144,8 +145,9 @@ class Consequencer(EuroPiScript):
             self.clock_step +=1
             self.step += 1
 
-            delta = time.ticks_diff(time.ticks_us(), t)
-            print('Function {} Time = {:6.3f}ms'.format('clockTrigger', delta/1000))
+            # function timing code. Leave in and activate as needed
+            #delta = time.ticks_diff(time.ticks_us(), t)
+            #print('Function {} Time = {:6.3f}ms'.format('clockTrigger', delta/1000))
 
         @din.handler_falling
         def clockTriggerEnd():
