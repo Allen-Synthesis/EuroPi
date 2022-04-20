@@ -2,7 +2,6 @@ from europi import *
 import machine
 from time import ticks_diff, ticks_ms
 from random import randint, uniform
-
 from europi_script import EuroPiScript
 
 '''
@@ -23,7 +22,10 @@ knob_1: randomness
 knob_2: select pre-loaded drum pattern
 
 button_1: Short Press: toggle randomized hi-hats on / off. Long Press: Play previous CV Pattern
-button_2: Short PressL Generate a new random cv pattern for outputs 4 - 6. Long Press: Cycle through analogue input modes
+button_2:
+- Short Press  (<300ms)  : Generate a new random cv pattern for outputs 4 - 6.
+- Medium Press (>300ms)  : Cycle through analogue input modes
+- Long Press   (>3000ms) : Toggle option to send clocks from output 4 on / off
 
 output_1: trigger 1 / Bass Drum
 output_2: trigger 2 / Snare Drum
@@ -32,11 +34,6 @@ output_4: randomly generated CV (cycled by pushing button 2)
 output_5: randomly generated CV (cycled by pushing button 2)
 output_6: randomly generated CV (cycled by pushing button 2)
 
-'''
-
-'''
-Ideas / To do:
-- Add self.output4isClock to the UI using a > 4 second button 1 press. Need to also show the option on the screen.
 '''
 
 class Consequencer(EuroPiScript):
@@ -97,7 +94,9 @@ class Consequencer(EuroPiScript):
         # Long press: Toggle random high-hat mode
         @b1.handler_falling
         def b1Pressed():
-            if ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
+            if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000:
+                self.output4isClock = not self.output4isClock
+            elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 self.random_HH = not self.random_HH
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
@@ -108,17 +107,13 @@ class Consequencer(EuroPiScript):
         @din.handler
         def clockTrigger():
 
+            t = time.ticks_us()
+            
             self.step_length = len(self.BD[self.pattern])
             
             # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
             if self.step >= self.step_length:
                 self.step = 0 
-
-            # Set cv4-6 voltage outputs based on previously generated random pattern
-            if self.output4isClock:
-                cv4.value(1)
-            else:
-                cv4.voltage(self.random4[self.CvPattern][self.step])
             
             cv5.voltage(self.random5[self.CvPattern][self.step])
             cv6.voltage(self.random6[self.CvPattern][self.step])
@@ -139,14 +134,18 @@ class Consequencer(EuroPiScript):
                 else:
                     cv3.value(int(self.HH[self.pattern][self.step]))
 
+            # Set cv4-6 voltage outputs based on previously generated random pattern
+            if self.output4isClock:
+                cv4.value(1)
+            else:
+                cv4.voltage(self.random4[self.CvPattern][self.step])
+
             # Incremenent the clock step
             self.clock_step +=1
-    
-            # Reset step number at step_length -1 as pattern arrays are zero-based
-            if self.step < self.step_length - 1:
-                self.step += 1
-            else:
-                self.step = 0
+            self.step += 1
+
+            delta = time.ticks_diff(time.ticks_us(), t)
+            print('Function {} Time = {:6.3f}ms'.format('clockTrigger', delta/1000))
 
         @din.handler_falling
         def clockTriggerEnd():
@@ -227,7 +226,11 @@ class Consequencer(EuroPiScript):
 
         # If the random toggle is on, show a rectangle
         if self.random_HH:
-            oled.fill_rect(0,29,20,3,1)
+            oled.fill_rect(0,29,10,3,1)
+
+        # Show self.output4isClock value
+        if self.output4isClock:
+            oled.rect(12,29,10,3,1)   
 
         # Show the analogInputMode
         oled.text('M' + str(self.analogInputMode), 112, 25, 1)
@@ -453,5 +456,9 @@ class pattern:
 
 
 if __name__ == '__main__':
+    # Reset module display state.
+    [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()
+
+
