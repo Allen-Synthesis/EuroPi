@@ -5,7 +5,6 @@ from europi_script import EuroPiScript
 import machine
 import json
 import gc
-#import micropython
 
 '''
 CVecorder
@@ -57,6 +56,7 @@ class CVecorder(EuroPiScript):
         self.CvIn = 0
         self.bankToSave = 0
         self.debugTest = False
+        self.writeError = False
 
         self.numCVR = 5  # Number of CV recorder channels - zero based
         self.numCVRBanks = 5  # Number of CV recording channel banks - zero based
@@ -215,8 +215,10 @@ class CVecorder(EuroPiScript):
                 with open(outputFile, 'w') as file:
                     # Attempt write data to state on disk, then break from while loop if the return (num bytes written) > 0
                     if file.write(jsonState) > 0:
+                        self.writeError = False
                         break
             except MemoryError as e:
+                self.writeError = True
                 if self.debugTest:
                     print(f'[{attempts}] Error: Memory allocation failed, retrying: {e}')
                     #print(micropython.mem_info("level"))
@@ -323,6 +325,9 @@ class CVecorder(EuroPiScript):
             oled.text('REC', 71, 25, 1)
         elif self.CvRecording[self.ActiveCvr] == 'pending':
             oled.text('. .', 71, 25, 1)
+        
+        if self.writeError:
+            oled.text('!w!', 71, 25, 1)
 
         # Active recording channel
         oled.text(str(self.ActiveBank+1) + ':' + str(self.ActiveCvr+1), 100, 25, 1)
