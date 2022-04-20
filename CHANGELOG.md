@@ -8,9 +8,8 @@
 - Consequencer: Added new patterns inspired by African beats and one based on the Fibonacci sequence
 - Consequencer: Added a feature to send a clock out of output 4 which is always in time with the Consequencer. I found this useful to combat the latency between the clock sent to the Consequencer and the gates that come out. With self.output4isClock set to True you can clock all your other modules using output 4 and they will be in-sync with the Consequencer
 - Consequencer: Added explanation of self.output4isClock to doc
-- CVecorder: Added comments to unused functions which are reserved for future use
-- Cvecorder: doc updates
-- Cvecorder: Added menu handling code
+- Consequencer: Added UI access to self.output4isClock (long-press of button 1)
+- CVecorder: Added
 
 ### 2022-04-04
 
