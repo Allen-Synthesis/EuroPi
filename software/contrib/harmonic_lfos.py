@@ -2,6 +2,7 @@ from europi import *
 from math import cos, radians
 from time import sleep_ms
 from machine import freq
+from random import randint
 from europi_script import EuroPiScript
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE #Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
@@ -20,6 +21,7 @@ class HarmonicLFOs(EuroPiScript):
         #Use the saved values for the LFO divisions and mode if found in the save state file, using defaults if not
         self.divisions = state.get("divisions", [1, 3, 5, 7, 11, 13])
         self.modes = state.get("modes", [0, 0, 0, 0, 0, 0])
+        self.MODE_COUNT = 5
         
         #Initialise all the other variables
         self.degree = 0
@@ -44,13 +46,7 @@ class HarmonicLFOs(EuroPiScript):
 
     def change_mode(self):
         """Change the mode that controls wave shape"""
-        old_mode = self.modes[self.selected_lfo]
-        old_mode += 1
-        
-        if old_mode == 5:
-            old_mode = 0
-            
-        self.modes[self.selected_lfo] = old_mode
+        self.modes[self.selected_lfo] = (self.modes[self.selected_lfo] + 1) % self.MODE_COUNT
         self.save_state()
 
     def get_delay_increment_value(self):
@@ -60,9 +56,7 @@ class HarmonicLFOs(EuroPiScript):
 
     def increment_selection(self):
         """Move the selection to the next LFO"""
-        self.selected_lfo += 1
-        if self.selected_lfo == 6:
-            self.selected_lfo = 0
+        self.selected_lfo = (self.selected_lfo + 1) % 6
         self.selected_lfo_start_value = self.get_clock_division()
 
     def save_state(self):
@@ -88,19 +82,9 @@ class HarmonicLFOs(EuroPiScript):
         self.delay, self.increment_value = self.get_delay_increment_value()
         sleep_ms(int(self.delay))
         
-    def draw_wave(self, shape):
-        if shape == 'square':
-            oled.vline(3,24,8,1)
-            oled.hline(3,24,6,1)
-            oled.vline(9,24,8,1)
-            oled.hline(9,31,6,1)
-            oled.vline(15,24,8,1)
-        elif shape == 'saw':
-            oled.line(3,31,9,24,1)
-            oled.vline(9,24,8,1)
-            oled.line(9,31,15,24,1)
-            oled.vline(15,24,8,1)
-        elif shape == 'sine':
+    def draw_wave(self):
+        shape = self.modes[self.selected_lfo]
+        if shape == 0: #Sine
             oled.pixel(3,31,1)
             oled.pixel(3,30,1)
             oled.pixel(3,29,1)
@@ -128,10 +112,21 @@ class HarmonicLFOs(EuroPiScript):
             oled.pixel(16,25,1)
             oled.pixel(16,24,1)
             oled.pixel(16,23,1)
-        elif shape == 'off':
+        elif shape == 1: #Saw
+            oled.line(3,31,9,24,1)
+            oled.vline(9,24,8,1)
+            oled.line(9,31,15,24,1)
+            oled.vline(15,24,8,1)
+        elif shape == 2: #Square
+            oled.vline(3,24,8,1)
+            oled.hline(3,24,6,1)
+            oled.vline(9,24,8,1)
+            oled.hline(9,31,6,1)
+            oled.vline(15,24,8,1)
+        elif shape == 3: #Off
             oled.line(3,24,15,31,1)
             oled.line(15,24,3,31,1)
-        elif shape == 'random':
+        elif shape == 4: #Random(ish)
             oled.pixel(3,29,1)
             oled.pixel(4,28,1)
             oled.pixel(4,27,1)
@@ -162,17 +157,10 @@ class HarmonicLFOs(EuroPiScript):
         x = 2 if number >= 10 else 6
         oled.text(str(number),x,12,1)
         
-        lfo_mode = self.modes[self.selected_lfo]
-        if lfo_mode == 0:
-            self.draw_wave('sine')
-        elif lfo_mode == 1:
-            self.draw_wave('saw')
-        elif lfo_mode == 2:
-            self.draw_wave('square')
-        elif lfo_mode == 3:
-            self.draw_wave('off')
-        elif lfo_mode == 4:
-            self.draw_wave('random')
+        self.draw_wave()
+        
+    def round_nearest(self, x, a):
+        return round(x / a) * a
         
     def calculate_voltage(self, cv, multiplier):
         """Determine the voltage based on current degree, wave shape, and MAX_VOLTAGE"""
@@ -187,7 +175,7 @@ class HarmonicLFOs(EuroPiScript):
             voltage = MAX_VOLTAGE * (int((degree_three_sixty / (three_sixty)) * MAX_VOLTAGE) < (MAX_VOLTAGE/2))
         elif lfo_mode == 3: #Off
             voltage = 0
-        elif lfo_mode == 4: #Random(ish)
+        elif lfo_mode == 4: #Random(ish). This is NOT actually random, it is the sum of 3 out of sync sine waves, but it produces a flucutating voltage that is near impossible to predict over time, and which can be clocked to be in time
             voltage = ((((0-(cos(self.rad*(1/multiplier)))+1)) * (MAX_VOLTAGE/2)) / 3) + ((((0-(cos(self.rad*(1/(multiplier*2.3))))+1)) * (MAX_VOLTAGE/2)) / 3) + ((((0-(cos(self.rad*(1/(multiplier*5.6))))+1)) * (MAX_VOLTAGE/2)) / 3)
         return voltage
         
