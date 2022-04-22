@@ -1,8 +1,8 @@
 from europi import *
 from math import cos, radians
-from random import randint
 from time import sleep_ms
 from machine import freq
+from random import randint
 from europi_script import EuroPiScript
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE #Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
@@ -20,7 +20,8 @@ class HarmonicLFOs(EuroPiScript):
         
         #Use the saved values for the LFO divisions and mode if found in the save state file, using defaults if not
         self.divisions = state.get("divisions", [1, 3, 5, 7, 11, 13])
-        self.mode = state.get("mode", 0)
+        self.modes = state.get("modes", [0, 0, 0, 0, 0, 0])
+        self.MODE_COUNT = 5
         
         #Initialise all the other variables
         self.degree = 0
@@ -45,11 +46,7 @@ class HarmonicLFOs(EuroPiScript):
 
     def change_mode(self):
         """Change the mode that controls wave shape"""
-        self.mode += 1
-        
-        if self.mode == 3:
-            self.mode = 0
-            
+        self.modes[self.selected_lfo] = (self.modes[self.selected_lfo] + 1) % self.MODE_COUNT
         self.save_state()
 
     def get_delay_increment_value(self):
@@ -59,9 +56,7 @@ class HarmonicLFOs(EuroPiScript):
 
     def increment_selection(self):
         """Move the selection to the next LFO"""
-        self.selected_lfo += 1
-        if self.selected_lfo == 6:
-            self.selected_lfo = 0
+        self.selected_lfo = (self.selected_lfo + 1) % 6
         self.selected_lfo_start_value = self.get_clock_division()
 
     def save_state(self):
@@ -71,7 +66,7 @@ class HarmonicLFOs(EuroPiScript):
         
         state = {
             "divisions": self.divisions,
-            "mode": self.mode
+            "modes": self.modes
         }
         self.save_state_json(state)
         
@@ -87,6 +82,71 @@ class HarmonicLFOs(EuroPiScript):
         self.delay, self.increment_value = self.get_delay_increment_value()
         sleep_ms(int(self.delay))
         
+    def draw_wave(self):
+        shape = self.modes[self.selected_lfo]
+        if shape == 0: #Sine
+            oled.pixel(3,31,1)
+            oled.pixel(3,30,1)
+            oled.pixel(3,29,1)
+            oled.pixel(4,28,1)
+            oled.pixel(4,27,1)
+            oled.pixel(4,26,1)
+            oled.pixel(4,25,1)
+            oled.pixel(5,24,1)
+            oled.pixel(6,23,1)
+            oled.pixel(7,23,1)
+            oled.pixel(8,24,1)
+            oled.pixel(9,25,1)
+            oled.pixel(9,26,1)
+            oled.pixel(9,27,1)
+            oled.pixel(10,28,1)
+            oled.pixel(10,29,1)
+            oled.pixel(11,30,1)
+            oled.pixel(12,31,1)
+            oled.pixel(13,31,1)
+            oled.pixel(14,30,1)
+            oled.pixel(15,29,1)
+            oled.pixel(15,28,1)
+            oled.pixel(15,27,1)
+            oled.pixel(15,26,1)
+            oled.pixel(16,25,1)
+            oled.pixel(16,24,1)
+            oled.pixel(16,23,1)
+        elif shape == 1: #Saw
+            oled.line(3,31,9,24,1)
+            oled.vline(9,24,8,1)
+            oled.line(9,31,15,24,1)
+            oled.vline(15,24,8,1)
+        elif shape == 2: #Square
+            oled.vline(3,24,8,1)
+            oled.hline(3,24,6,1)
+            oled.vline(9,24,8,1)
+            oled.hline(9,31,6,1)
+            oled.vline(15,24,8,1)
+        elif shape == 3: #Off
+            oled.line(3,24,15,31,1)
+            oled.line(15,24,3,31,1)
+        elif shape == 4: #Random(ish)
+            oled.pixel(3,29,1)
+            oled.pixel(4,28,1)
+            oled.pixel(4,27,1)
+            oled.pixel(5,26,1)
+            oled.pixel(6,26,1)
+            oled.pixel(7,27,1)
+            oled.pixel(8,28,1)
+            oled.pixel(9,28,1)
+            oled.pixel(10,27,1)
+            oled.pixel(10,26,1)
+            oled.pixel(10,25,1)
+            oled.pixel(11,24,1)
+            oled.pixel(12,25,1)
+            oled.pixel(13,26,1)
+            oled.pixel(13,27,1)
+            oled.pixel(14,28,1)
+            oled.pixel(14,29,1)
+            oled.pixel(15,30,1)
+            oled.pixel(16,30,1)
+        
     def display_selected_lfo(self):
         """Draw the current LFO's number and division to the OLED display"""
         oled.fill_rect(0,0,20,32,0)
@@ -95,18 +155,28 @@ class HarmonicLFOs(EuroPiScript):
         
         number = self.divisions[self.selected_lfo]
         x = 2 if number >= 10 else 6
-        oled.text(str(number),x,20,1)
+        oled.text(str(number),x,12,1)
         
-    def calculate_voltage(self, multiplier):
+        self.draw_wave()
+        
+    def round_nearest(self, x, a):
+        return round(x / a) * a
+        
+    def calculate_voltage(self, cv, multiplier):
         """Determine the voltage based on current degree, wave shape, and MAX_VOLTAGE"""
         three_sixty = 360*multiplier
         degree_three_sixty = self.degree % three_sixty
-        if self.mode == 0: #Sin
+        lfo_mode = self.modes[cvs.index(cv)]
+        if lfo_mode == 0: #Sin
             voltage = ((0-(cos(self.rad*(1/multiplier)))+1)) * (MAX_VOLTAGE/2)
-        elif self.mode == 1: #Saw
+        elif lfo_mode == 1: #Saw
             voltage = (degree_three_sixty / (three_sixty)) * MAX_VOLTAGE
-        elif self.mode == 2: #Square
+        elif lfo_mode == 2: #Square
             voltage = MAX_VOLTAGE * (int((degree_three_sixty / (three_sixty)) * MAX_VOLTAGE) < (MAX_VOLTAGE/2))
+        elif lfo_mode == 3: #Off
+            voltage = 0
+        elif lfo_mode == 4: #Random(ish). This is NOT actually random, it is the sum of 3 out of sync sine waves, but it produces a flucutating voltage that is near impossible to predict over time, and which can be clocked to be in time
+            voltage = ((((0-(cos(self.rad*(1/multiplier)))+1)) * (MAX_VOLTAGE/2)) / 3) + ((((0-(cos(self.rad*(1/(multiplier*2.3))))+1)) * (MAX_VOLTAGE/2)) / 3) + ((((0-(cos(self.rad*(1/(multiplier*5.6))))+1)) * (MAX_VOLTAGE/2)) / 3)
         return voltage
         
     def display_graphic_lines(self):
@@ -114,7 +184,7 @@ class HarmonicLFOs(EuroPiScript):
         self.rad = radians(self.degree)
         oled.vline(self.pixel_x,0,OLED_HEIGHT,0)
         for cv, multiplier in zip(cvs, self.divisions):
-            volts = self.calculate_voltage(multiplier)
+            volts = self.calculate_voltage(cv, multiplier)
             cv.voltage(volts)
             oled.pixel(self.pixel_x,self.pixel_y-int(volts*(self.pixel_y/10)),1)
 
