@@ -431,7 +431,7 @@ class Output:
     def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
         self.pin = PWM(Pin(pin))
         # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
-        self.pin.freq(1_000_000)
+        self.pin.freq(100_000)
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
@@ -453,9 +453,8 @@ class Output:
             return self._duty / MAX_UINT16
 
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
-        for index, current_gradient in enumerate(self._gradients):
-            if (voltage // 1) >= index:
-                self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (current_gradient*(voltage%1)))
+        index = int(voltage//1)
+        self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (self._gradients[index]*(voltage%1)))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
