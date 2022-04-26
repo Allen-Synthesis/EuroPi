@@ -97,7 +97,7 @@ class Hamlet(EuroPiScript):
                 if self.track_multiplier >=4:
                     self.track_multiplier = 1
                 else:
-                    self.track_multiplier = self.track_multiplier * 2
+                    self.track_multiplier *= 2
                 pass
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
@@ -170,6 +170,7 @@ class Hamlet(EuroPiScript):
             self.gate_2.off()
 
     def generateNewRandomCVPattern(self):
+        """Generate new random CV patterns for the voice tracks"""
         self.step_length = len(self.BD[self.pattern])
         # CV patterns are up to 4 times the length of the drum pattern
         patt = (self.generateRandomPattern(self.step_length, 0, 9) +
@@ -184,6 +185,7 @@ class Hamlet(EuroPiScript):
         self.track_2.append(patt)
 
     def updatePattern(self):
+        """Read from knob 2 or CV (if in appropriate mode) and change the drum pattern accordingly"""
         # If mode 2 and there is CV on the analogue input use it, if
         # not use the knob position
         val = 100 * ain.percent()
@@ -195,6 +197,7 @@ class Hamlet(EuroPiScript):
         self.step_length = len(self.BD[self.pattern])
 
     def updateCvPattern(self):
+        """Read from CV (if in appropriate mode) and change the CV pattern accordingly"""
         # If analogue input mode 3, get the CV pattern from CV input
         if self.analogInputMode != 3:
             return
@@ -209,12 +212,13 @@ class Hamlet(EuroPiScript):
 
                
     def generateRandomPattern(self, length, min, max):
+        """Generate a new random pattern"""
         # Returns a list of pairs of value and a sparsity
         self.t=[]
         # Sparsity values are from 1 to length. This means that notes
         # will progressively drop out as sparsity increases. Using
         # random values would give different behaviour.
-        # No suffle in micropython random :-(
+        # No shuffle in micropython random :-(
         # sparsities = random.shuffle(range(1,length+1))
         count = 0
         sparsities = []
@@ -229,16 +233,16 @@ class Hamlet(EuroPiScript):
         return self.t
 
     def updateSparsity(self):
+        """Update sparsity value from knob 1"""
         # Don't use Analog input for now
         self.sparsity = k1.read_position(steps=len(self.BD[self.pattern])+1)
 
     def updateRandomness(self):
-        # If mode 1 and there is CV on the analogue input use it, if not use the knob position
+        """Read randomness from CV (if in appropriate mode)"""
+        # If mode 1 and there is CV on the analogue input use it
         val = 100 * ain.percent()
         if self.analogInputMode == 1 and val > self.minAnalogInputVoltage:
             self.randomness = val
-        #else:
-        #    self.randomness = k2.read_position()
         
     def main(self):
         while True:

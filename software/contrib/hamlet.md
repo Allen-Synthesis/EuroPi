@@ -21,6 +21,8 @@ tracks can be adjusted.
 Use outputs 1/2 for drum gates. Pairs 3/4 and 5/6 provide gate/CV for
 melody lines. Send a clock to the digital input to start the sequence.
 
+Demo video: https://www.youtube.com/watch?v=bEbHBpgIl4A
+
 Credits:
 - The Europi hardware and firmware was designed by Allen Synthesis:
 https://github.com/Allen-Synthesis/EuroPi
