@@ -1,5 +1,16 @@
 # Change Log
 
+### 2022-04-13
+
+- Consequencer: Moved self.reset_timeout = 500 to a better place
+- Consequencer: Reduced latency by removing the if self.clock_step < 128 check
+- Consequencer: You can now add patterns longer than 32 steps without breaking anything 🙂
+- Consequencer: Added new patterns inspired by African beats and one based on the Fibonacci sequence
+- Consequencer: Added a feature to send a clock out of output 4 which is always in time with the Consequencer. I found this useful to combat the latency between the clock sent to the Consequencer and the gates that come out. With self.output4isClock set to True you can clock all your other modules using output 4 and they will be in-sync with the Consequencer
+- Consequencer: Added explanation of self.output4isClock to doc
+- Consequencer: Added UI access to self.output4isClock (long-press of button 1)
+- CVecorder: Added
+
 ### 2022-04-04
 
 - release version 0.3.0

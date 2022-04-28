@@ -31,7 +31,10 @@ Credits:
 - knob_2: Select pre-loaded gate pattern
 
 - button_1: Short Press: Toggle randomized pattern on output 3 on / off. Long Press: Play previous stepped CV sequence
-- button_2: Short Press: Generate a new random stepped cv sequence for outputs 4 - 6. Long Press: Cycle through analogue input modes
+- button_2:
+  - Short Press  (<300ms)  : Generate a new random cv pattern for outputs 4 - 6.
+  - Medium Press (>300ms)  : Cycle through analogue input modes
+  - Long Press   (>3000ms) : Toggle option to send clocks from output 4
 
 - output_1: gate 1 e.g Kick Drum
 - output_2: gate 2 e.g Snare Drum
@@ -52,7 +55,7 @@ You can of course connect outputs 1 - 3 to any module which expects gates and ou
 4. Select different patterns manually using knob 2 (right-hand knob). The selected pattern is shown visually on the screen.
 
 ## Adding randomness
-1. A long-press and release of button 1 toggles on/off the real-time generation of a random gate pattern to output 3
+1. A medium-press (>300ms and < 3000ms) and release of button 1 toggles on/off the real-time generation of a random gate pattern to output 3. A small filled rectangle is shown on the bottom left of the screen when this feature is active.
 2. Knob 1 increases or decreases the randomness of the patterns sent to outputs 1 -3
 3. Randomness can also be controlled by sending CV to the analogue input if analogInputMode 1 is selected (default).
 
@@ -88,10 +91,11 @@ Cycle through the modes by long-pressing and releasing button 2. The following m
 
 A fixed voltage will select a single pattern and varying voltage (e.g. an envelope or LFO) will smoothly cycle through patterns.
 
+# Advanced usage
+
 ## Adding / Removing / Updating Gate Patterns
 
-1. Update consequencer_patterns.py
-2. Restart the Europi module, or restart the program if using a micropython IDE/CLI
+Patterns can be added, removed or updated by updating the relevant list structures at the end of the consequencer.py file in the pattern class (look for the line `class pattern:`). Once patterns are updated make sure you save a copy of the updated file to the EuroPi using yoru favourite method (Thonny / REPL), then restart the Consequencer script.
 
 The syntax should be intuitive. A four-on-the-floor exanmple pattern is shown below. Each `1` or `0` represents a gate or no gate at that point in the sequence.
 The mapping of `BD`, `SN`, `HH` is as follows:
@@ -104,6 +108,12 @@ The mapping of `BD`, `SN`, `HH` is as follows:
     SN.append("0000100000001000")
     HH.append("1111111111111111")
 ```
+
+## Output clocks/gates on output 4
+
+The Consequencer has a small amount of latency between receiving a clock or gate at the digital input and sending out gates to the outputs. This may not be noticable depending on how you incorporate Consequencer into your patch. However, there is an option for Consequencer to send out gates on output which are perfectly in time with the sequence being played. This allows you to clock other modules using output 4.
+
+To enable this feature hold down button 1 for longer than 3 seconds, then release the button. A small unfilled rectangle is shown on the bottom left of the screen when this feature is active. This visual indicator is on the right of the random hi-hat visual indicator (filled rectangle on the bottom left of the screen).
 
 # Known bugs / Interesting features
 
