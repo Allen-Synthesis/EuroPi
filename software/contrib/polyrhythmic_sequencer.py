@@ -111,6 +111,12 @@ class Sequence:
         self._set_pitch()
         self.trigger_cv.on()
 
+    def reset(self):
+        """Reset the sequence back to the first note."""
+        self.step_index = 0
+        self._set_pitch()
+        self.trigger_cv.off()
+
 
 class PolyrhythmSeq(EuroPiScript):
     pages = ['SEQUENCE 1', 'SEQUENCE 2', 'POLYRHYTHM']
@@ -144,7 +150,12 @@ class PolyrhythmSeq(EuroPiScript):
         self.page = 0
         self.param_index = 0
         self.counter = 0
+        self.reset_timeout = 3000
         self._prev_k2 = None
+
+        # Assign cv outputs to logical triggers.
+        self.trigger_and = cv3
+        self.trigger_xor = cv6
 
         # Save state struct
         self.format_string = "12s12s4s4s"
@@ -192,16 +203,18 @@ class PolyrhythmSeq(EuroPiScript):
 
             # Trigger logical AND / XOR
             if seq1 and seq2:
-                cv3.on()
+                self.trigger_and.on()
             if (seq1 or seq2) and seq1 != seq2:
-                cv6.on()
+                self.trigger_xor.on()
+
             self.counter = self.counter + 1
 
         @din.handler_falling
         def triggers_off():
             # Turn off all of the trigger CV outputs.
             [seq.trigger_cv.off() for seq in self.seqs]
-            [c.off() for c in (cv3, cv6)]
+            self.trigger_and.off()
+            self.trigger_xor.off()
 
     def _trigger_seq(self, step: int):
         # Convert poly sequence enablement into binary to determine which
@@ -245,6 +258,15 @@ class PolyrhythmSeq(EuroPiScript):
         self.seqs[1].set_state(_state.seq2)
         self.polys = list(_state.polys)
         self.seq_poly = list(_state.seq_poly)
+    
+    def reset_check(self):
+        """Reset the sequences and triggers when no clock pulse detected for specified time."""
+        if self.counter != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
+            self.step = 0
+            self.counter = 0
+            [s.reset() for s in self.seqs]
+            self.trigger_and.off()
+            self.trigger_xor.off()
 
     def show_menu_header(self):
         if ticks_diff(ticks_ms(), b1.last_pressed()) < MENU_DURATION:
@@ -314,6 +336,8 @@ class PolyrhythmSeq(EuroPiScript):
 
             if self.page == 2:
                 self.edit_poly()
+            
+            self.reset_check()
 
             self.show_menu_header()
             oled.show()
