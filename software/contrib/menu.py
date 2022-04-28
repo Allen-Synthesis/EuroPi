@@ -4,6 +4,7 @@ from bootloader import BootloaderMenu
 from contrib.coin_toss import CoinToss
 from contrib.consequencer import Consequencer
 from contrib.diagnostic import Diagnostic
+from contrib.hamlet import Hamlet
 from contrib.harmonic_lfos import HarmonicLFOs
 from contrib.hello_world import HelloWorld
 from contrib.noddy_holder import NoddyHolder
@@ -18,6 +19,7 @@ EUROPI_SCRIPT_CLASSES = [
     CoinToss,
     Consequencer,
     Diagnostic,
+    Hamlet,
     HarmonicLFOs,
     HelloWorld,
     NoddyHolder,
