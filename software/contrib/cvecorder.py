@@ -134,7 +134,7 @@ class CVecorder(EuroPiScript):
                 self.bankToSave = self.ActiveBank
                 self.saveState()
                 if self.debugLogging:
-                    self.writeToDebugLog(f"[b2PressedLong] > 500 Saving state for bank {self.bankToSave}.")
+                    self.writeToDebugLog(f"[b2PressedLong] > 500 Calling saveState() for bank {self.bankToSave}.")
                 # reverse the ActiveCvr increment caused by the initial button press
                 if self.ActiveCvr > 0:
                     self.ActiveCvr -= 1
@@ -178,7 +178,7 @@ class CVecorder(EuroPiScript):
                 self.bankToSave = self.ActiveBank
                 self.saveState()
                 if self.debugLogging:
-                    self.writeToDebugLog(f"[handleClock] Saving state for bank {self.bankToSave}.")
+                    self.writeToDebugLog(f"[handleClock] Calling saveState() for bank {self.bankToSave}.")
 
 
     def clearCvrs(self, bank):
@@ -196,7 +196,7 @@ class CVecorder(EuroPiScript):
             self.bankToSave = b
             self.saveState()
             if self.debugLogging:
-                self.writeToDebugLog(f"[clearCvrs] Saving state for bank {self.bankToSave}.")
+                self.writeToDebugLog(f"[clearCvrs] Calling saveState() for bank {self.bankToSave}.")
 
     # Currently not used, but keeping in this script for future use
     def initCvrs(self):
@@ -234,10 +234,16 @@ class CVecorder(EuroPiScript):
                 attempts += 1
                 # Create json object of current CV bank
                 jsonState = json.dumps(self.CVR[self.bankToSave])
+
+                if self.debugLogging:
+                    self.writeToDebugLog(f"[saveState] Saving state for bank: {str(self.bankToSave)}. Size: {len(jsonState)}")
+
                 with open(outputFile, 'w') as file:
                     # Attempt write data to state on disk, then break from while loop if the return (num bytes written) > 0
                     if file.write(jsonState) > 0:
                         self.writeError = False
+                        if self.debugLogging:
+                            self.writeToDebugLog(f"[saveState] Bank {str(self.bankToSave)} saved OK")
                         break
             except MemoryError as e:
                 self.writeError = True
