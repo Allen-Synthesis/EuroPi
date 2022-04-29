@@ -1,5 +1,5 @@
 from europi import *
-from time import ticks_diff, ticks_ms
+from time import ticks_diff, ticks_ms, sleep_ms
 from random import randint, uniform
 from europi_script import EuroPiScript
 import machine
@@ -58,7 +58,7 @@ class CVecorder(EuroPiScript):
         self.bankToSave = 0
         self.initTest = False
         self.debugLogging = True
-        self.writeError = False
+        self.errorString = ' '
 
         self.numCVR = 5  # Number of CV recorder channels - zero based
         self.numCVRBanks = 5  # Number of CV recording channel banks - zero based
@@ -80,6 +80,7 @@ class CVecorder(EuroPiScript):
         #self.CvRecording = []  # CV recorder flags
 
         # Load CV Recordings from a previously stored state on disk or initialize if blank
+        self.showLoadingScreen()
         self.loadState()
 
         # Test routine, pick a random bank n times and save, then load the state
@@ -241,12 +242,12 @@ class CVecorder(EuroPiScript):
                 with open(outputFile, 'w') as file:
                     # Attempt write data to state on disk, then break from while loop if the return (num bytes written) > 0
                     if file.write(jsonState) > 0:
-                        self.writeError = False
+                        #self.errorString = ' '
                         if self.debugLogging:
                             self.writeToDebugLog(f"[saveState] Bank {str(self.bankToSave)} saved OK")
                         break
             except MemoryError as e:
-                self.writeError = True
+                self.errorString = 'w'
                 if self.initTest:
                     print(f'[{attempts}] Error: Memory allocation failed, retrying: {e}')
                 if self.debugLogging:
@@ -266,6 +267,10 @@ class CVecorder(EuroPiScript):
         # For each bank, check if a state file exists, then load it
         # If not, initialize the bank with zeros
 
+        # Potential issue......
+        # If for some reason the file open command fails, it will init each bank and wipe any previous recordings
+        # Added retries and debug code to try and capture the error if this does occur
+
         self.CVR = []  # CV recorder channels
         self.CvRecording = []  # CV recorder flags
 
@@ -280,49 +285,57 @@ class CVecorder(EuroPiScript):
             # Check if a state file exists
             fileName = f"saved_state_{self.__class__.__qualname__}_{b}.txt"
 
-            # Potential issue - needs more testing.
-            # If for some reason the file open command fails, it will init each bank and wipe any previous recordings
-            # Added debug code to try and capture the error if this does occur
-            # If there is an error, I need to work out how to handle this error condition
-            #   perhaps by retrying the file open operation a few times before choosing to initialize the bank
+            # Write the value to a the state file
+            maxRetries = 6
+            attempts = 0
+            while attempts < maxRetries:
 
-            try:
-                # save state exists for this bank, load it
-                with open(fileName, 'r') as file:
+                try:
+                    # save state exists for this bank, load it
+                    with open(fileName, 'r') as file:
 
-                    # read state from file into json object
-                    jsonData = file.read()
+                        # read state from file into json object
+                        jsonData = file.read()
 
-                    if self.initTest:
-                        print(f"Loading previous state for bank: {str(b)}. Size: {len(jsonData)}")
+                        if self.initTest:
+                            print(f"Loading previous state for bank: {str(b)}. Size: {len(jsonData)}")
 
+                        if self.debugLogging:
+                            self.writeToDebugLog(f"[loadState] [{attempts}] Loading previous state for bank: {str(b)}. Size: {len(jsonData)}")
+
+                        # populate CV recording channel with saved json data
+                        self.CVR[b] = json.loads(jsonData)
+
+                        # convert values in the list from int back to float
+                        i=0
+                        for channel in self.CVR[b]:
+                            self.CVR[b][i] = [x / 100 if x > 0 else 0 for x in self.CVR[b][i]]
+                            i += 1
+                        
+                        # read OK, break from while loop
+                        break
+
+                except OSError as e:
+                    self.errorString = 'r'
                     if self.debugLogging:
-                        self.writeToDebugLog(f"[loadState] Loading previous state for bank: {str(b)}. Size: {len(jsonData)}")
+                        self.writeToDebugLog(f"[loadState] [{attempts}] No state file found for bank {b}. Error: {e}")
+                    # No state file exists, initialize the array with zeros
+                    if self.initTest:
+                        print('Initializing bank: ' + str(b))
 
-                    # populate CV recording channel with saved json data
-                    self.CVR[b] = json.loads(jsonData)
+                    for i in range(self.numCVR+1):
+                        self.CVR[b].append([])
+                        for n in range (0, self.stepLength):
+                            self.CVR[b][i].append(0)
 
-                    # convert values in the list from int back to float
-                    i=0
-                    for channel in self.CVR[b]:
-                        self.CVR[b][i] = [x / 100 if x > 0 else 0 for x in self.CVR[b][i]]
-                        i += 1
+                except Exception as e:
+                    self.errorString = 'r'
+                    if self.debugLogging:
+                        self.writeToDebugLog(f"[loadState] [{attempts}] Exception when attempting to open previous state file for bank {b}. {e}")
 
-            except OSError as e:
-                if self.debugLogging:
-                    self.writeToDebugLog(f"[loadState] No state file found for bank {b}. or Error: {e}")
-                # No state file exists, initialize the array with zeros
-                if self.initTest:
-                    print('Initializing bank: ' + str(b))
-
-                for i in range(self.numCVR+1):
-                    self.CVR[b].append([])
-                    for n in range (0, self.stepLength):
-                        self.CVR[b][i].append(0)
-
-            except Exception as e:
-                if self.debugLogging:
-                    self.writeToDebugLog(f"[loadState] Exception when attempting to open previous state file for bank {b}. {e}")
+                # Sleep and increment attempt counter
+                sleep_ms(500)
+                attempts += 1
 
     # Currently not used, but keeping in this script for future use
     def debugDumpCvr(self):
@@ -388,13 +401,23 @@ class CVecorder(EuroPiScript):
                 with open(self.currentLogFile, 'a') as file:
                     # Attempt write data to state on disk, then break from while loop if the return (num bytes written) > 0
                     if file.write(timestring + ' ' + msg + '\n') > 0:
-                        self.writeError = False
+                        #self.errorString = ''
                         break
             except MemoryError as e:
                 print(f'[{attempts}] Error: Memory allocation failed, retrying: {e}')
             except Exception as e:
                 print(f'[{attempts}] Error writing to debug log. {e}')
 
+    def showLoadingScreen(self):
+        import framebuf
+
+        # push the bytearray of the Rpi logo into a 32 x 32 framebuffer, then show on the screen
+        buffer = bytearray(b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00|?\x00\x01\x86@\x80\x01\x01\x80\x80\x01\x11\x88\x80\x01\x05\xa0\x80\x00\x83\xc1\x00\x00C\xe3\x00\x00~\xfc\x00\x00L'\x00\x00\x9c\x11\x00\x00\xbf\xfd\x00\x00\xe1\x87\x00\x01\xc1\x83\x80\x02A\x82@\x02A\x82@\x02\xc1\xc2@\x02\xf6>\xc0\x01\xfc=\x80\x01\x18\x18\x80\x01\x88\x10\x80\x00\x8c!\x00\x00\x87\xf1\x00\x00\x7f\xf6\x00\x008\x1c\x00\x00\x0c \x00\x00\x03\xc0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
+        fb = framebuf.FrameBuffer(buffer, 32, 32, framebuf.MONO_HLSB)
+        oled.fill(0)
+        oled.blit(fb, 0,0)
+        oled.text('Loading...', 40, 12, 1)
+        oled.show()
 
     def updateScreen(self):
         # Clear the screen
@@ -414,11 +437,11 @@ class CVecorder(EuroPiScript):
         if self.CvRecording[self.ActiveCvr] == 'true':
             oled.text('REC', 71, 25, 1)
         elif self.CvRecording[self.ActiveCvr] == 'pending':
-            oled.text('. .', 71, 25, 1)
+            #oled.text('. .', 71, 25, 1)
+            oled.text('.' + self.errorString + '.', 71, 25, 1)
+        else:
+            oled.text(' ' + self.errorString + ' ', 71, 25, 1)
         
-        if self.writeError:
-            oled.text('!w!', 71, 25, 1)
-
         # Active recording channel
         oled.text(str(self.ActiveBank+1) + ':' + str(self.ActiveCvr+1), 100, 25, 1)
         
