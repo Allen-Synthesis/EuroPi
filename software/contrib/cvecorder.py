@@ -6,6 +6,7 @@ import machine
 import json
 import gc
 import os
+import framebuf
 
 '''
 CVecorder
@@ -116,31 +117,35 @@ class CVecorder(EuroPiScript):
             for n in range (0, self.stepLength):
                 self.CVR[self.ActiveBank][self.ActiveCvr][n] = 0
 
-        # B2 Long press
-        @b2.handler_falling
-        def b2PressedLong():
-            # 2000ms press clears all banks
-            if ticks_diff(ticks_ms(), b2.last_pressed()) >  2000:
-                self.clearCvrs('all')
-                #self.bankToSave = self.ActiveBank
-                #self.saveState()
-                # reverse the ActiveCvr increment caused by the initial button press
-                if self.ActiveCvr > 0:
-                    self.ActiveCvr -= 1
-                else:
-                    self.ActiveCvr = self.numCVR
-            # 500ms press clears the active bank
-            elif ticks_diff(ticks_ms(), b2.last_pressed()) >  500:
-                self.clearCvrs(self.ActiveBank)
-                self.bankToSave = self.ActiveBank
-                self.saveState()
-                if self.debugLogging:
-                    self.writeToDebugLog(f"[b2PressedLong] > 500 Calling saveState() for bank {self.bankToSave}.")
-                # reverse the ActiveCvr increment caused by the initial button press
-                if self.ActiveCvr > 0:
-                    self.ActiveCvr -= 1
-                else:
-                    self.ActiveCvr = self.numCVR
+        # # B2 Long press
+        # @b2.handler_falling
+        # def b2PressedLong():
+        #     # Issue: This seems to get triggered randomly sometimes when the button is not pressed! This causes all CV banks to be cleared! :(
+        #     # Leave this commented out until the problem is isolated and resolved
+        #     # 2000ms press clears all banks
+        #     if ticks_diff(ticks_ms(), b2.last_pressed()) >  2000:
+        #         self.confirmDelete('all')
+        #         self.clearCvrs('all')
+        #         #self.bankToSave = self.ActiveBank
+        #         #self.saveState()
+        #         # reverse the ActiveCvr increment caused by the initial button press
+        #         if self.ActiveCvr > 0:
+        #             self.ActiveCvr -= 1
+        #         else:
+        #             self.ActiveCvr = self.numCVR
+        #     # 500ms press clears the active bank
+        #     elif ticks_diff(ticks_ms(), b2.last_pressed()) >  500:
+        #         self.confirmDelete(self.ActiveBank)
+        #         self.clearCvrs(self.ActiveBank)
+        #         self.bankToSave = self.ActiveBank
+        #         self.saveState()
+        #         if self.debugLogging:
+        #             self.writeToDebugLog(f"[b2PressedLong] > 500 Calling saveState() for bank {self.bankToSave}.")
+        #         # reverse the ActiveCvr increment caused by the initial button press
+        #         if self.ActiveCvr > 0:
+        #             self.ActiveCvr -= 1
+        #         else:
+        #             self.ActiveCvr = self.numCVR
 
         # B2 short press
         @b2.handler
@@ -150,6 +155,20 @@ class CVecorder(EuroPiScript):
                 self.ActiveCvr += 1
             else:
                 self.ActiveCvr = 0
+
+    def confirmDelete(self, bank):
+        # Show confirm text on screen
+        oled.fill(0)
+        if str(bank) == 'all':
+            oled.text('Clear ALL banks?', 0, 0, 1)
+        else:
+            oled.text(f'Clear bank {bank}?', 0, 0, 1)
+        oled.text('CONFIRM: Hold B1', 0, 15, 1)
+        oled.show()
+        
+        # Wait for button 1
+        while b1.value() != 1:
+            sleep_ms(250)
 
     def handleClock(self):
 
@@ -409,8 +428,6 @@ class CVecorder(EuroPiScript):
                 print(f'[{attempts}] Error writing to debug log. {e}')
 
     def showLoadingScreen(self):
-        import framebuf
-
         # push the bytearray of the Rpi logo into a 32 x 32 framebuffer, then show on the screen
         buffer = bytearray(b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00|?\x00\x01\x86@\x80\x01\x01\x80\x80\x01\x11\x88\x80\x01\x05\xa0\x80\x00\x83\xc1\x00\x00C\xe3\x00\x00~\xfc\x00\x00L'\x00\x00\x9c\x11\x00\x00\xbf\xfd\x00\x00\xe1\x87\x00\x01\xc1\x83\x80\x02A\x82@\x02A\x82@\x02\xc1\xc2@\x02\xf6>\xc0\x01\xfc=\x80\x01\x18\x18\x80\x01\x88\x10\x80\x00\x8c!\x00\x00\x87\xf1\x00\x00\x7f\xf6\x00\x008\x1c\x00\x00\x0c \x00\x00\x03\xc0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
         fb = framebuf.FrameBuffer(buffer, 32, 32, framebuf.MONO_HLSB)
