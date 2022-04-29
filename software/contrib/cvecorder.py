@@ -5,6 +5,7 @@ from europi_script import EuroPiScript
 import machine
 import json
 import gc
+import os
 
 '''
 CVecorder
@@ -51,15 +52,29 @@ class CVecorder(EuroPiScript):
         self.clockStep = 0
         self.ActiveCvr = 0
         self.ActiveBank = 0
-        self.resetTimeout = 500
+        self.resetTimeout = 1000
         self.debug = True
         self.CvIn = 0
         self.bankToSave = 0
-        self.debugTest = False
+        self.initTest = False
+        self.debugLogging = True
         self.writeError = False
 
         self.numCVR = 5  # Number of CV recorder channels - zero based
         self.numCVRBanks = 5  # Number of CV recording channel banks - zero based
+
+        # Logging parameters
+        self.logFilePrefix = 'cvecorder_debug'
+        self.maxLogFiles = 5
+        self.logFileList = []
+        self.currentLogFile = ''
+        self.maxLogFileName = self.logFilePrefix + str(self.maxLogFiles) + '.log'
+
+        # rotate log files
+        self.rotateLog()
+
+        if self.debugLogging:
+            self.writeToDebugLog(f"[init] Firing up!.")
 
         #self.CVR = []  # CV recorder channels
         #self.CvRecording = []  # CV recorder flags
@@ -68,7 +83,7 @@ class CVecorder(EuroPiScript):
         self.loadState()
 
         # Test routine, pick a random bank n times and save, then load the state
-        if self.debugTest:
+        if self.initTest:
             #print(micropython.mem_info("level"))
             for n in range(3000):
                 # Clear vars
@@ -118,6 +133,8 @@ class CVecorder(EuroPiScript):
                 self.clearCvrs(self.ActiveBank)
                 self.bankToSave = self.ActiveBank
                 self.saveState()
+                if self.debugLogging:
+                    self.writeToDebugLog(f"[b2PressedLong] > 500 Saving state for bank {self.bankToSave}.")
                 # reverse the ActiveCvr increment caused by the initial button press
                 if self.ActiveCvr > 0:
                     self.ActiveCvr -= 1
@@ -160,13 +177,16 @@ class CVecorder(EuroPiScript):
                 self.CvRecording[self.ActiveCvr] = 'false'
                 self.bankToSave = self.ActiveBank
                 self.saveState()
+                if self.debugLogging:
+                    self.writeToDebugLog(f"[handleClock] Saving state for bank {self.bankToSave}.")
+
 
     def clearCvrs(self, bank):
         for b in range(self.numCVRBanks+1):
             # skip bank unless 'all' is passed
             if b != bank and bank != 'all':
                 continue
-            if self.debugTest:
+            if self.initTest:
                 print('Clearing bank: ' + str(b))
             # Set all CV values to zero
             for i in range(self.numCVR+1):
@@ -175,10 +195,12 @@ class CVecorder(EuroPiScript):
             # Save the cleared bank to local storage
             self.bankToSave = b
             self.saveState()
+            if self.debugLogging:
+                self.writeToDebugLog(f"[clearCvrs] Saving state for bank {self.bankToSave}.")
 
     # Currently not used, but keeping in this script for future use
     def initCvrs(self):
-        for b in range(self.numCVRBanks+1):
+        for b in range(self.numCVRBanks+1): 
             self.CVR.append([])
             for i in range(self.numCVR+1):
                 self.CVR[b].append([])
@@ -190,18 +212,18 @@ class CVecorder(EuroPiScript):
         # generate output filename
         outputFile = f"saved_state_{self.__class__.__qualname__}_{self.bankToSave}.txt"
 
-        # Convert each value to an int by multiplying by 100. This saves of storage and memory a little
+        # Convert each value to an int by multiplying by 100. This saves on storage and memory a little
         for i in range(len(self.CVR[self.bankToSave])):
             self.CVR[self.bankToSave][i] = [int(x * 100) for x in self.CVR[self.bankToSave][i]]
 
-        if self.debugTest:
+        if self.initTest:
             print('Saving state for bank: ' + str(self.bankToSave))
 
         # Trigger garbage collection to minimize memory use
         gc.collect()
 
         # Show free memory if running a debug test
-        if self.debugTest:
+        if self.initTest:
             print(self.free())
 
         # Write the value to a the state file
@@ -219,8 +241,10 @@ class CVecorder(EuroPiScript):
                         break
             except MemoryError as e:
                 self.writeError = True
-                if self.debugTest:
+                if self.initTest:
                     print(f'[{attempts}] Error: Memory allocation failed, retrying: {e}')
+                if self.debugLogging:
+                    self.writeToDebugLog(f"[saveState] Error: Memory allocation failed, retrying: {e}")
                     #print(micropython.mem_info("level"))
                 else:
                     pass
@@ -249,14 +273,25 @@ class CVecorder(EuroPiScript):
 
             # Check if a state file exists
             fileName = f"saved_state_{self.__class__.__qualname__}_{b}.txt"
+
+            # Potential issue - needs more testing.
+            # If for some reason the file open command fails, it will init each bank and wipe any previous recordings
+            # Added debug code to try and capture the error if this does occur
+            # If there is an error, I need to work out how to handle this error condition
+            #   perhaps by retrying the file open operation a few times before choosing to initialize the bank
+
             try:
                 # save state exists for this bank, load it
                 with open(fileName, 'r') as file:
-                    if self.debugTest:
-                        print('Loading previous state for bank: ' + str(b))
 
                     # read state from file into json object
                     jsonData = file.read()
+
+                    if self.initTest:
+                        print(f"Loading previous state for bank: {str(b)}. Size: {len(jsonData)}")
+
+                    if self.debugLogging:
+                        self.writeToDebugLog(f"[loadState] Loading previous state for bank: {str(b)}. Size: {len(jsonData)}")
 
                     # populate CV recording channel with saved json data
                     self.CVR[b] = json.loads(jsonData)
@@ -268,14 +303,20 @@ class CVecorder(EuroPiScript):
                         i += 1
 
             except OSError as e:
+                if self.debugLogging:
+                    self.writeToDebugLog(f"[loadState] No state file found for bank {b}. or Error: {e}")
                 # No state file exists, initialize the array with zeros
-                if self.debugTest:
+                if self.initTest:
                     print('Initializing bank: ' + str(b))
 
                 for i in range(self.numCVR+1):
                     self.CVR[b].append([])
                     for n in range (0, self.stepLength):
                         self.CVR[b][i].append(0)
+
+            except Exception as e:
+                if self.debugLogging:
+                    self.writeToDebugLog(f"[loadState] Exception when attempting to open previous state file for bank {b}. {e}")
 
     # Currently not used, but keeping in this script for future use
     def debugDumpCvr(self):
@@ -305,6 +346,49 @@ class CVecorder(EuroPiScript):
     def getCvBank(self):
         # Read CV Bank selection from knob 1
         self.ActiveBank = k1.read_position(self.numCVRBanks+1)
+
+    # Rotate log files to avoid filling up storage
+    def rotateLog(self):
+        
+        self.logFileList = os.listdir() 
+
+        # Delete the oldest allowed logfile if it exists
+        if self.maxLogFileName in self.logFileList:
+            os.remove(self.maxLogFileName)
+        
+        # Rename other log files if they exist 4 becomes 5 etc
+        # Note: when this while loop exits self.currentLogFile is the name of the log file used by writeToDebugLog
+        self.logFileNum = self.maxLogFiles - 1
+        while self.logFileNum > 0:
+            self.currentLogFile = self.logFilePrefix + str(self.logFileNum) + '.log'
+            if self.currentLogFile in self.logFileList:
+                os.rename(self.currentLogFile, self.logFilePrefix + str(self.logFileNum + 1) + '.log')
+            self.logFileNum -= 1
+
+    def writeToDebugLog(self, msg):
+
+        try:
+            rtc=machine.RTC()
+            timestamp=rtc.datetime()
+            timestring="%04d-%02d-%02d %02d:%02d:%02d"%(timestamp[0:3] + timestamp[4:7])
+        except:
+            timestring='0000-00-00 00:00:00'
+
+        maxRetries = 6
+        attempts = 0
+        while attempts < maxRetries:
+            try:
+                attempts += 1
+                with open(self.currentLogFile, 'a') as file:
+                    # Attempt write data to state on disk, then break from while loop if the return (num bytes written) > 0
+                    if file.write(timestring + ' ' + msg + '\n') > 0:
+                        self.writeError = False
+                        break
+            except MemoryError as e:
+                print(f'[{attempts}] Error: Memory allocation failed, retrying: {e}')
+            except Exception as e:
+                print(f'[{attempts}] Error writing to debug log. {e}')
+
 
     def updateScreen(self):
         # Clear the screen
