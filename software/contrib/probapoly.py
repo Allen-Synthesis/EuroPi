@@ -46,25 +46,28 @@ class Poly(EuroPiScript):
         self.step = 1
         self.clockStep = 0
         self.resetTimeout = 2000
-        self.maxPolyVal = 12
+        self.maxPolyVal = 23
         self.upper = 1
         self.lower = 3
+        self.ainValue = 0
         self.upperBernoulliProb = 50
         self.lowerBernoulliProb = 50
-        self.upperProb1 = 50
-        self.upperProb2 = 25
-        self.lowerProb1 = 50
-        self.lowerProb2 = 25
+        self.upperProb1 = 66
+        self.upperProb2 = 33
+        self.lowerProb1 = 66
+        self.lowerProb2 = 33
         self.doubleTime = False
+        self.doubleTimeManualOverride = False
         self.manualPatternLength = False
         self.patternLength = self.lcm(self.upper, self.lower)
         self.patternLengthPrevious = self.patternLength
+        self.ainMode = 3
 
         @din.handler
         def clockRising():
             for cv in cvs:
                 cv.off()
-            self.updateScreen()
+            #self.updateScreen()
             self.handleClock()
             self.clockStep +=1
             self.step += 1
@@ -77,8 +80,8 @@ class Poly(EuroPiScript):
         def clockFalling():
             for cv in cvs:
                 cv.off()
-            if self.doubleTime:
-                self.updateScreen()
+            if self.doubleTimeManualOverride or self.doubleTime:
+                #self.updateScreen()
                 self.handleClock()
                 self.clockStep +=1
                 self.step += 1
@@ -91,7 +94,7 @@ class Poly(EuroPiScript):
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) >  500:
                 # toggle double-time feature
-                self.doubleTime = not self.doubleTime
+                self.doubleTimeManualOverride = not self.doubleTimeManualOverride
             else:
                 # Decrement pattern length by 1
                 self.patternLength -= 1
@@ -126,17 +129,17 @@ class Poly(EuroPiScript):
             cv1.value(1)
 
         # Test 1: Outputs trigger with fixed and unrelated probabilities    
-            # if randint(0,99) < self.upperProb1:
-            #     cv2.value(1)
+            if randint(0,99) < self.upperProb1:
+                cv2.value(1)
 
-            # if randint(0,99) < self.upperProb2:
-            #     cv3.value(1)
+            if randint(0,99) < self.upperProb2:
+                cv3.value(1)
 
         # Test 2: Outputs trigger using a Bernoulli distribution
-            if randint(0,99) < self.upperBernoulliProb:
-                cv2.value(1)
-            else:
-                cv3.value(1)
+            # if randint(0,99) < self.upperBernoulliProb:
+            #     cv2.value(1)
+            # else:
+            #     cv3.value(1)
 
         # Play lower gate
         if self.step == 1 or (self.step-1) % self.lower == 0:
@@ -144,17 +147,17 @@ class Poly(EuroPiScript):
             cv4.value(1)
 
             # Test 1: Outputs trigger with fixed and unrelated probabilities    
-            # if randint(0,99) < self.lowerProb1:
-            #     cv5.value(1)
+            if randint(0,99) < self.lowerProb1:
+                cv5.value(1)
 
-            # if randint(0,99) < self.lowerProb2:
-            #     cv6.value(1)
+            if randint(0,99) < self.lowerProb2:
+                cv6.value(1)
 
         # Test 2: Outputs trigger using a Bernoulli distribution
-            if randint(0,99) < self.lowerBernoulliProb:
-                cv5.value(1)
-            else:
-                cv5.value(1)
+            # if randint(0,99) < self.lowerBernoulliProb:
+            #     cv5.value(1)
+            # else:
+            #     cv6.value(1)
 
     # Generate pattern length by finding the lowest common multiple (LCM) and greatest common divisor (GCD)
     # https://www.programiz.com/python-programming/examples/lcm
@@ -167,29 +170,57 @@ class Poly(EuroPiScript):
         return x
 
     def getUpper(self):
-        self.upper = k1.read_position(self.maxPolyVal) + 1
+        # Mode 2, use the analogue input voltage to set the upper ratio value
+        if self.ainValue > 0.9 and self.ainMode == 2:
+            self.upper = int((self.maxPolyVal / 100) * self.ainValue) + 1
+        else:
+            self.upper = k1.read_position(self.maxPolyVal) + 1
 
     def getLower(self):
         self.lower = k2.read_position(self.maxPolyVal) + 1
 
+    def getAinValue(self):
+        self.ainValue = 100 * ain.percent()
+        #print(self.ainValue)
+
     def updateScreen(self):
         # Clear the screen
         oled.fill(0)
-        oled.text(str(self.upper) + ':' + str(self.lower) + ' (' + str(self.step) + '/' + str(self.patternLength) + ')', 0, 0, 1)
-        if self.doubleTime:
+        oled.text(str(self.upper) + ':' + str(self.lower), 0, 0, 1)
+        oled.text(str(self.step) + '/' + str(self.patternLength), 72, 0, 1)
+        oled.text(str(self.upperProb1) + '|' + str(self.lowerProb1), 0, 12, 1)
+        #oled.text(str(self.lowerProb1) + '|' + str(self.lowerProb2), 50, 16, 1)
+
+        if self.doubleTimeManualOverride or self.doubleTime:
             oled.text('x2', 0, 24, 1)
         if self.manualPatternLength:
-            oled.text('mP', 80, 24, 1)
+            oled.text('M', 120, 24, 1)
         oled.show()
 
     def main(self):
         while True:
-            self.getLower()
+            self.getLower() 
             self.getUpper()
+            self.getAinValue()
+            self.updateScreen()
+
+            # CV toggles doubleTime
+            if self.ainMode == 1:
+                if self.ainValue > 10:
+                    #print(f'{self.ainValue} Setting doubleTime to True')
+                    self.doubleTime = True
+                else:
+                    self.doubleTime = False
+            # CV controls probability
+            elif self.ainValue >= 0.9 and self.ainMode == 3:
+                self.upperProb1 = int(self.ainValue * 2)
+                self.upperProb2 = int(self.ainValue * 2)
+                self.lowerProb1 = int(self.ainValue * 1)
+                self.lowerProb2 = int(self.ainValue * 1)
+
             if not self.manualPatternLength:
                 self.patternLength = self.lcm(self.upper, self.lower)
-            #self.patternLength = 16
-            #self.updateScreen()
+
 
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
             if self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
