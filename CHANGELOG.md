@@ -1,5 +1,18 @@
 # Change Log
 
+### 2022-04-28
+
+- [Release] version 0.4.0
+- [New Script] Hamlet, mod to Consequencer adding two voice tracks #129
+- [New Script] Bernoulli gates, dual Bernoulli gates #104
+- [New Script] CVecorder, record cv sequences #121
+- [Bug Fix] coin_toss triggering on falling slope instead of rise #117
+- [Bug Fix] remove for loop that was calling _set_duty() multiple times #126
+- [Bug Fix] Poly-rhythmic Seq sequence reset #130
+- [Other] add a test for menu's imports #120
+- [Other] Harmonic LFOs updates #127, #128
+
+
 ### 2022-04-13
 
 - Consequencer: Moved self.reset_timeout = 500 to a better place
