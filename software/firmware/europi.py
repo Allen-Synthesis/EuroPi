@@ -59,6 +59,18 @@ CHAR_WIDTH = 8
 CHAR_HEIGHT = 8
 
 
+
+# EuroPi error class
+
+class EuroPiError(Exception):
+    def __init__(self, error_code):
+        oled.fill(0)
+        oled.centre_text(f'Error {error_code}')
+        oled.show()
+        time.sleep(5)
+        oled.fill(0)
+
+
 # Helper functions.
 
 def clamp(value, low, high):
@@ -498,3 +510,5 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
+
+
