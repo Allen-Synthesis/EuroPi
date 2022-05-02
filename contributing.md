@@ -1,7 +1,11 @@
 # Contributing to the EuroPi Repository
 
-Contributing is welcomed and encouraged for anyone, from programming and/or synth experts to complete novices.  
-This repo is a collection of resources, so if there are any resources that you have created yourself, or found online that you think others would benefit from, then please consider submitting them here!  
+Contributing is welcomed and encouraged for anyone, from programming or synth experts to complete novices.  
+This repo is a collection of resources, so if there are any resources that you have created yourself, or found online 
+that you think others would benefit from, then please consider submitting them here!
+
+Contributions are made via a GitHub Pull Request (PR). The rest of this document covers that process as well as the responsibilities of the PR participants. It is expected that PR authors become familiar with the process described here
+before submitting their first PR.
 
 ## Contents
 1. [Overview]()
@@ -25,35 +29,58 @@ Outline
 
 
 ## Overview
-  * Who can contribute and what can be contributed (from original doc)
   * What is a PR and how does the process work in general
-  * ask for help and where to get it (from tips section)
+
+A PR is simply a set of changes that the author would like to be added to a repository. In the EuroPi repository, the 
+most common example would be a new script in the contrib directory. The PR process allows the maintainers of the 
+repository manage the contributions in a consistent way, and provides a means for non-maintainers to add changes to the repository.
+
+The PR process consists of a few steps. First, the author makes their desired changes on a branch in their own fork of 
+the main EuroPi repository. Second, the author opens a PR, submitting the changes for review. Next, the reviewers and 
+author work together to ensure that the changes are appropriate for the repository. Finally, the changes are merged into
+the main repository. The details of this process are described below.
+
+If you need any help with any stage of this process (or anything else), please don't hesitate to ask questions in the 
+[Discord Server](TODO: have Rory make a non-expiring link), [Discussions page](https://github.com/Allen-Synthesis/EuroPi/discussions), or email Rory directly at [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk).
+
+
 ## Responsibilities of PR Participants
-  * friendly, supportive, respectful
-  * goal to improve the EuroPi project
+
+It is expected that everyone participating in the PR process acts in a friendly, supportive, and respectful manner. 
+Always assume that participants are acting in good faith, towards the common goal of improving the EuroPi project.
+
 ### Responsibilities of the PR author
-  * Provide a complete and well described change
-  * follow PR guidelines below
+
+It is the responsibility of the PR author to follow the [guidelines]() outlined in this document. Additionally, the PR 
+author should, to the best of their ability, provide a complete and well thought out PR that is ready to merge.
+
 ### Responsibilities of the PR reviewer
-  * guide the PR process towards a merge
-  * ensure that the author is aware of these guidelines
-  * maintain the quality of the project
-  * enforce the guidelines
-  * understand the impact of the PR to the larger project
+
+It is the responsibility of the PR reviewer(s) to guide the author through the review process. They should verify that the author understands their responsibilities as outlined here.
+
+The PR reviewer is also responsible for maintaining the quality of the project by enforcing these guidelines and steering the author towards best practices. The reviewer must also consider the impact of the PR in the scope of the larger EuroPi project. 
+
   * clearly describe the intention of each comment (requirement or suggestion)
   * not impose any undue requirements on the author
 ## Working with Git
   * Steps to create a PR (from original doc below) (consider third party docs)
   * add branch step (allows fork divergence)
   * add details on how to allow a fork to diverge
+
 ## What to expect during the PR process
-  * Steps
-    1. open
-    2. comments and discussion
-    3. edit
-    4. back to 2
-    5. merge
-  * takes time (from tips section)
+
+A PR will typically progress through the following steps:
+    
+  1. PR opened by author
+  2. Reviewers add comments, questions, discussion points, and request changes
+  3. The author responds to these comments, and makes requested changes
+  4. Repeat steps 2 and 3 until reviewers approve the PR
+  6. PR is merged into the main branch
+   
+The PR process is expected to take time, in the range of days to weeks. This repository is run mainly by volunteers, 
+with other jobs and families, so your Pull Request may take some time before it's allowed to merge. This will just 
+depend on what other things the maintainers have going on at any given time, please don't think anyone is ignoring your contributions!
+
   * comments are meant to be supportive not negative (from tips section)
   * details on types of comments
     * required change
@@ -104,7 +131,6 @@ If you need any help fulfilling a change request, just add a comment and any one
   
   
 ### Tips and things to keep in mind
-1. This repository is run mainly by volunteers, with other jobs and families, so your Pull Request may take some time before it's allowed to merge. This will just depend on what other things the maintainers have on at any given time, please don't think anyone is ignoring your contributions!
 2. Please try to keep your Pull Requests to as few a files as possible. For example: if you have made some spelling changes to a main file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull Requests so that the workload for the maintainers is more manageable. Keeping each PR smaller will also mean that it will be merged much faster!
 3. Comments or reviews on your Pull Requests are *never* intended to be negative, however if you are unused to the matter of fact way that Git reviews are completed it may seem that way. If you believe someone is being genuinely antagonistic, please contact the Rory [via email](mailto:contact@allensynthesis.co.uk) or [on Discord](https://discordapp.com/users/roryjamesallen#6370).
 4. If you need any help with any stage of this process (or anything else), please don't hesistate to ask questions in the [Discussions page](https://github.com/Allen-Synthesis/EuroPi/discussions) or email Rory directly at [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk).
