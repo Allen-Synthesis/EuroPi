@@ -35,7 +35,7 @@ author work together to ensure that the changes are appropriate for the reposito
 the main repository. The details of this process are described below.
 
 If you need any help with any stage of this process (or anything else), please don't hesitate to ask questions in the 
-[Discord Server](TODO: have Rory make a non-expiring link), [Discussions page](https://github.com/Allen-Synthesis/EuroPi/discussions), 
+[Discord Server](https://discord.gg/2eFyqP2rSs), [Discussions page](https://github.com/Allen-Synthesis/EuroPi/discussions), 
 or email Rory directly at [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk).
 
 
