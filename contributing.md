@@ -64,15 +64,15 @@ towards best practices. At a deeper level, the reviewer must also consider the i
 larger EuroPi project. This is particularly important on changes that impact the EuroPi libraries or documentation.
 
 Finally, the reviewer should not impose any undue requirements on the author. The reviewer should not require that the 
-author make changes to portions of they repository that are unrelated to their code. If a change uncovers an issue in 
+author make changes to portions of the repository that are unrelated to their code. If a change uncovers an issue in 
 the underlying project it is not the authors responsibility to fix it. Though the author should understand that the
 merging of their PR may be contingent on such a fix being completed.
 
 
 ## Working with Git
   * Steps to create a PR (from original doc below) (consider third party docs)
-  * add branch step (allows fork divergence)
-  * add details on how to allow a fork to diverge
+  * Add branch step (allows fork divergence)
+  * Add details on how to allow a fork to diverge
 
 ## What to expect during the PR process
 
@@ -117,17 +117,17 @@ discretion.
 
 Please try to keep Pull Requests to as few a files as possible. For example: if you have made some spelling changes to a main file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull Requests so that the workload for the maintainers is more manageable. Keeping each PR smaller will also mean that it will be merged much faster!
 
-  * respect existing organization
-  * spelling and grammar
+  * Respect existing organization
+  * Spelling and grammar
 ### Documentation
   * Markdown must render properly on github
   * Api docs must build successfully
 ### Contrib scripts
-  * user documentation
+  * User documentation
   * Menu participation requirements
 ### Firmware
-  * pep8 
-  * documentation
+  * Pep8 
+  * Documentation
   * Testing requirements (automated or otherwise)
 
 <br>
