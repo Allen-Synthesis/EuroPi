@@ -22,11 +22,6 @@ before submitting their first PR.
 
 4. [What to expect during the PR process]()
 
-<br>
-<hr>
-Outline
-<hr>
-
 
 ## Overview
   * What is a PR and how does the process work in general
