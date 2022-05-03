@@ -56,7 +56,7 @@ the author understands their responsibilities as outlined here and what they nee
 
 When commenting on a PR, the reviewer should make the intention of each comment clear. Specifically, is the reviewer 
 requesting a change, and is that change required for PR approval. This is done by prefixing each comment with one of the
-following labels **\[required\]**, **\[optional\]**, **\[question\]**, **\[discussion\]**. A more detailed discussion of these labels can be found [below](TODO).
+following labels **\[required\]**, **\[optional\]**, **\[question\]**, **\[discussion\]**. A more detailed discussion of these labels can be found [below](#comment-labels).
 
 It is the responsibility of the PR reviewer(s) to reasonably understand the change that they are reviewing, as they are responsible for ensuring that the proposed change has a positive impact on the project and 
 aligns with the project's goals. On the surface, this is done by enforcing the PR guidelines and steering the author 
