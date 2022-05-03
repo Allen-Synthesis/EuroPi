@@ -24,7 +24,6 @@ before submitting their first PR.
 
 
 ## Overview
-  * What is a PR and how does the process work in general
 
 A PR is simply a set of changes that the author would like to be added to a repository. In the EuroPi repository, the 
 most common example would be a new script in the contrib directory. The PR process allows the maintainers of the 
