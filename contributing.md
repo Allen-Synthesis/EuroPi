@@ -41,7 +41,8 @@ author work together to ensure that the changes are appropriate for the reposito
 the main repository. The details of this process are described below.
 
 If you need any help with any stage of this process (or anything else), please don't hesitate to ask questions in the 
-[Discord Server](TODO: have Rory make a non-expiring link), [Discussions page](https://github.com/Allen-Synthesis/EuroPi/discussions), or email Rory directly at [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk).
+[Discord Server](TODO: have Rory make a non-expiring link), [Discussions page](https://github.com/Allen-Synthesis/EuroPi/discussions), 
+or email Rory directly at [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk).
 
 
 ## Responsibilities of PR Participants
@@ -56,12 +57,24 @@ author should, to the best of their ability, provide a complete and well thought
 
 ### Responsibilities of the PR reviewer
 
-It is the responsibility of the PR reviewer(s) to guide the author through the review process. They should verify that the author understands their responsibilities as outlined here.
+It is the responsibility of the PR reviewer(s) to guide the author through the review process. They should verify that 
+the author understands their responsibilities as outlined here and what they need to do at each step of the process.
 
-The PR reviewer is also responsible for maintaining the quality of the project by enforcing these guidelines and steering the author towards best practices. The reviewer must also consider the impact of the PR in the scope of the larger EuroPi project. 
+When commenting on a PR, the reviewer should make the intention of each comment clear. Specifically, is the reviewer 
+requesting a change, and is that change required for PR approval. This is done by prefixing each comment with one of the
+following labels **\[required\]**, **\[optional\]**, **\[question\]**, **\[discussion\]**. A more detailed discussion of these labels can be found [below](TODO).
 
-  * clearly describe the intention of each comment (requirement or suggestion)
-  * not impose any undue requirements on the author
+It is the responsibility of the PR reviewer(s) to reasonably understand the change that they are reviewing, as they are responsible for ensuring that the proposed change has a positive impact on the project and 
+aligns with the project's goals. On the surface, this is done by enforcing the PR guidelines and steering the author 
+towards best practices. At a deeper level, the reviewer must also consider the impact of the PR in the scope of the 
+larger EuroPi project. This is particularly important on changes that impact the EuroPi libraries or documentation.
+
+Finally, the reviewer should not impose any undue requirements on the author. The reviewer should not require that the 
+author make changes to portions of they repository that are unrelated to their code. If a change uncovers an issue in 
+the underlying project it is not the authors responsibility to fix it. Though the author should understand that the
+merging of their PR may be contingent on such a fix being completed.
+
+
 ## Working with Git
   * Steps to create a PR (from original doc below) (consider third party docs)
   * add branch step (allows fork divergence)
@@ -72,24 +85,44 @@ The PR reviewer is also responsible for maintaining the quality of the project b
 A PR will typically progress through the following steps:
     
   1. PR opened by author
-  2. Reviewers add comments, questions, discussion points, and request changes
-  3. The author responds to these comments, and makes requested changes
-  4. Repeat steps 2 and 3 until reviewers approve the PR
+  2. Reviewers add comments in the form of questions, discussion points, suggestions and required changes.
+  3. PR participants discuss the comments
+  4. The author makes requested changes
+  5. Repeat steps 2 - 4 until reviewers approve the PR
   6. PR is merged into the main branch
-   
-The PR process is expected to take time, in the range of days to weeks. This repository is run mainly by volunteers, 
-with other jobs and families, so your Pull Request may take some time before it's allowed to merge. This will just 
-depend on what other things the maintainers have going on at any given time, please don't think anyone is ignoring your contributions!
 
-  * comments are meant to be supportive not negative (from tips section)
-  * details on types of comments
-    * required change
-    * optional change
-    * discussion
+A comment left by a reviewer, even a **\[required\]** change, is not meant to be final, it is meant to be the beginning
+of a discussion. It is perfectly reasonable for a reviewer to require a change, only to have a discussion with the author
+that clarifies their understanding and then changes their opinion.
+
+Comments or reviews on Pull Requests are *never* intended to be negative, however if you are unused to the matter of 
+fact way that Git reviews are completed it may seem that way. If you believe someone is being genuinely antagonistic,
+please contact the Rory [via email](mailto:contact@allensynthesis.co.uk) or [on Discord](https://discordapp.com/users/roryjamesallen#6370).
+
+The PR process is expected to take time, in the range of days to weeks. This repository is run mainly by volunteers, 
+with other jobs and families, so a Pull Request may take some time before it's allowed to merge. This will just 
+depend on what other things the maintainers have going on at any given time, please don't think anyone is ignoring your
+contributions!
+
+## Comment labels
+
+  * **\[required\]** - The change requested in this comment is required for the reviewers approval. Typically this will be
+based on the PR guidelines. If the request is not backed up by the PR guidelines, the reviewer should explain their reasoning.
+  * **\[optional\]** - The change requested in this comment is a suggestion that the reviewer thinks will improve the 
+PR, but is not required for approval. It can be completed at the author's discretion.
+  * **\[question\]** - The reviewer is asking the author a question to better their understanding of the change. No 
+change is requested, but it is likely that an answer to the question is required for the reviewer's understanding, and 
+therefore approval.
+  * **\[discussion\]** - The reviewer is starting a discussion on a topic related to the proposed change. The discussion
+may later result in requesting changes to the PR, the opening of new issues, or opening new PRs at the participants
+discretion.
+
 ## PR guidelines and requirements
   * PR Description requirements
 ### General
-  * Favor small cohesive PRs (from tips section)
+
+Please try to keep Pull Requests to as few a files as possible. For example: if you have made some spelling changes to a main file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull Requests so that the workload for the maintainers is more manageable. Keeping each PR smaller will also mean that it will be merged much faster!
+
   * respect existing organization
   * spelling and grammar
 ### Documentation
@@ -130,7 +163,3 @@ If you need any help fulfilling a change request, just add a comment and any one
 11. Pat yourself on the back for sharing your knowledge with the community!
   
   
-### Tips and things to keep in mind
-2. Please try to keep your Pull Requests to as few a files as possible. For example: if you have made some spelling changes to a main file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull Requests so that the workload for the maintainers is more manageable. Keeping each PR smaller will also mean that it will be merged much faster!
-3. Comments or reviews on your Pull Requests are *never* intended to be negative, however if you are unused to the matter of fact way that Git reviews are completed it may seem that way. If you believe someone is being genuinely antagonistic, please contact the Rory [via email](mailto:contact@allensynthesis.co.uk) or [on Discord](https://discordapp.com/users/roryjamesallen#6370).
-4. If you need any help with any stage of this process (or anything else), please don't hesistate to ask questions in the [Discussions page](https://github.com/Allen-Synthesis/EuroPi/discussions) or email Rory directly at [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk).
