@@ -45,11 +45,11 @@ If you need any help with any stage of this process (or anything else), please d
 
 # Responsibilities of PR Participants
 
-It is expected that everyone participating in the PR process acts in a friendly, supportive, and respectful manner. Always assume that participants are acting in good faith, towards the common goal of improving the EuroPi project.
+It is expected that everyone participating in the PR process acts in a friendly, supportive, and respectful manner. Always assume that teh other participants are acting in good faith, towards the common goal of improving the EuroPi project.
 
 ## Responsibilities of the PR author
 
-It is the responsibility of the PR author to follow the [guidelines]() outlined in this document. Additionally, the PR author should, to the best of their ability, provide a complete and well thought out PR that is ready to merge.
+It is the responsibility of the PR author to follow the [guidelines](#pr-guidelines-and-requirements) outlined in this document. Additionally, the PR author should, to the best of their ability, provide a complete and well thought out PR that is ready to merge.
 
 ## Responsibilities of the PR reviewer
 
@@ -59,38 +59,41 @@ When commenting on a PR, the reviewer should make the intention of each comment 
 
 It is the responsibility of the PR reviewer(s) to reasonably understand the change that they are reviewing, as they are responsible for ensuring that the proposed change has a positive impact on the project and aligns with the project's goals. On the surface, this is done by enforcing the PR guidelines and steering the author towards best practices. At a deeper level, the reviewer must also consider the impact of the PR in the scope of the larger EuroPi project. This is particularly important on changes that impact the EuroPi libraries or documentation.
 
-Finally, the reviewer should not impose any undue requirements on the author. The reviewer should not require that the author make changes to portions of the repository that are unrelated to their code. If a change uncovers an issue in the underlying project it is not the authors responsibility to fix it. Though the author should understand that the merging of their PR may be contingent on such a fix being completed.
+Finally, the reviewer should not impose any undue requirements on the author. The reviewer should not require that the author make changes to portions of the repository that are unrelated to their code. If a change uncovers an issue in the underlying project, it is not the authors responsibility to fix it. Though the author should understand that the merging of their PR may be contingent on such a fix being completed.
 
 
 # Working with Git
 
 Working with Git itself is outside the scope of this document, but if you are new to git there are plenty of resources available to help you:
 
+  * [EuroPi's git_help](/git_help.md)
   * [GitHub's own docs:](https://docs.github.com)
     * [Working with Forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks)
     * [Proposing Changes](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests)
   * [How To: Fork a GitHub Repository & Submit a Pull Request](https://jarv.is/notes/how-to-pull-request-fork-github/)
 
 
-When making changes that you intend to contribute to the EuroPi project it's important to make use of git's ``branch`` feature. While it is possible to make changes on the ``main`` branch of your fork and submit a PR from there, you will have a much nicer experience if you use a separate branch for each of your PRs. Working with branches means that you can switch between multiple efforts easily. This will be useful for working on a second change while the first makes its way through this PR process. In addition, working on branches will allow your fork's ``main`` to diverge from EuroPi's if you'd like.
+When making changes that you intend to contribute to the EuroPi project it's important to make use of git's ``branch`` feature. While it is possible to make changes on the ``main`` branch of your fork and submit a PR from there, you will have a much nicer experience if you use a separate branch for each of your PRs. Working with branches means that you can switch between multiple efforts easily. This will be useful for working on a second change while the first makes its way through this PR process. In addition, working on branches will allow your fork's ``main`` to either remain in sync with or diverge from EuroPi's `main` as your needs change.
 
 # What to expect during the PR process
 A PR will typically progress through the following steps:
     
   1. PR opened by author
-  2. Reviewers add comments in the form of questions, discussion points, suggestions and required changes.
+  2. Reviewers add comments in the form of questions, discussion points, suggestions, and required changes.
   3. PR participants discuss the comments
-  4. The author makes requested changes
+  4. The author makes any requested changes
   5. Repeat steps 2 - 4 until reviewers approve the PR
   6. PR is merged into the main branch
 
 A comment left by a reviewer, even a **\[required\]** change, is not meant to be final, it is meant to be the beginning of a discussion. It is perfectly reasonable for a reviewer to require a change, only to have a discussion with the author that clarifies their understanding and then changes their opinion.
 
-Comments or reviews on Pull Requests are *never* intended to be negative, however if you are unused to the matter of fact way that Git reviews are completed it may seem that way. If you believe someone is being genuinely antagonistic, please contact the Rory [via email](mailto:contact@allensynthesis.co.uk) or [on Discord](https://discordapp.com/users/roryjamesallen#6370).
+Comments or reviews on Pull Requests are *never* intended to be negative, however if you are not used to the matter of fact way that Git reviews are completed it may seem that way. If you believe someone is being genuinely antagonistic, please contact the Rory [via email](mailto:contact@allensynthesis.co.uk) or [on Discord](https://discordapp.com/users/roryjamesallen#6370).
 
 The PR process is expected to take time, in the range of days to weeks. This repository is run mainly by volunteers, with other jobs and families, so a Pull Request may take some time before it's allowed to merge. This will just depend on what other things the maintainers have going on at any given time, please don't think anyone is ignoring your contributions!
 
 ## Comment labels
+
+These labels prefix each of the reviewer's comments in order to indicate their intention. 
 
 | Label |   |
 | ----- | - |
@@ -107,14 +110,14 @@ This section outlines the guidelines and requirements that a successful PR must 
 
 ### Provide a detailed Description
 
-When opening a PR you will have the opportunity to provide a description. This description introduces your changes to the reviewers, provides any necessary context and is a place for you to describe your motivation. The PR itself shows _what_ is being changed, the description is the _why_. In many cases the description will be relatively simple. For example: "This PR adds a new Harmonic LFO script to the contrib directory" or "This PR updates the documentation for several library functions to make their use more clear." In the case of a more complex change an more detailed description will be necessary.
+When opening a PR you will have the opportunity to provide a description. This description introduces your changes to the reviewers, provides any necessary context, and is a place for you to describe your motivation. The PR itself shows _what_ is being changed, the description is the _why_. In many cases the description will be relatively simple. For example: "This PR adds a new Harmonic LFO script to the contrib directory" or "This PR updates the documentation for several library functions to make their use more clear." In the case of a more complex change a more detailed description will be necessary.
 
 ### Keep PRs cohesive and focused
-Please try to keep Pull Requests to as few changes as possible. For example: if you have made some spelling changes to a main file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull Requests so that the workload for the maintainers is more manageable. Keeping each PR small will also mean that each can be merged and worked on independently, resulting in faster approvals.
+Please try to keep Pull Requests to as few changes as possible. For example: if you have made some spelling changes to this markdown file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull Requests so that the workload for the maintainers is more manageable. Keeping each PR small will also mean that each can be worked on and merged independently, resulting in faster approvals.
 
 ### Respect existing organization
 
-When adding new files to the project, follow the existing organizational structure which is summarized below.
+When adding new files to the project, follow the existing organizational structure as summarized here:
 
 | Directory | Purpose |
 | ----------| ------- |
@@ -144,6 +147,8 @@ The markdown must use [github's markdown style](https://docs.github.com/en/get-s
 The [API doc site](https://allen-synthesis.github.io/EuroPi/) must build successfully. See the [docs readme](/docs/README.md) for more details.
 
 ## Contrib scripts
+
+PRs that add or make changes to scripts in the [contrib](/software/contrib/) directory must meet the following requirements.
 
 ### Submission Format
 
