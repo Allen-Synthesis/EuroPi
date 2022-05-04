@@ -124,21 +124,114 @@ may later result in requesting changes to the PR, the opening of new issues, or 
 discretion.
 
 ## PR guidelines and requirements
-  * PR Description requirements
+
+This section outlines the guidelines and requirements that a successful PR must follow.
+
 ### General
 
-Please try to keep Pull Requests to as few a files as possible. For example: if you have made some spelling changes to a main file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull Requests so that the workload for the maintainers is more manageable. Keeping each PR smaller will also mean that it will be merged much faster!
+#### Provide a detailed Description
 
-  * Respect existing organization
-  * Spelling and grammar
+When opening a PR you will have the opportunity to provide a description. This description introduces your changes to 
+the reviewers, provides any necessary context and is a place for you to describe your motivation. The PR itself shows
+_what_ is being changed, the description is the _why_. In many cases the description will be relatively simple. For 
+example: "This PR adds a new Harmonic LFO script to the contrib directory" or "This PR updates the documentation for 
+several library functions to make their use more clear." In the case of a more complex change an more detailed 
+description will be necessary.
+
+#### Keep PRs cohesive and focused
+Please try to keep Pull Requests to as few changes as possible. For example: if you have made some spelling changes to a
+main file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull 
+Requests so that the workload for the maintainers is more manageable. Keeping each PR small will also mean that each
+can be merged and worked on independently, resulting in faster approvals.
+
+#### Respect existing organization
+
+When adding new files to the project, follow the existing organizational structure which is summarized below.
+
+| Directory | Purpose |
+| ----------| ------- |
+| `docs` | Files related to the [API doc site](https://allen-synthesis.github.io/EuroPi/) |
+| `hardware` | Files related to the EuroPi's hardware |
+| `scripts` | Scripts that are useful during development. |
+| `software` | Files related to the EuroPi's software |
+| `software/contrib` | User contributed scripts that run on the EuroPi |
+| `software/firmware` | Files that make up the EuroPi firmware (API) |
+| `software/tests` | Automated tests for both the firmware and contrib scripts. |
+
+
+#### Spelling and grammar
+
+It is expected that any prose is written clearly and follows english grammar rules. British english spelling is favored.
+
 ### Documentation
-  * Markdown must render properly on github
-  * Api docs must build successfully
+
+PRs that make changes to documentation, that is `*.md` files or anything in the [docs](/docs) directory must meet the
+following requirements.
+
+#### Markdown must render properly on github
+The markdown must use [github's markdown style](https://docs.github.com/en/get-started/writing-on-github) and render 
+properly when viewing the project on [github.com/Allen-Synthesis](https://github.com/Allen-Synthesis)
+  
+#### Api docs must build successfully
+
+The [API doc site](https://allen-synthesis.github.io/EuroPi/) must build successfully. See the [docs 
+readme](/docs/README.md) for more details.
+
 ### Contrib scripts
-  * User documentation
-  * Menu participation requirements
+
+#### Submission Format
+Please include:
+- Your name (or username) and the date you uploaded the program (dd/mm/yy) as a comment at the top of the file
+- Either a description as a comment at the top of the code itself if the program is very simple/obvious, or as a file with the exact same name as the program but with the '.md' suffix. It's much preferred to always have an 'md' file rather than a comment, as it's a much nicer way to view the program's function and a place for you to explain how the inputs and outputs are used.
+- The labels that apply to the program. You can come up with any labels, but some suggestions include:
+
+    LFO, Quantiser, Random, CV Generation, CV Modulation, Sampling, Controller
+
+Just write any labels that apply to your program, including any not listed here but that you think are relevant, in the 
+'md' file for your program. Think of this as the second most obvious way to see what your program does, after the title.
+
+#### File Naming
+Please use all lowercase and separate words with underscores for your program names. If additional resources are needed,
+such as image files, a directory with the same name and suffixed with `docs` can be included.
+e.g. the files associated with a program for a Sample and Hold function would look as follows:  
+
+```
+software/contrib
+├── sample_and_hold_docs
+│   └── sample_and_hold.png
+├── sample_and_hold.md
+├── sample_and_hold.py
+```
+
+#### Menu Inclusion
+
+In order to be included in the menu a program needs to meet a few additional requirements. See 
+[menu.md](/software/contrib/menu.md) for details. Programs are not required to participate in the menu in order to be 
+accepted, but it is nice.
+
+
+
 ### Firmware
-  * Pep8 
-  * Documentation
-  * Testing requirements (automated or otherwise)
+
+Changes to firmware code must adhere to more stringent requirements than other changes. Firmware changes have the 
+potential to affect every contrib script that runs on the EuroPi as well as the behavior of the module itself. Any
+change must have a clear and well described purpose and be well tested against the suite of available contrib scripts.
+
+#### Code Style Requirements
+
+There are currently no code style requirements for the firmware code, however we should favor python best practices such
+as [pep8](https://peps.python.org/pep-0008/) when possible.
+
+#### Documentation
+
+Changes or additions to public API functions must include the corresponding updates to their documentation and render
+properly on the [API doc site](https://allen-synthesis.github.io/EuroPi/).
+
+#### Testing
+
+All existing automated tests must pass. An effort should be made to improve the test suite by adding tests for new or 
+changed functionality.
+
+
+
 
