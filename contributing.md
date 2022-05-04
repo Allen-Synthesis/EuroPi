@@ -92,10 +92,12 @@ The PR process is expected to take time, in the range of days to weeks. This rep
 
 ### Comment labels
 
-  * **\[required\]** - The change requested in this comment is required for the reviewers approval. Typically this will be based on the PR guidelines. If the request is not backed up by the PR guidelines, the reviewer should explain their reasoning.
-  * **\[optional\]** - The change requested in this comment is a suggestion that the reviewer thinks will improve the PR, but is not required for approval. It can be completed at the author's discretion.
-  * **\[question\]** - The reviewer is asking the author a question to better their understanding of the change. No change is requested, but it is likely that an answer to the question is required for the reviewer's understanding, and therefore approval.
-  * **\[discussion\]** - The reviewer is starting a discussion on a topic related to the proposed change. The discussion may later result in requesting changes to the PR, the opening of new issues, or opening new PRs at the participants discretion.
+| Label |   |
+| ----- | - |
+| **\[required\]** | The change requested in this comment is required for the reviewers approval. Typically this will be based on the PR guidelines. If the request is not backed up by the PR guidelines, the reviewer should explain their reasoning. |
+| **\[optional\]** | The change requested in this comment is a suggestion that the reviewer thinks will improve the PR, but is not required for approval. It can be completed at the author's discretion. |
+| **\[question\]** | The reviewer is asking the author a question to better their understanding of the change. No change is requested, but it is likely that an answer to the question is required for the reviewer's understanding, and therefore approval. |
+| **\[discussion\]** | The reviewer is starting a discussion on a topic related to the proposed change. The discussion may later result in requesting changes to the PR, the opening of new issues, or opening new PRs at the participants discretion. |
 
 ## PR guidelines and requirements
 
