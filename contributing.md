@@ -4,37 +4,37 @@ Contributing is welcomed and encouraged for anyone, from programming or synth ex
 
 Contributions are made via a GitHub Pull Request (PR). The rest of this document covers that process as well as the responsibilities of the PR participants. It is expected that PR authors become familiar with the process described here before submitting their first PR.
 
-## Contents
+# Contents
 - [Contributing to the EuroPi Repository](#contributing-to-the-europi-repository)
-  - [Contents](#contents)
-  - [Overview](#overview)
-  - [Responsibilities of PR Participants](#responsibilities-of-pr-participants)
-    - [Responsibilities of the PR author](#responsibilities-of-the-pr-author)
-    - [Responsibilities of the PR reviewer](#responsibilities-of-the-pr-reviewer)
-  - [Working with Git](#working-with-git)
-  - [What to expect during the PR process](#what-to-expect-during-the-pr-process)
-    - [Comment labels](#comment-labels)
-  - [PR guidelines and requirements](#pr-guidelines-and-requirements)
-    - [General](#general)
-      - [Provide a detailed Description](#provide-a-detailed-description)
-      - [Keep PRs cohesive and focused](#keep-prs-cohesive-and-focused)
-      - [Respect existing organization](#respect-existing-organization)
-      - [Spelling and grammar](#spelling-and-grammar)
-    - [Documentation](#documentation)
-      - [Markdown must render properly on github](#markdown-must-render-properly-on-github)
-      - [Api docs must build successfully](#api-docs-must-build-successfully)
-    - [Contrib scripts](#contrib-scripts)
-      - [Submission Format](#submission-format)
-      - [File Naming](#file-naming)
-      - [Menu Inclusion](#menu-inclusion)
-    - [Firmware](#firmware)
-      - [Code Style Requirements](#code-style-requirements)
-      - [Documentation](#documentation-1)
-      - [Testing](#testing)
+- [Contents](#contents)
+- [Overview](#overview)
+- [Responsibilities of PR Participants](#responsibilities-of-pr-participants)
+  - [Responsibilities of the PR author](#responsibilities-of-the-pr-author)
+  - [Responsibilities of the PR reviewer](#responsibilities-of-the-pr-reviewer)
+- [Working with Git](#working-with-git)
+- [What to expect during the PR process](#what-to-expect-during-the-pr-process)
+  - [Comment labels](#comment-labels)
+- [PR guidelines and requirements](#pr-guidelines-and-requirements)
+  - [General](#general)
+    - [Provide a detailed Description](#provide-a-detailed-description)
+    - [Keep PRs cohesive and focused](#keep-prs-cohesive-and-focused)
+    - [Respect existing organization](#respect-existing-organization)
+    - [Spelling and grammar](#spelling-and-grammar)
+  - [Documentation](#documentation)
+    - [Markdown must render properly on github](#markdown-must-render-properly-on-github)
+    - [Api docs must build successfully](#api-docs-must-build-successfully)
+  - [Contrib scripts](#contrib-scripts)
+    - [Submission Format](#submission-format)
+    - [File Naming](#file-naming)
+    - [Menu Inclusion](#menu-inclusion)
+  - [Firmware](#firmware)
+    - [Code Style Requirements](#code-style-requirements)
+    - [Documentation](#documentation-1)
+    - [Testing](#testing)
 
 
 
-## Overview
+# Overview
 
 A PR is simply a set of changes that the author would like to be added to a repository. In the EuroPi repository, the most common example would be a new script in the contrib directory. The PR process allows the maintainers of the repository manage the contributions in a consistent way, and provides a means for non-maintainers to add changes to the repository.
 
@@ -43,15 +43,15 @@ The PR process consists of a few steps. First, the author makes their desired ch
 If you need any help with any stage of this process (or anything else), please don't hesitate to ask questions in the [Discord Server](https://discord.gg/2eFyqP2rSs), [Discussions page](https://github.com/Allen-Synthesis/EuroPi/discussions), or email Rory directly at [contact@allensynthesis.co.uk](mailto:contact@allensynthesis.co.uk).
 
 
-## Responsibilities of PR Participants
+# Responsibilities of PR Participants
 
 It is expected that everyone participating in the PR process acts in a friendly, supportive, and respectful manner. Always assume that participants are acting in good faith, towards the common goal of improving the EuroPi project.
 
-### Responsibilities of the PR author
+## Responsibilities of the PR author
 
 It is the responsibility of the PR author to follow the [guidelines]() outlined in this document. Additionally, the PR author should, to the best of their ability, provide a complete and well thought out PR that is ready to merge.
 
-### Responsibilities of the PR reviewer
+## Responsibilities of the PR reviewer
 
 It is the responsibility of the PR reviewer(s) to guide the author through the review process. They should verify that the author understands their responsibilities as outlined here and what they need to do at each step of the process.
 
@@ -62,7 +62,7 @@ It is the responsibility of the PR reviewer(s) to reasonably understand the chan
 Finally, the reviewer should not impose any undue requirements on the author. The reviewer should not require that the author make changes to portions of the repository that are unrelated to their code. If a change uncovers an issue in the underlying project it is not the authors responsibility to fix it. Though the author should understand that the merging of their PR may be contingent on such a fix being completed.
 
 
-## Working with Git
+# Working with Git
 
 Working with Git itself is outside the scope of this document, but if you are new to git there are plenty of resources available to help you:
 
@@ -74,7 +74,7 @@ Working with Git itself is outside the scope of this document, but if you are ne
 
 When making changes that you intend to contribute to the EuroPi project it's important to make use of git's ``branch`` feature. While it is possible to make changes on the ``main`` branch of your fork and submit a PR from there, you will have a much nicer experience if you use a separate branch for each of your PRs. Working with branches means that you can switch between multiple efforts easily. This will be useful for working on a second change while the first makes its way through this PR process. In addition, working on branches will allow your fork's ``main`` to diverge from EuroPi's if you'd like.
 
-## What to expect during the PR process
+# What to expect during the PR process
 A PR will typically progress through the following steps:
     
   1. PR opened by author
@@ -90,7 +90,7 @@ Comments or reviews on Pull Requests are *never* intended to be negative, howeve
 
 The PR process is expected to take time, in the range of days to weeks. This repository is run mainly by volunteers, with other jobs and families, so a Pull Request may take some time before it's allowed to merge. This will just depend on what other things the maintainers have going on at any given time, please don't think anyone is ignoring your contributions!
 
-### Comment labels
+## Comment labels
 
 | Label |   |
 | ----- | - |
@@ -99,20 +99,20 @@ The PR process is expected to take time, in the range of days to weeks. This rep
 | **\[question\]** | The reviewer is asking the author a question to better their understanding of the change. No change is requested, but it is likely that an answer to the question is required for the reviewer's understanding, and therefore approval. |
 | **\[discussion\]** | The reviewer is starting a discussion on a topic related to the proposed change. The discussion may later result in requesting changes to the PR, the opening of new issues, or opening new PRs at the participants discretion. |
 
-## PR guidelines and requirements
+# PR guidelines and requirements
 
 This section outlines the guidelines and requirements that a successful PR must follow.
 
-### General
+## General
 
-#### Provide a detailed Description
+### Provide a detailed Description
 
 When opening a PR you will have the opportunity to provide a description. This description introduces your changes to the reviewers, provides any necessary context and is a place for you to describe your motivation. The PR itself shows _what_ is being changed, the description is the _why_. In many cases the description will be relatively simple. For example: "This PR adds a new Harmonic LFO script to the contrib directory" or "This PR updates the documentation for several library functions to make their use more clear." In the case of a more complex change an more detailed description will be necessary.
 
-#### Keep PRs cohesive and focused
+### Keep PRs cohesive and focused
 Please try to keep Pull Requests to as few changes as possible. For example: if you have made some spelling changes to a main file, and are also uploading a script to the contrib folder, please try to separate these into two different Pull Requests so that the workload for the maintainers is more manageable. Keeping each PR small will also mean that each can be merged and worked on independently, resulting in faster approvals.
 
-#### Respect existing organization
+### Respect existing organization
 
 When adding new files to the project, follow the existing organizational structure which is summarized below.
 
@@ -127,25 +127,25 @@ When adding new files to the project, follow the existing organizational structu
 | `software/tests` | Automated tests for both the firmware and contrib scripts. |
 
 
-#### Spelling and grammar
+### Spelling and grammar
 
 It is expected that any prose is written clearly and follows english grammar rules. British english spelling is favored.
 
-### Documentation
+## Documentation
 
 PRs that make changes to documentation, that is `*.md` files or anything in the [docs](/docs) directory must meet the following requirements.
 
-#### Markdown must render properly on github
+### Markdown must render properly on github
 
 The markdown must use [github's markdown style](https://docs.github.com/en/get-started/writing-on-github) and render properly when viewing the project on [github.com/Allen-Synthesis](https://github.com/Allen-Synthesis)
   
-#### Api docs must build successfully
+### Api docs must build successfully
 
 The [API doc site](https://allen-synthesis.github.io/EuroPi/) must build successfully. See the [docs readme](/docs/README.md) for more details.
 
-### Contrib scripts
+## Contrib scripts
 
-#### Submission Format
+### Submission Format
 
 Please include:
 - Your name (or username) and the date you uploaded the program (dd/mm/yy) as a comment at the top of the file
@@ -156,7 +156,7 @@ Please include:
 
 Just write any labels that apply to your program, including any not listed here but that you think are relevant, in the 'md' file for your program. Think of this as the second most obvious way to see what your program does, after the title.
 
-#### File Naming
+### File Naming
 
 Please use all lowercase and separate words with underscores for your program names. If additional resources are needed, such as image files, a directory with the same name and suffixed with `docs` can be included. e.g. the files associated with a program for a Sample and Hold function would look as follows:  
 
@@ -168,28 +168,24 @@ software/contrib
 ├── sample_and_hold.py
 ```
 
-#### Menu Inclusion
+### Menu Inclusion
 
 In order to be included in the menu a program needs to meet a few additional requirements. See [menu.md](/software/contrib/menu.md) for details. Programs are not required to participate in the menu in order to be accepted, but it is nice.
 
 
 
-### Firmware
+## Firmware
 
 Changes to firmware code must adhere to more stringent requirements than other changes. Firmware changes have the potential to affect every contrib script that runs on the EuroPi as well as the behavior of the module itself. Any change must have a clear and well described purpose and be well tested against the suite of available contrib scripts.
 
-#### Code Style Requirements
+### Code Style Requirements
 
 There are currently no code style requirements for the firmware code, however we should favor python best practices such as [pep8](https://peps.python.org/pep-0008/) when possible.
 
-#### Documentation
+### Documentation
 
 Changes or additions to public API functions must include the corresponding updates to their documentation and render properly on the [API doc site](https://allen-synthesis.github.io/EuroPi/).
 
-#### Testing
+### Testing
 
 All existing automated tests must pass. An effort should be made to improve the test suite by adding tests for new or changed functionality.
-
-
-
-
