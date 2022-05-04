@@ -71,22 +71,23 @@ merging of their PR may be contingent on such a fix being completed.
 
 ## Working with Git
 
-Working with Git itself is outside the scope of this document, but if you are new to git there are plenty of external
-resources available to help you:
+Working with Git itself is outside the scope of this document, but if you are new to git there are plenty of resources
+available to help you:
 
   * [GitHub's own docs:](https://docs.github.com)
     * [Working with Forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks)
     * [Proposing Changes](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests)
   * [How To: Fork a GitHub Repository & Submit a Pull Request](https://jarv.is/notes/how-to-pull-request-fork-github/)
-  * 
 
 
-  * Steps to create a PR (from original doc below) (consider third party docs)
-  * Add branch step (allows fork divergence)
-  * Add details on how to allow a fork to diverge
+When making changes that you intend to contribute to the EuroPi project it's important to make use of git's ``branch``
+feature. While it is possible to make changes on the ``main`` branch of your fork and submit a PR from there, you will
+have a much nicer experience if you use a separate branch for each of your PRs. Working with branches means that you can 
+switch between multiple efforts easily. This will be useful for working on a second change while the first makes its way 
+through this PR process. In addition, working on branches will allow your fork's ``main`` to diverge from EuroPi's if 
+you'd like.
 
 ## What to expect during the PR process
-
 A PR will typically progress through the following steps:
     
   1. PR opened by author
