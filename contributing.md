@@ -8,19 +8,33 @@ Contributions are made via a GitHub Pull Request (PR). The rest of this document
 before submitting their first PR.
 
 ## Contents
-1. [Overview]()
-1. [Responsibilities of PR Participants]()
-    1. [Responsibilities of the PR author]()
-    2. [Responsibilities of the PR reviewer]()
-2. [Working with Git](#working-with-git)
-3. [PR guidelines and requirements]()
-   1. [General]()
-   2. [Documentation]()
-   3. [Contrib scripts]()
-      1. Code conventions 
-   4. [Firmware]()
+- [Contributing to the EuroPi Repository](#contributing-to-the-europi-repository)
+  - [Contents](#contents)
+  - [Overview](#overview)
+  - [Responsibilities of PR Participants](#responsibilities-of-pr-participants)
+    - [Responsibilities of the PR author](#responsibilities-of-the-pr-author)
+    - [Responsibilities of the PR reviewer](#responsibilities-of-the-pr-reviewer)
+  - [Working with Git](#working-with-git)
+  - [What to expect during the PR process](#what-to-expect-during-the-pr-process)
+    - [Comment labels](#comment-labels)
+  - [PR guidelines and requirements](#pr-guidelines-and-requirements)
+    - [General](#general)
+      - [Provide a detailed Description](#provide-a-detailed-description)
+      - [Keep PRs cohesive and focused](#keep-prs-cohesive-and-focused)
+      - [Respect existing organization](#respect-existing-organization)
+      - [Spelling and grammar](#spelling-and-grammar)
+    - [Documentation](#documentation)
+      - [Markdown must render properly on github](#markdown-must-render-properly-on-github)
+      - [Api docs must build successfully](#api-docs-must-build-successfully)
+    - [Contrib scripts](#contrib-scripts)
+      - [Submission Format](#submission-format)
+      - [File Naming](#file-naming)
+      - [Menu Inclusion](#menu-inclusion)
+    - [Firmware](#firmware)
+      - [Code Style Requirements](#code-style-requirements)
+      - [Documentation](#documentation-1)
+      - [Testing](#testing)
 
-4. [What to expect during the PR process]()
 
 
 ## Overview
@@ -110,7 +124,7 @@ with other jobs and families, so a Pull Request may take some time before it's a
 depend on what other things the maintainers have going on at any given time, please don't think anyone is ignoring your
 contributions!
 
-## Comment labels
+### Comment labels
 
   * **\[required\]** - The change requested in this comment is required for the reviewers approval. Typically this will be
 based on the PR guidelines. If the request is not backed up by the PR guidelines, the reviewer should explain their reasoning.
