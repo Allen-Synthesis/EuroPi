@@ -1,6 +1,5 @@
-This process is also what you would use to submit your scripts to the contrib folder; simply complete the steps below, and upload your script and description '.md' file to the contrib folder in your 'fork' in step 3 below.
-
-### Steps to submit a new file or change existing files
+# Making a Pull Request to submit changes or new scripts to the official repository  
+  
 
 |||
 | --- | --- |
