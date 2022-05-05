@@ -47,9 +47,9 @@ https://github.com/Allen-Synthesis/EuroPi
 - output_1: gate 1 e.g Kick Drum
 - output_2: gate 2 e.g Hi-Hat
 - output_3: track 1 gate
-- output_4: track 1 randomly generated stepped CV 
-- output_5: track 2 gate
-- output_6: track 2 randomly generated stepped CV
+- output_4: track 2 gate
+- output_5: track 2 randomly generated stepped CV
+- output_6: track 1 randomly generated stepped CV
 
 # Getting Started
 
@@ -66,13 +66,13 @@ knob). The first section of the selected gate pattern for track 1 is shown visua
 
 ## Voices 
 1. Connect output 3 to gate on voice 1
-2. Connect output 4 to pitch on voice 1, optionally via quantiser/attenuator.
-3. Connect output 5 to gate on voice 2
-4. Connect output 6 to pitch on voice 2, optionally via quantiser/attenuator.
-5. Gates will be output on 3/5 according to the gate pattern
+2. Connect output 6 to pitch on voice 1, optionally via quantiser/attenuator.
+3. Connect output 4 to gate on voice 2
+4. Connect output 5 to pitch on voice 2, optionally via quantiser/attenuator.
+5. Gates will be output on 3/4 according to the gate pattern
 6. The gate pattern for track 1 will be shown on the screen.
 7. Knob 1 increases or decreases the sparsity of the gates sent to
-   outputs 3 and 5. Fully CCW all notes are played, as the knob is
+   outputs 3 and 4. Fully CCW all notes are played, as the knob is
    turned CW, notes will drop out of the sequence.
 
 ## Sparsity
