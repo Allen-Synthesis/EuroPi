@@ -54,11 +54,11 @@ class CVecorder(EuroPiScript):
         self.ActiveCvr = 0
         self.ActiveBank = 0
         self.resetTimeout = 1000
-        self.debug = True
+        self.debug = False
         self.CvIn = 0
         self.bankToSave = 0
         self.initTest = False
-        self.debugLogging = True
+        self.debugLogging = False
         self.errorString = ' '
 
         self.numCVR = 5  # Number of CV recorder channels - zero based
