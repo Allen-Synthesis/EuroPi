@@ -45,7 +45,7 @@ If you need any help with any stage of this process (or anything else), please d
 
 # Responsibilities of PR Participants
 
-It is expected that everyone participating in the PR process acts in a friendly, supportive, and respectful manner. Always assume that teh other participants are acting in good faith, towards the common goal of improving the EuroPi project.
+It is expected that everyone participating in the PR process acts in a friendly, supportive, and respectful manner. Always assume that the other participants are acting in good faith, towards the common goal of improving the EuroPi project.
 
 ## Responsibilities of the PR author
 
