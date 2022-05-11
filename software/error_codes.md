@@ -6,3 +6,5 @@ They can be used in custom scripts, however it would be mroe sensible to simply 
 
 | Error Code | Meaning | Solution |
 | ---------- | ------- | -------- |
+| 0 | Unknown EuroPi Error | Review the stack trace for possible root causes. |
+| 1 | The method called received a value outside the expected range. | Validate or clamp the value being passed. |
