@@ -8,7 +8,7 @@ An oscillator? On the EuroPi? You bet!
 
 This script makes use of a small PIO program to produce three square wave oscillators, each of which can be set to different frequencies. For a brief primer on the Pi Pico's PIO, visit https://blues.io/blog/raspberry-pi-pico-pio/. The core PIO program for this script had its origins in Ben Everard's great little article on HackSpace: https://hackspace.raspberrypi.com/articles/raspberry-pi-picos-pio-for-mere-mortals-part-3-sound. Is it all just assembly code magic? Yes, sort of, but it really isn't all that scary if you take the time to learn how the different PIO instructions work. There are only 9 of them!
 
-The Poly Square is three independent oscillators which output on CVs 1-3. The base pitch is set by the analog input, which is interpreted as a V/oct input with 0V = C. Knob 1 allows for detuning of the 3 voices, and as the knob is turned clockwise, the spread between them increases. Knob 2 sets the polyphony mode. There are several available:
+The Poly Square is three independent oscillators which output on CVs 1-3. The base pitch is set by the analog input, which is interpreted as a V/oct input with 0V = C. Knob 1 allows for detuning of the 3 voices, and as the knob is turned clockwise, the spread between them increases. Button 2 toggles the maximum detune between a half step and a major 9th. Knob 2 sets the polyphony mode. There are several available:
 
 ## The polyphony modes
 - **Unison**: the oscillators are tuned to the same pitch
@@ -39,6 +39,7 @@ Credits:
 - button_1: while depressed, 'tuning mode' is turned on; this changes the knob functionality:
     - knob_1: coarse tune (up to an octave swing)
     - knob_2: fine tune (up to a half step)
+- button_2: toggles the maximum detune between a half step and a major 9th
 - output_1: oscillator 1
 - output_2: oscillator 2
 - output_3: oscillator 3
@@ -50,7 +51,7 @@ Credits:
 1. Switch on
 2. Connect outputs to mixer, filters, what have you
 3. Send V/oct signal to analog input
-4. Send resulting square waves to modules
+4. Enjoy square waves
 
 ## Details
 Polyphony modes are easy to add! Just add them to the PolySquare.modes list.

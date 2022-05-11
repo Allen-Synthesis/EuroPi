@@ -10,7 +10,7 @@ date: 2022-05-10
 labels: oscillator, poly
 
 A poly square oscillator with detuning & several polyphony modes. The analog
-input receives a V/oct and sets the central pitch of the 3 oscillators, and knob
+input receives a V/oct and sets the root pitch of the 3 oscillators, and knob
 1 sets the spread of the detuning across the oscillators. Knob 2 sets the
 polyphony mode of the oscillators, which output on CVs 1-3.
 
@@ -23,6 +23,7 @@ knob_2: polyphony mode
 button_1: while depressed, 'tuning mode' is turned on; this changes the knob functionality:
     knob_1: coarse tune (up to an octave swing)
     knob_2: fine tune (up to a half step swing)
+button_2: toggles the maximum detune between a half step and a major 9th
 
 output_1: oscillator 1
 output_2: oscillator 2
@@ -72,8 +73,8 @@ class PolyphonyMode:
 # Class for managing a state machine running the PIO oscillator program
 class SquareOscillator:
     def __init__(self, sm_id, pin, max_count, count_freq):
-        self._sm = StateMachine(sm_id, square_prog,
-            freq=2 * count_freq, sideset_base=Pin(pin))
+        self._sm = StateMachine(
+            sm_id, square_prog, freq=2 * count_freq, sideset_base=Pin(pin))
         # Use exec() to load max count into ISR
         self._sm.put(max_count)
         self._sm.exec("pull()")
@@ -129,10 +130,12 @@ class PolySquare(EuroPiScript):
         ]
         self.current_mode = None
         self.ui_update_requested = True
+        self.save_state_requested = False
         self.detune_amount = None
         self.coarse_tune = .5
         self.fine_tune = .5
         self.tuning_mode = False
+        self.max_detune = 1
         self.load_state()
 
         @b1.handler
@@ -144,8 +147,19 @@ class PolySquare(EuroPiScript):
         def tuning_mode_off():
             self.tuning_mode = False
             self.ui_update_requested = True
-            # Saves the tuning settings when the button is released
-            self.save_state()
+            # Save the tuning settings after the button is released
+            self.save_state_requested = True
+
+        # self.max_detune is not a boolean value, in case the values need to be
+        # updated in future or more than two values become available in the UI
+        # (by, say, mapping it to a knob instead of a button toggle)
+        @b2.handler
+        def change_max_detune():
+            if self.max_detune == 1:
+                self.max_detune = 14
+            else:
+                self.max_detune = 1
+            self.save_state_requested = True
         
     # Converts V/oct signal to Hertz, with 0V = C0
     def get_hertz(self, voltage):
@@ -168,38 +182,94 @@ class PolySquare(EuroPiScript):
     # the list of oscillators - the central oscillator (assuming an odd 
     # number of oscillators) stays in tune while the outer oscillators are 
     # progressively detuned.
-    def get_detuning(self, detune_amount, oscillator):
-        step_distance = self.get_step_distance(0, 1, len(self.oscillators))
-        return detune_amount * (step_distance *
-            self.oscillators.index(oscillator) - step_distance)
+    def get_detuning(self, detune_amount, oscillator_index):
+        oscillator_count = len(self.oscillators)
+        step_distance = self.get_step_distance(
+            0, self.max_detune, oscillator_count)
+        return detune_amount * step_distance * (oscillator_index - 
+             (oscillator_count - 1) / 2)
     
     # Returns a voltage offset for the oscillator based on the current
     # polyphony mode. This allows for things like triads, with the offsets
     # set accordingly.
-    def get_offset(self, oscillator):
-        return self.modes[self.current_mode].voltage_offsets[
-            self.oscillators.index(oscillator)]
+    def get_offset(self, oscillator_index):
+        return self.modes[self.current_mode].voltage_offsets[oscillator_index]
     
-    # Saves oscillator tuning settings
+    # Saves oscillator tuning & detuning settings
     def save_state(self):
-        settings = {"c": self.coarse_tune, "f": self.fine_tune}
+        settings = {
+            "c": self.coarse_tune, 
+            "f": self.fine_tune, 
+            "m": self.max_detune
+        }
         self.save_state_json(settings)
+        self.save_state_requested = False
 
-    # Loads oscillator tuning settings
+    # Loads oscillator tuning & detuning settings
     def load_state(self):
         settings = self.load_state_json()
         if "c" in settings:
             self.coarse_tune = settings["c"]
         if "f" in settings:
             self.fine_tune = settings["f"]
+        if "m" in settings:
+            self.max_detune = settings["m"]
+    
+    # Draws the UI for the "tuning" mode
+    def draw_tuning_ui(self):
+        oled.fill(0)
+        padding = 2
+        line_height = 9
+        title = "Tuning"
+        # Center the title at the top of the screen
+        title_x = int((OLED_WIDTH - ((len(title) + 1) * 7)) / 2) - 1
+        oled.text(title, title_x, padding)
+        tuning_bar_x = 60
+        tuning_bar_width = OLED_WIDTH - tuning_bar_x - padding
+        # Coarse tuning bar
+        oled.text("coarse:", padding, padding + line_height)
+        oled.rect(tuning_bar_x, padding + line_height, tuning_bar_width, 8, 1)
+        if self.coarse_tune < 0.5:
+            filled_bar_width = int((0.5 - self.coarse_tune) * tuning_bar_width)
+            oled.fill_rect(
+                int(tuning_bar_x + tuning_bar_width / 2 - filled_bar_width),
+                padding + line_height, filled_bar_width, 8, 1)
+        elif self.coarse_tune == 0.5:
+            line_x = int(tuning_bar_x + tuning_bar_width / 2)
+            oled.vline(line_x, padding + line_height, 8, 1)
+        else:
+            oled.fill_rect(
+                int(tuning_bar_x + tuning_bar_width / 2 + 2),
+                padding + line_height,
+                int((self.coarse_tune - 0.5) * tuning_bar_width), 8, 1)           
+        # Fine tuning bar
+        oled.text("fine:", padding + 16, padding + line_height * 2)
+        oled.rect(
+            tuning_bar_x, padding + line_height * 2, tuning_bar_width, 8, 1)
+        if self.fine_tune < 0.5:
+            filled_bar_width = int((0.5 - self.fine_tune) * tuning_bar_width)
+            oled.fill_rect(
+                int(tuning_bar_x + tuning_bar_width / 2 - filled_bar_width),
+                padding + line_height * 2, filled_bar_width, 8, 1)
+        elif self.fine_tune == 0.5:
+            line_x = int(tuning_bar_x + tuning_bar_width / 2)
+            oled.vline(line_x, padding + line_height * 2, 8, 1)
+        else:
+            oled.fill_rect(
+                int(tuning_bar_x + tuning_bar_width / 2 + 2),
+                padding + line_height * 2,
+                int((self.fine_tune - 0.5) * tuning_bar_width), 8, 1)
+        oled.show()
+    
+    # Draws the default UI
+    def draw_main_ui(self):
+        oled.centre_text("Poly Square\n" + self.modes[self.current_mode].name)
     
     def update_ui(self):
         if self.tuning_mode:
-            text = ("Tuning Mode\ncoarse: " + str(self.coarse_tune - .5) +
-                "\nfine: " + str(self.fine_tune - .5))
+            self.draw_tuning_ui()
         else:
-            text = "Super Square\n" + self.modes[self.current_mode].name
-        oled.centre_text(text)
+            self.draw_main_ui()
         self.ui_update_requested = False
     
     # Analog input - V/oct
@@ -208,6 +278,7 @@ class PolySquare(EuroPiScript):
     # Button 1 - repurposes both knobs for tuning while depressed:
     #   Knob 1 - coarse tune (up to an octave swing)
     #   Knob 2 - fine tune (up to a half step)
+    # Button 2 - toggles the maximum detune between a half step and a major 9th
     def update_settings(self):
         analog_input = ain.read_voltage(32)
         if self.tuning_mode:
@@ -229,17 +300,20 @@ class PolySquare(EuroPiScript):
             # polyphony mode, the adjustment from the tuning, and the 
             # adjustment from the detune amount to get the final pitch for 
             # the oscillator
+            oscillator_index = self.oscillators.index(oscillator)
             oscillator.set(oscillator.get_pitch(
                 self.get_hertz(
-                    analog_input + self.get_offset(oscillator) +
+                    analog_input + self.get_offset(oscillator_index) +
                     self.get_tuning() +
-                    self.get_detuning(self.detune_amount, oscillator))))
+                    self.get_detuning(self.detune_amount, oscillator_index))))
 
     def main(self):
         while True:
             self.update_settings()
             if self.ui_update_requested:
                 self.update_ui()
+            if self.save_state_requested:
+                self.save_state()
 
 # Main script execution
 if __name__ == '__main__':
