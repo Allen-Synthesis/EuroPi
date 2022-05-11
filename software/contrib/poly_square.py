@@ -86,8 +86,7 @@ class SquareOscillator:
     def set(self, value):
         # Minimum value is -1 (completely turn off), 0 actually still
         # produces a narrow pulse
-        value = max(value, -1)
-        value = min(value, self._max_count)
+        value = clamp(value, -1, self._max_count)
         self._sm.put(value)
             
     # Converts Hertz to the value the state machine running the PIO
