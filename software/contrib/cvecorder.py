@@ -6,6 +6,7 @@ import machine
 import json
 import gc
 import os
+import micropython
 #import framebuf
 
 '''
@@ -86,7 +87,7 @@ class CVecorder(EuroPiScript):
 
         # Test routine, pick a random bank n times and save, then load the state
         if self.initTest:
-            #print(micropython.mem_info("level"))
+            print(micropython.mem_info("level"))
             for n in range(3000):
                 # Clear vars
                 #self.CvRecording = []
@@ -271,7 +272,7 @@ class CVecorder(EuroPiScript):
                     print(f'[{attempts}] Error: Memory allocation failed, retrying: {e}')
                 if self.debugLogging:
                     self.writeToDebugLog(f"[saveState] Error: Memory allocation failed, retrying: {e}")
-                    #print(micropython.mem_info("level"))
+                    print(micropython.mem_info("level"))
                 else:
                     pass
 
