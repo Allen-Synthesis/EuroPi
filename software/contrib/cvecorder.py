@@ -305,7 +305,7 @@ class CVecorder(EuroPiScript):
             fileName = f"saved_state_{self.__class__.__qualname__}_{b}.txt"
 
             # Write the value to a the state file
-            maxRetries = 2
+            maxRetries = 6
             attempts = 0
             while attempts < maxRetries:
 
@@ -353,7 +353,7 @@ class CVecorder(EuroPiScript):
                         self.writeToDebugLog(f"[loadState] [{attempts}] Exception when attempting to open previous state file for bank {b}. {e}")
 
                 # Sleep and increment attempt counter
-                sleep_ms(50)
+                sleep_ms(500)
                 attempts += 1
 
     # Currently not used, but keeping in this script for future use
