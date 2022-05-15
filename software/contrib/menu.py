@@ -10,6 +10,7 @@ from contrib.hamlet import Hamlet
 from contrib.harmonic_lfos import HarmonicLFOs
 from contrib.hello_world import HelloWorld
 from contrib.noddy_holder import NoddyHolder
+from contri.piconacci import Piconacci
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
@@ -27,6 +28,7 @@ EUROPI_SCRIPT_CLASSES = [
     HarmonicLFOs,
     HelloWorld,
     NoddyHolder,
+    Piconacci,
     PolyrhythmSeq,
     RadioScanner,
     Scope,
