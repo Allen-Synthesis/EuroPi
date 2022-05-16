@@ -53,12 +53,9 @@ Every time you record a new CV channel, CV is automatically saved to local stora
 
 To overwrite saved CV simply record over it. However, if you would prefer to clear an entire bank or all banks use button 2 - see 'Clearing banks' for more info.
 
-## Clearing banks
-To clear the currently selected bank, press button 2 for between 0.5 seconds and 2 seconds.
-
-To clear all banks, press button 2 for over 2 seconds.
-
-
+## Clearing banks and channels
+If you want to update the CV recorded into a channel, simply record over it. To clear a bank, repeat this process for all channels in the bank.
+However, if you would rather clear a channel completely hit record and send no CV into the channel during the recording period.
 
 # Patching ideas
 
