@@ -45,6 +45,8 @@ https://github.com/Allen-Synthesis/EuroPi
 
 Piconnaci emits triggers on each output with clock divisions based on values from the Fibonacci series. Those values are taken by selecting a "window" of six consecutive values and then assigning values to the outputs. The window can be moved and rotated through short and long button presses.
 
+![pico drawio](https://user-images.githubusercontent.com/1035997/168587520-de2286af-1ae4-45be-a0f4-0aeb8128c4a9.png)
+
 # Limitations
 
 The code has a limit on the number of values used (50). In practice this is unlikely to be an issue and probably works for most sensible circumstances. The 50th value (disregarding 0, 1) is 20,365,011,074. At a BPM of 120, that'll be a trigger every 300 years which is pretty slow even for glacial ambient. 
