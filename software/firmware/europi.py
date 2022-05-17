@@ -13,6 +13,7 @@ For example::
 
 Will set the CV output 3 to a voltage of 4.5V.
 """
+import sys
 import time
 
 from machine import ADC
@@ -22,10 +23,9 @@ from machine import Pin
 
 from ssd1306 import SSD1306_I2C
 
-try:
-    import micropython
+if sys.implementation.name == "micropython":
     TEST_ENV = False # We're in micropython, so we can assume access to real hardware
-except ModuleNotFoundError:
+else:
     TEST_ENV = True # This var is set when we don't have any real hardware, for example in a test or doc generation setting
 
 try:
