@@ -1,0 +1,141 @@
+from europi import *
+import machine
+from europi_script import EuroPiScript
+
+NOTES = {
+    0: "C",
+    1: "C#",
+    2: "D",
+    3: "D#",
+    4: "E",
+    5: "F",
+    6: "F#",
+    7: "G",
+    8: "G#",
+    9: "A",
+    10: "A#",
+    11: "B",
+}
+
+
+class Mode:
+    def __init__(self, name: str, intervals: tuple):
+        self.intervals = intervals
+        self.name = name
+
+    def get_notes(self, root: int):
+        notes = []
+        for interval in self.intervals:
+            notes.append((root + interval) % 12)
+        return notes
+
+
+class MoltQuantizer(EuroPiScript):
+    def __init__(self):
+        oled.centre_text("MOLT\nquantizer")
+        # Settings for improved performance.
+        machine.freq(250_000_000)
+        k1.set_samples(32)
+        k2.set_samples(32)
+        self.modes = [
+            Mode("Mode 1", (0, 2, 4, 6, 8, 10)),
+            Mode("Mode 2", (0, 1, 3, 4, 6, 7, 9, 10)),
+            Mode("Mode 3", (0, 2, 3, 4, 6, 7, 8, 10, 11)),
+            Mode("Mode 4", (0, 1, 2, 5, 6, 7, 8, 11)),
+            Mode("Mode 5", (0, 1, 5, 6, 7, 11)),
+            Mode("Mode 6", (0, 2, 4, 5, 6, 8, 10, 11)),
+            Mode("Mode 7", (0, 1, 2, 3, 5, 6, 7, 8, 9, 11)),
+            Mode("Major", (0, 2, 4, 5, 7, 9, 11)),
+            Mode("Melodic minor", (0, 2, 3, 5, 7, 9, 11)),
+            Mode("Major penta.", (0, 2, 4, 7, 9)),
+            Mode("Minor penta.", (0, 2, 3, 7, 9)),
+        ]
+        self.current_mode = None
+        self.root = 0
+        self.voice_spread = 0
+        self.ui_update_requested = False
+        self.update_settings()
+
+        def increment_root():
+            self.root = (self.root + 1) % 12
+            self.ui_update_requested = True
+
+        def decrement_root():
+            self.root = (self.root - 1) % 12
+            self.ui_update_requested = True
+
+        b1.handler(decrement_root, True)
+        b2.handler(increment_root, True)
+
+    @classmethod
+    def display_name(cls):
+        return "MOLT quantizer"
+
+    def get_quantized_pitch(
+        self, input_pitch: float, pitches: tuple, scale_step_offset: int
+    ):
+        return pitches[
+            clamp(
+                min(range(len(pitches)), key=lambda i: abs(pitches[i] - input_pitch))
+                + scale_step_offset,
+                0,
+                len(pitches) - 1,
+            )
+        ]
+
+    def get_pitches(self, notes: tuple):
+        pitches = []
+        for octave in range(10):
+            for note in notes:
+                pitches.append(octave + (note / 12))
+        return sorted(pitches)
+
+    def get_pitch(self, root: int, interval: int):
+        return root + interval
+
+    def get_note_name(self, note: int):
+        return NOTES[note]
+
+    def update_ui(self):
+        if self.ui_update_requested:
+            oled.centre_text(
+                "root: "
+                + self.get_note_name(self.root)
+                + "\nspread: "
+                + str(self.voice_spread)
+                + "\n"
+                + self.modes[self.current_mode].name
+            )
+            self.ui_update_requested = False
+
+    def update_settings(self):
+        new_voice_spread = k1.read_position(10)
+        new_mode = k2.read_position(len(self.modes))
+        if not (
+            new_voice_spread == self.voice_spread and new_mode == self.current_mode
+        ):
+            self.voice_spread = k1.read_position(10)
+            self.current_mode = k2.read_position(len(self.modes))
+            self.ui_update_requested = True
+
+    def play(self):
+        notes = self.modes[self.current_mode].get_notes(self.root)
+        input_pitch = ain.read_voltage(32)
+        pitches = self.get_pitches(notes)
+        i = 0
+        for cv in cvs:
+            cv.voltage(
+                self.get_quantized_pitch(input_pitch, pitches, self.voice_spread * i)
+            )
+            i += 1
+
+    def main(self):
+        while True:
+            self.update_ui()
+            self.play()
+            self.update_settings()
+
+
+# Main script execution
+if __name__ == "__main__":
+    MoltQuantizer().main()
