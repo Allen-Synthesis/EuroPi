@@ -98,6 +98,7 @@ class AnalogueReader:
     """
 
     def __init__(self, pin, samples=DEFAULT_SAMPLES):
+        self._pin_id = pin
         self.pin = ADC(Pin(pin))
         self.set_samples(samples)
 
