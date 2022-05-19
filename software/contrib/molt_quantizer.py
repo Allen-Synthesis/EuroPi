@@ -30,6 +30,14 @@ class Mode:
         return notes
 
 
+class Voice:
+    def __init__(self, cv_output):
+        self.cv_output = cv_output
+
+    def set(self, pitch):
+        self.cv_output.voltage(pitch)
+
+
 class MoltQuantizer(EuroPiScript):
     def __init__(self):
         oled.centre_text("MOLT\nquantizer")
@@ -54,18 +62,21 @@ class MoltQuantizer(EuroPiScript):
         self.root = 0
         self.voice_spread = 0
         self.ui_update_requested = False
+        self.current_pitch = None
+        self.current_pitch_bias = 0.1
         self.update_settings()
 
+        @b1.handler
         def increment_root():
             self.root = (self.root + 1) % 12
+            self.current_pitch = None
             self.ui_update_requested = True
 
+        @b2.handler
         def decrement_root():
             self.root = (self.root - 1) % 12
+            self.current_pitch = None
             self.ui_update_requested = True
-
-        b1.handler(decrement_root, True)
-        b2.handler(increment_root, True)
 
     @classmethod
     def display_name(cls):
@@ -116,18 +127,42 @@ class MoltQuantizer(EuroPiScript):
         ):
             self.voice_spread = k1.read_position(10)
             self.current_mode = k2.read_position(len(self.modes))
+            self.current_pitch = None
             self.ui_update_requested = True
+
+    def get_midpoint_distance(self, value, other_value):
+        return abs(value - other_value) / 2
+
+    def get_is_new_pitch(self, old_pitch, new_pitch, pitches, current_pitch_bias):
+        pitch_index = pitches.index(old_pitch)
+        return new_pitch < old_pitch - (
+            self.get_midpoint_distance(
+                old_pitch, pitches[(pitch_index - 1) % len(pitches)]
+            )
+            + current_pitch_bias
+        ) or new_pitch > old_pitch + (
+            self.get_midpoint_distance(
+                old_pitch, pitches[(pitch_index + 1) % len(pitches)]
+            )
+            + current_pitch_bias
+        )
 
     def play(self):
         notes = self.modes[self.current_mode].get_notes(self.root)
         input_pitch = ain.read_voltage(32)
         pitches = self.get_pitches(notes)
-        i = 0
-        for cv in cvs:
-            cv.voltage(
-                self.get_quantized_pitch(input_pitch, pitches, self.voice_spread * i)
-            )
-            i += 1
+        if self.current_pitch == None or self.get_is_new_pitch(
+            self.current_pitch, input_pitch, pitches, self.current_pitch_bias
+        ):
+            i = 0
+            for cv in cvs:
+                quantized_pitch = self.get_quantized_pitch(
+                    input_pitch, pitches, self.voice_spread * i
+                )
+                cv.voltage(quantized_pitch)
+                if i == 0:
+                    self.current_pitch = quantized_pitch
+                i += 1
 
     def main(self):
         while True:
