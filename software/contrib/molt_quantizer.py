@@ -30,14 +30,6 @@ class Mode:
         return notes
 
 
-class Voice:
-    def __init__(self, cv_output):
-        self.cv_output = cv_output
-
-    def set(self, pitch):
-        self.cv_output.voltage(pitch)
-
-
 class MoltQuantizer(EuroPiScript):
     def __init__(self):
         oled.centre_text("MOLT\nquantizer")
@@ -82,9 +74,7 @@ class MoltQuantizer(EuroPiScript):
     def display_name(cls):
         return "MOLT quantizer"
 
-    def get_quantized_pitch(
-        self, input_pitch: float, pitches: tuple, scale_step_offset: int
-    ):
+    def get_quantized_pitch(self, input_pitch, pitches, scale_step_offset):
         return pitches[
             clamp(
                 min(range(len(pitches)), key=lambda i: abs(pitches[i] - input_pitch))
@@ -94,17 +84,17 @@ class MoltQuantizer(EuroPiScript):
             )
         ]
 
-    def get_pitches(self, notes: tuple):
+    def get_pitches(self, notes):
         pitches = []
         for octave in range(10):
             for note in notes:
                 pitches.append(octave + (note / 12))
         return sorted(pitches)
 
-    def get_pitch(self, root: int, interval: int):
+    def get_pitch(self, root, interval):
         return root + interval
 
-    def get_note_name(self, note: int):
+    def get_note_name(self, note):
         return NOTES[note]
 
     def update_ui(self):
@@ -135,16 +125,27 @@ class MoltQuantizer(EuroPiScript):
 
     def get_is_new_pitch(self, old_pitch, new_pitch, pitches, current_pitch_bias):
         pitch_index = pitches.index(old_pitch)
-        return new_pitch < old_pitch - (
-            self.get_midpoint_distance(
-                old_pitch, pitches[(pitch_index - 1) % len(pitches)]
+        return (
+            not new_pitch == min(pitches)
+            and not new_pitch == max(pitches)
+            and (
+                new_pitch
+                < old_pitch
+                - (
+                    self.get_midpoint_distance(
+                        old_pitch, pitches[(pitch_index - 1) % len(pitches)]
+                    )
+                    + current_pitch_bias
+                )
+                or new_pitch
+                > old_pitch
+                + (
+                    self.get_midpoint_distance(
+                        old_pitch, pitches[(pitch_index + 1) % len(pitches)]
+                    )
+                    + current_pitch_bias
+                )
             )
-            + current_pitch_bias
-        ) or new_pitch > old_pitch + (
-            self.get_midpoint_distance(
-                old_pitch, pitches[(pitch_index + 1) % len(pitches)]
-            )
-            + current_pitch_bias
         )
 
     def play(self):
