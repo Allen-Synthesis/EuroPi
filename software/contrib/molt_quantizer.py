@@ -126,25 +126,19 @@ class MoltQuantizer(EuroPiScript):
     def get_is_new_pitch(self, old_pitch, new_pitch, pitches, current_pitch_bias):
         pitch_index = pitches.index(old_pitch)
         return (
-            not new_pitch == min(pitches)
-            and not new_pitch == max(pitches)
-            and (
-                new_pitch
-                < old_pitch
-                - (
-                    self.get_midpoint_distance(
-                        old_pitch, pitches[(pitch_index - 1) % len(pitches)]
-                    )
-                    + current_pitch_bias
-                )
-                or new_pitch
-                > old_pitch
-                + (
-                    self.get_midpoint_distance(
-                        old_pitch, pitches[(pitch_index + 1) % len(pitches)]
-                    )
-                    + current_pitch_bias
-                )
+            old_pitch >= min(pitches)
+            or old_pitch >= max(pitches)
+            or new_pitch
+            < old_pitch
+            - (
+                self.get_midpoint_distance(old_pitch, pitches[(pitch_index - 1)])
+                + current_pitch_bias
+            )
+            or new_pitch
+            > old_pitch
+            + (
+                self.get_midpoint_distance(old_pitch, pitches[(pitch_index + 1)])
+                + current_pitch_bias
             )
         )
 
