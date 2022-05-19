@@ -5,12 +5,29 @@ from europi import k1, k2, b1, b2, oled
 from europi_script import EuroPiScript
 from experimental.knobs import KnobBank
 
+"""
+An example program showing the use of a KnobBank or LockableKnobs. This script is not meant to be merged into main, 
+it only exists so that PR reviewers can try out a LockableKnob in physical hardware easily.
+"""
+
 
 class KnobPlayground(EuroPiScript):
     def __init__(self):
         super().__init__()
-        self.kb1 = KnobBank(k1, [("p1", 1), ("p2", 1), ("p3", 1)], include_disabled=False)
-        self.kb2 = KnobBank(k2, [("p4", 1), ("p5", 1)])
+        self.kb1 = (
+            KnobBank.builder(k1)
+            .with_locked_knob("p1", initial_value=1, threshold=0.02)
+            .with_locked_knob("p2", initial_value=1)
+            .with_locked_knob("p3", initial_value=1)
+            .build()
+        )
+        self.kb2 = (
+            KnobBank.builder(k2)
+            .with_disabled_knob()
+            .with_locked_knob("p4", initial_value=1, threshold=1 / 7)
+            .with_locked_knob("p5", initial_value=1, threshold=1 / 3)
+            .build()
+        )
 
         b1.handler(lambda: self.kb1.next())
         b2.handler(lambda: self.kb2.next())

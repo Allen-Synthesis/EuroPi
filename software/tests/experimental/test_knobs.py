@@ -5,6 +5,8 @@ from machine import ADC
 
 from mock_hardware import MockHardware
 
+# locked knob tests
+
 
 @pytest.fixture
 def locked_knob(mockHardware: MockHardware):
@@ -14,9 +16,6 @@ def locked_knob(mockHardware: MockHardware):
     mockHardware.set_ADC_u16_value(k, MAX_UINT16 / 2)
 
     return k
-
-
-# locked knob tests
 
 
 def test_starting_state(locked_knob: LockableKnob):
@@ -94,21 +93,45 @@ def test_state_changes(locked_knob: LockableKnob):
     assert locked_knob.state == LockableKnob.STATE_LOCKED
 
 
-def test_access_percent():
-    assert False
+def test_access_percent(mockHardware: MockHardware, locked_knob: LockableKnob):
+    assert round(locked_knob.percent(), 2) == 0.50
+
+    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
+    assert round(locked_knob.percent(), 2) == 0
+    
+    mockHardware.set_ADC_u16_value(locked_knob, 0)
+    assert round(locked_knob.percent(), 2) == 1
 
 
-def test_access_choice():
-    assert False
+def test_access_choice(mockHardware: MockHardware, locked_knob: LockableKnob):
+    assert locked_knob.choice([1,2,3]) == 2
+
+    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
+    assert locked_knob.choice([1,2,3]) == 1
+    
+    mockHardware.set_ADC_u16_value(locked_knob, 0)
+    assert locked_knob.choice([1,2,3]) == 3
 
 
-def test_access_range():
-    assert False
+
+def test_access_range(mockHardware: MockHardware, locked_knob: LockableKnob):
+    assert locked_knob.range() == 49
+
+    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
+    assert locked_knob.range() == 0
+    
+    mockHardware.set_ADC_u16_value(locked_knob, 0)
+    assert locked_knob.range() == 99
 
 
-def test_access_read_position():
-    assert False
+def test_access_read_position(mockHardware: MockHardware, locked_knob: LockableKnob):
+    assert locked_knob.read_position() == 49
 
+    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
+    assert locked_knob.read_position() == 0
+    
+    mockHardware.set_ADC_u16_value(locked_knob, 0)
+    assert locked_knob.read_position() == 99
 
 # Disabled Knob Tests
 
@@ -118,7 +141,13 @@ def test_access_read_position():
 
 @pytest.fixture
 def knob_bank(mockHardware: MockHardware):
-    kb = KnobBank(k1, [("param1", None), ("param2", MAX_UINT16)])
+    kb = (
+        KnobBank.builder(k1)
+        .with_disabled_knob()
+        .with_unlocked_knob("param1")
+        .with_locked_knob("param2", MAX_UINT16)
+        .build()
+    )
 
     # start the knob in the middle
     mockHardware.set_ADC_u16_value(k1, MAX_UINT16 / 2)
@@ -134,6 +163,33 @@ def test_next_mode(knob_bank: KnobBank):
     assert knob_bank.index == 0
     knob_bank.next()
     assert knob_bank.index == 1
+
+
+def test_access_by_name(mockHardware: MockHardware, knob_bank: KnobBank):
+    # knob starts in the middle, knob 1
+    assert round(knob_bank.param1.percent(), 2) == 0.50
+    assert round(knob_bank.param2.percent(), 2) == 0
+    assert round(knob_bank.current.percent(), 2) == 0.50
+
+    # change to knob 2, then move the knob
+    knob_bank.next()
+    mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 3)
+
+    assert round(knob_bank.param1.percent(), 2) == 0.50
+    assert round(knob_bank.param2.percent(), 2) == 0
+    assert round(knob_bank.current.percent(), 2) == 0
+
+    mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16)
+
+    assert round(knob_bank.param1.percent(), 2) == 0.50
+    assert round(knob_bank.param2.percent(), 2) == 0
+    assert round(knob_bank.current.percent(), 2) == 0
+
+    mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 3)
+
+    assert round(knob_bank.param1.percent(), 2) == 0.50
+    assert round(knob_bank.param2.percent(), 2) == 0.67
+    assert round(knob_bank.current.percent(), 2) == 0.67
 
 
 def test_access_by_index(mockHardware: MockHardware, knob_bank: KnobBank):
@@ -205,30 +261,3 @@ def test_access_by_index(mockHardware: MockHardware, knob_bank: KnobBank):
     assert round(knob_bank.knobs[1].percent(), 2) == 0.80
     assert round(knob_bank.knobs[2].percent(), 2) == 0.67
     assert round(knob_bank.current.percent(), 2) == 0.80
-
-
-def test_access_by_name(mockHardware: MockHardware, knob_bank: KnobBank):
-    # knob starts in the middle, knob 1
-    assert round(knob_bank.param1.percent(), 2) == 0.50
-    assert round(knob_bank.param2.percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0.50
-
-    # change to knob 2, then move the knob
-    knob_bank.next()
-    mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 3)
-
-    assert round(knob_bank.param1.percent(), 2) == 0.50
-    assert round(knob_bank.param2.percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0
-
-    mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16)
-
-    assert round(knob_bank.param1.percent(), 2) == 0.50
-    assert round(knob_bank.param2.percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0
-
-    mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 3)
-
-    assert round(knob_bank.param1.percent(), 2) == 0.50
-    assert round(knob_bank.param2.percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0.67
