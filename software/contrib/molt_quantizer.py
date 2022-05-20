@@ -19,11 +19,11 @@ NOTES = {
 
 
 class Mode:
-    def __init__(self, name: str, intervals: tuple):
+    def __init__(self, name, intervals):
         self.intervals = intervals
         self.name = name
 
-    def get_notes(self, root: int):
+    def get_notes(self, root):
         notes = []
         for interval in self.intervals:
             notes.append((root + interval) % 12)
@@ -32,7 +32,6 @@ class Mode:
 
 class MoltQuantizer(EuroPiScript):
     def __init__(self):
-        oled.centre_text("MOLT\nquantizer")
         # Settings for improved performance.
         machine.freq(250_000_000)
         k1.set_samples(32)
