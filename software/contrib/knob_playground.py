@@ -14,6 +14,9 @@ it only exists so that PR reviewers can try out a LockableKnob in physical hardw
 class KnobPlayground(EuroPiScript):
     def __init__(self):
         super().__init__()
+        self.next_k1 = False
+        self.next_k2 = False
+
         self.kb1 = (
             KnobBank.builder(k1)
             .with_locked_knob("p1", initial_value=1, threshold=0.02)
@@ -29,14 +32,26 @@ class KnobPlayground(EuroPiScript):
             .build()
         )
 
-        b1.handler(lambda: self.kb1.next())
-        b2.handler(lambda: self.kb2.next())
+        @b1.handler
+        def next_knob1():
+            self.next_k1 = True
+        
+        @b2.handler
+        def next_knob2():
+            self.next_k2 = True
 
     def main(self):
         choice_p4 = ["a", "b", "c", "d", "e", "f", "g"]
         choice_p5 = ["one", "two", "three"]
 
         while True:
+            if self.next_k1:
+                self.kb1.next()
+                self.next_k1 = False
+            if self.next_k2:
+                self.kb2.next()
+                self.next_k2 = False
+
             p1 = "*" if self.kb1.index == 0 else " "
             p2 = "*" if self.kb1.index == 1 else " "
             p3 = "*" if self.kb1.index == 2 else " "

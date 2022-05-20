@@ -70,7 +70,7 @@ class KnobBank:
     def current(self) -> LockableKnob:
         return self.knobs[self.index]
 
-    def next(self):
+    def next(self):  # potential race condition: next() and _sample_adc() can both change state
         self.current.lock()
         self.index = (self.index + 1) % len(self.knobs)
         self.current.request_unlock()
