@@ -49,26 +49,25 @@ class MoltQuantizer(EuroPiScript):
             Mode("Melodic minor", (0, 2, 3, 5, 7, 9, 11)),
             Mode("Major penta.", (0, 2, 4, 7, 9)),
             Mode("Minor penta.", (0, 2, 3, 7, 9)),
+            Mode("Chromatic", (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)),
         ]
         self.current_mode = None
         self.root = 0
         self.voice_spread = 0
         self.ui_update_requested = False
+        self.update_root_amount = 0
         self.current_pitch = None
-        self.current_pitch_bias = 0.1
+        self.current_pitch_bias = 0.025
+        self.load_state()
         self.update_settings()
 
         @b1.handler
-        def increment_root():
-            self.root = (self.root + 1) % 12
-            self.current_pitch = None
-            self.ui_update_requested = True
+        def decrement_root():
+            self.update_root_amount -= 1
 
         @b2.handler
-        def decrement_root():
-            self.root = (self.root - 1) % 12
-            self.current_pitch = None
-            self.ui_update_requested = True
+        def increment_root():
+            self.update_root_amount += 1
 
     @classmethod
     def display_name(cls):
@@ -109,7 +108,25 @@ class MoltQuantizer(EuroPiScript):
             )
             self.ui_update_requested = False
 
+    def save_state(self):
+        settings = {"r": self.root}
+        self.save_state_json(settings)
+
+    def load_state(self):
+        settings = self.load_state_json()
+        if "r" in settings:
+            self.root = settings["r"]
+
+    def update_root(self, steps):
+        self.root = (self.root + steps) % 12
+        self.current_pitch = None
+        self.update_root_amount = 0
+        self.save_state()
+
     def update_settings(self):
+        if not self.update_root_amount == 0:
+            self.update_root(self.update_root_amount)
+            self.ui_update_requested = True
         new_voice_spread = k1.read_position(10)
         new_mode = k2.read_position(len(self.modes))
         if not (
@@ -124,6 +141,8 @@ class MoltQuantizer(EuroPiScript):
         return abs(value - other_value) / 2
 
     def get_is_new_pitch(self, old_pitch, new_pitch, pitches, current_pitch_bias):
+        if old_pitch == None:
+            return True
         pitch_index = pitches.index(old_pitch)
         return (
             old_pitch <= min(pitches)
@@ -146,7 +165,7 @@ class MoltQuantizer(EuroPiScript):
         notes = self.modes[self.current_mode].get_notes(self.root)
         input_pitch = ain.read_voltage(32)
         pitches = self.get_pitches(notes)
-        if self.current_pitch == None or self.get_is_new_pitch(
+        if self.get_is_new_pitch(
             self.current_pitch, input_pitch, pitches, self.current_pitch_bias
         ):
             i = 0
