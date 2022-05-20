@@ -131,8 +131,8 @@ class MoltQuantizer(EuroPiScript):
         if not (
             new_voice_spread == self.voice_spread and new_mode == self.current_mode
         ):
-            self.voice_spread = k1.read_position(10)
-            self.current_mode = k2.read_position(len(self.modes))
+            self.voice_spread = new_voice_spread
+            self.current_mode = new_mode
             self.current_pitch = None
             self.ui_update_requested = True
 
