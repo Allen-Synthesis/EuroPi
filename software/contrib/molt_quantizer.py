@@ -95,16 +95,15 @@ class MoltQuantizer(EuroPiScript):
         return NOTES[note]
 
     def update_ui(self):
-        if self.ui_update_requested:
-            oled.centre_text(
-                "root: "
-                + self.get_note_name(self.root)
-                + "\nspread: "
-                + str(self.voice_spread)
-                + "\n"
-                + self.modes[self.current_mode].name
-            )
-            self.ui_update_requested = False
+        oled.centre_text(
+            "root: "
+            + self.get_note_name(self.root)
+            + "\nspread: "
+            + str(self.voice_spread)
+            + "\n"
+            + self.modes[self.current_mode].name
+        )
+        self.ui_update_requested = False
 
     def save_state(self):
         settings = {"r": self.root}
@@ -179,7 +178,8 @@ class MoltQuantizer(EuroPiScript):
     def main(self):
         while True:
             self.update_settings()
-            self.update_ui()
+            if self.ui_update_requested:
+                self.update_ui()
             self.play()
 
 
