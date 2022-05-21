@@ -58,7 +58,6 @@ class MoltQuantizer(EuroPiScript):
         self.current_pitch = None
         self.current_pitch_bias = 0.025
         self.load_state()
-        self.update_settings()
 
         @b1.handler
         def decrement_root():
@@ -179,9 +178,9 @@ class MoltQuantizer(EuroPiScript):
 
     def main(self):
         while True:
+            self.update_settings()
             self.update_ui()
             self.play()
-            self.update_settings()
 
 
 # Main script execution
