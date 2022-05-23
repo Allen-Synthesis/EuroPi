@@ -4,7 +4,7 @@ from time import ticks_diff, ticks_ms
 from random import randint, uniform
 from europi_script import EuroPiScript
 
-"""
+'''
 Consequencer
 author: Nik Ansell (github.com/gamecat69)
 date: 2022-02-05
@@ -34,19 +34,18 @@ output_4: randomly generated CV (cycled by pushing button 2)
 output_5: randomly generated CV (cycled by pushing button 2)
 output_6: randomly generated CV (cycled by pushing button 2)
 
-"""
-
+'''
 
 class Consequencer(EuroPiScript):
     def __init__(self):
         # Overclock the Pico for improved performance.
         machine.freq(250_000_000)
 
-        # Initialize sequencer pattern arrays
-        p = pattern()
-        self.BD = p.BD
-        self.SN = p.SN
-        self.HH = p.HH
+        # Initialize sequencer pattern arrays   
+        p = pattern()     
+        self.BD=p.BD
+        self.SN=p.SN
+        self.HH=p.HH
 
         # Initialize variables
         self.step = 0
@@ -56,17 +55,17 @@ class Consequencer(EuroPiScript):
         self.random_HH = False
         self.minAnalogInputVoltage = 0.9
         self.randomness = 0
-        self.analogInputMode = 1  # 1: Randomness, 2: Pattern, 3: CV Pattern
+        self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
         self.reset_timeout = 500
 
         # option to always output a clock on output 4
         # this helps to sync Consequencer with other modules
         self.output4isClock = False
-
+        
         # Calculate the longest pattern length to be used when generating random sequences
         self.maxStepLength = len(max(self.BD, key=len))
-
+        
         # Generate random CV for cv4-6
         self.random4 = []
         self.random5 = []
@@ -78,8 +77,8 @@ class Consequencer(EuroPiScript):
         # Long press: Change operating mode
         @b2.handler_falling
         def b2Pressed():
-
-            if ticks_diff(ticks_ms(), b2.last_pressed()) > 300:
+            
+            if ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
                 if self.analogInputMode < 3:
                     self.analogInputMode += 1
                 else:
@@ -89,7 +88,7 @@ class Consequencer(EuroPiScript):
                 self.CvPattern += 1
                 if self.CvPattern == len(self.random4):
                     self.generateNewRandomCVPattern()
-
+            
         # Triggered when button 1 is released
         # Short press: Play previous CV pattern for cv4-6
         # Long press: Toggle random high-hat mode
@@ -97,7 +96,7 @@ class Consequencer(EuroPiScript):
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000:
                 self.output4isClock = not self.output4isClock
-            elif ticks_diff(ticks_ms(), b1.last_pressed()) > 300:
+            elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 self.random_HH = not self.random_HH
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
@@ -109,26 +108,26 @@ class Consequencer(EuroPiScript):
         def clockTrigger():
 
             # function timing code. Leave in and activate as needed
-            # t = time.ticks_us()
-
+            #t = time.ticks_us()
+            
             self.step_length = len(self.BD[self.pattern])
-
+            
             # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
             if self.step >= self.step_length:
-                self.step = 0
-
+                self.step = 0 
+            
             cv5.voltage(self.random5[self.CvPattern][self.step])
             cv6.voltage(self.random6[self.CvPattern][self.step])
 
             # How much randomness to add to cv1-3
             # As the randomness value gets higher, the chance of a randomly selected int being lower gets higher
-            if randint(0, 99) < self.randomness:
+            if randint(0,99) < self.randomness:
                 cv1.value(randint(0, 1))
                 cv2.value(randint(0, 1))
                 cv3.value(randint(0, 1))
             else:
                 cv1.value(int(self.BD[self.pattern][self.step]))
-                cv2.value(int(self.SN[self.pattern][self.step]))
+                cv2.value(int(self.SN[self.pattern][self.step]))                    
 
                 # If randomize HH is ON:
                 if self.random_HH:
@@ -143,12 +142,12 @@ class Consequencer(EuroPiScript):
                 cv4.voltage(self.random4[self.CvPattern][self.step])
 
             # Incremenent the clock step
-            self.clock_step += 1
+            self.clock_step +=1
             self.step += 1
 
             # function timing code. Leave in and activate as needed
-            # delta = time.ticks_diff(time.ticks_us(), t)
-            # print('Function {} Time = {:6.3f}ms'.format('clockTrigger', delta/1000))
+            #delta = time.ticks_diff(time.ticks_us(), t)
+            #print('Function {} Time = {:6.3f}ms'.format('clockTrigger', delta/1000))
 
         @din.handler_falling
         def clockTriggerEnd():
@@ -170,7 +169,7 @@ class Consequencer(EuroPiScript):
             self.pattern = int((len(self.BD) / 100) * val)
         else:
             self.pattern = k2.read_position(len(self.BD))
-
+        
         self.step_length = len(self.BD[self.pattern])
 
     def getCvPattern(self):
@@ -180,17 +179,18 @@ class Consequencer(EuroPiScript):
         else:
             # Get the analogue input voltage as a percentage
             CvpVal = 100 * ain.percent()
-
+            
             # Is there a voltage on the analogue input and are we configured to use it?
             if CvpVal > 0.4:
                 # Convert percentage value to a representative index of the pattern array
                 self.CvPattern = int((len(self.random4) / 100) * CvpVal)
 
     def generateRandomPattern(self, length, min, max):
-        self.t = []
+        self.t=[]
         for i in range(0, length):
-            self.t.append(uniform(0, 9))
+            self.t.append(uniform(0,9))
         return self.t
+
 
     def getRandomness(self):
         # If mode 1 and there is CV on the analogue input use it, if not use the knob position
@@ -207,17 +207,14 @@ class Consequencer(EuroPiScript):
             self.getCvPattern()
             self.updateScreen()
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
-            if (
-                self.clock_step != 0
-                and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout
-            ):
+            if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
                 self.clock_step = 0
 
     def visualizePattern(self, pattern):
         self.t = pattern
-        self.t = self.t.replace("1", "^")
-        self.t = self.t.replace("0", " ")
+        self.t = self.t.replace('1','^')
+        self.t = self.t.replace('0',' ')
         return self.t
 
     def updateScreen(self):
@@ -238,26 +235,25 @@ class Consequencer(EuroPiScript):
             oled.rect(12, 29, 10, 3, 1)
 
         # Show randomness
-        oled.text("R" + str(int(self.randomness)), 26, 25, 1)
+        oled.text('R' + str(int(self.randomness)), 26, 25, 1)
 
         # Show CV pattern
-        oled.text("C" + str(self.CvPattern), 56, 25, 1)
+        oled.text('C' + str(self.CvPattern), 56, 25, 1)
 
         # Show the analogInputMode
-        oled.text("M" + str(self.analogInputMode), 85, 25, 1)
+        oled.text('M' + str(self.analogInputMode), 85, 25, 1)
 
-        # Show the analogInputMode
+        # Show the pattern number
         oled.text(str(self.pattern), 110, 25, 1)
 
         oled.show()
 
-
 class pattern:
 
     # Initialize pattern lists
-    BD = []
-    SN = []
-    HH = []
+    BD=[]
+    SN=[]
+    HH=[]
 
     # African Patterns
     BD.append("10110000001100001011000000110000")
@@ -464,8 +460,9 @@ class pattern:
     HH.append("111")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Reset module display state.
     [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()
+
