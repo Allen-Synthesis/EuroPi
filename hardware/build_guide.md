@@ -233,7 +233,7 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 ---
 
 #### OLED Configuration
-There are two pin configurations that the OLED used in this build commonly comes in, which are labelled on the board 'THT' (The Pi Hut), and 'CPC' (CPC, AliExpress, most other suppliers).  
+There are two pin configurations that the OLED used in this build commonly comes in, which are labelled on the board 'TPH' (The Pi Hut), and 'CPC' (CPC, AliExpress, most other suppliers).  
 The Pi Hut display is preferable as it does not have pre-soldered headers, so is easier to mount on the board. However the CPC display is still entirely usable.  
   
 This configuration setup allows you to tell the module which display you are using, as their pins are ordered differently:  
