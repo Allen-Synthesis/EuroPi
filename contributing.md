@@ -132,7 +132,7 @@ When adding new files to the project, follow the existing organizational structu
 
 ### Spelling and grammar
 
-It is expected that any prose is written clearly and follows english grammar rules. British english spelling is favored.
+It is expected that any prose is written clearly and follows English grammar rules. British English spelling is favoured.
 
 ## Documentation
 
