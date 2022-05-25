@@ -185,8 +185,10 @@ Changes to firmware code must adhere to more stringent requirements than other c
 
 ### Code Style Requirements
 
-There are currently no code style requirements for the firmware code, however we should favor python best practices such as [pep8](https://peps.python.org/pep-0008/) when possible.
+The main codebase (all code outside of `/software/contrib` and `/tests/contrib`) follows the Black style format and a GitHub CI Action will verify if this is the case for
+all newly added or changed code in incoming Pull Requests.
 
+To format your code you can install Black through `pip install -r requirements_dev.txt` and run the actual formatting by calling `black .` from the root project folder.
 ### Documentation
 
 Changes or additions to public API functions must include the corresponding updates to their documentation and render properly on the [API doc site](https://allen-synthesis.github.io/EuroPi/).
