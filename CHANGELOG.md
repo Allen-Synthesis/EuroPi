@@ -1,5 +1,16 @@
 # Change Log
 
+### 2022-05-24
+
+- [Release] version 0.5.0
+- [New Script] PolySquare 6 oscillator contrib script #141
+- [Bug Fix] Updated display to show pattern number, decrease loading times #146
+- [Bug Fix] Cvecorder bank clear remediation #139,
+- [Documentation] Contributing updates #138, #125
+- [Documentation] Update hamlet.md to align gate/CV ports with code #135
+- [Other] Add a new test fixture called MockHardware #137
+- [Other] Add missing test mocks #143
+
 ### 2022-04-28
 
 - [Release] version 0.4.0
