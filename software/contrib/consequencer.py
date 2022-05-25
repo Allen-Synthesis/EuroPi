@@ -218,30 +218,33 @@ class Consequencer(EuroPiScript):
         return self.t
 
     def updateScreen(self):
-        #oled.clear() - dont use this, it causes the screen to flicker!
+        # oled.clear() - dont use this, it causes the screen to flicker!
         oled.fill(0)
-        
+
         # Show selected pattern visually
-        oled.text(self.visualizePattern(self.BD[self.pattern]),0,0,1)
-        oled.text(self.visualizePattern(self.SN[self.pattern]),0,10,1)
-        oled.text(self.visualizePattern(self.HH[self.pattern]),0,20,1)
+        oled.text(self.visualizePattern(self.BD[self.pattern]), 0, 0, 1)
+        oled.text(self.visualizePattern(self.SN[self.pattern]), 0, 10, 1)
+        oled.text(self.visualizePattern(self.HH[self.pattern]), 0, 20, 1)
 
         # If the random toggle is on, show a rectangle
         if self.random_HH:
-            oled.fill_rect(0,29,10,3,1)
+            oled.fill_rect(0, 29, 10, 3, 1)
 
         # Show self.output4isClock value
         if self.output4isClock:
-            oled.rect(12,29,10,3,1)   
-
-        # Show the analogInputMode
-        oled.text('M' + str(self.analogInputMode), 112, 25, 1)
+            oled.rect(12, 29, 10, 3, 1)
 
         # Show randomness
-        oled.text('R' + str(int(self.randomness)), 40, 25, 1)    
+        oled.text('R' + str(int(self.randomness)), 26, 25, 1)
 
         # Show CV pattern
-        oled.text('C' + str(self.CvPattern), 76, 25, 1)
+        oled.text('C' + str(self.CvPattern), 56, 25, 1)
+
+        # Show the analogInputMode
+        oled.text('M' + str(self.analogInputMode), 85, 25, 1)
+
+        # Show the pattern number
+        oled.text(str(self.pattern), 110, 25, 1)
 
         oled.show()
 
@@ -462,5 +465,4 @@ if __name__ == '__main__':
     [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()
-
 

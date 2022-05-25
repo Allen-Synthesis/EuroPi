@@ -12,6 +12,7 @@ from contrib.hello_world import HelloWorld
 from contrib.noddy_holder import NoddyHolder
 from contrib.piconacci import Piconacci
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
+from contrib.poly_square import PolySquare
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
 from contrib.strange_attractor import StrangeAttractor
@@ -30,6 +31,7 @@ EUROPI_SCRIPT_CLASSES = [
     NoddyHolder,
     Piconacci,
     PolyrhythmSeq,
+    PolySquare,
     RadioScanner,
     Scope,
     StrangeAttractor,
