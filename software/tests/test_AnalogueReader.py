@@ -7,7 +7,8 @@ from mock_hardware import MockHardware
 
 @pytest.fixture
 def analogueReader():
-    return AnalogueReader(pin=1)  #actual pin value doesn't matter
+    return AnalogueReader(pin=1)  # actual pin value doesn't matter
+
 
 @pytest.mark.parametrize(
     "value, expected",
@@ -49,7 +50,6 @@ def test_range(mockHardware: MockHardware, analogueReader, value, expected):
         ([i for i in range(10)], MAX_UINT16 / 3, 3),
         ([i for i in range(10)], MAX_UINT16 / 2, 5),
         ([i for i in range(10)], MAX_UINT16, 9),
-
         (["a", "b"], 0, "a"),
         (["a", "b"], MAX_UINT16, "b"),
     ],
@@ -58,5 +58,3 @@ def test_choice(mockHardware: MockHardware, analogueReader, values, value, expec
     mockHardware.set_ADC_u16_value(analogueReader, value)
 
     assert analogueReader.choice(values) == expected
-
-
