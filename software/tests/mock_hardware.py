@@ -2,6 +2,7 @@ from machine import ADC, Pin
 
 from europi import AnalogueReader, DigitalReader
 
+
 class MockHardware:
     """A class used in tests to stand in for actual EuroPi hardware. Allows a test to set the values for various
     hardware components, such as the position of a knob. Then a test can run a script and assert the script's behavior.
@@ -20,9 +21,8 @@ class MockHardware:
 
     def set_ADC_u16_value(self, reader: AnalogueReader, value: int):
         """Sets the value that will be returned by a call to `read_u16` on the given AnalogueReader."""
-        self._adc_pin_values[reader.pin] =  value
+        self._adc_pin_values[reader.pin] = value
 
     def set_digital_value(self, reader: DigitalReader, value: bool):
         """Sets the value that will be returned by a call to `value` on the given DigitalReader."""
-        self._digital_pin_values[reader.pin] =  not value
-
+        self._digital_pin_values[reader.pin] = not value
