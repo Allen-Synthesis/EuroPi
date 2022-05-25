@@ -9,6 +9,7 @@
 ### [General Questions](#general-questions)
 ### [Hardware Decisions](#hardware-decisions)
 ### [Bill of Materials (BOM)](#bill-of-materials)
+### [Git](#git)
 ### [Programming](#programming-1)
 ### [Calibration](#calibration-1)
 
@@ -27,6 +28,11 @@
 ## Bill of Materials
 
 | Do any of the capacitors need to be polarised? | No, non-polarised will work fine |
+|--|--|
+
+## Git/GitHub
+
+| What is a 'Pull Request'? | This is a request made by a user to the main repository to 'pull' the extra data, either changes, new files, or deletions, from their fork into the main one. Essentially it is the way that users contribute to the main repository. The guidelines for creating a PR, and more explanation of what one is, can be found in the [contributing guidelines](contributing.md) |
 |--|--|
 
 ## Programming
