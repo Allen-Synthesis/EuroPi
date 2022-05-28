@@ -188,7 +188,14 @@ Changes to firmware code must adhere to more stringent requirements than other c
 The main codebase (all code outside of `/software/contrib` and `/tests/contrib`) follows the Black style format and a GitHub CI Action will verify if this is the case for
 all newly added or changed code in incoming Pull Requests.
 
-To format your code you can install Black through `pip install -r requirements_dev.txt` and run the actual formatting by calling `black .` from the root project folder.
+To format your code you can install Black through `pip install -r requirements_dev.txt` and run the actual formatting by calling `black .` from the root project folder. This formats all code contained within the main codebase.
+
+Optionally, you can also manually run black as a one-off to format your contrib script:
+```shell
+$ black software/contrib/polyrhythmic_sequencer.py
+```
+To prevent black from reformatting certain parts of your code (which should be rare), start a block with `# fmt: off` and end with `# fmt: on`, or end a line with `# fmt: skip`.
+
 ### Documentation
 
 Changes or additions to public API functions must include the corresponding updates to their documentation and render properly on the [API doc site](https://allen-synthesis.github.io/EuroPi/).
