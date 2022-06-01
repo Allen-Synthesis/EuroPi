@@ -1,0 +1,50 @@
+name: Publish Python distributions to PyPI and TestPyPI
+
+on:
+  workflow_call:
+    secrets:
+      TEST_PYPI_API_TOKEN:
+        required: true
+      PYPI_API_TOKEN:
+        required: true
+
+jobs:
+  build-n-publish:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      
+      - name: Build firmware tarball
+        working-directory: software/firmware
+        run: python setup.py sdist --dist-dir=../dist
+      
+      - name: Build contrib tarball
+        working-directory: software
+        run: python setup.py sdist
+
+      - name: Publish distribution to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1.5
+        continue-on-error: true
+        with:
+          verbose: true
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+          packages_dir: software/dist
+          skip_existing: true
+
+      - name: Publish distribution to PyPI
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1.5
+        with:
+          verbose: true
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: software/dist
+

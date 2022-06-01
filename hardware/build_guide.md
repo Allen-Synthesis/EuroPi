@@ -208,7 +208,7 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 
 ### Small Capacitors
 
-#### Solder the 100nF capacitors to the back (C8, C9). If your board has a polarity marking, ignore it unless you are deliberately using larger polarised capacitors than the BOM calls for, in which case make sure they line up with the PCB marking
+#### Solder the 100nF capacitors to the back (C7, C8). If your board has a polarity marking, ignore it unless you are deliberately using larger polarised capacitors than the BOM calls for, in which case make sure they line up with the PCB marking
 ![_DSC2363](https://user-images.githubusercontent.com/79809962/148646621-f21b893c-dd15-405c-a6d9-2fb33511e9b1.jpg)
 
 ---
@@ -233,7 +233,7 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 ---
 
 #### OLED Configuration
-There are two pin configurations that the OLED used in this build commonly comes in, which are labelled on the board 'THT' (The Pi Hut), and 'CPC' (CPC, AliExpress, most other suppliers).  
+There are two pin configurations that the OLED used in this build commonly comes in, which are labelled on the board 'TPH' (The Pi Hut), and 'CPC' (CPC, AliExpress, most other suppliers).  
 The Pi Hut display is preferable as it does not have pre-soldered headers, so is easier to mount on the board. However the CPC display is still entirely usable.  
   
 This configuration setup allows you to tell the module which display you are using, as their pins are ordered differently:  

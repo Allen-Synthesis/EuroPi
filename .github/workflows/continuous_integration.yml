@@ -1,0 +1,24 @@
+name: Continuous Integration
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  run_tests:
+    uses: ./.github/workflows/pytest.yml
+  
+  build_and_publish:
+    uses: ./.github/workflows/publish_to_pypi.yml
+    needs: run_tests
+    secrets:
+      TEST_PYPI_API_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable

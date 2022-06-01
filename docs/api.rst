@@ -5,3 +5,5 @@ API
    :toctree: generated
 
    europi
+   europi_script
+   ui

@@ -1,11 +1,10 @@
-
-
 class ADC:
     def __init__(self, *args):
         pass
-    
+
     def read_u16(self, *args):
-        pass
+        return 0
+
 
 class I2C:
     def __init__(self, channel, sda, scl, freq, *args):
@@ -14,14 +13,19 @@ class I2C:
     def scan(self):
         return []
 
+
 class Pin:
-    IN = 'in'
+    IN = "in"
 
     def __init__(self, id, *args):
         pass
 
     def irq(self, handler=None, trigger=None):
         pass
+
+    def value(self, *args):
+        pass
+
 
 class PWM:
     def __init__(self, *args):

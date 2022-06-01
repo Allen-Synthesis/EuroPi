@@ -1,0 +1,2 @@
+class FrameBuffer:
+    pass

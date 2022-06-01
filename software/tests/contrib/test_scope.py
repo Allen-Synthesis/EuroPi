@@ -1,6 +1,6 @@
 import pytest
 
-from scope import calc_y_pos
+from contrib.scope import Scope
 
 
 @pytest.mark.parametrize(
@@ -20,7 +20,7 @@ from scope import calc_y_pos
     ],
 )
 def test_calc_y_pos(a_voltage, expected_pos):
-    assert calc_y_pos(12, a_voltage) == expected_pos
+    assert Scope.calc_y_pos(12, a_voltage) == expected_pos
 
 
 
@@ -41,4 +41,4 @@ def test_calc_y_pos(a_voltage, expected_pos):
     ],
 )
 def test_calc_y_pos_scale(max_disp_voltage, a_voltage, expected_pos):
-    assert calc_y_pos(max_disp_voltage, a_voltage) == expected_pos
+    assert Scope.calc_y_pos(max_disp_voltage, a_voltage) == expected_pos
