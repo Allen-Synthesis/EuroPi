@@ -54,10 +54,9 @@ MIN_INPUT_VOLTAGE = 0.095
 
 
 class SmoothRandomVoltages:
-
     def __init__(self):
-        self.voltages = [0, 0 , 0]
-        self.target_voltages = [0, 0 , 0]
+        self.voltages = [0, 0, 0]
+        self.target_voltages = [0, 0, 0]
 
         # Exponential incremental value for assigning slew rate.
         self.slew_rate = lambda: (1 << europi.k1.range(9) + 1) / 100
@@ -78,7 +77,9 @@ class SmoothRandomVoltages:
                 europi.oled.show()
                 # 0: Bars, 1: Scope, 2: Blank.
                 self.visualization = (self.visualization + dir) % 3
+
             return func
+
         europi.b1.handler(change_visualization(1))
         europi.b2.handler(change_visualization(-1))
 
@@ -92,12 +93,13 @@ class SmoothRandomVoltages:
         # Col 3, change on clock pulse with knob 2 probability.
         if europi.k2.percent() > random():
             self.target_voltages[2] = self.get_new_voltage()
-    
+
     def get_new_voltage(self):
+        """Return a new voltage from analog in or random value."""
         if europi.ain.read_voltage() > MIN_INPUT_VOLTAGE:
             return europi.ain.read_voltage()
         return uniform(europi.MIN_OUTPUT_VOLTAGE, europi.MAX_OUTPUT_VOLTAGE)
-    
+
     def update_display(self):
         """Show current voltage visualizations."""
         if self.visualization == 0:
@@ -129,8 +131,8 @@ class SmoothRandomVoltages:
         europi.oled.show()
 
     def display_scope(self):
-        pixel_x = europi.OLED_WIDTH-1
-        pixel_y = europi.OLED_HEIGHT-1
+        pixel_x = europi.OLED_WIDTH - 1
+        pixel_y = europi.OLED_HEIGHT - 1
         europi.oled.scroll(-1, 0)
         europi.oled.vline(pixel_x, 0, europi.OLED_HEIGHT, 0)
         europi.oled.pixel(pixel_x, pixel_y - int(self.voltages[0] * (pixel_y / 10)), 1)
@@ -159,6 +161,6 @@ class SmoothRandomVoltages:
             self.update_display()
 
 
-# if __name__ == '__main__':
-srv = SmoothRandomVoltages()
-srv.main()
+if __name__ == "__main__":
+    srv = SmoothRandomVoltages()
+    srv.main()
