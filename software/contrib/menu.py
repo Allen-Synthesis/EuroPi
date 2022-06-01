@@ -14,6 +14,7 @@ from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.poly_square import PolySquare
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
+from contrib.smooth_random_voltages import SmoothRandomVoltages
 from contrib.strange_attractor import StrangeAttractor
 from calibrate import Calibrate
 
@@ -32,6 +33,7 @@ EUROPI_SCRIPT_CLASSES = [
     PolySquare,
     RadioScanner,
     Scope,
+    SmoothRandomVoltages,
     StrangeAttractor,
     Calibrate,
 ]

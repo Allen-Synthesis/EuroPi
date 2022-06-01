@@ -41,9 +41,12 @@ import machine
 try:
     from software.firmware import europi
     from software.firmware.europi import OLED_HEIGHT, OLED_WIDTH
+    from software.firmware.europi_script import EuroPiScript
+
 except ImportError:
     import europi
     from europi import OLED_HEIGHT, OLED_WIDTH
+    from europi_script import EuroPiScript
 
 
 # Overclocked for faster display refresh.
@@ -53,7 +56,7 @@ machine.freq(250000000)
 MIN_INPUT_VOLTAGE = 0.095
 
 
-class SmoothRandomVoltages:
+class SmoothRandomVoltages(EuroPiScript):
     def __init__(self):
         self.voltages = [0, 0, 0]
         self.target_voltages = [0, 0, 0]
