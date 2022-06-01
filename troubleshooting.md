@@ -29,7 +29,7 @@ This means that your device is either not connected, or not being detected.
 
 ## Calibration gets stuck on 10V
 
-This means that the value the module recorded for 10V when you were sending in voltages to the analogue input canot be reached by the CV output.  
+This means that the value the module recorded for 10V when you were sending in voltages to the analogue input cannot be reached by the CV output.  
 This could mean either:
 1. The value you sent in for 10V was more than 10V
 2. The module actually cannot reach 10V
