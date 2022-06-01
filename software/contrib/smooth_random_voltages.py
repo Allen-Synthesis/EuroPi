@@ -1,7 +1,7 @@
 """
 Smooth Random Voltages
 author: Adam Wonak (github.com/awonak)
-date: 2022-03-08
+date: 2022-06-01
 labels: random, s&h
 
 
@@ -64,7 +64,7 @@ class SmoothRandomVoltages(EuroPiScript):
         # Exponential incremental value for assigning slew rate.
         self.slew_rate = lambda: (1 << europi.k1.range(9) + 1) / 100
 
-        # Visualization func
+        # Visualization display choice.
         self.visualization = 0  # 0: Bars, 1: Scope, 2: Blank.
 
         # Register digital input handler
@@ -83,8 +83,8 @@ class SmoothRandomVoltages(EuroPiScript):
 
             return func
 
-        europi.b1.handler(change_visualization(1))
-        europi.b2.handler(change_visualization(-1))
+        europi.b1.handler(change_visualization(-1))
+        europi.b2.handler(change_visualization(1))
 
     def set_target_voltages(self):
         """Get next random voltage value."""
@@ -111,29 +111,27 @@ class SmoothRandomVoltages(EuroPiScript):
             self.display_scope()
 
     def display_bars(self):
+        """Draw a bar representing the slew / target for each of the 3 voltages."""
         europi.oled.fill(0)
         for i in range(3):
             x1 = 0
             y1 = int(i * (OLED_HEIGHT / 3))
             y2 = int(OLED_HEIGHT / 3) - 1
-
-            # Slew
-            x2 = int((self.voltages[i] / europi.MAX_OUTPUT_VOLTAGE) * OLED_WIDTH)
-            if self.voltages[i] > self.target_voltages[i]:
-                europi.oled.rect(x1, y1, x2, y2, 1)
+            x2_slew = int((self.voltages[i] / europi.MAX_OUTPUT_VOLTAGE) * OLED_WIDTH)
+            x2_target = int((self.target_voltages[i] / europi.MAX_OUTPUT_VOLTAGE) * OLED_WIDTH)
+            # Smooth voltage rising
+            if self.voltages[i] < self.target_voltages[i]:
+                europi.oled.fill_rect(x1, y1, x2_slew, y2, 1)
+                europi.oled.rect(x1, y1, x2_target, y2, 1)
+            # Smooth voltage falling
             else:
-                europi.oled.fill_rect(x1, y1, x2, y2, 1)
-
-            # Stepped
-            x2 = int((self.target_voltages[i] / europi.MAX_OUTPUT_VOLTAGE) * OLED_WIDTH)
-            if self.voltages[i] > self.target_voltages[i]:
-                europi.oled.fill_rect(x1, y1, x2, y2, 1)
-            else:
-                europi.oled.rect(x1, y1, x2, y2, 1)
+                europi.oled.rect(x1, y1, x2_slew, y2, 1)
+                europi.oled.fill_rect(x1, y1, x2_target, y2, 1)
 
         europi.oled.show()
 
     def display_scope(self):
+        """Draw a real-time line representing the slew value for each of the 3 voltages."""
         pixel_x = europi.OLED_WIDTH - 1
         pixel_y = europi.OLED_HEIGHT - 1
         europi.oled.scroll(-1, 0)
