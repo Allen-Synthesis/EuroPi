@@ -12,19 +12,22 @@ Inspired by: https://youtu.be/tupkx3q7Dyw
 
 New voltages assigned upon each digital input trigger. Top row outputs move
 towards target voltage according to slew rate set by knob 1. Bottom row outputs
-immediately change to new target voltage.
+immediately change to new target voltage. Voltage source toggled by button 2,
+which will switch between random and analog input voltage source. Button 1 will
+toggle various display types for the oled.
 
 Col 1, change on each trigger.
 Col 2, change on each trigger if target voltage has been reached.
 Col 3, change on trigger with knob 2 probability.
 
-The buttons will cycle through the visualizations: Bars, Scope, Blank.
-
-digital_input: trigger to set a new target voltage
-analog_input: if non-zero voltage present, use that value for new target voltage and shift values.
+digital_input: trigger to set a new target voltage.
+analog_input: source for new target value when enabled.
 
 knob_1: slew rate
-knob_2: probability of voltage 3
+knob_2: probability of new Col 3 voltage
+
+button_1: cycle through the visualizations: Bars, Scope, Blank.
+button_2: cycle through voltage sources: random, analog input.
 
 output_1: smooth random voltage 1 - new voltage on trigger
 output_2: smooth random voltage 2 - new voltage after target reached
@@ -36,24 +39,26 @@ output_6: stepped random voltage 3 - new voltage based on k2 probability (no sle
 
 """
 from random import random, uniform
+from utime import ticks_diff, ticks_ms
 import machine
 
 try:
     from software.firmware import europi
-    from software.firmware.europi import OLED_HEIGHT, OLED_WIDTH
+    from software.firmware.europi import CHAR_HEIGHT, OLED_HEIGHT, OLED_WIDTH
     from software.firmware.europi_script import EuroPiScript
 
 except ImportError:
     import europi
-    from europi import OLED_HEIGHT, OLED_WIDTH
+    from europi import CHAR_HEIGHT, OLED_HEIGHT, OLED_WIDTH
     from europi_script import EuroPiScript
 
 
 # Overclocked for faster display refresh.
 machine.freq(250000000)
 
-# Adjust to match your max unplugged voltage noise level.
-MIN_INPUT_VOLTAGE = 0.095
+
+# Script Constants
+MENU_DURATION = 1800
 
 
 class SmoothRandomVoltages(EuroPiScript):
@@ -67,6 +72,10 @@ class SmoothRandomVoltages(EuroPiScript):
         # Visualization display choice.
         self.visualization = 0  # 0: Bars, 1: Scope, 2: Blank.
 
+        # Voltage source choice.
+        self.voltage_source = 0  # 0: random, 1: analog input.
+        self.voltage_source_display = ["random", "analog"]
+
         # Register digital input handler
         @europi.din.handler
         def new_target_voltages():
@@ -74,34 +83,37 @@ class SmoothRandomVoltages(EuroPiScript):
             self.set_target_voltages()
 
         # Cycle through the visualizations
-        def change_visualization(dir):
-            def func():
-                europi.oled.fill(0)
-                europi.oled.show()
-                # 0: Bars, 1: Scope, 2: Blank.
-                self.visualization = (self.visualization + dir) % 3
+        @europi.b1.handler
+        def change_visualization():
+            europi.oled.fill(0)
+            europi.oled.show()
+            # 0: Bars, 1: Scope, 2: Blank.
+            self.visualization = (self.visualization + 1) % 3
 
-            return func
-
-        europi.b1.handler(change_visualization(-1))
-        europi.b2.handler(change_visualization(1))
+        # Toggle between random and analog input voltage source
+        @europi.b2.handler
+        def change_voltage_source():
+            # 0: random, 1: analog input.
+            self.voltage_source = (self.voltage_source + 1) % 2
 
     def set_target_voltages(self):
         """Get next random voltage value."""
-        # Col 1, change on each clock pulse.
+        # Col 1, change on each trigger.
         self.target_voltages[0] = self.get_new_voltage()
-        # Col 2, change on each clock pulse if target voltage has been reached.
+        # Col 2, change on each trigger if target voltage has been reached.
         if self.voltages[1] == self.target_voltages[1]:
             self.target_voltages[1] = self.get_new_voltage()
-        # Col 3, change on clock pulse with knob 2 probability.
+        # Col 3, change on trigger with knob 2 probability.
         if europi.k2.percent() > random():
             self.target_voltages[2] = self.get_new_voltage()
 
     def get_new_voltage(self):
         """Return a new voltage from analog in or random value."""
-        if europi.ain.read_voltage() > MIN_INPUT_VOLTAGE:
+        # 0: random, 1: analog input.
+        if self.voltage_source == 0:
+            return uniform(europi.MIN_OUTPUT_VOLTAGE, europi.MAX_OUTPUT_VOLTAGE)
+        else:
             return europi.ain.read_voltage()
-        return uniform(europi.MIN_OUTPUT_VOLTAGE, europi.MAX_OUTPUT_VOLTAGE)
 
     def update_display(self):
         """Show current voltage visualizations."""
@@ -109,14 +121,23 @@ class SmoothRandomVoltages(EuroPiScript):
             self.display_bars()
         elif self.visualization == 1:
             self.display_scope()
+        self.show_menu_header()
+        europi.oled.show()
+
+    def show_menu_header(self):
+        """When button2 has been pressed, show the current changed source value."""
+        if ticks_diff(ticks_ms(), europi.b2.last_pressed()) < MENU_DURATION:
+            europi.oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT, 1)
+            msg = f"Source: {self.voltage_source_display[self.voltage_source]}"
+            europi.oled.text(msg, 0, 0, 0)
 
     def display_bars(self):
         """Draw a bar representing the slew / target for each of the 3 voltages."""
         europi.oled.fill(0)
         for i in range(3):
             x1 = 0
-            y1 = int(i * (OLED_HEIGHT / 3))
-            y2 = int(OLED_HEIGHT / 3) - 1
+            y1 = int(i * (OLED_HEIGHT / 3)) + 2
+            y2 = int(OLED_HEIGHT / 3) - 2
             x2_slew = int((self.voltages[i] / europi.MAX_OUTPUT_VOLTAGE) * OLED_WIDTH)
             x2_target = int((self.target_voltages[i] / europi.MAX_OUTPUT_VOLTAGE) * OLED_WIDTH)
             # Smooth voltage rising
@@ -128,8 +149,6 @@ class SmoothRandomVoltages(EuroPiScript):
                 europi.oled.rect(x1, y1, x2_slew, y2, 1)
                 europi.oled.fill_rect(x1, y1, x2_target, y2, 1)
 
-        europi.oled.show()
-
     def display_scope(self):
         """Draw a real-time line representing the slew value for each of the 3 voltages."""
         pixel_x = europi.OLED_WIDTH - 1
@@ -139,7 +158,6 @@ class SmoothRandomVoltages(EuroPiScript):
         europi.oled.pixel(pixel_x, pixel_y - int(self.voltages[0] * (pixel_y / 10)), 1)
         europi.oled.pixel(pixel_x, pixel_y - int(self.voltages[1] * (pixel_y / 10)), 1)
         europi.oled.pixel(pixel_x, pixel_y - int(self.voltages[2] * (pixel_y / 10)), 1)
-        europi.oled.show()
 
     def main(self):
         # Start the main loop.
