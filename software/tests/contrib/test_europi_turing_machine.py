@@ -1,7 +1,7 @@
 import pytest
 
-from turing_machine import EuroPiTuringMachine, MAX_OUTPUT_VOLTAGE, DEFAULT_BIT_COUNT
-from europi import ain, k1
+from contrib.turing_machine import EuroPiTuringMachine, ain, k1
+from mock_hardware import MockHardware
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def turing_machine():
 
 
 @pytest.mark.parametrize(
-    "k1_value, ain_value, expected",
+    "k1_percent, ain_percent, expected_probability",
     [
         # k1 locked ain varies
         (1.0, 0.0, 0),
@@ -32,7 +32,6 @@ def turing_machine():
         (0.5, 0.9, 0),
         (0.5, 0.99, 0),
         (0.5, 1.0, 0),
-
         # k1 looped ain varies
         (0.0, 0.0, 100),
         (0.0, 0.004, 100),
@@ -45,7 +44,9 @@ def turing_machine():
         (0.0, 1.0, 0),
     ],
 )
-def test_flip_probability(monkeypatch, turing_machine: EuroPiTuringMachine, k1_value, ain_value, expected):
-    monkeypatch.setattr(ain, "percent", lambda: ain_value)
-    monkeypatch.setattr(k1, "percent", lambda: k1_value)
-    assert turing_machine.flip_probability() == expected
+def test_flip_probability(
+    mockHardware: MockHardware, turing_machine: EuroPiTuringMachine, k1_percent, ain_percent, expected_probability
+):
+    mockHardware.set_analogue_input_percent(ain, ain_percent)
+    mockHardware.set_knob_percent(k1, k1_percent)
+    assert turing_machine.flip_probability() == expected_probability

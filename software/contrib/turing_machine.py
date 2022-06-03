@@ -198,7 +198,7 @@ class EuroPiTuringMachine(EuroPiScript):
         cv6.voltage(self.tm.get_voltage())
 
     def flip_probability(self):
-        return clamp(int((round(1 - k1.percent() - ain.percent(), 2)) * 100), 0, 100)
+        return clamp(int(round(1 - k1.percent() - ain.percent(), 2) * 100), 0, 100)
 
     def scale(self):
         if self.k2_scale_mode:

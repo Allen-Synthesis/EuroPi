@@ -1,6 +1,6 @@
 import pytest
 
-from turing_machine import TuringMachine, MAX_OUTPUT_VOLTAGE, DEFAULT_BIT_COUNT
+from contrib.turing_machine import TuringMachine, MAX_OUTPUT_VOLTAGE, DEFAULT_BIT_COUNT
 
 
 def tm(bit_count, starting_bits):
@@ -13,8 +13,10 @@ def tm(bit_count, starting_bits):
 def turing_machine():
     return tm(16, 0b1100110011110000)  # set the bits to a known value
 
+
 def get_bit_string(tm):
     return f"{tm.bits:0{tm.bit_count}b}"
+
 
 def test_bad_bit_count():
     with pytest.raises(ValueError, match=r"4") as e:
@@ -56,6 +58,7 @@ def test_get_8_bits(bit_count, starting_bits, expected):
     turing_machine = tm(bit_count, starting_bits)
     eight_bits = turing_machine.get_8_bits()
     assert f"{eight_bits:08b}" == expected
+
 
 @pytest.mark.parametrize(
     "bit_count,starting_bits,index,expected",
@@ -152,8 +155,9 @@ def test_length_2(turing_machine):
     for _ in range(10):
         assert turing_machine.get_voltage() == 3.333333333333333
         turing_machine.step()
-        assert turing_machine.get_voltage() ==  6.666666666666666
+        assert turing_machine.get_voltage() == 6.666666666666666
         turing_machine.step()
+
 
 def test_length_4(turing_machine):
     turing_machine.bits = 0b1100110011110001
@@ -165,14 +169,15 @@ def test_length_4(turing_machine):
 
     for _ in range(10):
         print(_)
-        assert turing_machine.get_voltage() ==   5.333333333333333
+        assert turing_machine.get_voltage() == 5.333333333333333
         turing_machine.step()
-        assert turing_machine.get_voltage() ==  0.6666666666666666
+        assert turing_machine.get_voltage() == 0.6666666666666666
         turing_machine.step()
-        assert turing_machine.get_voltage() ==  1.3333333333333333
+        assert turing_machine.get_voltage() == 1.3333333333333333
         turing_machine.step()
         assert turing_machine.get_voltage() == 2.6666666666666665
         turing_machine.step()
+
 
 def test_bad_length(turing_machine):
     with pytest.raises(ValueError, match=r"1") as e:
@@ -180,6 +185,7 @@ def test_bad_length(turing_machine):
 
     with pytest.raises(ValueError, match=r"" + str(DEFAULT_BIT_COUNT + 1)) as e:
         turing_machine.length = DEFAULT_BIT_COUNT + 1
+
 
 def test_write(turing_machine):
     turing_machine.write = True
