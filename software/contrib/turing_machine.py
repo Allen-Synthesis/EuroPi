@@ -20,12 +20,17 @@ If you'd like to use different bits for the pulse outputs you can update the `CV
 from random import getrandbits, randint
 from time import sleep
 
+
 try:
     from firmware import europi
-    from firmware.europi import clamp, din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
+    from firmware.europi import clamp, MAX_UINT16
+    from firmware.europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
+    from firmware.experimental.knobs import KnobBank
 except ImportError:
     import europi
-    from europi import clamp, din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
+    from europi import clamp, MAX_UINT16
+    from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
+    from experimental.knobs import KnobBank
 
 from europi_script import EuroPiScript
 
@@ -183,19 +188,30 @@ class EuroPiTuringMachine(EuroPiScript):
         self.tm.length_getter = self.length
         self.tm.write_getter = self.write
         self.tm.step_handler = self.step_handler
-        self.k2_scale_mode = True  # scale mode or length mode
+        self.request_next_k2 = False
+        self.kb2 = (
+            KnobBank.builder(k2)
+            .with_disabled_knob()
+            .with_locked_knob("scale", initial_value=MAX_UINT16)
+            .with_locked_knob("length", initial_value=MAX_UINT16)
+            .build()
+        )
 
         @din.handler
         def clock():
             self.tm.step()
 
         @b2.handler_falling
-        def mode_toggle():
-            if self.k2_scale_mode:
-                self.tm.scale = self.scale()
-            else:
-                self.tm.length = self.length()
-            self.k2_scale_mode = not self.k2_scale_mode
+        def request_next_k2_mode():
+            self.request_next_k2 = True
+
+    def next_k2_mode(self):
+        if self.kb2.current_name == "scale":
+            self.tm.scale = self.scale()
+        elif self.kb2.current_name == "length":
+            self.tm.length = self.length()
+        self.kb2.next()
+        self.request_next_k2 = False
 
     def step_handler(self):
         cv1.value(self.tm.get_bit(CV1_PULSE_BIT))
@@ -209,16 +225,18 @@ class EuroPiTuringMachine(EuroPiScript):
         return clamp(int(round(1 - k1.percent() - ain.percent(), 2) * 100), 0, 100)
 
     def scale(self):
-        if self.k2_scale_mode:
-            return k2.percent() * self.tm.max_output_voltage
+        if self.kb2.current_name == "scale":
+            return self.kb2.scale.percent() * self.tm.max_output_voltage
         else:
             return self.tm._scale
 
     def length(self):
-        if self.k2_scale_mode:
-            return self.tm._length
+        if self.kb2.current_name == "length":
+            return self.kb2.length.choice(
+                [2, 3, 4, 5, 6, 8, 12, 16]  # TODO: vary based on bit_count?
+            )
         else:
-            return k2.choice([2, 3, 4, 5, 6, 8, 12, 16])  # TODO: vary based on bit_count?
+            return self.tm._length
 
     def write(self):
         return b1.value()
@@ -241,6 +259,9 @@ class EuroPiTuringMachine(EuroPiScript):
         line1_y = 11
         line2_y = 23
         while True:
+            if self.request_next_k2:
+                self.next_k2_mode()
+
             oled.fill(0)
             prob = self.tm.flip_probability
             prob_2 = (
@@ -250,12 +271,14 @@ class EuroPiTuringMachine(EuroPiScript):
                 if self.tm.flip_probability == 100
                 else ""
             )
-            scale_str = f"{'*' if self.k2_scale_mode else ' '}scale:{self.tm.scale:3.1f}"
-            len_str = f"{' ' if self.k2_scale_mode else '*'}{self.tm.length:2} steps"
+            scale_str = (
+                f"{'*' if self.kb2.current_name == 'scale' else ' '}scale:{self.tm.scale:3.1f}"
+            )
+            len_str = f"{'*' if self.kb2.current_name == 'length' else ' '}{self.tm.length:2} steps"
 
             self.bits_as_led_line(oled, self.tm.get_8_bits())
 
-            oled.text(f" {prob}", 0, line1_y, 1)
+            oled.text(f" {prob}%", 0, line1_y, 1)
             oled.text(f"{scale_str}", 40, line1_y, 1)
 
             oled.text(f"{prob_2}", 0, line2_y, 1)

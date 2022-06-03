@@ -140,10 +140,12 @@ class KnobBank:
     def __init__(self, physical_knob: Knob, virtual_knobs, initial_selection) -> None:
         self.index = 0
         self.knobs = []
+        self.names = []
 
         for name, knob in virtual_knobs.items():
             setattr(self, name, knob)  # make knob available by its name
             self.knobs.append(knob)
+            self.names.append(name)
         self.knobs[initial_selection].request_unlock()
         self.index = initial_selection
 
@@ -151,6 +153,10 @@ class KnobBank:
     def current(self) -> LockableKnob:
         """The currently active knob."""
         return self.knobs[self.index]
+    
+    @property
+    def current_name(self) -> str:
+        return self.names[self.index]
 
     def next(self):  # potential race condition: next() and _sample_adc() can both change state
         """Select the next knob by locking the current knob, and requesting an unlock on the next in
