@@ -192,8 +192,8 @@ class EuroPiTuringMachine(EuroPiScript):
         self.kb2 = (
             KnobBank.builder(k2)
             .with_disabled_knob()
-            .with_locked_knob("scale", initial_value=MAX_UINT16)
-            .with_locked_knob("length", initial_value=MAX_UINT16)
+            .with_locked_knob("scale", initial_value=0)
+            .with_locked_knob("length", initial_value=0)
             .build()
         )
 
