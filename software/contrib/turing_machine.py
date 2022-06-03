@@ -284,7 +284,6 @@ class EuroPiTuringMachine(EuroPiScript):
             oled.text(f"{prob_2}", 0, line2_y, 1)
             oled.text(f"{len_str}", 63, line2_y, 1)
             oled.show()
-            sleep(0.1)
 
 
 if __name__ == "__main__":
