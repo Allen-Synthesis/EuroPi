@@ -98,20 +98,19 @@ def test_access_percent(mockHardware: MockHardware, locked_knob: LockableKnob):
 
     mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
     assert round(locked_knob.percent(), 2) == 0
-    
+
     mockHardware.set_ADC_u16_value(locked_knob, 0)
     assert round(locked_knob.percent(), 2) == 1
 
 
 def test_access_choice(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert locked_knob.choice([1,2,3]) == 2
+    assert locked_knob.choice([1, 2, 3]) == 2
 
     mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
-    assert locked_knob.choice([1,2,3]) == 1
-    
-    mockHardware.set_ADC_u16_value(locked_knob, 0)
-    assert locked_knob.choice([1,2,3]) == 3
+    assert locked_knob.choice([1, 2, 3]) == 1
 
+    mockHardware.set_ADC_u16_value(locked_knob, 0)
+    assert locked_knob.choice([1, 2, 3]) == 3
 
 
 def test_access_range(mockHardware: MockHardware, locked_knob: LockableKnob):
@@ -119,7 +118,7 @@ def test_access_range(mockHardware: MockHardware, locked_knob: LockableKnob):
 
     mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
     assert locked_knob.range() == 0
-    
+
     mockHardware.set_ADC_u16_value(locked_knob, 0)
     assert locked_knob.range() == 99
 
@@ -129,9 +128,10 @@ def test_access_read_position(mockHardware: MockHardware, locked_knob: LockableK
 
     mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
     assert locked_knob.read_position() == 0
-    
+
     mockHardware.set_ADC_u16_value(locked_knob, 0)
     assert locked_knob.read_position() == 99
+
 
 # Disabled Knob Tests
 

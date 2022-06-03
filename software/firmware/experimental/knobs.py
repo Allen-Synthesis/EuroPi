@@ -85,10 +85,14 @@ class KnobBank:
             self.knobs_by_name[DisabledKnob.__name__] = DisabledKnob(self.knob)
             return self
 
-        def with_locked_knob(self, name: str, initial_value, threshold=DEFAULT_THRESHOLD) -> "KnobBankBuilder":
+        def with_locked_knob(
+            self, name: str, initial_value, threshold=DEFAULT_THRESHOLD
+        ) -> "KnobBankBuilder":
             if name == None:
                 raise ValueError("Knob name cannot be None")
-            self.knobs_by_name[name] = LockableKnob(self.knob, initial_value=initial_value, threshold=threshold)
+            self.knobs_by_name[name] = LockableKnob(
+                self.knob, initial_value=initial_value, threshold=threshold
+            )
             return self
 
         def with_unlocked_knob(self, name: str, threshold=DEFAULT_THRESHOLD) -> "KnobBankBuilder":
@@ -106,7 +110,9 @@ class KnobBank:
             if self.initial_index == None:
                 self.initial_index = 0
             return KnobBank(
-                physical_knob=self.knob, virtual_knobs=self.knobs_by_name, initial_selection=self.initial_index
+                physical_knob=self.knob,
+                virtual_knobs=self.knobs_by_name,
+                initial_selection=self.initial_index,
             )
 
     @staticmethod
