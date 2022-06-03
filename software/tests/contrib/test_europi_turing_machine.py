@@ -45,7 +45,11 @@ def turing_machine():
     ],
 )
 def test_flip_probability(
-    mockHardware: MockHardware, turing_machine: EuroPiTuringMachine, k1_percent, ain_percent, expected_probability
+    mockHardware: MockHardware,
+    turing_machine: EuroPiTuringMachine,
+    k1_percent,
+    ain_percent,
+    expected_probability,
 ):
     mockHardware.set_analogue_input_percent(ain, ain_percent)
     mockHardware.set_knob_percent(k1, k1_percent)

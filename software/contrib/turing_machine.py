@@ -80,7 +80,9 @@ class TuringMachine:
         self.step_handler = lambda: None
 
     def _rotate_bits(self):
-        self.bits = ((self.bits << 1) % (1 << self.bit_count)) | ((self.bits >> (self.length - 1)) & 1)
+        self.bits = ((self.bits << 1) % (1 << self.bit_count)) | (
+            (self.bits >> (self.length - 1)) & 1
+        )
 
     def step(self):
         """Move the turing machine to its next state based on its current state. Parameters that affect the next state
@@ -127,7 +129,9 @@ class TuringMachine:
     def flip_probability(self, probability: int):
         """Set the flip probability as an integer in the range [0, 100]."""
         if probability < 0 or probability > 100:
-            raise ValueError(f"Probability of {probability} is outside the expected range of [0,100]")
+            raise ValueError(
+                f"Probability of {probability} is outside the expected range of [0,100]"
+            )
         self._flip_probability = probability
 
     @property
@@ -140,7 +144,9 @@ class TuringMachine:
     def scale(self, scale):
         """Set the scale factor as a float in the range [0, `max_output_voltage`]"""
         if scale < 0 or scale > self.max_output_voltage:
-            raise ValueError(f"Scale of {scale} is outside the expected range of [0,{self.max_output_voltage}]")
+            raise ValueError(
+                f"Scale of {scale} is outside the expected range of [0,{self.max_output_voltage}]"
+            )
         self._scale = scale
 
     @property
@@ -152,7 +158,9 @@ class TuringMachine:
     def length(self, length):
         """Sets the length of the current sequence as an integer in the range of [2, `bit_count`]"""
         if length < 2 or length > self.bit_count:
-            raise ValueError(f"Length of {length} is outside the expected range of [2,{self.bit_count}]")
+            raise ValueError(
+                f"Length of {length} is outside the expected range of [2,{self.bit_count}]"
+            )
         self._length = length
 
     @property
@@ -235,7 +243,13 @@ class EuroPiTuringMachine(EuroPiScript):
         while True:
             oled.fill(0)
             prob = self.tm.flip_probability
-            prob_2 = "locked" if self.tm.flip_probability == 0 else "looped" if self.tm.flip_probability == 100 else ""
+            prob_2 = (
+                "locked"
+                if self.tm.flip_probability == 0
+                else "looped"
+                if self.tm.flip_probability == 100
+                else ""
+            )
             scale_str = f"{'*' if self.k2_scale_mode else ' '}scale:{self.tm.scale:3.1f}"
             len_str = f"{' ' if self.k2_scale_mode else '*'}{self.tm.length:2} steps"
 
