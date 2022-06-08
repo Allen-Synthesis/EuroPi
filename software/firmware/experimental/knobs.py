@@ -5,6 +5,17 @@ DEFAULT_THRESHOLD = 0.05
 
 
 class LockableKnob(Knob):
+    """A Knob whose state can be locked on the current value. Once locked, reading the knob's
+    position will always return the locked value. When unlocking the knob, the value still doesn't
+    change until the position of the knob moves to within ``threshold`` percent of the value. This
+    prevents large jumps in a stetting when the knob is unlocked.
+
+    :param knob: The knob to wrap.
+    :param initial_value: The value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.
+    :param threshold: a decimal between 0 and 1 representing how close the knob must be to the locked value in order to unlock. The percentage is in terms of the knobs full range. Defaults to 5% (0.05)
+
+    """
+
     STATE_UNLOCKED = 0
     STATE_UNLOCK_REQUESTED = 1
     STATE_LOCKED = 2
@@ -22,31 +33,43 @@ class LockableKnob(Knob):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.pin}, {self.value}, {self.state})"
 
-    def _sample_adc(self, samples=None, **kwargs):
+    def _sample_adc(self, samples=None):
         if self.state == LockableKnob.STATE_LOCKED:
             return self.value
 
         elif self.state == LockableKnob.STATE_UNLOCKED:
-            return super()._sample_adc(samples, **kwargs)
+            return super()._sample_adc(samples)
 
         else:  # STATE_UNLOCK_REQUESTED:
-            current_value = super()._sample_adc(samples, **kwargs)
+            current_value = super()._sample_adc(samples)
             if abs(self.value - current_value) < self.threshold:
                 self.state = LockableKnob.STATE_UNLOCKED
                 return current_value
             else:
                 return self.value
 
-    def lock(self):
-        self.value = self._sample_adc()
+    def lock(self, samples=None):
+        """Locks this knob at its current state. Makes a call to the underlying knob's
+        ``_sample_adc()`` method with the given number of samples."""
+        self.value = self._sample_adc(samples=samples)
         self.state = LockableKnob.STATE_LOCKED
 
     def request_unlock(self):
+        """Requests that the knob be unlocked. The knob will unlock the next time a reading of it's
+        position is taken that is withing the threshold percentage of the locked value. That is,
+        when the knob is moved close to the locked value. If ``lock()`` is called before the knob
+        unlocks, the unlock is aborted.
+        """
         if self.state == LockableKnob.STATE_LOCKED:
             self.state = LockableKnob.STATE_UNLOCK_REQUESTED
 
 
 class DisabledKnob(LockableKnob):
+    """A ``LockableKnob`` that cannot be unlocked and whose value is unimportant. Useful when
+    building multifunction knobs.
+
+    :param knob: The knob to wrap."""
+
     def __init__(self, knob: Knob):
         super().__init__(knob, initial_value=MAX_UINT16)
 
@@ -56,6 +79,33 @@ class DisabledKnob(LockableKnob):
 
 
 class KnobBank:
+    """A ``KnobBank`` is a group of named 'virtual' ``LockableKnobs`` that share the same physical
+    knob. Only one of these knobs is active (unlocked) at a time. This allows for a single knob to
+    be used to control many parameters.
+
+    It is recommended that ``KnobBanks`` be created using the ``Builder``, as in::
+
+       k1_bank = (
+           KnobBank.builder(k1)
+           .with_disabled_knob()
+           .with_unlocked_knob("x", threshold=0.02)
+           .with_locked_knob("y", initial_value=1)
+           .build()
+       )
+
+    Knobs can be referenced using their names::
+
+       k1_bank.x.percent()
+       k1_bank.y.read_position()
+
+    .. note::
+       ``KnobBank`` is not thread safe. It is possible to end up with two unlocked knobs if you call
+       ``next()`` and take readings from a knob in two different threads. This can easily happen if
+       your script calls ``next()`` in a button handler, while constantly reading the knob state in
+       a main loop. The workaround is to set a flag in the button handler and call ``next()`` in the
+       main loop.
+    """
+
     def __init__(self, physical_knob: Knob, virtual_knobs, initial_selection) -> None:
         self.index = 0
         self.knobs = []
@@ -68,26 +118,37 @@ class KnobBank:
 
     @property
     def current(self) -> LockableKnob:
+        """The currently active knob."""
         return self.knobs[self.index]
 
     def next(self):  # potential race condition: next() and _sample_adc() can both change state
+        """Select the next knob by locking the current knob, and requesting an unlock on the next in
+        the bank."""
         self.current.lock()
         self.index = (self.index + 1) % len(self.knobs)
         self.current.request_unlock()
 
     class Builder:
+        """A convenient interface for creating KnobBanks with consistent initial state."""
+
         def __init__(self, knob: Knob) -> None:
             self.knob = knob
             self.knobs_by_name = OrderedDict()
             self.initial_index = None
 
-        def with_disabled_knob(self) -> "KnobBankBuilder":
+        def with_disabled_knob(self) -> "Builder":
+            """Add a ``DisabledKnob`` to the bank. This disables the knob so that no parameters can
+            be changed."""
             self.knobs_by_name[DisabledKnob.__name__] = DisabledKnob(self.knob)
             return self
 
         def with_locked_knob(
             self, name: str, initial_value, threshold=DEFAULT_THRESHOLD
-        ) -> "KnobBankBuilder":
+        ) -> "Builder":
+            """Add a ``LockableKnob`` to the bank whose initial state is locked.
+
+            :param name: the name of this virtual knob
+            """
             if name == None:
                 raise ValueError("Knob name cannot be None")
             self.knobs_by_name[name] = LockableKnob(
@@ -95,7 +156,12 @@ class KnobBank:
             )
             return self
 
-        def with_unlocked_knob(self, name: str, threshold=DEFAULT_THRESHOLD) -> "KnobBankBuilder":
+        def with_unlocked_knob(self, name: str, threshold=DEFAULT_THRESHOLD) -> "Builder":
+            """Add a ``LockableKnob`` to the bank whose initial state is unlocked. This knob will be
+            active. Only one unlocked knob may be added to the bank.
+
+            :param name: the name of this virtual knob
+            """
             if name == None:
                 raise ValueError("Knob name cannot be None")
             if self.initial_index != None:
@@ -105,6 +171,7 @@ class KnobBank:
             return self
 
         def build(self) -> "KnobBank":
+            """Create the ``KnobBank`` with the specified knobs."""
             if len(self.knobs_by_name) < 0:
                 raise ValueError(f"Must specify at least one knob in the bank.")
             if self.initial_index == None:
