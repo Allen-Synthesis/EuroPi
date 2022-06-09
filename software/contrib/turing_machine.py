@@ -1,6 +1,6 @@
 """
- A script meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully as possible on the 
- EuroPi hardware using bit shift operations to mimic the analog shift register.
+ A script meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully 
+ as possible on the EuroPi hardware using bit shift operations to mimic the analog shift register.
 
 din - clock
 ain - cv control over the big knob, added to the knobs value
@@ -15,7 +15,11 @@ cv4 - pulse 1 & 2
 cv5 - pulse 2 & 4
 cv6 - sequence out
 
-If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT` constants below.
+If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT` 
+constants below.
+
+The length, scale, and bit pattern are saved whenever the knob 2 state is changed, or when the user
+exits to the menu.
 """
 from random import getrandbits, randint
 from time import sleep

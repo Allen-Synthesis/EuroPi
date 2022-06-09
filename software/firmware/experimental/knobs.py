@@ -153,7 +153,7 @@ class KnobBank:
     def current(self) -> LockableKnob:
         """The currently active knob."""
         return self.knobs[self.index]
-    
+
     @property
     def current_name(self) -> str:
         return self.names[self.index]
