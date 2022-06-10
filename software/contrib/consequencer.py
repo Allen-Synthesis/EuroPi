@@ -47,6 +47,11 @@ class Consequencer(EuroPiScript):
         self.SN=p.SN
         self.HH=p.HH
 
+        # Initialize sequencer pattern probabiltiies
+        self.BdProb = p.BdProb
+        self.SnProb = p.SnProb
+        self.HhProb = p.HhProb
+
         # Initialize variables
         self.step = 0
         self.trigger_duration_ms = 50
@@ -121,19 +126,26 @@ class Consequencer(EuroPiScript):
 
             # How much randomness to add to cv1-3
             # As the randomness value gets higher, the chance of a randomly selected int being lower gets higher
+            # The output will only trigger if the randint() is <= than the probability of the step in BdProb, SnProb and HhProb respectively
             if randint(0,99) < self.randomness:
-                cv1.value(randint(0, 1))
-                cv2.value(randint(0, 1))
-                cv3.value(randint(0, 1))
+                if randint(0,9) <= int(self.BdProb[self.pattern][self.step]):
+                    cv1.value(randint(0, 1))
+                if randint(0,9) <= int(self.SnProb[self.pattern][self.step]):
+                    cv2.value(randint(0, 1))
+                if randint(0,9) <= int(self.HhProb[self.pattern][self.step]):
+                    cv3.value(randint(0, 1))
             else:
-                cv1.value(int(self.BD[self.pattern][self.step]))
-                cv2.value(int(self.SN[self.pattern][self.step]))                    
+                if randint(0,9) <= int(self.BdProb[self.pattern][self.step]):
+                    cv1.value(int(self.BD[self.pattern][self.step]))
+                if randint(0,9) <= int(self.SnProb[self.pattern][self.step]):
+                    cv2.value(int(self.SN[self.pattern][self.step]))
 
                 # If randomize HH is ON:
                 if self.random_HH:
                     cv3.value(randint(0, 1))
                 else:
-                    cv3.value(int(self.HH[self.pattern][self.step]))
+                    if randint(0,9) <= int(self.HhProb[self.pattern][self.step]):
+                        cv3.value(int(self.HH[self.pattern][self.step]))
 
             # Set cv4-6 voltage outputs based on previously generated random pattern
             if self.output4isClock:
@@ -211,9 +223,12 @@ class Consequencer(EuroPiScript):
                 self.step = 0
                 self.clock_step = 0
 
-    def visualizePattern(self, pattern):
+    def visualizePattern(self, pattern, probabilityLessThanNine):
         self.t = pattern
-        self.t = self.t.replace('1','^')
+        if probabilityLessThanNine:
+            self.t = self.t.replace('1','-')
+        else:
+            self.t = self.t.replace('1','^')
         self.t = self.t.replace('0',' ')
         return self.t
 
@@ -222,9 +237,10 @@ class Consequencer(EuroPiScript):
         oled.fill(0)
 
         # Show selected pattern visually
-        oled.text(self.visualizePattern(self.BD[self.pattern]), 0, 0, 1)
-        oled.text(self.visualizePattern(self.SN[self.pattern]), 0, 10, 1)
-        oled.text(self.visualizePattern(self.HH[self.pattern]), 0, 20, 1)
+        # 2nd argument to self.visualizePattern returns True if all probabilities are 9
+        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern] != (str(9) * self.step_length)), 0, 0, 1)
+        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern] != (str(9) * self.step_length)), 0, 10, 1)
+        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern] != (str(9) * self.step_length)), 0, 20, 1)
 
         # If the random toggle is on, show a rectangle
         if self.random_HH:
@@ -255,209 +271,370 @@ class pattern:
     SN=[]
     HH=[]
 
+    # Initialize pattern probabilities
+
+    BdProb = []
+    SnProb = []
+    HhProb = []
+
+    # Mixed probability patterns
+    BD.append("10111111111100001011000000110000")
+    SN.append("10001000100010001010000001001000")
+    HH.append("11111111111111111111111111111111")
+    BdProb.append("99992222229999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("44449999555599996666999922229999")
+
     # African Patterns
     BD.append("10110000001100001011000000110000")
     SN.append("10001000100010001010100001001010")
     HH.append("00001011000010110000101100001011")
+    BdProb.append("99999999999999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("99999999999999999999999999999999")
 
     BD.append("10101010101010101010101010101010")
     SN.append("00001000000010000000100000001001")
     HH.append("10100010101000101010001010100000")
+    BdProb.append("99999999999999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("99999999999999999999999999999999")
 
     BD.append("11000000101000001100000010100000")
     SN.append("00001000000010000000100000001010")
     HH.append("10111001101110011011100110111001")
+    BdProb.append("99999999999999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("99999999999999999999999999999999")
 
     BD.append("10001000100010001000100010001010")
     SN.append("00100100101100000010010010110010")
     HH.append("10101010101010101010101010101011")
+    BdProb.append("99999999999999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("99999999999999999999999999999999")
 
     BD.append("00101011101000111010001110100010")
     SN.append("00101011101000111010001110100010")
     HH.append("00001000000010000000100000001000")
+    BdProb.append("99999999999999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("99999999999999999999999999999999")
 
     BD.append("10101111101000111010001110101000")
     SN.append("10101111101000111010001110101000")
     HH.append("00000000101000001010000010100010")
+    BdProb.append("99999999999999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("99999999999999999999999999999999")
 
     BD.append("10110110000011111011011000001111")
     SN.append("10110110000011111011011000001111")
     HH.append("11111010001011111010001110101100")
+    BdProb.append("99999999999999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("99999999999999999999999999999999")
 
     BD.append("10010100100101001001010010010100")
     SN.append("00100010001000100010001000100010")
     HH.append("01010101010101010101010101010101")
+    BdProb.append("99999999999999999999999999999999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("99999999999999999999999999999999")
 
     # 0,1,1,2,3,5,8,12
     BD.append("0101011011101111")
     SN.append("1010100100010000")
     HH.append("1110100100010000")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     # Add patterns
     BD.append("1000100010001000")
     SN.append("0000000000000000")
     HH.append("0000000000000000")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000000000000000")
     HH.append("0010010010010010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000000000")
     HH.append("0010010010010010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000001000")
     HH.append("0010010010010010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000000000")
     HH.append("0000000000000000")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000001000")
     HH.append("0000000000000000")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000001000")
     HH.append("0000100010001001")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000001000")
     HH.append("0101010101010101")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000000000000000")
     HH.append("1111111111111111")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000001000")
     HH.append("1111111111111111")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000000000")
     HH.append("0001000000000000")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000100010001000")
     SN.append("0000100000000000")
     HH.append("0001001000000000")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
     BD.append("1000000010000000")
     SN.append("0000100000001000")
     HH.append("1010101010101010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1010001000100100")
     SN.append("0000100101011001")
     HH.append("0000000100000100")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000000110000010")
     SN.append("0000100000001000")
     HH.append("1010101110001010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1100000100110000")
     SN.append("0000100000001000")
     HH.append("1010101010101010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000000110100000")
     SN.append("0000100000001000")
     HH.append("0010101010101010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1010000000110001")
     SN.append("0000100000001000")
     HH.append("1010101010101010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1000000110100001")
     SN.append("0000100000001000")
     HH.append("0000100010101011")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1001001010000000")
     SN.append("0000100000001000")
     HH.append("0000100000001000")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1010001001100000")
     SN.append("0000100000001000")
     HH.append("1010101010001010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1010000101110001")
     SN.append("0000100000001000")
     HH.append("1010101010001010")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     # End external patterns
 
     BD.append("1000100010001000")
     SN.append("0000101001001000")
     HH.append("0101010101010101")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1100000001010000")
     SN.append("0000101000001000")
     HH.append("0101010101010101")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1100000001010000")
     SN.append("0000101000001000")
     HH.append("1111111111111111")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1001001001000100")
     SN.append("0001000000010000")
     HH.append("0101110010011110")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     BD.append("1001001001000100")
     SN.append("0001000000010000")
     HH.append("1111111111111111")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 
     # Be warned patterns < 16 steps can sound disjointed when using CV to select the pattern!
 
     BD.append("10010000010010")
     SN.append("00010010000010")
     HH.append("11100110111011")
+    BdProb.append("99999999999999")
+    SnProb.append("99999999999999")
+    HhProb.append("99999999999999")
 
     BD.append("1001000001001")
     SN.append("0001001000001")
     HH.append("1110011011101")
+    BdProb.append("9999999999999")
+    SnProb.append("9999999999999")
+    HhProb.append("9999999999999")
 
     BD.append("100100000100")
     SN.append("000100100000")
     HH.append("111001101110")
+    BdProb.append("999999999999")
+    SnProb.append("999999999999")
+    HhProb.append("999999999999")
 
     BD.append("10010000010")
     SN.append("00010010000")
     HH.append("11100110111")
+    BdProb.append("99999999999")
+    SnProb.append("99999999999")
+    HhProb.append("99999999999")
 
     BD.append("10010000010")
     SN.append("00010010000")
     HH.append("11111010011")
+    BdProb.append("99999999990")
+    SnProb.append("99999999990")
+    HhProb.append("99999999990")
 
     BD.append("1001000010")
     SN.append("0001000000")
     HH.append("1111101101")
+    BdProb.append("9999999999")
+    SnProb.append("9999999999")
+    HhProb.append("9999999999")
 
     BD.append("100100010")
     SN.append("000100000")
     HH.append("111110111")
+    BdProb.append("999999999")
+    SnProb.append("999999999")
+    HhProb.append("999999999")
 
     BD.append("10010010")
     SN.append("00010000")
     HH.append("11111111")
+    BdProb.append("99999999")
+    SnProb.append("99999999")
+    HhProb.append("99999999")
 
     BD.append("1001001")
     SN.append("0001000")
     HH.append("1111111")
+    BdProb.append("9999999")
+    SnProb.append("9999999")
+    HhProb.append("9999999")
 
     BD.append("100100")
     SN.append("000100")
     HH.append("111111")
+    BdProb.append("999999")
+    SnProb.append("999999")
+    HhProb.append("999999")
 
     BD.append("10000")
     SN.append("00001")
     HH.append("11110")
+    BdProb.append("99999")
+    SnProb.append("99999")
+    HhProb.append("99999")
 
     BD.append("1000")
     SN.append("0000")
     HH.append("1111")
+    BdProb.append("9999")
+    SnProb.append("9999")
+    HhProb.append("9999")
 
     BD.append("100")
     SN.append("000")
     HH.append("111")
+    BdProb.append("999")
+    SnProb.append("999")
+    HhProb.append("999")
 
 
 if __name__ == '__main__':
