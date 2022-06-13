@@ -22,7 +22,7 @@ mode of the knob is changed with the right button (b2).
 - **din:** clock
 - **ain:** cv control over the big knob, added to the knobs value
 - **k1:** the big knob (probability that the sequence changes)
-- **k2:** output scale (0-10v)  or sequence length (2-16 steps)
+- **k2:** output scale (0-10v) or sequence length (2-16 steps)
 - **b1:** write (clear bits)
 - **b2:** change k2 function
 - **cv1:** pulse 1
