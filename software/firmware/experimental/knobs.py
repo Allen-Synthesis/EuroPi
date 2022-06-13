@@ -20,7 +20,7 @@ class LockableKnob(Knob):
     STATE_UNLOCK_REQUESTED = 1
     STATE_LOCKED = 2
 
-    def __init__(self, knob: Knob, initial_value=None, threshold=DEFAULT_THRESHOLD):
+    def __init__(self, knob: Knob, initial_value=None, threshold_percentage=DEFAULT_THRESHOLD):
         super().__init__(knob.pin_id)
         self.pin = knob.pin  # Share the ADC
         self.value = initial_value if initial_value != None else 0
@@ -28,7 +28,7 @@ class LockableKnob(Knob):
             self.state = LockableKnob.STATE_UNLOCKED
         else:
             self.state = LockableKnob.STATE_LOCKED
-        self.threshold = int(threshold * MAX_UINT16)
+        self.threshold = int(threshold_percentage * MAX_UINT16)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.pin}, {self.value}, {self.state})"
@@ -143,7 +143,7 @@ class KnobBank:
             return self
 
         def with_locked_knob(
-            self, name: str, initial_value, threshold=DEFAULT_THRESHOLD
+            self, name: str, initial_value, threshold_percentage=DEFAULT_THRESHOLD
         ) -> "Builder":
             """Add a ``LockableKnob`` to the bank whose initial state is locked.
 
@@ -152,11 +152,13 @@ class KnobBank:
             if name == None:
                 raise ValueError("Knob name cannot be None")
             self.knobs_by_name[name] = LockableKnob(
-                self.knob, initial_value=initial_value, threshold=threshold
+                self.knob, initial_value=initial_value, threshold_percentage=threshold_percentage
             )
             return self
 
-        def with_unlocked_knob(self, name: str, threshold=DEFAULT_THRESHOLD) -> "Builder":
+        def with_unlocked_knob(
+            self, name: str, threshold_percentage=DEFAULT_THRESHOLD
+        ) -> "Builder":
             """Add a ``LockableKnob`` to the bank whose initial state is unlocked. This knob will be
             active. Only one unlocked knob may be added to the bank.
 
@@ -166,7 +168,9 @@ class KnobBank:
                 raise ValueError("Knob name cannot be None")
             if self.initial_index != None:
                 raise ValueError(f"Second unlocked knob specified: {name}")
-            self.knobs_by_name[name] = LockableKnob(self.knob, threshold=threshold)
+            self.knobs_by_name[name] = LockableKnob(
+                self.knob, threshold_percentage=threshold_percentage
+            )
             self.initial_index = len(self.knobs_by_name) - 1
             return self
 
