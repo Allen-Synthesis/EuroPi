@@ -21,7 +21,7 @@ class LockableKnob(Knob):
     STATE_LOCKED = 2
 
     def __init__(self, knob: Knob, initial_value=None, threshold=DEFAULT_THRESHOLD):
-        super().__init__(knob._pin_id)
+        super().__init__(knob.pin_id)
         self.pin = knob.pin  # Share the ADC
         self.value = initial_value if initial_value != None else 0
         if initial_value == None:
