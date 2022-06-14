@@ -79,6 +79,16 @@ def test_get_bit(bit_count, starting_bits, index, expected):
     assert bit == expected
 
 
+def test_get_bit_and(turing_machine):
+    # 0b1100110011110000
+    assert turing_machine.get_bit_and(0, 1) == 0
+    assert turing_machine.get_bit_and(0, 5) == 0
+    assert turing_machine.get_bit_and(5, 6) == 1
+    assert turing_machine.get_bit_and(5, 6) == 1
+    assert turing_machine.get_bit_and(0, 5, 6) == 0
+    assert turing_machine.get_bit_and(5, 6, 7) == 1
+
+
 def test_get_voltage(turing_machine):
     turing_machine.bits = 0xFFFF  # MAX
     assert turing_machine.get_voltage() == 10

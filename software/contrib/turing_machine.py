@@ -12,7 +12,7 @@ cv1 - pulse 1
 cv2 - pulse 2
 cv3 - pulse 4
 cv4 - pulse 1 & 2
-cv5 - pulse 2 & 4
+cv5 - pulse 1 & 2 & 4
 cv6 - sequence out
 
 If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT` 
@@ -116,10 +116,13 @@ class TuringMachine:
         """Returns the bit at the specified index. This method exists to support the Pulses Expander functionality."""
         return self.bits >> i & 1
 
-    def get_bit_and(self, i, j):
+    def get_bit_and(self, *args):
         """Returns the result of a bitwise and of the bits at the specified indexes. This method exists to support the
         Pulses Expander functionality."""
-        return self.get_bit(i) & self.get_bit(j)
+        result = 1
+        for i in args:
+            result = result & self.get_bit(i)
+        return result
 
     def get_voltage(self):
         """Returns the voltage described by the eight least significant bits of the internal bit register, scaled by the
@@ -222,7 +225,7 @@ class EuroPiTuringMachine(EuroPiScript):
         cv2.value(self.tm.get_bit(CV2_PULSE_BIT))
         cv3.value(self.tm.get_bit(CV3_PULSE_BIT))
         cv4.value(self.tm.get_bit_and(CV1_PULSE_BIT, CV2_PULSE_BIT))
-        cv5.value(self.tm.get_bit_and(CV2_PULSE_BIT, CV3_PULSE_BIT))
+        cv5.value(self.tm.get_bit_and(CV1_PULSE_BIT, CV2_PULSE_BIT, CV3_PULSE_BIT))
         cv6.voltage(self.tm.get_voltage())
 
     def flip_probability(self):
