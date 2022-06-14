@@ -10,10 +10,13 @@ class LockableKnob(Knob):
     change until the position of the knob moves to within ``threshold`` percent of the value. This
     prevents large jumps in a stetting when the knob is unlocked.
 
+    This class is useful for cases where you want to have a single physical knob control several
+    parameters (see also the :class:`KnobBank` class). Or where the value of a parameter needs to be
+    disassociated from the postition of the knob, as in after loading saved state.
+
     :param knob: The knob to wrap.
     :param initial_value: The value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.
     :param threshold: a decimal between 0 and 1 representing how close the knob must be to the locked value in order to unlock. The percentage is in terms of the knobs full range. Defaults to 5% (0.05)
-
     """
 
     STATE_UNLOCKED = 0
@@ -57,15 +60,15 @@ class LockableKnob(Knob):
     def request_unlock(self):
         """Requests that the knob be unlocked. The knob will unlock the next time a reading of it's
         position is taken that is withing the threshold percentage of the locked value. That is,
-        when the knob is moved close to the locked value. If ``lock()`` is called before the knob
-        unlocks, the unlock is aborted.
+        when the knob is moved close to the locked value. If :meth:`~LockableKnob.lock()` is called
+        before the knob unlocks, the unlock is aborted.
         """
         if self.state == LockableKnob.STATE_LOCKED:
             self.state = LockableKnob.STATE_UNLOCK_REQUESTED
 
 
 class DisabledKnob(LockableKnob):
-    """A ``LockableKnob`` that cannot be unlocked and whose value is unimportant. Useful when
+    """A :class:`LockableKnob` that cannot be unlocked and whose value is unimportant. Useful when
     building multifunction knobs.
 
     :param knob: The knob to wrap."""
@@ -79,11 +82,11 @@ class DisabledKnob(LockableKnob):
 
 
 class KnobBank:
-    """A ``KnobBank`` is a group of named 'virtual' ``LockableKnobs`` that share the same physical
-    knob. Only one of these knobs is active (unlocked) at a time. This allows for a single knob to
-    be used to control many parameters.
+    """A ``KnobBank`` is a group of named 'virtual' :class"``LockableKnobs`` that share the same
+    physical knob. Only one of these knobs is active (unlocked) at a time. This allows for a single
+    knob to be used to control many parameters.
 
-    It is recommended that ``KnobBanks`` be created using the ``Builder``, as in::
+    It is recommended that ``KnobBanks`` be created using the :class:``Builder``, as in::
 
        k1_bank = (
            KnobBank.builder(k1)
@@ -100,10 +103,38 @@ class KnobBank:
 
     .. note::
        ``KnobBank`` is not thread safe. It is possible to end up with two unlocked knobs if you call
-       ``next()`` and take readings from a knob in two different threads. This can easily happen if
-       your script calls ``next()`` in a button handler, while constantly reading the knob state in
-       a main loop. The workaround is to set a flag in the button handler and call ``next()`` in the
-       main loop.
+       :meth:`~KnobBank.next()` and take readings from a knob in two different threads. This can
+       easily happen if your script calls ``next()`` in a button handler, while constantly reading
+       the knob state in a main loop. The workaround is to set a flag in the button handler and call
+       ``next()`` in the main loop.
+
+       For example::
+
+          class KnobBankExample(EuroPiScript):
+              def __init__(self):
+                  super().__init__()
+                  self.next_k1 = False
+
+                  self.kb1 = (
+                      KnobBank.builder(k1)
+                      .with_locked_knob("p1", initial_value=1, threshold_percentage=0.02)
+                      .with_locked_knob("p2", initial_value=1)
+                      .with_locked_knob("p3", initial_value=1)
+                      .build()
+                  )
+
+                  @b1.handler
+                  def next_knob1():
+                      self.next_k1 = True
+
+              def main(self):
+
+                  while True:
+                      if self.next_k1:
+                          self.kb1.next()
+                          self.next_k1 = False
+
+                      # main loop body
     """
 
     def __init__(self, physical_knob: Knob, virtual_knobs, initial_selection) -> None:
@@ -129,7 +160,7 @@ class KnobBank:
         self.current.request_unlock()
 
     class Builder:
-        """A convenient interface for creating KnobBanks with consistent initial state."""
+        """A convenient interface for creating a :class:`KnobBank` with consistent initial state."""
 
         def __init__(self, knob: Knob) -> None:
             self.knob = knob
@@ -137,7 +168,7 @@ class KnobBank:
             self.initial_index = None
 
         def with_disabled_knob(self) -> "Builder":
-            """Add a ``DisabledKnob`` to the bank. This disables the knob so that no parameters can
+            """Add a :class:`DisabledKnob` to the bank. This disables the knob so that no parameters can
             be changed."""
             self.knobs_by_name[DisabledKnob.__name__] = DisabledKnob(self.knob)
             return self
@@ -149,15 +180,15 @@ class KnobBank:
             threshold_percentage=None,
             threshold_from_choice_count=None,
         ) -> "Builder":
-            """Add a ``LockableKnob`` to the bank whose initial state is locked.
+            """Add a :class:`LockableKnob` to the bank whose initial state is locked.
 
             `threshold_from_choice_count` is a convenience parameter to be used in the case where
             this knob will be used to select from a relatively few number of choices, via the
-            `Knob.choice()` method. Pass the number of choices to this parameter and an appropriate
-            threshhold value will be calculated.
+            :meth:`~europi.Knob.choice()` method. Pass the number of choices to this parameter and
+            an appropriate threshhold value will be calculated.
 
             :param name: the name of this virtual knob
-            :param threshold_percentage: the threshold percentage for this knob as described by LockableKnob
+            :param threshold_percentage: the threshold percentage for this knob as described by :class:`LockableKnob`
             :param threshold_from_choice_count: Provides the number of choices this knob will be used with in order to generate an appropriate threshold.
             """
             if initial_value is None:
@@ -173,16 +204,16 @@ class KnobBank:
             threshold_percentage=None,
             threshold_from_choice_count=None,
         ) -> "Builder":
-            """Add a ``LockableKnob`` to the bank whose initial state is unlocked. This knob will be
-            active. Only one unlocked knob may be added to the bank.
+            """Add a :class:`LockableKnob` to the bank whose initial state is unlocked. This knob
+            will be active. Only one unlocked knob may be added to the bank.
 
             `threshold_from_choice_count` is a convenience parameter to be used in the case where
             this knob will be used to select from a relatively few number of choices, via the
-            `Knob.choice()` method. Pass the number of choices to this parameter and an appropriate
-            threshhold value will be calculated.
+            :meth:`~europi.Knob.choice()` method. Pass the number of choices to this parameter and
+            an appropriate threshhold value will be calculated.
 
             :param name: the name of this virtual knob
-            :param threshold_percentage: the threshold percentage for this knob as described by LockableKnob
+            :param threshold_percentage: the threshold percentage for this knob as described by :class:`LockableKnob`
             :param threshold_from_choice_count: Provides the number of choices this knob will be used with in order to generate an appropriate threshold.
 
             """
@@ -223,7 +254,7 @@ class KnobBank:
             return self
 
         def build(self) -> "KnobBank":
-            """Create the ``KnobBank`` with the specified knobs."""
+            """Create the :class:`KnobBank` with the specified knobs."""
             if len(self.knobs_by_name) < 0:
                 raise ValueError(f"Must specify at least one knob in the bank.")
             if self.initial_index == None:
