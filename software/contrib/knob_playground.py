@@ -27,8 +27,8 @@ class KnobPlayground(EuroPiScript):
         self.kb2 = (
             KnobBank.builder(k2)
             .with_disabled_knob()
-            .with_locked_knob("p4", initial_value=1, threshold=1 / 7)
-            .with_locked_knob("p5", initial_value=1, threshold=1 / 3)
+            .with_locked_knob("p4", initial_value=1, threshold_from_choice_count=7)
+            .with_locked_knob("p5", initial_value=1, threshold_from_choice_count=3)
             .build()
         )
 

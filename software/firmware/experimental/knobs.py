@@ -143,35 +143,83 @@ class KnobBank:
             return self
 
         def with_locked_knob(
-            self, name: str, initial_value, threshold_percentage=DEFAULT_THRESHOLD
+            self,
+            name: str,
+            initial_value,
+            threshold_percentage=None,
+            threshold_from_choice_count=None,
         ) -> "Builder":
             """Add a ``LockableKnob`` to the bank whose initial state is locked.
 
+            `threshold_from_choice_count` is a convenience parameter to be used in the case where
+            this knob will be used to select from a relatively few number of choices, via the
+            `Knob.choice()` method. Pass the number of choices to this parameter and an appropriate
+            threshhold value will be calculated.
+
             :param name: the name of this virtual knob
+            :param threshold_percentage: the threshold percentage for this knob as described by LockableKnob
+            :param threshold_from_choice_count: Provides the number of choices this knob will be used with in order to generate an appropriate threshold.
             """
-            if name == None:
-                raise ValueError("Knob name cannot be None")
-            self.knobs_by_name[name] = LockableKnob(
-                self.knob, initial_value=initial_value, threshold_percentage=threshold_percentage
+            if initial_value is None:
+                raise ValueError("initial_value cannot be None")
+
+            return self._with_knob(
+                name, initial_value, threshold_percentage, threshold_from_choice_count
             )
-            return self
 
         def with_unlocked_knob(
-            self, name: str, threshold_percentage=DEFAULT_THRESHOLD
+            self,
+            name: str,
+            threshold_percentage=None,
+            threshold_from_choice_count=None,
         ) -> "Builder":
             """Add a ``LockableKnob`` to the bank whose initial state is unlocked. This knob will be
             active. Only one unlocked knob may be added to the bank.
 
+            `threshold_from_choice_count` is a convenience parameter to be used in the case where
+            this knob will be used to select from a relatively few number of choices, via the
+            `Knob.choice()` method. Pass the number of choices to this parameter and an appropriate
+            threshhold value will be calculated.
+
             :param name: the name of this virtual knob
+            :param threshold_percentage: the threshold percentage for this knob as described by LockableKnob
+            :param threshold_from_choice_count: Provides the number of choices this knob will be used with in order to generate an appropriate threshold.
+
             """
-            if name == None:
-                raise ValueError("Knob name cannot be None")
             if self.initial_index != None:
                 raise ValueError(f"Second unlocked knob specified: {name}")
-            self.knobs_by_name[name] = LockableKnob(
-                self.knob, threshold_percentage=threshold_percentage
-            )
+
+            self._with_knob(name, None, threshold_percentage, threshold_from_choice_count)
+
             self.initial_index = len(self.knobs_by_name) - 1
+
+            return self
+
+        def _with_knob(
+            self,
+            name: str,
+            initial_value,
+            threshold_percentage,
+            threshold_from_choice_count=None,
+        ):
+            if name == None:
+                raise ValueError("Knob name cannot be None")
+
+            if threshold_percentage != None and threshold_from_choice_count != None:
+                raise ValueError(
+                    "Specify only one of either threshold_percentage or threshold_from_choice_count not both"
+                )
+
+            if threshold_from_choice_count != None:
+                threshold_percentage = 1 / threshold_from_choice_count
+
+            elif threshold_percentage == None:
+                threshold_percentage = DEFAULT_THRESHOLD
+
+            self.knobs_by_name[name] = LockableKnob(
+                self.knob, initial_value=initial_value, threshold_percentage=threshold_percentage
+            )
+
             return self
 
         def build(self) -> "KnobBank":

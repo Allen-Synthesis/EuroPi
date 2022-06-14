@@ -1,5 +1,5 @@
 import pytest
-from experimental.knobs import LockableKnob, KnobBank
+from experimental.knobs import LockableKnob, KnobBank, DEFAULT_THRESHOLD
 from europi import k1, MAX_UINT16
 from machine import ADC
 
@@ -261,3 +261,34 @@ def test_access_by_index(mockHardware: MockHardware, knob_bank: KnobBank):
     assert round(knob_bank.knobs[1].percent(), 2) == 0.80
     assert round(knob_bank.knobs[2].percent(), 2) == 0.67
     assert round(knob_bank.current.percent(), 2) == 0.80
+
+
+# KnobBank.Builder tests
+
+
+def test_builder():
+    kb = (
+        KnobBank.builder(k1)
+        .with_disabled_knob()
+        .with_unlocked_knob("param1")
+        .with_locked_knob("param2", MAX_UINT16)
+        .build()
+    )
+
+    assert len(kb.knobs) == 3
+    assert kb.index == 1
+    assert kb.param2._sample_adc() == MAX_UINT16
+
+
+def test_builder_threshold_from_choice_count():
+    kb = (
+        KnobBank.builder(k1)
+        .with_unlocked_knob("param1", threshold_from_choice_count=7)
+        .with_locked_knob("param2", MAX_UINT16)
+        .build()
+    )
+
+    assert len(kb.knobs) == 2
+    assert kb.index == 0
+    assert kb.param1.threshold == int(1 / 7 * MAX_UINT16)
+    assert kb.param2.threshold == int(DEFAULT_THRESHOLD * MAX_UINT16)
