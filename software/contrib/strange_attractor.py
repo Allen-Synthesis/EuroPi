@@ -1,7 +1,7 @@
 from europi import *
 import machine
 from europi_script import EuroPiScript
-from time import ticks_diff, ticks_ms
+from utime import ticks_diff, ticks_ms
 from math import fabs, floor
 from random import choice
 
@@ -91,14 +91,24 @@ class Attractor:
             self.y_min = min(self.y, self.y_min)
             self.z_min = min(self.z, self.z_min)
 
-        self.x_range = self.x_max - self.x_min
-        self.y_range = self.y_max - self.y_min
-        self.z_range = self.z_max - self.z_min
+        self.set_range(self.x_min, self.x_max, self.y_min, self.y_max, self.z_min, self.z_max)
 
         # Reset to initial parameters
         self.x = self.initial_state[0]
         self.y = self.initial_state[1]
         self.z = self.initial_state[2]
+
+    def set_range(self, x_min, x_max, y_min, y_max, z_min, z_max):
+        self.x_max = x_max
+        self.y_max = y_max
+        self.z_max = z_max
+        self.x_min = x_min
+        self.y_min = y_min
+        self.z_min = z_min
+
+        self.x_range = self.x_max - self.x_min
+        self.y_range = self.y_max - self.y_min
+        self.z_range = self.z_max - self.z_min
 
     def x_scaled(self):
         return (100.0 * (self.x - self.x_min)) / self.x_range
@@ -230,12 +240,10 @@ class StrangeAttractor(EuroPiScript):
         machine.freq(250_000_000)
 
         # Initialise and calculate ranges.
-        # This will take around 30 seconds per attractor.
+        # This will take around 30 seconds per unsaved attractor.
         self.attractors = get_attractors()
-        for att in self.attractors:
-            self.initialise_message(att.name)
-            att.estimate_ranges()
-            self.done_message()
+        self.init_estimates()
+
         # select a random attractor
         self.selected_attractor = choice(range(0, len(self.attractors)))
         self.a = self.attractors[self.selected_attractor]
@@ -296,6 +304,37 @@ class StrangeAttractor(EuroPiScript):
             # Start agin
             self.freeze = False
 
+    def init_estimates(self):
+        self.initialise_message()
+        state = self.load_state_json()
+        state_dirty = False
+        for att in self.attractors:
+            att_state = state.get(att.name)
+            if att_state:
+                att.set_range(
+                    att_state.get("x_min"),
+                    att_state.get("x_max"),
+                    att_state.get("y_min"),
+                    att_state.get("y_max"),
+                    att_state.get("z_min"),
+                    att_state.get("z_max"),
+                )
+            else:
+                self.initialise_message(att.name)
+                att.estimate_ranges()
+                state[att.name] = {
+                    "x_min": att.x_min,
+                    "x_max": att.x_max,
+                    "y_min": att.y_min,
+                    "y_max": att.y_max,
+                    "z_min": att.z_min,
+                    "z_max": att.z_max,
+                }
+                state_dirty = True
+
+        if state_dirty:
+            self.save_state_json(state)
+
     def update_values(self):
         if not self.freeze:
             self.a.step()
@@ -351,17 +390,13 @@ class StrangeAttractor(EuroPiScript):
             if ticks_diff(ticks_ms(), self.checkpoint) > self.period:
                 self.update()
 
-    def initialise_message(self, att_name):
+    def initialise_message(self, att_name=None):
         oled.fill(0)
         oled.text("Strange", 0, 0, 1)
         oled.text(f"Attractor v{VERSION}", 0, 8, 1)
         oled.text("Initialising...", 0, 16, 1)
-        oled.text(att_name, 10, 24, 1)
-        oled.show()
-
-    def done_message(self):
-        oled.fill(0)
-        oled.text("Done", 0, 0, 1)
+        if att_name:
+            oled.text(att_name, 10, 24, 1)
         oled.show()
 
     def update_screen(self):
