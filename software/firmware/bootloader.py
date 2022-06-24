@@ -50,7 +50,9 @@ class BootloaderMenu(EuroPiScript):
 
     @staticmethod
     def _build_scripts_config(classes):
-        return OrderedDict([(cls.display_name(), cls) for cls in classes if BootloaderMenu._is_europi_script(cls)])
+        return OrderedDict(
+            [(cls.display_name(), cls) for cls in classes if BootloaderMenu._is_europi_script(cls)]
+        )
 
     def launch(self, selected_item):
         self.run_request = selected_item

@@ -185,7 +185,16 @@ Changes to firmware code must adhere to more stringent requirements than other c
 
 ### Code Style Requirements
 
-There are currently no code style requirements for the firmware code, however we should favor python best practices such as [pep8](https://peps.python.org/pep-0008/) when possible.
+The main codebase (all code outside of `/software/contrib` and `/tests/contrib`) follows the Black style format and a GitHub CI Action will verify if this is the case for
+all newly added or changed code in incoming Pull Requests.
+
+To format your code you can install Black through `pip install -r requirements_dev.txt` and run the actual formatting by calling `black .` from the root project folder. This formats all code contained within the main codebase.
+
+Optionally, you can also manually run black as a one-off to format your contrib script:
+```shell
+$ black software/contrib/polyrhythmic_sequencer.py
+```
+To prevent black from reformatting certain parts of your code (which should be rare), start a block with `# fmt: off` and end with `# fmt: on`, or end a line with `# fmt: skip`.
 
 ### Documentation
 
