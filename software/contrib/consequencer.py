@@ -62,7 +62,7 @@ class Consequencer(EuroPiScript):
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
-        self.reset_timeout = 500
+        self.reset_timeout = 1000
 
         # option to always output a clock on output 4
         # this helps to sync Consequencer with other modules
@@ -223,30 +223,32 @@ class Consequencer(EuroPiScript):
                 self.step = 0
                 self.clock_step = 0
 
-    def visualizePattern(self, pattern, probabilityLessThanNine):
-        self.t = pattern
-        if probabilityLessThanNine:
-            self.t = self.t.replace('1','-')
-        else:
-            self.t = self.t.replace('1','^')
-        self.t = self.t.replace('0',' ')
-        return self.t
+    def visualizePattern(self, pattern, prob):
+        output=''
+        for s in range (len(pattern)):
+            if pattern[s] == "1":
+                if prob[s] != '9':
+                    output = output + '-'
+                else:
+                    output = output + '^'
+            else:
+                output = output + ' '
+        return output
 
     def updateScreen(self):
         # oled.clear() - dont use this, it causes the screen to flicker!
         oled.fill(0)
 
         # Show selected pattern visually
-        # 2nd argument to self.visualizePattern returns True if all probabilities are 9
-        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern] != (str(9) * self.step_length)), 0, 0, 1)
-        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern] != (str(9) * self.step_length)), 0, 10, 1)
-        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern] != (str(9) * self.step_length)), 0, 20, 1)
+        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), 0, 0, 1)
+        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), 0, 10, 1)
+        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), 0, 20, 1)
 
         # If the random toggle is on, show a rectangle
         if self.random_HH:
             oled.fill_rect(0, 29, 10, 3, 1)
 
-        # Show self.output4isClock value
+        # Show self.output4isClock indicator
         if self.output4isClock:
             oled.rect(12, 29, 10, 3, 1)
 
@@ -280,10 +282,31 @@ class pattern:
     # Mixed probability patterns
     BD.append("10111111111100001011000000110000")
     SN.append("10001000100010001010000001001000")
+    HH.append("10101010101010101010101010101010")
+    BdProb.append("99992111129999999999999999969999")
+    SnProb.append("99999999999999999999999999999999")
+    HhProb.append("92939495969792939495969792939492")
+
+    BD.append("10111111111100001011000000110000")
+    SN.append("10001000100010001010000001001000")
     HH.append("11111111111111111111111111111111")
     BdProb.append("99992222229999999999999999999999")
     SnProb.append("99999999999999999999999999999999")
     HhProb.append("44449999555599996666999922229999")
+
+    BD.append("1000100010001000")
+    SN.append("0000101001001000")
+    HH.append("0101010101010101")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
+
+    BD.append("1000110010001100")
+    SN.append("0000101001001000")
+    HH.append("1111111111111111")
+    BdProb.append("9999939999999299")
+    SnProb.append("9999999999999999")
+    HhProb.append("9293949592939495")
 
     # African Patterns
     BD.append("10110000001100001011000000110000")
@@ -576,9 +599,9 @@ class pattern:
     BD.append("10010000010")
     SN.append("00010010000")
     HH.append("11111010011")
-    BdProb.append("99999999990")
-    SnProb.append("99999999990")
-    HhProb.append("99999999990")
+    BdProb.append("99999999999")
+    SnProb.append("99999999999")
+    HhProb.append("99999999999")
 
     BD.append("1001000010")
     SN.append("0001000000")
@@ -627,7 +650,7 @@ class pattern:
     HH.append("1111")
     BdProb.append("9999")
     SnProb.append("9999")
-    HhProb.append("9999")
+    HhProb.append("9595")
 
     BD.append("100")
     SN.append("000")
