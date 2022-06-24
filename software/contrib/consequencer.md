@@ -20,6 +20,15 @@ Credits:
 - The Europi hardware and firmware was designed by Allen Synthesis: https://github.com/Allen-Synthesis/EuroPi
 - A small number of preloaded drum patterns were recreated from here: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
 
+# July 2022 Update - Probability based drum patterms
+
+Consequencer now includes the ability to add probability-based steps to patterns!
+You can use probability in patterns to add variabilty in interesting ways.
+Some example patterns have been included in this release and you can find instructions below in the "Advanced usage" section for adding your own.
+
+You can easiliy identify steps within patterns that have a probability less than 100%.
+Normal steps are shown with a `^` character, whereas steps with a probability are shown with a `-`.
+
 # Controls
 
 ![Operating Diagram](https://user-images.githubusercontent.com/79809962/154732035-ccc0d8c1-0e4e-4b8c-97e3-ccfa07a4880b.png)
@@ -97,16 +106,23 @@ A fixed voltage will select a single pattern and varying voltage (e.g. an envelo
 
 Patterns can be added, removed or updated by updating the relevant list structures at the end of the consequencer.py file in the pattern class (look for the line `class pattern:`). Once patterns are updated make sure you save a copy of the updated file to the EuroPi using yoru favourite method (Thonny / REPL), then restart the Consequencer script.
 
-The syntax should be intuitive. A four-on-the-floor exanmple pattern is shown below. Each `1` or `0` represents a gate or no gate at that point in the sequence.
+The syntax should be intuitive. An exanmple pattern is shown below. Each `1` or `0` represents a gate or no gate at that point in the sequence.
 The mapping of `BD`, `SN`, `HH` is as follows:
 - BD: Output 1
 - SN: Output 2
 - HH: Output 3
 
+Starting with the July 2022 update, steps now also have a probability which is configured using the BdProb, SnProb and HhProb sections as shown beloe.
+Use a value from `1` to `9` to set the desired level of probability for each step.
+A value of `9` will cause the step to trigger 100% of the time, any value from `1` to `8` will trigger the step from n/9 times.
+
 ```
-    BD.append("1000100010001000")
-    SN.append("0000100000001000")
+    BD.append("1001001001000100")
+    SN.append("0001000000010000")
     HH.append("1111111111111111")
+    BdProb.append("9999999999999999")
+    SnProb.append("9999999999999999")
+    HhProb.append("9999999999999999")
 ```
 
 ## Output clocks/gates on output 4
