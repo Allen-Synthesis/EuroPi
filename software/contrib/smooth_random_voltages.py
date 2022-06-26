@@ -61,13 +61,48 @@ machine.freq(250000000)
 MENU_DURATION = 1800
 
 
+class EnvelopeGenerator:
+    """
+    Create an envelope generator function.
+
+    Creates a generator function returning the absolute value differece between
+    the start and target voltages over the given duration in ms.
+    """
+
+    def __init__(self, start=0, target=10, slew_rate=512):
+        self.target = target
+        self.start = start
+        self.duration = max(slew_rate, 1)  # avoid div by zero
+        self._generator = self.create()
+
+        print(f"{self.start} : {self.target} : {self.slew_rate} :: {self._generator}")
+
+    def create(self):
+        cv_diff = abs(self.target - self.start)
+        cur = min(self.start, self.target)
+        _target = max(self.start, self.target)
+        env_start = ticks_ms()
+        while cur < _target:
+            time_since_start = ticks_diff(ticks_ms(), env_start)
+            env_progress = time_since_start / self.slew_rate
+            cur = env_progress * cv_diff
+            cur = europi.clamp(cur, europi.MIN_OUTPUT_VOLTAGE, europi.MAX_OUTPUT_VOLTAGE)
+            yield cur
+
+    def next(self):
+        try:
+            return next(self._generator)
+        except StopIteration:
+            return 0
+
+
 class SmoothRandomVoltages(EuroPiScript):
     def __init__(self):
         self.voltages = [0, 0, 0]
         self.target_voltages = [0, 0, 0]
 
         # Exponential incremental value for assigning slew rate.
-        self.slew_rate = lambda: (1 << europi.k1.range(9) + 1) / 100
+        self.slew_rate = lambda: (1 << europi.k1.range(20) + 1)
 
         # Visualization display choice.
         self.visualization = 0  # 0: Bars, 1: Scope, 2: Blank.
@@ -75,6 +110,13 @@ class SmoothRandomVoltages(EuroPiScript):
         # Voltage source choice.
         self.voltage_source = 0  # 0: random, 1: analog input.
         self.voltage_source_display = ["random", "analog"]
+
+        # Envelopes
+        self.env = [
+            EnvelopeGenerator(0, 10),
+            EnvelopeGenerator(0, 10),
+            EnvelopeGenerator(0, 10),
+        ]
 
         # Register digital input handler
         @europi.din.handler
@@ -100,12 +142,21 @@ class SmoothRandomVoltages(EuroPiScript):
         """Get next random voltage value."""
         # Col 1, change on each trigger.
         self.target_voltages[0] = self.get_new_voltage()
+        self.env[0] = EnvelopeGenerator(self.voltages[0], self.target_voltages[0], self.slew_rate())
+
         # Col 2, change on each trigger if target voltage has been reached.
         if self.voltages[1] == self.target_voltages[1]:
             self.target_voltages[1] = self.get_new_voltage()
+            self.env[1] = EnvelopeGenerator(
+                self.voltages[1], self.target_voltages[1], self.slew_rate()
+            )
+
         # Col 3, change on trigger with knob 2 probability.
         if europi.k2.percent() > random():
             self.target_voltages[2] = self.get_new_voltage()
+            self.env[2] = EnvelopeGenerator(
+                self.voltages[2], self.target_voltages[2], self.slew_rate()
+            )
 
     def get_new_voltage(self):
         """Return a new voltage from analog in or random value."""
@@ -165,12 +216,12 @@ class SmoothRandomVoltages(EuroPiScript):
             for i in range(len(self.voltages)):
                 # Smooth voltage rising
                 if self.voltages[i] < self.target_voltages[i]:
-                    self.voltages[i] += self.slew_rate()
+                    self.voltages[i] += self.env[i].next()
                     self.voltages[i] = min(self.voltages[i], self.target_voltages[i])
 
                 # Smooth voltage falling
                 elif self.voltages[i] > self.target_voltages[i]:
-                    self.voltages[i] -= self.slew_rate()
+                    self.voltages[i] -= self.env[i].next()
                     self.voltages[i] = max(self.voltages[i], self.target_voltages[i])
 
                 # Set the current smooth / stepped voltage.
