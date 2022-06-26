@@ -72,7 +72,7 @@ class EnvelopeGenerator:
     def __init__(self, start=0, target=10, slew_rate=512):
         self.target = target
         self.start = start
-        self.duration = max(slew_rate, 1)  # avoid div by zero
+        self.slew_rate = max(slew_rate, 1)  # avoid div by zero
         self._generator = self.create()
 
         print(f"{self.start} : {self.target} : {self.slew_rate} :: {self._generator}")
@@ -102,7 +102,8 @@ class SmoothRandomVoltages(EuroPiScript):
         self.target_voltages = [0, 0, 0]
 
         # Exponential incremental value for assigning slew rate.
-        self.slew_rate = lambda: (1 << europi.k1.range(20) + 1)
+        # self.slew_rate = lambda: (1 << europi.k1.range(20) + 1)
+        self.slew_rate = lambda: europi.k1.range(100000)
 
         # Visualization display choice.
         self.visualization = 0  # 0: Bars, 1: Scope, 2: Blank.
@@ -202,9 +203,9 @@ class SmoothRandomVoltages(EuroPiScript):
 
     def display_scope(self):
         """Draw a real-time line representing the slew value for each of the 3 voltages."""
-        pixel_x = europi.OLED_WIDTH - 1
+        pixel_x = 0
         pixel_y = europi.OLED_HEIGHT - 1
-        europi.oled.scroll(-1, 0)
+        europi.oled.scroll(1, 0)
         europi.oled.vline(pixel_x, 0, europi.OLED_HEIGHT, 0)
         europi.oled.pixel(pixel_x, pixel_y - int(self.voltages[0] * (pixel_y / 10)), 1)
         europi.oled.pixel(pixel_x, pixel_y - int(self.voltages[1] * (pixel_y / 10)), 1)
