@@ -117,7 +117,7 @@ If you do not wish to calibrate the module and don't mind your voltages being sl
 
 # Programming Limitations
 
-As with all hardware, the EuroPi has certain limitations set by the hardware. Some are more obvious and are required knowledge for any user, and some are more in depth and are only relevant if you will be programming the module yourself.
+As with all hardware, the EuroPi has certain limitations. Some are more obvious and are required knowledge for any user, and some are more in depth and are only relevant if you will be programming the module yourself.
 
 ### Obvious Limitations
 - Analogue input is only 0-10V
