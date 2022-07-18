@@ -9,5 +9,5 @@ As with all hardware, the EuroPi has certain limitations set by the hardware. So
 - Debouncing of the buttons means that very fast double presses may not be detected
 
 ### Programming Limitations
-- Clock pulses shorter than approximately 0.01s will not be reliably detected (this depends on clock speed too)
+- Clock pulses shorter than approximately 0.01s (10ms) will not be reliably detected (this depends on clock speed too)
 - Reading any analogue source, either the analogue input or knobs, will result in a slight delay of the script (this can be reduced by using fewer samples, at the cost of accuracy)
