@@ -31,8 +31,8 @@ else:
 try:
     from calibration_values import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
 except ImportError:
-    # Note: run calibrate.py to get a more precise calibration.
-    INPUT_CALIBRATION_VALUES = [384, 44634]
+    # Note: run calibrate.py to get a more precise calibration.    
+    INPUT_CALIBRATION_VALUES = [0, 64354]
     OUTPUT_CALIBRATION_VALUES = [
         0,
         6300,
@@ -181,10 +181,12 @@ class AnalogueInput(AnalogueReader):
         percent = reading / max_value
         # low precision vs. high precision
         if len(self._gradients) == 2:
-            cv = 10 * (reading / INPUT_CALIBRATION_VALUES[-1])
+            cv = int(self.MAX_VOLTAGE - self.MIN_VOLTAGE) * (reading / INPUT_CALIBRATION_VALUES[-1])
         else:
             index = int(percent * (len(INPUT_CALIBRATION_VALUES) - 1))
-            cv = index + (self._gradients[index] * (reading - INPUT_CALIBRATION_VALUES[index]))
+            cv = index + (self._gradients[index] * (reading - INPUT_CALIBRATION_VALUES[index]))        
+        
+        cv = cv + self.MIN_VOLTAGE        
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 

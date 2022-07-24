@@ -1,6 +1,6 @@
 from machine import ADC, Pin
 
-from europi import AnalogueReader, DigitalReader
+from europi import AnalogueReader, DigitalReader, AnalogueInput
 
 
 class MockHardware:
@@ -26,3 +26,8 @@ class MockHardware:
     def set_digital_value(self, reader: DigitalReader, value: bool):
         """Sets the value that will be returned by a call to `value` on the given DigitalReader."""
         self._digital_pin_values[reader.pin] = not value
+    
+    def set_min_max_voltage(self, reader: AnalogueInput, min_voltage: float, max_voltage: float):
+        """Sets the minimum and maximum voltage that will be returned by a call to `read_voltage` on the given AnalogueInput."""
+        reader.MIN_VOLTAGE = min_voltage
+        reader.MAX_VOLTAGE = max_voltage
