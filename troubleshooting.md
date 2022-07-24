@@ -27,6 +27,32 @@ This means that your device is either not connected, or not being detected.
 4. Re-flash the firmware using the 'flash_nuke.uf2' found on the [Adafruit website](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython), and then re-flash it again using the most recent firmware
 
 
+## Calibration gets stuck on 10V
+
+This means that the value the module recorded for 10V when you were sending in voltages to the analogue input cannot be reached by the CV output.  
+This could mean either:
+1. The value you sent in for 10V was more than 10V
+2. The module actually cannot reach 10V
+
+To test if it is 1 or 2, first retry calibration, making sure the voltages you send in are accurate (never more than 10V). Measure this with a multimeter if you can to be sure.  
+
+If this doesn't fix the issue, then you know that your module cannot reach 10V on its own. There are a few things this could be:
+1. The LEDs you used draw more current than the standard ones in the BOM, and are thus causing the output voltage to drop below 10V
+2. There is a bridge/missing solder joint which is causing the output stage to have a lower gain factor than it should, and thus can't reach 10V
+3. (Very unlikely) The output jack is broken and is not connected to the circuit properly
+
+The easiest way to test a few of these possibilities at once is to set the output to the highest value possible, with this code:
+``` 
+from europi import *
+cv1._set_duty(65535)
+```
+Simply create a new file with only this code in it, and then run the code with the module connected.
+Now, use a multimeter to measure the voltage at the end of a mono cable plugged into the jack, and see if it is above 10V. As long as it is over 10V, even if only by about 0.5V, then this proves that the problem is not any of the above. If this is the case (the voltage is above 10V) then reflash the firmware using the instructions at the bottom of [the steps to fix above](#steps-to-fix-1).
+
+If it was less than 10V, then check all of the solder joints on both PCBs, but especially all of the ones around the TL074 op-amps. If you see any joint that looks like it could be either bridging two pins or cracked, then clean up the joint with some solder braid or a solder sucker (a braid is preferred as it's less likely to damage the board) and re-solder.
+
+If none of this solves the issue, then please post in the support channel of the [Discord server](https://discord.gg/JaQwtCnBV5) with photos of your PCBs, and we can see if we can spot anything!
+
 ## EuroPi Hardware Error
 
 ```diff
