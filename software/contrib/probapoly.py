@@ -95,7 +95,7 @@ class Poly(EuroPiScript):
 
         @b1.handler_falling
         def b1Pressed():
-            if ticks_diff(ticks_ms(), b1.last_pressed()) >  500 and ticks_diff(ticks_ms(), b2.last_pressed()) < 3000:
+            if ticks_diff(ticks_ms(), b1.last_pressed()) >  500 and ticks_diff(ticks_ms(), b1.last_pressed()) < 3000:
                 # toggle double-time feature
                 self.doubleTimeManualOverride = not self.doubleTimeManualOverride
             else:
