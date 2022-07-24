@@ -36,9 +36,12 @@ output_6: Gate lower polyrhythm (50% probability)
 
 Demo video: https://www.youtube.com/watch?v=Rflmr2yJYG0
 
-# Controls and Display
+# Display
 
-![Operating Diagram](./cvecorder-docs/cvecorder.png)
+Top Row: Upper ratio value, output 2 probability, output 3 probability
+Bottom Row: Lower ratio value, output 5 probability, output 6 probability
+
+Top right: current step / pattern length
 
 # Getting Started
 
