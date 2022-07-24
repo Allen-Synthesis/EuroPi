@@ -53,10 +53,6 @@ except ImportError:
     from europi_script import EuroPiScript
 
 
-# Overclocked for faster display refresh.
-machine.freq(250000000)
-
-
 # Script Constants
 MENU_DURATION = 1800
 
@@ -74,8 +70,6 @@ class EnvelopeGenerator:
         self.start = start
         self.slew_rate = max(slew_rate, 1)  # avoid div by zero
         self._generator = self.create()
-
-        print(f"{self.start} : {self.target} : {self.slew_rate} :: {self._generator}")
 
     def create(self):
         cv_diff = abs(self.target - self.start)
@@ -101,9 +95,8 @@ class SmoothRandomVoltages(EuroPiScript):
         self.voltages = [0, 0, 0]
         self.target_voltages = [0, 0, 0]
 
-        # Exponential incremental value for assigning slew rate.
-        # self.slew_rate = lambda: (1 << europi.k1.range(20) + 1)
-        self.slew_rate = lambda: europi.k1.range(100000)
+        # Maximim ms duration for slew rate.
+        self.slew_rate = lambda: europi.k1.range(50000)
 
         # Visualization display choice.
         self.visualization = 0  # 0: Bars, 1: Scope, 2: Blank.
