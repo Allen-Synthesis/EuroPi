@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ui &mdash; EuroPi  documentation</title>
+  <title>experimental &mdash; EuroPi  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="experimental" href="experimental.html" />
-    <link rel="prev" title="europi_script" href="europi_script.html" /> 
+    <link rel="next" title="experimental.knobs" href="experimental.knobs.html" />
+    <link rel="prev" title="ui" href="ui.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,8 +42,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
 <li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">ui</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">experimental</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.knobs.html">experimental.knobs</a></li>
 </ul>
 </li>
@@ -66,9 +66,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../api.html">API</a> &raquo;</li>
-      <li>ui</li>
+      <li>experimental</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/ui.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/experimental.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -76,46 +76,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-ui">
-<span id="ui"></span><h1>ui<a class="headerlink" href="#module-ui" title="Permalink to this headline"></a></h1>
-<p>This module provides reusable UI components.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui.Menu">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.</span></span><span class="sig-name descname"><span class="pre">Menu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_knob=&lt;europi.Knob</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choice_buttons=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.Menu" title="Permalink to this definition"></a></dt>
-<dd><p>A class representing a menu displayable on the EuroPi screen. The user can select a menu item using the
-configured knob and select it with the configured button(s).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>items</strong> – a list of the menu items</p></li>
-<li><p><strong>select_func</strong> – the function to call when a menu item is chosen. The function will be called with single argument, the selected item.</p></li>
-<li><p><strong>select_knob</strong> – the knob used to select the menu item, defaults to k1</p></li>
-<li><p><strong>choice_buttons</strong> – a List of Buttons that can be pressed to choose the selected item. Defaults to b1</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui.Menu.draw_menu">
-<span class="sig-name descname"><span class="pre">draw_menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.Menu.draw_menu" title="Permalink to this definition"></a></dt>
-<dd><p>This function should be called by your script’s main loop in order to display and refresh the menu.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="ui.Menu.selected">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">selected</span></span><a class="headerlink" href="#ui.Menu.selected" title="Permalink to this definition"></a></dt>
-<dd><p>The currently selected menu item.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="module-experimental">
+<span id="experimental"></span><h1>experimental<a class="headerlink" href="#module-experimental" title="Permalink to this headline"></a></h1>
+<p>This ‘experimental’ package is a place for code to live that might change significantly or might 
+not be fully thought out or feature rich enough to include in the firmware proper. It exists for the
+purpose of allowing developers to experiment, colaborate, write scripts against it and provide 
+feedback. Code here should slowly evolve and stabilize.</p>
+<p>Once code here has proven to be both stable and useful we can promote it out of the experimental 
+into the firmware library package and update calling scripts.</p>
+<p>Code that is neither stable nor useful should be removed.</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="europi_script.html" class="btn btn-neutral float-left" title="europi_script" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="experimental.html" class="btn btn-neutral float-right" title="experimental" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ui.html" class="btn btn-neutral float-left" title="ui" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experimental.knobs.html" class="btn btn-neutral float-right" title="experimental.knobs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
