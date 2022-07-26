@@ -9,7 +9,6 @@ from contrib.diagnostic import Diagnostic
 from contrib.hamlet import Hamlet
 from contrib.harmonic_lfos import HarmonicLFOs
 from contrib.hello_world import HelloWorld
-from contrib.knob_playground import KnobPlayground
 from contrib.noddy_holder import NoddyHolder
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.poly_square import PolySquare
@@ -28,7 +27,6 @@ EUROPI_SCRIPT_CLASSES = [
     Hamlet,
     HarmonicLFOs,
     HelloWorld,
-    KnobPlayground,
     NoddyHolder,
     PolyrhythmSeq,
     PolySquare,
