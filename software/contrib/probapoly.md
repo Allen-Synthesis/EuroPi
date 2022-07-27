@@ -21,8 +21,12 @@ analog_in: Different mode, adjusted by setting self.ainMode as follows:
 - Mode 2: Analogue input voltage adjusts the upper poly value
 - [default] Mode 3: Analogue input voltage adjusts the probabilities of outputs 2,3,5,6 sending gates
 
-button_1: Short press (<500ms): Reduce pattern length (using manual pattern length is ON). Long Press (>500ms): Toggle doubletime feature
-button_2: Short press (<500ms): Reduce pattern length (using manual pattern length is ON). Long Press (>500ms): Toggle Manual pattern length feature
+button_1: 
+    Short press (<500ms): Reduce pattern length (using manual pattern length is ON). 
+    Long Press (>500ms): Toggle doubletime feature
+button_2: 
+    Short press (<500ms): Reduce pattern length (using manual pattern length is ON). 
+    Long Press (>500ms): Toggle Manual pattern length feature
 
 knob_1: Select upper polyrhythm value
 knob_2: Select lower polyrhythm value
