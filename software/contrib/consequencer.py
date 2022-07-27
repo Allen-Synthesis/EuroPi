@@ -127,24 +127,28 @@ class Consequencer(EuroPiScript):
             # How much randomness to add to cv1-3
             # As the randomness value gets higher, the chance of a randomly selected int being lower gets higher
             # The output will only trigger if the randint() is <= than the probability of the step in BdProb, SnProb and HhProb respectively
-            if randint(0,99) < self.randomness:
-                if randint(0,9) <= int(self.BdProb[self.pattern][self.step]):
+            # Random number 0-99
+            randomNumber0_99 = randint(0,99)
+            # Random number 0-9
+            randomNumber0_9 = randomNumber0_99 // 10
+            if randomNumber0_99 < self.randomness:
+                if randomNumber0_9 <= int(self.BdProb[self.pattern][self.step]):
                     cv1.value(randint(0, 1))
-                if randint(0,9) <= int(self.SnProb[self.pattern][self.step]):
+                if randomNumber0_9 <= int(self.SnProb[self.pattern][self.step]):
                     cv2.value(randint(0, 1))
-                if randint(0,9) <= int(self.HhProb[self.pattern][self.step]):
+                if randomNumber0_9 <= int(self.HhProb[self.pattern][self.step]):
                     cv3.value(randint(0, 1))
             else:
-                if randint(0,9) <= int(self.BdProb[self.pattern][self.step]):
+                if randomNumber0_9 <= int(self.BdProb[self.pattern][self.step]):
                     cv1.value(int(self.BD[self.pattern][self.step]))
-                if randint(0,9) <= int(self.SnProb[self.pattern][self.step]):
+                if randomNumber0_9 <= int(self.SnProb[self.pattern][self.step]):
                     cv2.value(int(self.SN[self.pattern][self.step]))
 
                 # If randomize HH is ON:
                 if self.random_HH:
                     cv3.value(randint(0, 1))
                 else:
-                    if randint(0,9) <= int(self.HhProb[self.pattern][self.step]):
+                    if randomNumber0_9 <= int(self.HhProb[self.pattern][self.step]):
                         cv3.value(int(self.HH[self.pattern][self.step]))
 
             # Set cv4-6 voltage outputs based on previously generated random pattern
@@ -227,7 +231,8 @@ class Consequencer(EuroPiScript):
         output=''
         for s in range (len(pattern)):
             if pattern[s] == "1":
-                output = '^' if prob[s] == '9' else '-'
+                char = '^' if prob[s] == '9' else '-'
+                output = output + char
             else:
                 output = output + ' '
         return output
