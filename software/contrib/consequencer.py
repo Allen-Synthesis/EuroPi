@@ -227,10 +227,7 @@ class Consequencer(EuroPiScript):
         output=''
         for s in range (len(pattern)):
             if pattern[s] == "1":
-                if prob[s] != '9':
-                    output = output + '-'
-                else:
-                    output = output + '^'
+                output = '^' if prob[s] == '9' else '-'
             else:
                 output = output + ' '
         return output
