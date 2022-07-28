@@ -1,5 +1,10 @@
 # Change Log
 
+### 2022-06-
+
+- [api] New experimental package added including `LockableKnob` and `KnobBank`
+- [New Script] Turing Machine
+
 ### 2022-05-24
 
 - [Release] version 0.5.0
