@@ -1,7 +1,6 @@
 from europi import *
 import machine
 from time import ticks_diff, ticks_ms
-from random import randint, uniform
 from europi_script import EuroPiScript
 import uasyncio as asyncio
 
