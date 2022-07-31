@@ -47,6 +47,7 @@ class MasterClock(EuroPiScript):
         self.MIN_PULSE_WIDTH = 8
         self.resetTimeout = 2000
         self.previousStepTime = 0
+        self.minAnalogInputVoltage = 0.9
 
         self.getSleepTime()
         self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2
@@ -81,7 +82,12 @@ class MasterClock(EuroPiScript):
         self.timeToSleepMs = int((60000 / self.bpm / self.CLOCKS_PER_QUARTER_NOTE))
     
     def getBPM(self):
-        self.bpm = self.MIN_BPM + k1.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
+        val = 100 * ain.percent()
+        # If there is an analogue input voltage use that for BPM. If not use the knob setting
+        if val > self.minAnalogInputVoltage:
+            self.bpm = int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM)
+        else:
+            self.bpm = self.MIN_BPM + k1.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
 
     def getPulseWidth(self):
         # Get desired PW percent
