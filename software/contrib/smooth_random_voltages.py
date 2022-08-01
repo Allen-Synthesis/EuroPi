@@ -195,12 +195,12 @@ class SmoothRandomVoltages(EuroPiScript):
             for i in range(len(self.voltages)):
                 # Smooth voltage rising
                 if self.voltages[i] < self.target_voltages[i]:
-                    self.voltages[i] += self.env[i].next()
+                    self.voltages[i] += next(self.env[i])
                     self.voltages[i] = min(self.voltages[i], self.target_voltages[i])
 
                 # Smooth voltage falling
                 elif self.voltages[i] > self.target_voltages[i]:
-                    self.voltages[i] -= self.env[i].next()
+                    self.voltages[i] -= next(self.env[i])
                     self.voltages[i] = max(self.voltages[i], self.target_voltages[i])
 
                 # Set the current smooth / stepped voltage.
