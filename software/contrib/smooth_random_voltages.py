@@ -57,37 +57,22 @@ except ImportError:
 MENU_DURATION = 1800
 
 
-class EnvelopeGenerator:
+def envelope_generator(start=0, target=10, slew_rate=512):
     """
-    Create an envelope generator function.
-
     Creates a generator function returning the absolute value differece between
     the start and target voltages over the given duration in ms.
     """
-
-    def __init__(self, start=0, target=10, slew_rate=512):
-        self.target = target
-        self.start = start
-        self.slew_rate = max(slew_rate, 1)  # avoid div by zero
-        self._generator = self.create()
-
-    def create(self):
-        cv_diff = abs(self.target - self.start)
-        cur = min(self.start, self.target)
-        _target = max(self.start, self.target)
-        env_start = ticks_ms()
-        while cur < _target:
-            time_since_start = ticks_diff(ticks_ms(), env_start)
-            env_progress = time_since_start / self.slew_rate
-            cur = env_progress * cv_diff
-            cur = europi.clamp(cur, europi.MIN_OUTPUT_VOLTAGE, europi.MAX_OUTPUT_VOLTAGE)
-            yield cur
-
-    def next(self):
-        try:
-            return next(self._generator)
-        except StopIteration:
-            return 0
+    cv_diff = abs(target - start)
+    cur = min(start, target)
+    _target = max(start, target)
+    slew_rate = max(slew_rate, 1)  # avoid div by zero
+    env_start = ticks_ms()
+    while cur < _target:
+        time_since_start = ticks_diff(ticks_ms(), env_start)
+        env_progress = time_since_start / slew_rate
+        cur = env_progress * cv_diff
+        cur = europi.clamp(cur, europi.MIN_OUTPUT_VOLTAGE, europi.MAX_OUTPUT_VOLTAGE)
+        yield cur
 
 
 class SmoothRandomVoltages(EuroPiScript):
@@ -107,9 +92,9 @@ class SmoothRandomVoltages(EuroPiScript):
 
         # Envelopes
         self.env = [
-            EnvelopeGenerator(0, 10),
-            EnvelopeGenerator(0, 10),
-            EnvelopeGenerator(0, 10),
+            envelope_generator(0, 10),
+            envelope_generator(0, 10),
+            envelope_generator(0, 10),
         ]
 
         # Register digital input handler
@@ -136,19 +121,19 @@ class SmoothRandomVoltages(EuroPiScript):
         """Get next random voltage value."""
         # Col 1, change on each trigger.
         self.target_voltages[0] = self.get_new_voltage()
-        self.env[0] = EnvelopeGenerator(self.voltages[0], self.target_voltages[0], self.slew_rate())
+        self.env[0] = envelope_generator(self.voltages[0], self.target_voltages[0], self.slew_rate())
 
         # Col 2, change on each trigger if target voltage has been reached.
         if self.voltages[1] == self.target_voltages[1]:
             self.target_voltages[1] = self.get_new_voltage()
-            self.env[1] = EnvelopeGenerator(
+            self.env[1] = envelope_generator(
                 self.voltages[1], self.target_voltages[1], self.slew_rate()
             )
 
         # Col 3, change on trigger with knob 2 probability.
         if europi.k2.percent() > random():
             self.target_voltages[2] = self.get_new_voltage()
-            self.env[2] = EnvelopeGenerator(
+            self.env[2] = envelope_generator(
                 self.voltages[2], self.target_voltages[2], self.slew_rate()
             )
 
