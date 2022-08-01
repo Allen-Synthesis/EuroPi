@@ -66,10 +66,10 @@ class MasterClock(EuroPiScript):
         # Clock Divisions. Hold these are vars in case these are ever exposed via the UI
         # Output 1 is always master clock / 1
         self.divisionOutput2 = 2
-        self.divisionOutput3 = 3
-        self.divisionOutput4 = 4
-        self.divisionOutput5 = 5
-        self.divisionOutput6 = 8
+        self.divisionOutput3 = 4
+        self.divisionOutput4 = 8
+        self.divisionOutput5 = 16
+        self.divisionOutput6 = 32
 
         self.getSleepTime()
         self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2
