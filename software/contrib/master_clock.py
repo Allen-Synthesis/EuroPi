@@ -48,7 +48,7 @@ class MasterClock(EuroPiScript):
         self.running = True
         self.MAX_DIVISION = 32
         self.CLOCKS_PER_QUARTER_NOTE = 4
-        self.MIN_BPM = 50
+        self.MIN_BPM = 20  # Successfully calibrated to >= 20 and <= 240 BPM
         self.MAX_BPM = 240
         self.MIN_PULSE_WIDTH = 8
         self.resetTimeout = 2000
