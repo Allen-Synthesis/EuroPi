@@ -10,12 +10,18 @@ author: Nik Ansell (github.com/gamecat69)
 date: 2022-08-01
 labels: clock
 
-This is intended to serve as a master clock and clock divider. Each output sends a trigger of a configurable pulse length.
+A master clock and clock divider. Each output sends a trigger/gate at different divisions of the master clock.
+The pulse width (gate/trigger duration) is configurable using knob 1.
+The maximum gate/trigger duration is 50% of the pulse width of output 1.
+
+For wonky/more interesting clock patterns there are two additional functions:
+- Reset to step 1 using a gate into the digital input
+- Variable BPM using CV into the analog input
 
 Demo video: TBC
 
 digital_in: Reset step count on rising edge
-analog_in: not used
+analog_in: Adjust BPM
 
 knob_1: BPM
 knob_2: Pulse width
@@ -48,6 +54,14 @@ class MasterClock(EuroPiScript):
         self.resetTimeout = 2000
         self.previousStepTime = 0
         self.minAnalogInputVoltage = 0.9
+
+        # Clock Divisions. Hold these are vars in case these are ever exposed via the UI
+        # Output 1 is always master clock / 1
+        self.divisionOutput2 = 2
+        self.divisionOutput3 = 4
+        self.divisionOutput4 = 8
+        self.divisionOutput5 = 16
+        self.divisionOutput6 = 32
 
         self.getSleepTime()
         self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2
@@ -103,19 +117,19 @@ class MasterClock(EuroPiScript):
     def clockTrigger(self):
         el.create_task(self.outputPulse(cv1))
 
-        if self.step % 2 == 0:
+        if self.step % self.divisionOutput2 == 0:
             el.create_task(self.outputPulse(cv2))
 
-        if self.step % 4 == 0:
+        if self.step % self.divisionOutput3 == 0:
             el.create_task(self.outputPulse(cv3))
 
-        if self.step % 8 == 0:
+        if self.step % self.divisionOutput4 == 0:
             el.create_task(self.outputPulse(cv4))
 
-        if self.step % 16 == 0:
+        if self.step % self.divisionOutput5 == 0:
             el.create_task(self.outputPulse(cv5))
 
-        if self.step % 32 == 0:
+        if self.step % self.divisionOutput6 == 0:
             el.create_task(self.outputPulse(cv6))
 
         # advance/reset clock step
@@ -125,7 +139,7 @@ class MasterClock(EuroPiScript):
             self.step = 1
         
         # Get time of last step to use in the auto reset function
-        self.previousStepTime = time.ticks_ms()
+        self.previousStepTime = ticks_ms()
 
     async def main(self):
         while True:
