@@ -8,7 +8,7 @@ labels: random, s&h
 Random cv with adjustable slew rate.
 Inspired by: https://youtu.be/tupkx3q7Dyw
 
-3 smooth unique random voltages paired with matching stepped random voltages.
+3 random or analog input s&h voltages with changable slew smoothness.
 
 New voltages assigned upon each digital input trigger. Top row outputs move
 towards target voltage according to slew rate set by knob 1. Bottom row outputs
