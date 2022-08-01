@@ -10,7 +10,7 @@ author: Nik Ansell (github.com/gamecat69)
 date: 2022-08-01
 labels: clock
 
-A master clock and clock divider. Each output sends a trigger/gate at different divisions of the master clock.
+A master clock and clock divider. Each output sends a +5V trigger/gate at different divisions of the master clock.
 The pulse width (gate/trigger duration) is configurable using knob 1.
 The maximum gate/trigger duration is 50% of the pulse width of output 1.
 
@@ -55,19 +55,21 @@ class MasterClock(EuroPiScript):
         self.previousStepTime = 0
         self.minAnalogInputVoltage = 0.9
 
-        self.DEBUG = True
+        # When enabled, set msDriftCompensation to 30
+        # When disabled, set msDriftCompensation to 28
+        self.DEBUG = False
 
-        # In testing a 30ms drift was found at all tempos
+        # In testing a 28ms drift was found at all tempos
         # Adding this offset brings the BPM and Pulse width back into a reasonable tolerance
-        self.msDriftCompensation = 30
+        self.msDriftCompensation = 28
 
         # Clock Divisions. Hold these are vars in case these are ever exposed via the UI
         # Output 1 is always master clock / 1
         self.divisionOutput2 = 2
-        self.divisionOutput3 = 4
-        self.divisionOutput4 = 8
-        self.divisionOutput5 = 16
-        self.divisionOutput6 = 32
+        self.divisionOutput3 = 3
+        self.divisionOutput4 = 4
+        self.divisionOutput5 = 5
+        self.divisionOutput6 = 8
 
         self.getSleepTime()
         self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2
@@ -185,3 +187,4 @@ if __name__ == '__main__':
     el = asyncio.get_event_loop()
     el.create_task(mc.main())
     el.run_forever()
+
