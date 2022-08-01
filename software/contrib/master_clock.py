@@ -45,15 +45,21 @@ class MasterClock(EuroPiScript):
         self.step = 1
         self.bpm = 100
         self.pulseWidthMs = 10
-        self.running = False
+        self.running = True
         self.MAX_DIVISION = 32
         self.CLOCKS_PER_QUARTER_NOTE = 4
         self.MIN_BPM = 50
-        self.MAX_BPM = 200
+        self.MAX_BPM = 240
         self.MIN_PULSE_WIDTH = 8
         self.resetTimeout = 2000
         self.previousStepTime = 0
         self.minAnalogInputVoltage = 0.9
+
+        self.DEBUG = True
+
+        # In testing a 30ms drift was found at all tempos
+        # Adding this offset brings the BPM and Pulse width back into a reasonable tolerance
+        self.msDriftCompensation = 30
 
         # Clock Divisions. Hold these are vars in case these are ever exposed via the UI
         # Output 1 is always master clock / 1
@@ -115,6 +121,10 @@ class MasterClock(EuroPiScript):
 
     # Triggered by main. Sends output pulses at required division
     def clockTrigger(self):
+
+        if self.DEBUG:
+            print('BPM: ' + str(self.bpm) + ' cycle: ' + str(self.timeToSleepMs) + ' PW:' + str(self.pulseWidthMs))
+
         el.create_task(self.outputPulse(cv1))
 
         if self.step % self.divisionOutput2 == 0:
@@ -155,7 +165,7 @@ class MasterClock(EuroPiScript):
 
             if self.running:
                 self.clockTrigger()
-                await asyncio.sleep_ms(self.timeToSleepMs)
+                await asyncio.sleep_ms(int(self.timeToSleepMs - self.msDriftCompensation))
 
     def updateScreen(self):
         # oled.clear() - dont use this, it causes the screen to flicker!
