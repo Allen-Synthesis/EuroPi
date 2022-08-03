@@ -31,7 +31,7 @@ output_6: Gate lower polyrhythm (50% probability)
 
 '''
 
-class Poly(EuroPiScript):
+class Probapoly(EuroPiScript):
     def __init__(self):
         
         # Needed if using europi_script
@@ -56,9 +56,9 @@ class Poly(EuroPiScript):
         self.lowerProb2 = 25
         self.doubleTime = False
         self.doubleTimeManualOverride = False
-        self.manualPatternLength = False
+        self.manualPatternLengthFeature = False
         self.patternLength = self.lcm(self.upper, self.lower)
-        self.patternLengthPrevious = self.patternLength
+        self.manualPatternLength = 32  # Default manual pattern length when self.manualPatternLengthFeature is first True
         
         # Todo: Make this mode accessible from the UI
         # Mode 1: Analogue input toggles double time feature
@@ -70,13 +70,12 @@ class Poly(EuroPiScript):
         def clockRising():
             for cv in cvs:
                 cv.off()
-            #self.updateScreen()
             self.handleClock()
             self.clockStep +=1
             self.step += 1
 
-            # Reached of of pattern, or a shorter patter is now needed, reset step to 0
-            if self.step >= self.patternLength + 1:
+            # Reached end of pattern, or a shorter pattern is now needed (based on upper and lower values), reset step to 0
+            if self.step > self.patternLength:
                 self.step = 1
 
         @din.handler_falling
@@ -84,7 +83,6 @@ class Poly(EuroPiScript):
             for cv in cvs:
                 cv.off()
             if self.doubleTimeManualOverride or self.doubleTime:
-                #self.updateScreen()
                 self.handleClock()
                 self.clockStep +=1
                 self.step += 1
@@ -99,26 +97,23 @@ class Poly(EuroPiScript):
                 # toggle double-time feature
                 self.doubleTimeManualOverride = not self.doubleTimeManualOverride
             else:
-                # Decrement pattern length by 1
-                self.patternLength -= 1
-                # Set the pattern length to the previous value for playability
-                self.patternLengthPrevious = self.patternLength
+            # Short press, decrease manual pattern length if self.manualPatternLengthFeature is True
+                if self.manualPatternLengthFeature:
+                    self.manualPatternLength -= 1
+                    self.patternLength = self.manualPatternLength
 
         @b2.handler_falling
-        def b1Pressed():
+        def b2Pressed():
             if ticks_diff(ticks_ms(), b2.last_pressed()) >  500 and ticks_diff(ticks_ms(), b2.last_pressed()) < 3000:
-                self.manualPatternLength = not self.manualPatternLength
-                if self.manualPatternLength:
-                    # Set the pattern length to the previous value for playability, or 32 if not set previously (un changed)
-                    if self.patternLengthPrevious == self.patternLength:
-                        self.patternLength
-                    else:
-                        self.patternLength = self.patternLengthPrevious
+                # Toggle manualPatternLengthFeature
+                self.manualPatternLengthFeature = not self.manualPatternLengthFeature
+                if self.manualPatternLengthFeature:
+                    self.patternLength = self.manualPatternLength
             else:
-                # Increment pattern length by 1
-                self.patternLength += 1
-                # Set the pattern length to the previous value for playability
-                self.patternLengthPrevious = self.patternLength
+            # Short press, increase manual pattern length if self.manualPatternLengthFeature is True
+                if self.manualPatternLengthFeature:
+                    self.manualPatternLength += 1
+                    self.patternLength = self.manualPatternLength
 
     def handleClock(self):
         
@@ -204,7 +199,7 @@ class Poly(EuroPiScript):
 
         if self.doubleTimeManualOverride or self.doubleTime:
             oled.text('!¿', 100, 22, 1)
-        if self.manualPatternLength:
+        if self.manualPatternLengthFeature:
             oled.text('M', 119, 22, 1)
         oled.show()
 
@@ -228,15 +223,17 @@ class Poly(EuroPiScript):
                 self.lowerProb1 = int(self.ainValue * 2)
                 self.lowerProb2 = int(self.ainValue * 1)
 
-            if not self.manualPatternLength:
+            if not self.manualPatternLengthFeature:
                 self.patternLength = self.lcm(self.upper, self.lower)
 
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
             if self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
                 self.step = 1
                 self.clockStep = 0
+            
+            print(self.manualPatternLength)
 
 if __name__ == '__main__':
-    dm = Poly()
+    dm = Probapoly()
     dm.main()
 
