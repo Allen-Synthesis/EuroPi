@@ -3,6 +3,7 @@ import machine
 from time import ticks_diff, ticks_ms
 from europi_script import EuroPiScript
 import uasyncio as asyncio
+from random import randint
 
 '''
 Master Clock
@@ -62,8 +63,8 @@ class MasterClockInner(EuroPiScript):
 
         self.MAX_DIVISION = 128
         self.clockDivisions = []
-        for n in range(self.MAX_DIVISION):
-            self.clockDivisions.append(n+1)
+        for n in range(self.MAX_DIVISION+1):
+            self.clockDivisions.append(n)
         
         # When enabled, set msDriftCompensation to 30
         # When disabled, set msDriftCompensation to 28
@@ -220,20 +221,40 @@ class MasterClockInner(EuroPiScript):
 
         self.el.create_task(self.outputPulse(cv1))
 
-        if self.step % self.divisionOutput2 == 0:
-            self.el.create_task(self.outputPulse(cv2))
+        if self.divisionOutput2 != 0:
+            if self.step % self.divisionOutput2 == 0:
+                self.el.create_task(self.outputPulse(cv2))
+        else:
+            # 0 = random
+            cv2.value(randint(0, 1))
 
-        if self.step % self.divisionOutput3 == 0:
-            self.el.create_task(self.outputPulse(cv3))
+        if self.divisionOutput3 != 0:
+            if self.step % self.divisionOutput3 == 0:
+                self.el.create_task(self.outputPulse(cv3))
+        else:
+            # 0 = random
+            cv3.value(randint(0, 1))
 
-        if self.step % self.divisionOutput4 == 0:
-            self.el.create_task(self.outputPulse(cv4))
+        if self.divisionOutput4 != 0:
+            if self.step % self.divisionOutput4 == 0:
+                self.el.create_task(self.outputPulse(cv4))
+        else:
+            # 0 = random
+            cv4.value(randint(0, 1))
 
-        if self.step % self.divisionOutput5 == 0:
-            self.el.create_task(self.outputPulse(cv5))
+        if self.divisionOutput5 != 0:
+            if self.step % self.divisionOutput5 == 0:
+                self.el.create_task(self.outputPulse(cv5))
+        else:
+            # 0 = random
+            cv5.value(randint(0, 1))
 
-        if self.step % self.divisionOutput6 == 0:
-            self.el.create_task(self.outputPulse(cv6))
+        if self.divisionOutput6 != 0:
+            if self.step % self.divisionOutput6 == 0:
+                self.el.create_task(self.outputPulse(cv6))
+        else:
+            # 0 = random
+            cv6.value(randint(0, 1))
 
         # advance/reset clock step, resetting at the maximum configured division
         maxConfiguredDivision = max(self.divisionOutput2, self.divisionOutput3, self.divisionOutput4, self.divisionOutput5, self.divisionOutput6)
