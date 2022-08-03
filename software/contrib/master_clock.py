@@ -184,6 +184,15 @@ class MasterClockInner(EuroPiScript):
     def getSleepTime(self):
         self.timeToSleepMs = int((60000 / self.bpm / self.CLOCKS_PER_QUARTER_NOTE))
     
+    def checkForAinBPM(self):
+        val = 100 * ain.percent()
+        # If there is an analogue input voltage use that for BPM
+        if val > self.minAnalogInputVoltage:
+            self.bpm = int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM)
+            self.getSleepTime()
+            self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
+            self.getPulseWidth()      
+
     def getBPM(self):
         val = 100 * ain.percent()
         # If there is an analogue input voltage use that for BPM. If not use the knob setting
@@ -279,6 +288,8 @@ class MasterClockInner(EuroPiScript):
             if self.step != 0 and ticks_diff(ticks_ms(), self.previousStepTime) > self.resetTimeout:
                  self.step = 1
                  self.completedCycles = 0
+
+            self.checkForAinBPM()
 
             if self.running:
                 self.clockTrigger()
