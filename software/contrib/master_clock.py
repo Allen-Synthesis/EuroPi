@@ -80,8 +80,8 @@ class MasterClockInner(EuroPiScript):
 
         # Get working vars
         self.loadState()
-        self.getSleepTime()
-        self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2
+        self.calcSleepTime()
+        #self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2
         self.getPulseWidth()
 
         # Get asyncio event loop object
@@ -131,7 +131,7 @@ class MasterClockInner(EuroPiScript):
         if self.configMode:
             oled.text('*', 120, 0, 1)
             self.getBPM()
-            self.getSleepTime()
+            self.calcSleepTime()
             self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
             self.getPulseWidth()
             self.saveState()
@@ -186,7 +186,7 @@ class MasterClockInner(EuroPiScript):
         cv.off()
 
     ''' Given a desired BPM, calculate the time to sleep between clock pulses '''
-    def getSleepTime(self):
+    def calcSleepTime(self):
         self.timeToSleepMs = int((60000 / self.bpm / self.CLOCKS_PER_QUARTER_NOTE))
     
     def checkForAinBPM(self):
@@ -194,22 +194,24 @@ class MasterClockInner(EuroPiScript):
         # If there is an analogue input voltage use that for BPM
         if val > self.minAnalogInputVoltage:
             self.bpm = int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM)
-            self.getSleepTime()
-            self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
+            self.calcSleepTime()
+            #self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
             self.getPulseWidth()      
 
     def getBPM(self):
         self.bpm = self.MIN_BPM + k1.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
 
     def getPulseWidth(self):
-        # Get desired PW percent
-        self.pulseWidthPercent = k2.read_position(steps=50, samples=512) + 1
-        # Calc Pulse Width duration (x 2 needed because the max is 50%)
-        self.pulseWidthMs = int((self.MAX_PULSE_WIDTH * 2) * (self.pulseWidthPercent / 100)) 
-        # Don't allow a pulse width less than the minimum
-        if self.pulseWidthMs < self.MIN_PULSE_WIDTH:
-            self.pulseWidthMs = self.MIN_PULSE_WIDTH
-            self.pulseWidthPercent = 'min'
+        if self.configMode:
+            self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
+            # Get desired PW percent
+            self.pulseWidthPercent = k2.read_position(steps=50, samples=512) + 1
+            # Calc Pulse Width duration (x 2 needed because the max is 50%)
+            self.pulseWidthMs = int((self.MAX_PULSE_WIDTH * 2) * (self.pulseWidthPercent / 100)) 
+            # Don't allow a pulse width less than the minimum
+            if self.pulseWidthMs < self.MIN_PULSE_WIDTH:
+                self.pulseWidthMs = self.MIN_PULSE_WIDTH
+                self.pulseWidthPercent = 'min'
 
     ''' Triggered by main. Sends output pulses at required division '''
     def clockTrigger(self):
@@ -294,7 +296,7 @@ class MasterClockInner(EuroPiScript):
 
             if self.running:
                 self.clockTrigger()
-                self.getSleepTime()
+                self.calcSleepTime()
                 await asyncio.sleep_ms(int(self.timeToSleepMs - self.msDriftCompensation))
 
 
