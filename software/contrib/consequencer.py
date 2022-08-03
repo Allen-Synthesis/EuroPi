@@ -52,16 +52,20 @@ class Consequencer(EuroPiScript):
         self.SnProb = p.SnProb
         self.HhProb = p.HhProb
 
-        # Populate empty probabilities with '9's
+        # Load and populate probability patterns
+        # If the probability string len is < pattern len, automatically fill out with the last digit:
+        # - 9   becomes 999999999
+        # - 95  becomes 955555555
+        # - 952 becomes 952222222 
         for pi in range(len(self.BD)):
             if len(self.BdProb[pi]) < len(self.BD[pi]):
-                self.BdProb[pi] = "9" * len(self.BD[pi])
+                self.BdProb[pi] = self.BdProb[pi] + (self.BdProb[pi][-1] * (len(self.BD[pi]) - len(self.BdProb[pi])))
         for pi in range(len(self.SN)):
             if len(self.SnProb[pi]) < len(self.SN[pi]):
-                self.SnProb[pi] = "9" * len(self.SN[pi])
+                self.SnProb[pi] = self.SnProb[pi] + (self.SnProb[pi][-1] * (len(self.SN[pi]) - len(self.SnProb[pi])))
         for pi in range(len(self.HH)):
             if len(self.HhProb[pi]) < len(self.HH[pi]):
-                self.HhProb[pi] = "9" * len(self.HH[pi])
+                self.HhProb[pi] = self.HhProb[pi] + (self.HhProb[pi][-1] * (len(self.HH[pi]) - len(self.HhProb[pi])))
 
         # Initialize variables
         self.step = 0
@@ -297,22 +301,22 @@ class pattern:
     SN.append("10001000100010001010000001001000")
     HH.append("10101010101010101010101010101010")
     BdProb.append("99992111129999999999999999969999")
-    SnProb.append("9")
+    SnProb.append("95")
     HhProb.append("92939495969792939495969792939492")
 
     BD.append("10111111111100001011000000110000")
     SN.append("10001000100010001010000001001000")
     HH.append("11111111111111111111111111111111")
     BdProb.append("99992222229999999999999999999999")
-    SnProb.append("9")
+    SnProb.append("95")
     HhProb.append("44449999555599996666999922229999")
 
     BD.append("1000100010001000")
     SN.append("0000101001001000")
     HH.append("0101010101010101")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
+    BdProb.append("999995")
+    SnProb.append("5")
+    HhProb.append("99995")
 
     BD.append("1000110010001100")
     SN.append("0000101001001000")
