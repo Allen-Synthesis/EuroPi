@@ -79,7 +79,7 @@ class MasterClockInner(EuroPiScript):
         # Vars to drive UI on screen3
         self.markerPositions = [ [0, 1], [0, 11], [0, 21], [52, 1], [52, 11], [52, 21]]
         self.activeOption = 1
-        self.previousselectedDivision = ''
+        self.previousSelectedDivision = ''
 
         # Get working vars
         self.loadState()
@@ -156,7 +156,7 @@ class MasterClockInner(EuroPiScript):
             selectedDivision = k2.choice(self.clockDivisions)
 
             # Only adjust values if k2 has moved. This avoids a potentially annoying UX
-            if self.previousselectedDivision != selectedDivision:
+            if self.previousSelectedDivision != selectedDivision:
                 if self.activeOption == 2:
                     self.divisionOutput2 = selectedDivision
                 elif self.activeOption == 3:
@@ -169,7 +169,7 @@ class MasterClockInner(EuroPiScript):
                     self.divisionOutput6 = selectedDivision
                 self.saveState()
             
-            self.previousselectedDivision = selectedDivision
+            self.previousSelectedDivision = selectedDivision
 
         oled.text('1:/1', lPadding1, 1, 1)
         oled.text('2:/' + str(self.divisionOutput2), lPadding1, 11, 1)
