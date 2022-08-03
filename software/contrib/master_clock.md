@@ -1,11 +1,9 @@
 # EuroPi Master Clock and Clock Divider
 
+'''
 Master Clock
-
 author: Nik Ansell (github.com/gamecat69)
-
 date: 2022-08-02
-
 labels: clock, divider
 
 A master clock and clock divider. Each output sends a +5V trigger/gate at different divisions of the master clock.
@@ -21,11 +19,11 @@ Demo video: TBC
 digital_in: Reset step count on rising edge
 analog_in: Adjust BPM
 
-knob_1: BPM (In screen 2)
-knob_2: Pulse width (In screen 2)
+knob_1: Screen 2: Adjust BPM. Screen 3: Select output to edit 
+knob_2: Screen 2: Adjust Pulse width. Screen 3: Adjust division of selected output 
 
 button_1: Start / Stop
-button_2: Cycle through screens
+button_2: Short Press (<500ms): Cycle through screens. Long Press (>500ms): Enter config mode
 
 Defaults:
 output_1: clock / 1
@@ -34,3 +32,6 @@ output_3: clock / 4
 output_4: clock / 8
 output_5: clock / 16
 output_6: clock / 32
+
+Known Issues:
+- If playback is restarted while screen 2 is in config mode, playback will be slightly irratic

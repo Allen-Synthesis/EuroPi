@@ -23,11 +23,11 @@ Demo video: TBC
 digital_in: Reset step count on rising edge
 analog_in: Adjust BPM
 
-knob_1: BPM (In screen 2)
-knob_2: Pulse width (In screen 2)
+knob_1: Screen 2: Adjust BPM. Screen 3: Select output to edit 
+knob_2: Screen 2: Adjust Pulse width. Screen 3: Adjust division of selected output 
 
 button_1: Start / Stop
-button_2: Cycle through screens
+button_2: Short Press (<500ms): Cycle through screens. Long Press (>500ms): Enter config mode
 
 Defaults:
 output_1: clock / 1
