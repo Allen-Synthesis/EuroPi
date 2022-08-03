@@ -87,8 +87,8 @@ class Probapoly(EuroPiScript):
                 self.clockStep +=1
                 self.step += 1
 
-                # Reached of of pattern, or a shorter patter is now needed, reset step to 0
-                if self.step >= self.patternLength + 1:
+                # Reached end of pattern, or a shorter pattern is now needed, reset step to 1
+                if self.step > self.patternLength:
                     self.step = 1
 
         @b1.handler_falling
@@ -118,7 +118,7 @@ class Probapoly(EuroPiScript):
     def handleClock(self):
         
         # Play upper gate
-        if self.step == 1 or (self.step-1) % self.upper == 0:
+        if self.step % self.upper == 0:    
             cv1.value(1)
 
         # Output trigger with fixed and unrelated probabilities
@@ -129,7 +129,7 @@ class Probapoly(EuroPiScript):
                 cv3.value(1)
 
         # Play lower gate
-        if self.step == 1 or (self.step-1) % self.lower == 0:
+        if self.step % self.lower == 0:
             cv4.value(1)
 
             # Output trigger with fixed and unrelated probabilities
