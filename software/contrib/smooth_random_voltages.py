@@ -55,6 +55,7 @@ except ImportError:
 
 # Script Constants
 MENU_DURATION = 1800
+MAX_SLEW_RATE = 100_000
 
 
 def envelope_generator(start=0, target=10, slew_rate=512):
@@ -81,7 +82,7 @@ class SmoothRandomVoltages(EuroPiScript):
         self.target_voltages = [0, 0, 0]
 
         # Maximim ms duration for slew rate.
-        self.slew_rate = lambda: europi.k1.range(50000)
+        self.slew_rate = lambda: europi.k1.range(MAX_SLEW_RATE)
 
         # Visualization display choice.
         self.visualization = 0  # 0: Bars, 1: Scope, 2: Blank.
