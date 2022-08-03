@@ -37,6 +37,9 @@ output_4: clock / 8
 output_5: clock / 16
 output_6: clock / 32
 
+Known Issues:
+- If playback is restarted while screen 2 is in config mode, playback will be slightly irratic
+
 '''
 
 class MasterClockInner(EuroPiScript):
@@ -55,9 +58,9 @@ class MasterClockInner(EuroPiScript):
         self.minAnalogInputVoltage = 0.9
         self.screen = 1
         self.configMode = False
-        self.screenIndicator = ['not-used', 'o..', '.o.', '..o' ]
+        self.screenIndicator = ['o..', '.o.', '..o' ]
 
-        self.MAX_DIVISION = 32
+        self.MAX_DIVISION = 128
         self.clockDivisions = []
         for n in range(self.MAX_DIVISION):
             self.clockDivisions.append(n+1)
@@ -71,7 +74,7 @@ class MasterClockInner(EuroPiScript):
         self.msDriftCompensation = 28
 
         # Vars to drive UI on screen3
-        self.markerPositions = [ [0,0], [0, 1], [0, 11], [0, 21], [49, 1], [49, 11], [49, 21]]
+        self.markerPositions = [ [0, 1], [0, 11], [0, 21], [49, 1], [49, 11], [49, 21]]
         self.activeOption = 1
         self.previousselectedDivision = ''
 
@@ -113,7 +116,7 @@ class MasterClockInner(EuroPiScript):
     '''Show running status'''
     def screen1(self):
         oled.fill(0)
-        oled.text(self.screenIndicator[self.screen], 100, 23, 1)
+        oled.text(self.screenIndicator[self.screen-1], 100, 23, 1)
         oled.text(str(self.completedCycles) + ':' + str(self.step), 0, 0, 1)
         if not self.running:
             oled.text('B1:Start', 0, 23, 1)
@@ -124,7 +127,7 @@ class MasterClockInner(EuroPiScript):
     '''Configure BPM and Pulse Width'''
     def screen2(self):
         oled.fill(0)
-        oled.text(self.screenIndicator[self.screen], 100, 23, 1)
+        oled.text(self.screenIndicator[self.screen-1], 100, 23, 1)
         if self.configMode:
             oled.text('*', 120, 0, 1)
             self.getBPM()
@@ -142,7 +145,7 @@ class MasterClockInner(EuroPiScript):
         # k1 adjusts selected option
         self.activeOption = k1.choice([2, 3, 4, 5, 6])
         oled.fill(0)
-        oled.text(self.screenIndicator[self.screen], 100, 23, 1)
+        oled.text(self.screenIndicator[self.screen-1], 100, 23, 1)
         if self.configMode:
             oled.text('*', 120, 0, 1)
 
@@ -171,7 +174,7 @@ class MasterClockInner(EuroPiScript):
         oled.text('4:/' + str(self.divisionOutput4), 54, 1, 1)
         oled.text('5:/' + str(self.divisionOutput5), 54, 11, 1)
         oled.text('6:/' + str(self.divisionOutput6), 54, 21, 1)
-        oled.text('|', self.markerPositions[self.activeOption][0], self.markerPositions[self.activeOption][1], 1)
+        oled.text('|', self.markerPositions[self.activeOption-1][0], self.markerPositions[self.activeOption-1][1], 1)
         oled.show()
 
     ''' Holds given output (cv) high for pulseWidthMs duration '''
@@ -194,12 +197,7 @@ class MasterClockInner(EuroPiScript):
             self.getPulseWidth()      
 
     def getBPM(self):
-        val = 100 * ain.percent()
-        # If there is an analogue input voltage use that for BPM. If not use the knob setting
-        if val > self.minAnalogInputVoltage:
-            self.bpm = int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM)
-        else:
-            self.bpm = self.MIN_BPM + k1.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
+        self.bpm = self.MIN_BPM + k1.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
 
     def getPulseWidth(self):
         # Get desired PW percent
@@ -289,7 +287,8 @@ class MasterClockInner(EuroPiScript):
                  self.step = 1
                  self.completedCycles = 0
 
-            self.checkForAinBPM()
+            if not self.configMode:
+                self.checkForAinBPM()
 
             if self.running:
                 self.clockTrigger()
