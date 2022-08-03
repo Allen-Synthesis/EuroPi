@@ -198,7 +198,7 @@ class Probapoly(EuroPiScript):
         oled.fill_rect(rectRightX, 22, self.lowerProb2//5, 8, 1)
 
         if self.doubleTimeManualOverride or self.doubleTime:
-            oled.text('!¿', 100, 22, 1)
+            oled.text('!!', 100, 22, 1)
         if self.manualPatternLengthFeature:
             oled.text('M', 119, 22, 1)
         oled.show()
