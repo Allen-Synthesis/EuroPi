@@ -115,7 +115,14 @@ The mapping of `BD`, `SN`, `HH` is as follows:
 Starting with the July 2022 update, steps now also have a probability which is configured using the BdProb, SnProb and HhProb sections as shown below.
 Use a value from `1` to `9` to set the desired level of probability for each step.
 A value of `9` will cause the step to trigger 100% of the time, any value from `1` to `8` will trigger the step from n/9 times.
-If a 100% probability is desired for every step in a pattern,  place a single digit (e.g. `9`) into the BdProb, SnProb or HhProb lists as shown in the second pattern below.
+
+You can also use shorthand to define probabilities, for example:
+
+- A single digit probability string is auto-populated for all values. e.g. a probability of `9` for an 8 step pattern will automatically become `99999999`
+
+- A multi-digit probability string that is shorter in length than the pattern string is automatically filled with the last digit in the probability string. e.g. a probability of `9995` for an 8 step pattern will automatically become `99995555`.
+
+Example valid patterns and probability patterns are shown below.
 
 ```
     BD.append("1001001001000100")
@@ -129,8 +136,8 @@ If a 100% probability is desired for every step in a pattern,  place a single di
     SN.append("0001100000010000")
     HH.append("1010101010110101")
     BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
+    SnProb.append("99995")
+    HhProb.append("95")
 
 ```
 
