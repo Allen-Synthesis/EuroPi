@@ -59,6 +59,8 @@ class Probapoly(EuroPiScript):
         self.manualPatternLengthFeature = False
         self.patternLength = self.lcm(self.upper, self.lower)
         self.manualPatternLength = 32  # Default manual pattern length when self.manualPatternLengthFeature is first True
+        self.UPPER_BUTTON_PRESS_TIME_LIMIT = 3000 # Used as a workaround to stop phantom button presses (Issue 132)
+        self.SHORT_BUTTON_PRESS_TIME_THRESHOLD = 500
         
         # Todo: Make this mode accessible from the UI
         # Mode 1: Analogue input toggles double time feature
@@ -93,7 +95,7 @@ class Probapoly(EuroPiScript):
 
         @b1.handler_falling
         def b1Pressed():
-            if ticks_diff(ticks_ms(), b1.last_pressed()) >  500 and ticks_diff(ticks_ms(), b1.last_pressed()) < 3000:
+            if ticks_diff(ticks_ms(), b1.last_pressed()) > self.SHORT_BUTTON_PRESS_TIME_THRESHOLD and ticks_diff(ticks_ms(), b1.last_pressed()) < self.UPPER_BUTTON_PRESS_TIME_LIMIT:
                 # toggle double-time feature
                 self.doubleTimeManualOverride = not self.doubleTimeManualOverride
             else:
@@ -104,7 +106,7 @@ class Probapoly(EuroPiScript):
 
         @b2.handler_falling
         def b2Pressed():
-            if ticks_diff(ticks_ms(), b2.last_pressed()) >  500 and ticks_diff(ticks_ms(), b2.last_pressed()) < 3000:
+            if ticks_diff(ticks_ms(), b2.last_pressed()) > self.SHORT_BUTTON_PRESS_TIME_THRESHOLD and ticks_diff(ticks_ms(), b2.last_pressed()) < self.UPPER_BUTTON_PRESS_TIME_LIMIT:
                 # Toggle manualPatternLengthFeature
                 self.manualPatternLengthFeature = not self.manualPatternLengthFeature
                 if self.manualPatternLengthFeature:
