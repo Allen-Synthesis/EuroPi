@@ -91,7 +91,7 @@ class MasterClockInner(EuroPiScript):
 
         # Get asyncio event loop object
         self.el = asyncio.get_event_loop()
-        self.el.run_forever()
+        #self.el.run_forever()
 
         # Starts/Stops the master clock
         @b1.handler_falling
