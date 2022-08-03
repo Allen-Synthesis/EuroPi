@@ -81,7 +81,6 @@ class MasterClockInner(EuroPiScript):
         # Get working vars
         self.loadState()
         self.calcSleepTime()
-        #self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2
         self.getPulseWidth()
 
         # Get asyncio event loop object
@@ -132,7 +131,6 @@ class MasterClockInner(EuroPiScript):
             oled.text('*', 120, 0, 1)
             self.getBPM()
             self.calcSleepTime()
-            self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
             self.getPulseWidth()
             self.saveState()
         
@@ -195,15 +193,14 @@ class MasterClockInner(EuroPiScript):
         if val > self.minAnalogInputVoltage:
             self.bpm = int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM)
             self.calcSleepTime()
-            #self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
             self.getPulseWidth()      
 
     def getBPM(self):
         self.bpm = self.MIN_BPM + k1.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
 
     def getPulseWidth(self):
+        self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
         if self.configMode:
-            self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
             # Get desired PW percent
             self.pulseWidthPercent = k2.read_position(steps=50, samples=512) + 1
             # Calc Pulse Width duration (x 2 needed because the max is 50%)
@@ -212,6 +209,8 @@ class MasterClockInner(EuroPiScript):
             if self.pulseWidthMs < self.MIN_PULSE_WIDTH:
                 self.pulseWidthMs = self.MIN_PULSE_WIDTH
                 self.pulseWidthPercent = 'min'
+        else:
+            self.pulseWidthMs = int((self.MAX_PULSE_WIDTH * 2) * (self.pulseWidthPercent / 100))
 
     ''' Triggered by main. Sends output pulses at required division '''
     def clockTrigger(self):
@@ -236,8 +235,9 @@ class MasterClockInner(EuroPiScript):
         if self.step % self.divisionOutput6 == 0:
             self.el.create_task(self.outputPulse(cv6))
 
-        # advance/reset clock step
-        if self.step < self.MAX_DIVISION:
+        # advance/reset clock step, resetting at the maximum configured division
+        maxConfiguredDivision = max(self.divisionOutput2, self.divisionOutput3, self.divisionOutput4, self.divisionOutput5, self.divisionOutput6)
+        if self.step < maxConfiguredDivision:
             self.step += 1
         else:
             self.completedCycles += 1
