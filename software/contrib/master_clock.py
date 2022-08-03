@@ -58,7 +58,7 @@ class MasterClockInner(EuroPiScript):
         self.minAnalogInputVoltage = 0.9
         self.screen = 1
         self.configMode = False
-        self.screenIndicator = ['o..', '.o.', '..o' ]
+        self.screenIndicator = ['.  ', ' . ', '  .' ]
 
         self.MAX_DIVISION = 128
         self.clockDivisions = []
@@ -74,7 +74,7 @@ class MasterClockInner(EuroPiScript):
         self.msDriftCompensation = 28
 
         # Vars to drive UI on screen3
-        self.markerPositions = [ [0, 1], [0, 11], [0, 21], [49, 1], [49, 11], [49, 21]]
+        self.markerPositions = [ [0, 1], [0, 11], [0, 21], [52, 1], [52, 11], [52, 21]]
         self.activeOption = 1
         self.previousselectedDivision = ''
 
@@ -141,7 +141,9 @@ class MasterClockInner(EuroPiScript):
         oled.show()
 
     '''Configure clock divisions'''
-    def screen3(self):        
+    def screen3(self):
+        lPadding1 = 5
+        lPadding2 = 58
         # k1 adjusts selected option
         self.activeOption = k1.choice([2, 3, 4, 5, 6])
         oled.fill(0)
@@ -168,12 +170,12 @@ class MasterClockInner(EuroPiScript):
             
             self.previousselectedDivision = selectedDivision
 
-        oled.text('1:/1', 5, 1, 1)
-        oled.text('2:/' + str(self.divisionOutput2), 5, 11, 1)
-        oled.text('3:/' + str(self.divisionOutput3), 5, 21, 1)
-        oled.text('4:/' + str(self.divisionOutput4), 54, 1, 1)
-        oled.text('5:/' + str(self.divisionOutput5), 54, 11, 1)
-        oled.text('6:/' + str(self.divisionOutput6), 54, 21, 1)
+        oled.text('1:/1', lPadding1, 1, 1)
+        oled.text('2:/' + str(self.divisionOutput2), lPadding1, 11, 1)
+        oled.text('3:/' + str(self.divisionOutput3), lPadding1, 21, 1)
+        oled.text('4:/' + str(self.divisionOutput4), lPadding2, 1, 1)
+        oled.text('5:/' + str(self.divisionOutput5), lPadding2, 11, 1)
+        oled.text('6:/' + str(self.divisionOutput6), lPadding2, 21, 1)
         oled.text('|', self.markerPositions[self.activeOption-1][0], self.markerPositions[self.activeOption-1][1], 1)
         oled.show()
 
