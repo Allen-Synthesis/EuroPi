@@ -230,8 +230,6 @@ class Probapoly(EuroPiScript):
             if self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
                 self.step = 1
                 self.clockStep = 0
-            
-            print(self.manualPatternLength)
 
 if __name__ == '__main__':
     dm = Probapoly()
