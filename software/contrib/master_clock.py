@@ -2,7 +2,10 @@ from europi import *
 import machine
 from time import ticks_diff, ticks_ms
 from europi_script import EuroPiScript
-import uasyncio as asyncio
+try:
+    import uasyncio as asyncio
+except ImportError:
+    import asyncio
 from random import randint
 
 '''
