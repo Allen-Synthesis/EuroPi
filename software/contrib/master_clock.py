@@ -11,18 +11,20 @@ author: Nik Ansell (github.com/gamecat69)
 date: 2022-08-02
 labels: clock, divider
 
-A master clock and clock divider. Each output sends a +5V trigger/gate at different divisions of the master clock.
-The pulse width (gate/trigger duration) is configurable using knob 1.
-The maximum gate/trigger duration is 50% of the pulse width of output 1.
+A master clock and clock divider. Each output sends a +5V trigger/gate at different divisions of the master clock, or randomly if condigured with a division of zero.
+Pulse width (gate/trigger duration) is configurable up to a maximum of 50% of the pulse width of output 1.
 
-For wonky/more interesting clock patterns there are two additional functions:
-- Reset to step 1 using a gate into the digital input
-- Variable BPM using CV into the analog input
+All configuration (BPM, Pulse Width, output clock divisions) is automatically saved, then loaded when the module is restarted.
+
+For wonky/more interesting clock patterns try these:
+- Reset to step 1 using a gate into the digital input, or by using an odd value for the maximum division
+- Vary BPM by sending CV into the analog input
+- Set the division to zero for an output, this will cause the output to randomly go from high (+5V) to low (0V)
 
 Demo video: TBC
 
-digital_in: Reset step count on rising edge
-analog_in: Adjust BPM
+digital_in: (optional) Reset step count on rising edge
+analog_in: (optional) Adjust BPM
 
 knob_1: Screen 2: Adjust BPM. Screen 3: Select output to edit 
 knob_2: Screen 2: Adjust Pulse width. Screen 3: Adjust division of selected output 
