@@ -62,7 +62,7 @@ class MasterClockInner(EuroPiScript):
         self.resetTimeout = 2000
         self.previousStepTime = 0
         self.minAnalogInputVoltage = 0.9
-        self.screen = 1
+        self.screen = 2
         self.configMode = False
         self.screenIndicator = ['.  ', ' . ', '  .' ]
 
@@ -80,7 +80,7 @@ class MasterClockInner(EuroPiScript):
         self.msDriftCompensation = 28
 
         # Vars to drive UI on screen3
-        self.markerPositions = [ [0, 1], [0, 11], [0, 21], [52, 1], [52, 11], [52, 21]]
+        self.markerPositions = [ [0, 0], [69, 0], [0, 12], [40, 12], [80, 12], [0, 24], [40, 24], [80, 24]]
         self.activeOption = 1
         self.previousSelectedDivision = ''
 
@@ -104,14 +104,21 @@ class MasterClockInner(EuroPiScript):
             if ticks_diff(ticks_ms(), b2.last_pressed()) > 500 and ticks_diff(ticks_ms(), b2.last_pressed()) < 4000:
                 self.configMode = not self.configMode
                 self.running = False
+                if not self.configMode:
+                    # config mode has just been turned off, save state
+                    self.saveState()
             else:
                 # Turn off config mode to avoid current knob positions messing up other settings on the next screen
                 if self.configMode:
                     self.configMode = False
-                if self.screen < 3:
-                    self.screen += 1
+
+                if self.screen == 1:
+                    self.screen = 2
+                elif self.screen == 2:
+                    self.screen = 1
                 else:
                     self.screen = 1
+
         
         # Reset step count upon receiving a din voltage
         @din.handler
@@ -121,7 +128,7 @@ class MasterClockInner(EuroPiScript):
     '''Show running status'''
     def screen1(self):
         oled.fill(0)
-        oled.text(self.screenIndicator[self.screen-1], 100, 23, 1)
+        #oled.text(self.screenIndicator[self.screen-1], 100, 23, 1)
         oled.text(str(self.completedCycles) + ':' + str(self.step), 0, 0, 1)
         if not self.running:
             oled.text('B1:Start', 0, 23, 1)
@@ -130,7 +137,7 @@ class MasterClockInner(EuroPiScript):
         oled.show()
 
     '''Configure BPM and Pulse Width'''
-    def screen2(self):
+    def screen2_old(self):
         oled.fill(0)
         oled.text(self.screenIndicator[self.screen-1], 100, 23, 1)
         if self.configMode:
@@ -144,8 +151,68 @@ class MasterClockInner(EuroPiScript):
         oled.text('PW: ' + str(self.pulseWidthPercent) + '%/' + str(self.pulseWidthMs) + 'ms', 0, 12, 1)
         oled.show()
 
+    '''new screen testing'''
+    def screen2(self):
+        # k1 adjusts selected option
+        self.activeOption = k1.choice([1, 2, 3, 4, 5, 6, 7, 8])
+        oled.fill(0)
+        if self.configMode:
+            configMarker = '|'
+            if self.activeOption == 1:
+                # BPM
+                self.bpm = self.MIN_BPM + k2.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
+            elif self.activeOption == 2:
+                # Pulse Width
+                self.calcSleepTime()
+                self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2  # Maximum of 50% pulse width
+                # Get desired PW percent
+                self.pulseWidthPercent = k2.read_position(steps=50, samples=512) + 1
+                # Calc Pulse Width duration (x 2 needed because the max is 50%)
+                self.pulseWidthMs = int((self.MAX_PULSE_WIDTH * 2) * (self.pulseWidthPercent / 100)) 
+                # Don't allow a pulse width less than the minimum
+                if self.pulseWidthMs < self.MIN_PULSE_WIDTH:
+                    self.pulseWidthMs = self.MIN_PULSE_WIDTH
+                    self.pulseWidthPercent = 'm'
+            elif self.activeOption > 2:
+                # k2 adjusts clock division
+                selectedDivision = k2.choice(self.clockDivisions)
+
+                # Only adjust values if k2 has moved. This avoids a potentially annoying UX
+                if self.previousSelectedDivision != selectedDivision:
+                    if self.activeOption == 4:
+                        self.divisionOutput2 = selectedDivision
+                    elif self.activeOption == 5:
+                        self.divisionOutput3 = selectedDivision
+                    elif self.activeOption == 6:
+                        self.divisionOutput4 = selectedDivision
+                    elif self.activeOption == 7:
+                        self.divisionOutput5 = selectedDivision
+                    elif self.activeOption == 8:
+                        self.divisionOutput6 = selectedDivision
+                
+                self.previousSelectedDivision = selectedDivision
+
+            #oled.text('|', 62, 0, 1)
+            #self.getBPM()
+            #self.calcSleepTime()
+            #self.getPulseWidth()
+            #self.saveState()
+        else:
+            configMarker = '.'
+
+        oled.text(str(self.bpm) + ' bpm', 6, 0, 1)
+        oled.text(str(self.pulseWidthPercent) + ':' + str(str(self.pulseWidthMs)), 75, 0, 1)
+        oled.text('/1', 6, 12, 1)
+        oled.text('/' + str(self.divisionOutput2), 45, 12, 1)
+        oled.text('/' + str(self.divisionOutput3), 85, 12, 1)
+        oled.text('/' + str(self.divisionOutput4), 6, 24, 1)
+        oled.text('/' + str(self.divisionOutput5), 45, 24, 1)
+        oled.text('/' + str(self.divisionOutput6), 85, 24, 1)
+        oled.text(configMarker, self.markerPositions[self.activeOption-1][0], self.markerPositions[self.activeOption-1][1], 1)
+        oled.show() 
+
     '''Configure clock divisions'''
-    def screen3(self):
+    def screen3_old(self):
         lPadding1 = 5
         lPadding2 = 58
         # k1 adjusts selected option
@@ -214,7 +281,7 @@ class MasterClockInner(EuroPiScript):
             # Don't allow a pulse width less than the minimum
             if self.pulseWidthMs < self.MIN_PULSE_WIDTH:
                 self.pulseWidthMs = self.MIN_PULSE_WIDTH
-                self.pulseWidthPercent = 'min'
+                self.pulseWidthPercent = 'm'
         else:
             self.pulseWidthMs = int((self.MAX_PULSE_WIDTH * 2) * (self.pulseWidthPercent / 100))
 
@@ -284,6 +351,8 @@ class MasterClockInner(EuroPiScript):
             "divisionOutput6": self.divisionOutput6
         }
         self.save_state_json(state)
+        if self.DEBUG:
+            print('State saved')
 
     ''' Load a previously saved state, or initialize working vars, then save'''
     def loadState(self):
@@ -307,10 +376,10 @@ class MasterClockInner(EuroPiScript):
             # Display selected screen
             if self.screen == 1:
                 self.screen1()
-            elif self.screen == 2:
-                self.screen2()
             else:
-                self.screen3()
+                self.screen2()
+            #else:
+                #self.screen3()
 
             # Auto reset function after resetTimeout
             if self.step != 0 and ticks_diff(ticks_ms(), self.previousStepTime) > self.resetTimeout:
