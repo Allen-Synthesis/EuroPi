@@ -36,6 +36,7 @@ except ImportError:
     from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
     from experimental.knobs import KnobBank
 
+from config import ConfigPointsBuilder
 from europi_script import EuroPiScript
 
 # Customize pulses output here
@@ -69,9 +70,15 @@ class TuringMachine:
     explicitly sub-classing the `TuringMachine` class. See `EuroPiTuringMachine` for a more detailed example.
     """
 
-    def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
+    def __init__(
+        self,
+        bit_count=DEFAULT_BIT_COUNT,
+        max_output_voltage=MAX_OUTPUT_VOLTAGE,
+        clear_on_write=True,
+    ):
         """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8.
         The maximum output voltage is also configurable and defaults to `europi.MAX_OUTPUT_VOLTAGE`"""
+
         if bit_count < 8:
             raise ValueError(f"Specified bit_count ({bit_count}) is less than the minimum (8).")
         self.bit_count = bit_count
@@ -80,6 +87,7 @@ class TuringMachine:
         self.max_output_voltage = max_output_voltage
         self._scale = max_output_voltage
         self._length = bit_count
+        self.clear_on_write = clear_on_write
         self._write = False
 
         self.flip_probability_getter = lambda: self._flip_probability
@@ -101,7 +109,11 @@ class TuringMachine:
         """
         self._rotate_bits()
         if self.write:
-            self.bits = self.bits & ~1
+            if self.clear_on_write:
+                self.bits = self.bits & ~1
+            else:
+                self.bits = self.bits | (1 << 0)
+
         if randint(0, 99) < self.flip_probability:
             self.bits = self.bits ^ 0b1
         self.step_handler()
@@ -189,7 +201,10 @@ class TuringMachine:
 
 class EuroPiTuringMachine(EuroPiScript):
     def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
-        self.tm = TuringMachine(bit_count, max_output_voltage)
+        super().__init__()
+        self.tm = TuringMachine(
+            bit_count, max_output_voltage, clear_on_write=self.config["write_value"] == 0
+        )
         self.tm.flip_probability_getter = self.flip_probability
         self.tm.scale_getter = self.scale
         self.tm.length_getter = self.length
@@ -261,6 +276,10 @@ class EuroPiTuringMachine(EuroPiScript):
     @classmethod
     def display_name(cls):
         return "Turing Machine"
+
+    @classmethod
+    def config_points(cls, config_builder: ConfigPointsBuilder):
+        return config_builder.with_choice(name="write_value", choices=[0, 1], default=0)
 
     def main(self):
         line1_y = 11
