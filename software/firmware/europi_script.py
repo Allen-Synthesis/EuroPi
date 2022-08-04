@@ -2,6 +2,7 @@
 import os
 import json
 from utime import ticks_diff, ticks_ms
+from config_points import ConfigPointsBuilder
 
 
 class EuroPiScript:
@@ -104,6 +105,7 @@ class EuroPiScript:
 
     def __init__(self):
         self._last_saved = 0
+        self.config = self._load_config()
 
     def main(self):
         """Override this method with your script's main loop method."""
@@ -199,7 +201,86 @@ class EuroPiScript:
         Check for a previously saved state. If it exists, return state as a
         dict. If no state is found, an empty dictionary will be returned.
         """
-        json_str = self._load_state()
+        return self._load_json_data(self._load_state())
+
+    def _load_state(self, mode: str = "r") -> any:
+        return self._load_file(self._state_filename, mode)
+
+    def remove_state(self):
+        """Remove the state file for this script."""
+        self._delete_file(self._state_filename)
+
+    def last_saved(self):
+        """Return the ticks in milliseconds since last save."""
+        try:
+            return ticks_diff(ticks_ms(), self._last_saved)
+        except AttributeError:
+            raise Exception("EuroPiScript classes must call `super().__init__()`.")
+
+    # config methods
+
+    @classmethod
+    def config_points(cls, config_builder: ConfigPointsBuilder):
+        # def config_points(cls, config_builder: ConfigPointsBuilder):
+        """TODO"""
+        return config_builder
+
+    @classmethod
+    def _build_config_points(cls):
+        return cls.config_points(ConfigPointsBuilder()).build()
+
+    @classmethod
+    def _config_filename(cls):
+        return f"config_{cls.__qualname__}.json"
+
+    def _save_config(self, data: dict):
+        """Take config as a dict and save to this class's config file.
+
+        .. note::
+            Be mindful of how often `_save_config()` is called because
+            writing to disk too often can slow down the performance of your
+            script. Only call save state when state has changed and consider
+            adding a time since last save check to reduce save frequency.
+        """
+        json_str = json.dumps(data)
+        with open(self._config_filename(), "w") as file:
+            file.write(json_str)
+
+    @classmethod
+    def _load_config(cls):
+        """If this class has config points, this method returns the config dictionary as saved in
+        this class's config file, else, returns an empty dict."""
+        config_points = cls._build_config_points()
+        if len(config_points):
+            data = cls._load_file(cls._config_filename())
+            if not data:
+                return config_points.default_config()
+            else:
+                return cls._load_json_data(data)
+        else:
+            return {}
+
+    def _delete_config(self):
+        """Deletes the config file, effectively resetting to defaults."""
+        self._delete_file(self._config_filename())
+
+    # generic file methods #TODO move these elsewhere?
+
+    @staticmethod
+    def _load_file(filename, mode: str = "r") -> any:
+        try:
+            with open(filename, mode) as file:
+                return file.read()
+        except OSError as e:
+            return ""
+
+    @staticmethod
+    def _load_json_data(json_str):
+        """Load previously saved json data as a dict.
+
+        Check for a previously saved data. If it exists, return data as a
+        dict. If no data is found, an empty dictionary will be returned.
+        """
         if json_str == "":
             return {}
         try:
@@ -208,23 +289,9 @@ class EuroPiScript:
             print(f"Unable to decode {json_str}: {e}")
             return {}
 
-    def _load_state(self, mode: str = "r") -> any:
+    @staticmethod
+    def _delete_file(filename):
         try:
-            with open(self._state_filename, mode) as file:
-                return file.read()
-        except OSError as e:
-            return ""
-
-    def remove_state(self):
-        """Remove the state file for this script."""
-        try:
-            os.remove(self._state_filename)
+            os.remove(filename)
         except OSError:
             pass
-
-    def last_saved(self):
-        """Return the ticks in milliseconds since last save."""
-        try:
-            return ticks_diff(ticks_ms(), self._last_saved)
-        except AttributeError:
-            raise Exception("EuroPiScript classes must call `super().__init__()`.")
