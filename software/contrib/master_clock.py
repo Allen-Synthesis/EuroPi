@@ -156,9 +156,9 @@ class MasterClockInner(EuroPiScript):
 
             if self.activeOption == 1:
                 # read current knob value
-                newBpm = self.MIN_BPM + k2.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
+                newBpm = self.MIN_BPM + k2.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 2), samples=512)
                 # unlock the knob if it has reached near the same value - avoids messy UX
-                if abs(newBpm - self.state.get('bpm')) <= 2:
+                if abs(newBpm - self.state.get('bpm')) <= 10:
                     self.k2Unlocked = True
                 # update config value if k2 is unlocked
                 if self.k2Unlocked:
@@ -184,16 +184,7 @@ class MasterClockInner(EuroPiScript):
                 selectedDivision = k2.choice(self.clockDivisions)
                 # Only adjust values if k2 has moved. This avoids a potentially annoying UX
                 if self.previousSelectedDivision != selectedDivision:
-                    if self.activeOption == 4:
-                        self.outputDivisions[1] = selectedDivision
-                    elif self.activeOption == 5:
-                        self.outputDivisions[2] = selectedDivision
-                    elif self.activeOption == 6:
-                        self.outputDivisions[3] = selectedDivision
-                    elif self.activeOption == 7:
-                        self.outputDivisions[4] = selectedDivision
-                    elif self.activeOption == 8:
-                        self.outputDivisions[5] = selectedDivision
+                    self.outputDivisions[self.activeOption - 3] = selectedDivision
                 
                 self.previousSelectedDivision = selectedDivision
             
