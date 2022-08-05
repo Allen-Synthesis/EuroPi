@@ -140,7 +140,7 @@ class MasterClockInner(EuroPiScript):
             oled.text('B1:Stop', 0, 23, 1)
         oled.show()
 
-    '''new screen testing'''
+    '''config screen'''
     def screen2(self):
         # k1 adjusts selected option
         self.activeOption = k1.choice([1, 2, 3, 4, 5, 6, 7, 8])
