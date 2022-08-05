@@ -64,7 +64,6 @@ class MasterClockInner(EuroPiScript):
         self.minAnalogInputVoltage = 0.9
         self.screen = 2
         self.configMode = False
-        self.screenIndicator = ['.  ', ' . ', '  .' ]
 
         self.MAX_DIVISION = 128
         self.clockDivisions = []
@@ -266,7 +265,11 @@ class MasterClockInner(EuroPiScript):
         if val > self.minAnalogInputVoltage:
             self.bpm = int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM)
             self.calcSleepTime()
-            self.getPulseWidth()      
+            self.getPulseWidth()
+        else:
+            # No analog input, revert to last saved state
+            self.bpm = self.state.get("bpm", 100)
+            self.pulseWidthPercent = self.state.get("self.pulseWidthPercent", 50)
 
     def getBPM(self):
         self.bpm = self.MIN_BPM + k1.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 1), samples=512)
@@ -341,7 +344,7 @@ class MasterClockInner(EuroPiScript):
 
     ''' Save working vars to a save state file'''
     def saveState(self):
-        state = {
+        self.state = {
             "bpm": self.bpm,
             "pulseWidthPercent": self.pulseWidthPercent,
             "divisionOutput2": self.divisionOutput2,
@@ -350,23 +353,23 @@ class MasterClockInner(EuroPiScript):
             "divisionOutput5": self.divisionOutput5,
             "divisionOutput6": self.divisionOutput6
         }
-        self.save_state_json(state)
+        self.save_state_json(self.state)
         if self.DEBUG:
             print('State saved')
 
     ''' Load a previously saved state, or initialize working vars, then save'''
     def loadState(self):
 
-        state = self.load_state_json()
+        self.state = self.load_state_json()
 
-        self.bpm = state.get("bpm", 100)
-        self.pulseWidthPercent = state.get("self.pulseWidthPercent", 50)
+        self.bpm = self.state.get("bpm", 100)
+        self.pulseWidthPercent = self.state.get("self.pulseWidthPercent", 50)
 
-        self.divisionOutput2 = state.get("divisionOutput2", 2)
-        self.divisionOutput3 = state.get("divisionOutput3", 4)
-        self.divisionOutput4 = state.get("divisionOutput4", 8)
-        self.divisionOutput5 = state.get("divisionOutput5", 16)
-        self.divisionOutput6 = state.get("divisionOutput6", 32)
+        self.divisionOutput2 = self.state.get("divisionOutput2", 2)
+        self.divisionOutput3 = self.state.get("divisionOutput3", 4)
+        self.divisionOutput4 = self.state.get("divisionOutput4", 8)
+        self.divisionOutput5 = self.state.get("divisionOutput5", 16)
+        self.divisionOutput6 = self.state.get("divisionOutput6", 32)
 
         self.saveState()
 
