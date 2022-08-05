@@ -77,9 +77,10 @@ class MasterClockInner(EuroPiScript):
         # When disabled, set msDriftCompensation to 28
         self.DEBUG = False
 
-        # In testing a 28ms drift was found at all tempos
+        # In testing a 17ms drift was found at all tempos and a 25ms drift when editing BPM/PW
         # Adding this offset brings the BPM and pulse width back into a reasonable tolerance
-        self.msDriftCompensation = 28
+        self.msDriftCompensation = 17
+        self.msDriftCompensationConfigMode = 6
 
         # Vars to drive UI
         self.markerPositions = [ [0, 0], [69, 0], [0, 12], [40, 12], [80, 12], [0, 24], [40, 24], [80, 24]]
@@ -306,8 +307,10 @@ class MasterClockInner(EuroPiScript):
             if self.running:
                 self.clockTrigger()
                 self.calcSleepTime()
-                await asyncio.sleep_ms(int(self.timeToSleepMs - self.msDriftCompensation))
-
+                if self.configMode:
+                    await asyncio.sleep_ms(int(self.timeToSleepMs - self.msDriftCompensation - self.msDriftCompensationConfigMode))
+                else:
+                    await asyncio.sleep_ms(int(self.timeToSleepMs - self.msDriftCompensation))
 
 class MasterClock(EuroPiScript):
     def __init__(self):
