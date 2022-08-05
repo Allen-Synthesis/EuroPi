@@ -103,7 +103,8 @@ class MasterClockInner(EuroPiScript):
         def cycleScreen():
             if ticks_diff(ticks_ms(), b2.last_pressed()) > 500 and ticks_diff(ticks_ms(), b2.last_pressed()) < 4000:
                 self.configMode = not self.configMode
-                self.running = False
+                # [temp] keep the clock running when in config mode to see if the previous slowdown bug occurs in testing
+                #self.running = False
                 if not self.configMode:
                     # config mode has just been turned off, save state and lock k2
                     self.saveState()
