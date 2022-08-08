@@ -82,7 +82,6 @@ class CVecorder(EuroPiScript):
         #self.CvRecording = []  # CV recorder flags
 
         # Load CV Recordings from a previously stored state on disk or initialize if blank
-        #self.showLoadingScreen()
         self.loadState()
 
         # Test routine, pick a random bank n times and save, then load the state
