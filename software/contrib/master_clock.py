@@ -44,7 +44,8 @@ output_5: clock / 16
 output_6: clock / 32
 
 Known Issues:
-- If playback is restarted while screen 2 is in config mode, playback will be slightly irratic
+- If playback is restarted while screen 2 is in config mode, playback will be slightly irratic, especially when moving knobs
+- BPM occasionally drifts by 1ms - possibly because asyncio is is truely async
 
 '''
 
