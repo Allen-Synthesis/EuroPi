@@ -69,6 +69,7 @@ class MasterClockInner(EuroPiScript):
         self.previousActiveOption = ''
 
         self.MAX_DIVISION = 128
+        self.MAX_PW_PERCENTAGE = 80
         self.clockDivisions = []
         for n in range(self.MAX_DIVISION+1):
             self.clockDivisions.append(n)
@@ -79,8 +80,9 @@ class MasterClockInner(EuroPiScript):
 
         # In testing a 17ms drift was found at all tempos and a 25ms drift when editing BPM/PW
         # Adding this offset brings the BPM and pulse width back into a reasonable tolerance
+        # self.msDriftCompensationConfigMode is an additional offset if configMode causes additional slowdown
         self.msDriftCompensation = 17
-        self.msDriftCompensationConfigMode = 6
+        self.msDriftCompensationConfigMode = 0
 
         # Vars to drive UI
         self.markerPositions = [ [0, 0], [69, 0], [0, 12], [40, 12], [80, 12], [0, 24], [40, 24], [80, 24]]
@@ -92,7 +94,11 @@ class MasterClockInner(EuroPiScript):
         self.getPulseWidth()
 
         # Get asyncio event loop object
-        self.el = asyncio.get_event_loop()
+        #self.el = asyncio.get_event_loop()
+
+        self.tasks = []
+        for n in range(6):
+            self.tasks.append(0)
 
         # Starts/Stops the master clock
         @b1.handler_falling
@@ -146,7 +152,7 @@ class MasterClockInner(EuroPiScript):
         self.activeOption = k1.choice([1, 2, 3, 4, 5, 6, 7, 8])
 
         oled.fill(0)
-        if self.configMode:
+        if self.configMode and self.activeOption != 3:
             configMarker = '|'
             
             # if active config option changes, lock k2 and save state
@@ -156,7 +162,7 @@ class MasterClockInner(EuroPiScript):
 
             if self.activeOption == 1:
                 # read current knob value
-                newBpm = self.MIN_BPM + k2.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 2), samples=512)
+                newBpm = self.MIN_BPM + k2.read_position(steps=(self.MAX_BPM - self.MIN_BPM + 2))
                 # unlock the knob if it has reached near the same value - avoids messy UX
                 if abs(newBpm - self.state.get('bpm')) <= 10:
                     self.k2Unlocked = True
@@ -169,7 +175,7 @@ class MasterClockInner(EuroPiScript):
                     
             elif self.activeOption == 2:
                 # read current knob value
-                newPw = k2.read_position(steps=50, samples=512) + 1
+                newPw = k2.read_position(steps=self.MAX_PW_PERCENTAGE) + 1
                 # unlock the knob if it has reached near the same value - avoids messy UX
                 if abs(newPw - self.state.get('pulseWidthPercent')) <= 2:
                     self.k2Unlocked = True
@@ -183,7 +189,8 @@ class MasterClockInner(EuroPiScript):
                 # k2 adjusts clock division
                 selectedDivision = k2.choice(self.clockDivisions)
                 # Only adjust values if k2 has moved. This avoids a potentially annoying UX
-                if self.previousSelectedDivision != selectedDivision:
+                # self.activeOption != 3 / output 1 is disabled from configuration
+                if self.previousSelectedDivision != selectedDivision and self.activeOption != 3:
                     self.outputDivisions[self.activeOption - 3] = selectedDivision
                 
                 self.previousSelectedDivision = selectedDivision
@@ -228,10 +235,10 @@ class MasterClockInner(EuroPiScript):
             self.getPulseWidth()
 
     def getPulseWidth(self):
-        # Set max to 50% of total cycle time
-        self.MAX_PULSE_WIDTH = self.timeToSleepMs // 2
-        # Get desired PW percent. clamp ensures it is higher than MIN and lower than MAX
-        self.pulseWidthMs = clamp(int((self.MAX_PULSE_WIDTH * 2) * (self.pulseWidthPercent / 100)), self.MIN_PULSE_WIDTH, self.MAX_PULSE_WIDTH)
+        # Set max of self.MAX_PW_PERCENTAGE percent of total cycle time
+        self.MAX_PULSE_WIDTH = int(self.timeToSleepMs * self.MAX_PW_PERCENTAGE // 100)
+        # Calc pulse width in milliseconds given the desired percentage. clamp ensures it is higher than MIN and lower than MAX
+        self.pulseWidthMs = clamp((self.timeToSleepMs * (self.pulseWidthPercent)//100), self.MIN_PULSE_WIDTH, self.MAX_PULSE_WIDTH)
 
     ''' Triggered by main. Sends output pulses at required division '''
     def clockTrigger(self):
@@ -242,7 +249,10 @@ class MasterClockInner(EuroPiScript):
         for idx, output in enumerate(self.outputDivisions):
             if output != 0:
                 if self.step % output == 0:
-                    self.el.create_task(self.outputPulse(cvs[idx]))
+                    #self.tasks[idx] = self.el.create_task(self.outputPulse(cvs[idx]))
+                    if self.tasks[idx] != 0 and not self.tasks[idx].done():
+                        print(f'Task: {idx} is not done')
+                    self.tasks[idx] = asyncio.create_task(self.outputPulse(cvs[idx]))
             else:
                 cvs[idx].value(randint(0, 1))
 
@@ -255,6 +265,15 @@ class MasterClockInner(EuroPiScript):
         
         # Get time of last step to use in the auto reset function
         self.previousStepTime = ticks_ms()
+
+        # Debug print tasks
+        #for i in self.tasks:
+        #    if i != 0:
+        #        #attrs = dir(i)
+        #        #print(', '.join("%s" % item for item in attrs))
+        #        print(f'[{i}] done: {str(i.done())}. state: {str(i.state)}. data: {str(i.data)}. coro: {str(i.coro)}')
+        #    else:
+        #        print(0)
 
     ''' Save working vars to a save state file'''
     def saveState(self):
