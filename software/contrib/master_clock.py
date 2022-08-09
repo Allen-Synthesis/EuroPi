@@ -56,21 +56,23 @@ class MasterClockInner(EuroPiScript):
         self.step = 1
         self.completedCycles = 0
         self.running = True
-        self.CLOCKS_PER_QUARTER_NOTE = 4
-        self.MIN_BPM = 20  # Successfully calibrated to >= 20 and <= 240 BPM
-        self.MAX_BPM = 240
-        self.MIN_PULSE_WIDTH = 8
         self.resetTimeout = 2000
         self.previousStepTime = 0
-        self.minAnalogInputVoltage = 0.9
         self.screen = 2
         self.configMode = False
         self.k2Unlocked = False
         self.previousSelectedDivision = 0
         self.previousActiveOption = ''
 
+        self.MIN_BPM = 20  # Successfully calibrated to >= 20 and <= 240 BPM
+        self.MAX_BPM = 240
+        self.MIN_PULSE_WIDTH = 8
+        self.MIN_AIN_VOLTAGE = 1.1
         self.MAX_DIVISION = 128
         self.MAX_PW_PERCENTAGE = 80
+        self.CLOCKS_PER_QUARTER_NOTE = 4
+
+        # Create list of available clock divisions
         self.clockDivisions = []
         for n in range(self.MAX_DIVISION+1):
             self.clockDivisions.append(n)
@@ -225,7 +227,7 @@ class MasterClockInner(EuroPiScript):
     def checkForAinBPM(self):
         val = 100 * ain.percent()
         # If there is an analogue input voltage use that for BPM. clamp ensures it is higher than MIN and lower than MAX
-        if val > self.minAnalogInputVoltage:
+        if val > self.MIN_AIN_VOLTAGE:
             self.bpm = clamp(int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM), self.MIN_BPM, self.MAX_BPM)
             self.calcSleepTime()
             self.getPulseWidth()
