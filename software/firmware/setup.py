@@ -17,6 +17,7 @@ setup(
         "europi_script",
         "europi",
         "ui",
+        "experimental.knobs",
     ],
     install_requires=[],
 )
