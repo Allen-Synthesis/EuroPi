@@ -2,6 +2,11 @@
 
 ### 2022-08-28
 
+- [Release] version 0.6.1
+- [Bug Fix] Add new `experimental` package to firmware setup.py (https://github.com/Allen-Synthesis/EuroPi/issues/164)
+
+### 2022-08-28
+
 - [Release] version 0.6.0
 - [New Script] Turing Machine  (https://github.com/Allen-Synthesis/EuroPi/pull/114)
 - [New Script] Smooth random voltages  (https://github.com/Allen-Synthesis/EuroPi/pull/153)
