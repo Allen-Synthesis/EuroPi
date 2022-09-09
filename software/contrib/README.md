@@ -57,7 +57,7 @@ Quantised outputs are available, with the note for each step, and the polyrhythm
 Creates interesting polyrhythmic gate patterns while also allowing probabilities to be set on gates.
 Given values for and upper and lower rhythmic ratios, Probapoly will create a looping pattern as short as possible with no repetition of the pattern within the loop.
 
-### Radio Scanner [[documentation]](/software/contrib/radio_scanner.md) [[script]](/software/contrib/radio_scanner.py)
+### Radio Scanner '\[[documentation](/software/contrib/radio_scanner.md) | [script]](/software/contrib/radio_scanner.py)\]`
 A tool for exploring sounds and control voltage combinations by navigating a 2D plane
 The two knobs allow users to scan in 2 separate axis, with the value of each knob available as a CV output.
 There is also a CV output for the difference between the two knob positions, and then the lower row of CV outputs is the inverse of each jack above.
@@ -72,7 +72,7 @@ Random cv with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw
 3 random or analog input s&h voltages with changable slew smoothness. New voltages assigned upon each digital input trigger. Top row outputs move
 towards target voltage according to slew rate set by knob 1. Bottom row outputs immediately change to new target voltage.
 
-### Strange Attractor [documentation](/software/contrib/strange_attractor.md) | [script](/software/contrib/strange_attractor.py)
+### Strange Attractor ([documentation](/software/contrib/strange_attractor.md) | [script](/software/contrib/strange_attractor.py))
 A source of chaotic modulation using systems of differential equations such as the Lorenz System
 Users have the x, y, and z values of the output of each attractor model available as CV outputs, as well as 3 gate signals related to the relationships between these values
 
