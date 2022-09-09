@@ -57,7 +57,7 @@ Quantised outputs are available, with the note for each step, and the polyrhythm
 Creates interesting polyrhythmic gate patterns while also allowing probabilities to be set on gates.
 Given values for and upper and lower rhythmic ratios, Probapoly will create a looping pattern as short as possible with no repetition of the pattern within the loop.
 
-### Radio Scanner '\[[documentation](/software/contrib/radio_scanner.md) | [script]](/software/contrib/radio_scanner.py)\]`
+### Radio Scanner `\[ [documentation](/software/contrib/radio_scanner.md) | [script](/software/contrib/radio_scanner.py) \]`
 A tool for exploring sounds and control voltage combinations by navigating a 2D plane
 The two knobs allow users to scan in 2 separate axis, with the value of each knob available as a CV output.
 There is also a CV output for the difference between the two knob positions, and then the lower row of CV outputs is the inverse of each jack above.
@@ -76,6 +76,6 @@ towards target voltage according to slew rate set by knob 1. Bottom row outputs 
 A source of chaotic modulation using systems of differential equations such as the Lorenz System
 Users have the x, y, and z values of the output of each attractor model available as CV outputs, as well as 3 gate signals related to the relationships between these values
 
-### Turing Machine \[[documentation](/software/contrib/turing_machine.md) | [script](/software/contrib/turing_machine.py)\]
+### Turing Machine \[ [documentation](/software/contrib/turing_machine.md) | [script](/software/contrib/turing_machine.py) \]
 A script meant to recreate the [Music Thing Modular Turning Machine Random Sequencer](https://musicthing.co.uk/pages/turing.html)
 as faithfully as possible on the EuroPi hardware.
