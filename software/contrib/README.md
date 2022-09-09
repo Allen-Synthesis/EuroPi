@@ -5,7 +5,7 @@ directory, specifically [the section on contrib scripts](/contributing.md#contri
 
 # List of current scripts
 
-### Bernoulli Gates \[ [[documentation](/software/contrib/bernoulli_gates.md) | [script](/software/contrib/bernoulli_gates.py) \]
+### Bernoulli Gates \[ [documentation](/software/contrib/bernoulli_gates.md) | [script](/software/contrib/bernoulli_gates.py) \]
 A probability script based on Mutable Instruments Branches
 Two channels of probability based routing, where the digital input will be routed to one of two outputs based on a weighted random chance, controlled by a knob per channel, and the analogue input for channel 1
 
