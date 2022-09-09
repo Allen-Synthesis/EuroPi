@@ -41,38 +41,38 @@ The division of the master clock that each LFO runs at, as well as each of their
 An example script for the menu system
 This script can be copied and altered as a starting point for your own scripts that are to be menu compatible, and make use of the save state functionality
 
-### Noddy Holder [[documentation]](/software/contrib/noddy_holder.md) [[script]](/software/contrib/noddy_holder.py)
+### Noddy Holder \[ [documentation](/software/contrib/noddy_holder.md) | [script](/software/contrib/noddy_holder.py) \]
 Two channels of sample/track and hold based on a single trigger and CV source
 Users have a copy of the original trigger signal, a sample and hold and a track and hold of the analogue input, and the all above but with the gate inverted, available from the CV outputs
 
-### Poly Square [[documentation]](/software/contrib/poly_square.md) [[script]](/software/contrib/poly_square.py)
+### Poly Square \[ [documentation](/software/contrib/poly_square.md) | [script](/software/contrib/poly_square.py) \]
 Six independent oscillators which output on CVs 1-6. The base pitch is set by the analog input, which is interpreted as a V/oct input with 0V = C. Knob 1 allows for detuning of the 6 voices, and as the knob is turned clockwise, the spread between them increases. Button 2 toggles the maximum detune between a half step and a major 9th. Knob 2 sets the polyphony mode.
 
-### Polyhythmic Sequencer [[script]](/software/contrib/polyrhythmic_sequencer.py)
+### Polyhythmic Sequencer \[ [script](/software/contrib/polyrhythmic_sequencer.py) \]
 A sequencer that advances notes according to a polyrhythmic clock, inspired by the operation of the Moog Subharmonicon sequencer
 Users can run two simultaneous polyrhythmic sequences clocked by the same external clock.
 Quantised outputs are available, with the note for each step, and the polyrhythm it runs at, being easily changed to write the sequence
 
-### Probapoly [[documentation]](/software/contrib/probapoly.md) [[script]](/software/contrib/probapoly.py)
+### Probapoly \[ [documentation](/software/contrib/probapoly.md) | [script](/software/contrib/probapoly.py) \]
 Creates interesting polyrhythmic gate patterns while also allowing probabilities to be set on gates.
 Given values for and upper and lower rhythmic ratios, Probapoly will create a looping pattern as short as possible with no repetition of the pattern within the loop.
 
-### Radio Scanner `\[ [documentation](/software/contrib/radio_scanner.md) | [script](/software/contrib/radio_scanner.py) \]`
+### Radio Scanner \[ [documentation](/software/contrib/radio_scanner.md) | [script](/software/contrib/radio_scanner.py) \]
 A tool for exploring sounds and control voltage combinations by navigating a 2D plane
 The two knobs allow users to scan in 2 separate axis, with the value of each knob available as a CV output.
 There is also a CV output for the difference between the two knob positions, and then the lower row of CV outputs is the inverse of each jack above.
 The outputs can also be rotated as inspired by the 4MS Rotating Clock Divider
 
-### Scope [[script]](/software/contrib/scope.py)
+### Scope \[ [script](/software/contrib/scope.py) \]
 An oscilloscope script to monitor the analogue and digital inputs
 The current values of the analogue and digital inputs are displayed in an oscilloscope style on the OLED display, and copies of both signals, as well as an inverted gate signal, are available from the CV outputs
 
-### Smooth Random Voltages [[script]](/software/contrib/smooth_random_voltages.py)
+### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
 Random cv with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw
 3 random or analog input s&h voltages with changable slew smoothness. New voltages assigned upon each digital input trigger. Top row outputs move
 towards target voltage according to slew rate set by knob 1. Bottom row outputs immediately change to new target voltage.
 
-### Strange Attractor ([documentation](/software/contrib/strange_attractor.md) | [script](/software/contrib/strange_attractor.py))
+### Strange Attractor \[ [documentation](/software/contrib/strange_attractor.md) | [script](/software/contrib/strange_attractor.py) \]
 A source of chaotic modulation using systems of differential equations such as the Lorenz System
 Users have the x, y, and z values of the output of each attractor model available as CV outputs, as well as 3 gate signals related to the relationships between these values
 
