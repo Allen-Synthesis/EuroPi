@@ -76,7 +76,6 @@ towards target voltage according to slew rate set by knob 1. Bottom row outputs 
 A source of chaotic modulation using systems of differential equations such as the Lorenz System
 Users have the x, y, and z values of the output of each attractor model available as CV outputs, as well as 3 gate signals related to the relationships between these values
 
-### Turing Machine
-[[documentation]](/software/contrib/turing_machine.md) [[script]](/software/contrib/turing_machine.py)
+### Turing Machine \[[documentation](/software/contrib/turing_machine.md) | [script](/software/contrib/turing_machine.py)\]
 A script meant to recreate the [Music Thing Modular Turning Machine Random Sequencer](https://musicthing.co.uk/pages/turing.html)
 as faithfully as possible on the EuroPi hardware.
