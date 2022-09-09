@@ -5,7 +5,7 @@ directory, specifically [the section on contrib scripts](/contributing.md#contri
 
 # List of current scripts
 
-### [Bernoulli Gates](/software/contrib/bernoulli_gates.md)
+### Bernoulli Gates [[documentation]](/software/contrib/bernoulli_gates.md) [[script]](/software/contrib/bernoulli_gates.py) 
 A probability script based on Mutable Instruments Branches
 Two channels of probability based routing, where the digital input will be routed to one of two outputs based on a weighted random chance, controlled by a knob per channel, and the analogue input for channel 1
 
@@ -76,6 +76,6 @@ towards target voltage according to slew rate set by knob 1. Bottom row outputs 
 A source of chaotic modulation using systems of differential equations such as the Lorenz System
 Users have the x, y, and z values of the output of each attractor model available as CV outputs, as well as 3 gate signals related to the relationships between these values
 
-### [Turing Machine](/software/contrib/turing_machine.md))
+### [Turing Machine](/software/contrib/turing_machine.md)
 A script meant to recreate the [Music Thing Modular Turning Machine Random Sequencer](https://musicthing.co.uk/pages/turing.html)
 as faithfully as possible on the EuroPi hardware.
