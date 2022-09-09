@@ -5,39 +5,39 @@ directory, specifically [the section on contrib scripts](/contributing.md#contri
 
 # List of current scripts
 
-### Bernoulli Gates [[documentation]](/software/contrib/bernoulli_gates.md) [[script]](/software/contrib/bernoulli_gates.py) 
+### Bernoulli Gates \[ [[documentation](/software/contrib/bernoulli_gates.md) | [script](/software/contrib/bernoulli_gates.py) \]
 A probability script based on Mutable Instruments Branches
 Two channels of probability based routing, where the digital input will be routed to one of two outputs based on a weighted random chance, controlled by a knob per channel, and the analogue input for channel 1
 
-### Coin Toss [[documentation]](/software/contrib/coin_toss.md) [[script]](/software/contrib/coin_toss.py)
+### Coin Toss \[ [documentation](/software/contrib/coin_toss.md) | [script](/software/contrib/coin_toss.py) \]
 A probability utility with an output based on a percentage choice between 1 or 0
 Using the threshold knob and analogue input, users can determine whether a 1 or a 0 is preferred by the weighted random choice each time the digital input is triggered, or an internal clock depending on the mode
 
-### Consequencer [[documentation]](/software/contrib/consequencer.md) [[script]](/software/contrib/consequencer.md)
+### Consequencer \[ [documentation](/software/contrib/consequencer.md) | [script](/software/contrib/consequencer.md) \]
 A gate and CV sequencer inspired by Mutable Instruments Grids and the Music Thing Modular Turing Machine
 Users can morph between patterns and CV sequences during operation, with 3 gate and 3 CV outputs based on the current pattern, programmed randomness, and CV input, running from an external clock
 
-### CVecorder [[documentation]](/software/contrib/cvecorder.md) [[script]](/software/contrib/cvecorder.py)
+### CVecorder \[ [documentation](/software/contrib/cvecorder.md) | [script](/software/contrib/cvecorder.py) \]
 6 channels of control voltage recording
 Record 6 banks of 6 channels of control voltage, and then play them back at a consistent rate set by an external clock.
 Recording of CV can be primed so that you can record a movement without missing a beat
 
-### Diagnostic [[documentation]](/software/contrib/diagnostic.md) [[script]](/software/contrib/diagnostic.py)
+### Diagnostic \[ [documentation](/software/contrib/diagnostic.md) | [script](/software/contrib/diagnostic.py) \]
 Test the hardware of the module
 The values of all inputs are shown on the display, and the outputs are set to fixed voltages.
 Users can rotate the outputs to ensure they each output the same voltage when sent the same instruction from the script
 
-### Hamlet [[documentation]](/software/contrib/hamlet.md) [[script]](/software/contrib/hamlet.py)
+### Hamlet \[ [documentation](/software/contrib/hamlet.md) | [script](/software/contrib/hamlet.py) \]
 A variation of the Consequencer script specifically geared towards driving voices
 2pairs of gate and CV outputs are available to drive two voices, as well as 2 drum gate outputs.
 As with the consequencer, the patterns can be smoothly morphed between while performing
 
-### Harmonic LFOs [[documentation]](/software/contrib/harmonic_lfos.md) [[script]](/software/contrib/harmonic_lfos.py)
+### Harmonic LFOs \[ [documentation](/software/contrib/harmonic_lfos.md) | [script](/software/contrib/harmonic_lfos.py) \]
 6 tempo-related LFOs with adjustable wave shape
 Users can run up to 6 LFOs with one internal master clock, with wave shapes of either sine, saw, square, semi-random, or off.
 The division of the master clock that each LFO runs at, as well as each of their wave shapes, can be adjusted during operation
 
-### Hello World [[script]](/software/contrib/hello_world.py)
+### Hello World \[ [script](/software/contrib/hello_world.py) \]
 An example script for the menu system
 This script can be copied and altered as a starting point for your own scripts that are to be menu compatible, and make use of the save state functionality
 
@@ -68,7 +68,7 @@ An oscilloscope script to monitor the analogue and digital inputs
 The current values of the analogue and digital inputs are displayed in an oscilloscope style on the OLED display, and copies of both signals, as well as an inverted gate signal, are available from the CV outputs
 
 ### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
-Random cv with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw
+Random CV with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw. 
 3 random or analog input s&h voltages with changable slew smoothness. New voltages assigned upon each digital input trigger. Top row outputs move
 towards target voltage according to slew rate set by knob 1. Bottom row outputs immediately change to new target voltage.
 
