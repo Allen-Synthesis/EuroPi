@@ -42,9 +42,9 @@ class EuroPiScript:
         * No externally influenced input - The instance variables your script saves should not be externally influenced, meaning you should not save the current knob position, current analog input value or current digital input value.
 
     To add the ability to save and load state, you must:
-        
+
         1. **Initialize base classes** When implementing the ``EuroPiScript`` base class, its initialization method must be called to initialize its intance variables.
-        
+
         2. **Call the inherited EuroPiScript method load_state_X().** The ``EuroPiScript`` base class has ``load_state_X()`` methods to check for a previously saved state of a specific format. When initializing your script, call ``load_state_X()`` where ``X`` is the persistance format of choice. If no state is found, an empty value will be returned.
 
         3. **Apply saved state variables to this instance.** Set state variables with default fallback values if not found in the json save state.
@@ -75,7 +75,7 @@ class EuroPiScript:
                     if self.enabled:
                         self.counter += 1
                         self.save_state()  # 4
-                
+
                 @b1.handler
                 def toggle_enablement():
                     self.enabled = not self.enabled
@@ -91,7 +91,7 @@ class EuroPiScript:
                     "enabled": self.enabled,
                 }
                 self.save_state_json(state)
-            
+
             def main(self):
                 oled.centre_text("Hello world")
 
@@ -127,10 +127,10 @@ class EuroPiScript:
     @property
     def _state_filename(self):
         return f"saved_state_{self.__class__.__qualname__}.txt"
-    
+
     def save_state(self):
         """Encode state and call the appropriate persistence save method.
-        
+
         Override this class with the script specific encoding of state into
         the persistence format that best matches its use case. Then call the
         appropriate save method, such as `save_state_json(state)`. See the
@@ -140,7 +140,7 @@ class EuroPiScript:
 
     def save_state_str(self, state: str):
         """Take state in persistence format as a string and write to disk.
-        
+
         .. note::
             Be mindful of how often `save_state_str()` is called because
             writing to disk too often can slow down the performance of your
@@ -158,7 +158,7 @@ class EuroPiScript:
             script. Only call save state when state has changed and consider
             adding a time since last save check to reduce save frequency.
         """
-        return self._save_state(state, mode='wb')
+        return self._save_state(state, mode="wb")
 
     def save_state_json(self, state: dict):
         """Take state as a dict and save as a json string.
@@ -172,14 +172,14 @@ class EuroPiScript:
         json_str = json.dumps(state)
         return self._save_state(json_str)
 
-    def _save_state(self, state: str, mode: str ='w'):
+    def _save_state(self, state: str, mode: str = "w"):
         with open(self._state_filename, mode) as file:
             file.write(state)
         self._last_saved = ticks_ms()
 
     def load_state_str(self) -> str:
         """Check disk for saved state, if it exists, return the raw state value as a string.
-        
+
         Check for a previously saved state. If it exists, return state as a
         string. If no state is found, an empty string will be returned.
         """
@@ -187,7 +187,7 @@ class EuroPiScript:
 
     def load_state_bytes(self) -> bytes:
         """Check disk for saved state, if it exists, return the raw state value as bytes.
-        
+
         Check for a previously saved state. If it exists, return state as a
         byte string. If no state is found, an empty string will be returned.
         """
@@ -208,7 +208,7 @@ class EuroPiScript:
             print(f"Unable to decode {json_str}: {e}")
             return {}
 
-    def _load_state(self, mode: str ='r') -> any:
+    def _load_state(self, mode: str = "r") -> any:
         try:
             with open(self._state_filename, mode) as file:
                 return file.read()
@@ -221,7 +221,7 @@ class EuroPiScript:
             os.remove(self._state_filename)
         except OSError:
             pass
-    
+
     def last_saved(self):
         """Return the ticks in milliseconds since last save."""
         try:

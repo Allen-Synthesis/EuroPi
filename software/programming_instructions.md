@@ -113,3 +113,19 @@ If you do not wish to calibrate the module and don't mind your voltages being sl
 7. Once you have connected the analogue input to CV output 1, press button 1
 8. Wait for each voltage up to 10V to complete. The module will tell you once it has completed.
 9. The calibration process is now complete! You now need to rename or delete the 'calibrate.py' program, however DO NOT delete the new file created called 'calibration_values.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
+
+
+# Programming Limitations
+
+As with all hardware, the EuroPi has certain limitations. Some are more obvious and are required knowledge for any user, and some are more in depth and are only relevant if you will be programming the module yourself.
+
+### Obvious Limitations
+- Analogue input is only 0-10V
+- Digital input can only detect signals above 0.7V (meaning it may trigger accidentally if you have a noisy 'low' state)
+- Outputs, analogue input, and knobs, have a maximum resolution of 12 bits (4096 steps)
+- Debouncing of the buttons means that very fast double presses may not be detected
+
+### In Depth Limitations
+- Clock pulses shorter than approximately 0.01s (10ms) will not be reliably detected (this depends on clock speed too)
+- Reading any analogue source, either the analogue input or knobs, will result in a slight delay of the script (this can be reduced by using fewer samples, at the cost of accuracy)
+

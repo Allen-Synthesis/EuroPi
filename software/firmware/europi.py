@@ -13,6 +13,7 @@ For example::
 
 Will set the CV output 3 to a voltage of 4.5V.
 """
+import sys
 import time
 
 from machine import ADC
@@ -22,18 +23,29 @@ from machine import Pin
 
 from ssd1306 import SSD1306_I2C
 
-try:
-    import micropython
-    TEST_ENV = False # We're in micropython, so we can assume access to real hardware
-except ModuleNotFoundError:
-    TEST_ENV = True # This var is set when we don't have any real hardware, for example in a test or doc generation setting
+if sys.implementation.name == "micropython":
+    TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
+else:
+    TEST_ENV = True  # This var is set when we don't have any real hardware, for example in a test or doc generation setting
 
 try:
     from calibration_values import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
 except ImportError:
     # Note: run calibrate.py to get a more precise calibration.
-    INPUT_CALIBRATION_VALUES=[384, 44634]
-    OUTPUT_CALIBRATION_VALUES = [0, 6300, 12575, 19150, 25375, 31625, 38150, 44225, 50525, 56950, 63475]
+    INPUT_CALIBRATION_VALUES = [384, 44634]
+    OUTPUT_CALIBRATION_VALUES = [
+        0,
+        6300,
+        12575,
+        19150,
+        25375,
+        31625,
+        38150,
+        44225,
+        50525,
+        56950,
+        63475,
+    ]
 
 
 # OLED component display dimensions.
@@ -61,6 +73,7 @@ CHAR_HEIGHT = 8
 
 # Helper functions.
 
+
 def clamp(value, low, high):
     """Returns a value that is no lower than 'low' and no higher than 'high'."""
     return max(min(value, high), low)
@@ -76,6 +89,7 @@ def reset_state():
 
 # Component classes.
 
+
 class AnalogueReader:
     """A base class for common analogue read methods.
 
@@ -84,6 +98,7 @@ class AnalogueReader:
     """
 
     def __init__(self, pin, samples=DEFAULT_SAMPLES):
+        self.pin_id = pin
         self.pin = ADC(Pin(pin))
         self.set_samples(samples)
 
@@ -97,8 +112,7 @@ class AnalogueReader:
     def set_samples(self, samples):
         """Override the default number of sample reads with the given value."""
         if not isinstance(samples, int):
-            raise ValueError(
-                f"set_samples expects an int value, got: {samples}")
+            raise ValueError(f"set_samples expects an int value, got: {samples}")
         self._samples = samples
 
     def percent(self, samples=None):
@@ -111,7 +125,7 @@ class AnalogueReader:
             raise ValueError(f"range expects an int value, got: {steps}")
         percent = self.percent(samples)
         if int(percent) == 1:
-            return steps -1
+            return steps - 1
         return int(percent * steps)
 
     def choice(self, values, samples=None):
@@ -140,6 +154,7 @@ class AnalogueInput(AnalogueReader):
     processor won't bog down until you get way up into the thousands if you
     wan't incredibly accurate (but quite slow) readings.
     """
+
     def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
         super().__init__(pin)
         self.MIN_VOLTAGE = min_voltage
@@ -147,10 +162,11 @@ class AnalogueInput(AnalogueReader):
         self._gradients = []
         for index, value in enumerate(INPUT_CALIBRATION_VALUES[:-1]):
             try:
-                self._gradients.append(1 / (INPUT_CALIBRATION_VALUES[index+1] - value))
+                self._gradients.append(1 / (INPUT_CALIBRATION_VALUES[index + 1] - value))
             except ZeroDivisionError:
                 raise Exception(
-                    "The input calibration process did not complete properly. Please complete again with rack power turned on")
+                    "The input calibration process did not complete properly. Please complete again with rack power turned on"
+                )
         self._gradients.append(self._gradients[-1])
 
     def percent(self, samples=None):
@@ -169,8 +185,7 @@ class AnalogueInput(AnalogueReader):
             cv = 10 * (reading / INPUT_CALIBRATION_VALUES[-1])
         else:
             index = int(percent * (len(INPUT_CALIBRATION_VALUES) - 1))
-            cv = index + (self._gradients[index] *
-                          (reading - INPUT_CALIBRATION_VALUES[index]))
+            cv = index + (self._gradients[index] * (reading - INPUT_CALIBRATION_VALUES[index]))
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
@@ -228,6 +243,7 @@ class DigitalReader:
     not need to be used by user scripts.
 
     """
+
     def __init__(self, pin, debounce_delay=500):
         self.pin = Pin(pin, Pin.IN)
         self.debounce_delay = debounce_delay
@@ -258,7 +274,11 @@ class DigitalReader:
             self.last_falling_ms = time.ticks_ms()
 
             # Check if 'other' pin is set and if 'other' pins is high and if this pin has been high for long enough.
-            if self._other and self._other.value() and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500:
+            if (
+                self._other
+                and self._other.value()
+                and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500
+            ):
                 return self._both_handler()
 
             return self._falling_handler()
@@ -328,6 +348,7 @@ class DigitalInput(DigitalReader):
     to change behavior based on the altered state. See `tips <https://docs.micropython.org/en/latest/reference/isr_rules.html#tips-and-recommended-practices>`_
     from the MicroPython documentation for more details.
     """
+
     def __init__(self, pin, debounce_delay=0):
         super().__init__(pin, debounce_delay)
 
@@ -361,6 +382,7 @@ class Button(DigitalReader):
     triggered with the ``DigitalInput.last_triggered()`` method.
 
     """
+
     def __init__(self, pin, debounce_delay=200):
         super().__init__(pin, debounce_delay)
 
@@ -380,13 +402,22 @@ class Display(SSD1306_I2C):
     you to perform more complicated graphics without slowing your program, or
     to perform the calculations for other functions, but only update the
     display every few steps to prevent lag.
-    
+
     To clear the display, simply fill the display with the colour black by using ``oled.fill(0)``
 
     More explanations and tips about the the display can be found in the oled_tips file
     `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
     """
-    def __init__(self, sda, scl, width=OLED_WIDTH, height=OLED_HEIGHT, channel=I2C_CHANNEL, freq=I2C_FREQUENCY):
+
+    def __init__(
+        self,
+        sda,
+        scl,
+        width=OLED_WIDTH,
+        height=OLED_HEIGHT,
+        channel=I2C_CHANNEL,
+        freq=I2C_FREQUENCY,
+    ):
         i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
         self.height = height
@@ -394,7 +425,8 @@ class Display(SSD1306_I2C):
         if len(i2c.scan()) == 0:
             if not TEST_ENV:
                 raise Exception(
-                    "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly")
+                    "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
+                )
 
         super().__init__(self.width, self.height, i2c)
 
@@ -404,11 +436,10 @@ class Display(SSD1306_I2C):
         # Default font is 8x8 pixel monospaced font which can be split to a
         # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
         # for readability.
-        lines = str(text).split('\n')
+        lines = str(text).split("\n")
         maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
-            raise Exception(
-                "Provided text exceeds available space on oled display.")
+            raise Exception("Provided text exceeds available space on oled display.")
 
         padding_top = (self.height - (len(lines) * 9)) / 2
         for index, content in enumerate(lines):
@@ -428,6 +459,7 @@ class Output:
     resistor values actually give you a range of about 0-10.5V, which is why
     calibration is important if you want to be able to output precise voltages.
     """
+
     def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
         self.pin = PWM(Pin(pin))
         # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
@@ -438,9 +470,8 @@ class Output:
 
         self._gradients = []
         for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
-            self._gradients.append(OUTPUT_CALIBRATION_VALUES[index+1] - value)
+            self._gradients.append(OUTPUT_CALIBRATION_VALUES[index + 1] - value)
         self._gradients.append(self._gradients[-1])
-
 
     def _set_duty(self, cycle):
         cycle = int(cycle)
@@ -453,8 +484,8 @@ class Output:
             return self._duty / MAX_UINT16
 
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
-        index = int(voltage//1)
-        self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (self._gradients[index]*(voltage%1)))
+        index = int(voltage // 1)
+        self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (self._gradients[index] * (voltage % 1)))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
