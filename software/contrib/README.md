@@ -101,7 +101,6 @@ as faithfully as possible on the EuroPi hardware.
 
 <i>Contributors: [mjaskula](https://github.com/mjaskula), [awonak](https://github.com/awonak)</i>
 <br><i>Labels: sequencer, random, triggers</i>
-<br><br>
 
 ---
 
