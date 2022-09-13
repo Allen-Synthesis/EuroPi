@@ -270,7 +270,7 @@ class MasterClockInner(EuroPiScript):
             else:
                 cvs[idx].value(randint(0, 1))
 
-        # advance/reset clock step, resetting at the maximum configured division
+        # advance/reset clock step, resetting at the lowest common multiple
         if self.step < self.lcm(self.outputDivisions):
             self.step += 1
         else:
