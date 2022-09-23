@@ -231,9 +231,10 @@ class EuroPiScript:
 
     @classmethod
     def _config_filename(cls):
-        return f"config_{cls.__qualname__}.json"
+        return f"config/config_{cls.__qualname__}.json"
 
-    def _save_config(self, data: dict):
+    @classmethod
+    def _save_config(cls, data: dict):
         """Take config as a dict and save to this class's config file.
 
         .. note::
@@ -243,7 +244,11 @@ class EuroPiScript:
             adding a time since last save check to reduce save frequency.
         """
         json_str = json.dumps(data)
-        with open(self._config_filename(), "w") as file:
+        try:
+            os.mkdir("config")
+        except OSError:
+            pass
+        with open(cls._config_filename(), "w") as file:
             file.write(json_str)
 
     @classmethod
@@ -253,10 +258,13 @@ class EuroPiScript:
         config_points = cls._build_config_points()
         if len(config_points):
             data = cls._load_file(cls._config_filename())
+            config = config_points.default_config()
             if not data:
-                return config_points.default_config()
+                return config
             else:
-                return cls._load_json_data(data)
+                saved_config = cls._load_json_data(data)
+                config.update(saved_config)
+                return config
         else:
             return {}
 

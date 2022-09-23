@@ -12,7 +12,9 @@ class ScriptForTesting(EuroPiScript):
 class ScriptForTestingWithConfig(EuroPiScript):
     @classmethod
     def config_points(cls, config_builder: ConfigPointsBuilder):
-        return config_builder.with_choice(name="a", choices=[5, 6], default=5)
+        return config_builder.with_choice(name="a", choices=[5, 6], default=5).with_choice(
+            name="b", choices=[7, 8], default=7
+        )
 
 
 @pytest.fixture
@@ -63,7 +65,7 @@ def test_save_load_state_bytes(script_for_testing):
 
 
 def test_config_file_name(script_for_testing):
-    assert script_for_testing._config_filename() == "config_ScriptForTesting.json"
+    assert script_for_testing._config_filename() == "config/config_ScriptForTesting.json"
 
 
 def test_load_config_no_config(script_for_testing):
@@ -71,13 +73,22 @@ def test_load_config_no_config(script_for_testing):
 
 
 def test_load_config_defaults(script_for_testing_with_config):
-    assert script_for_testing_with_config._load_config() == {"a": 5}
+    assert script_for_testing_with_config._load_config() == {"a": 5, "b": 7}
 
 
 def test_save_and_load_saved_config(script_for_testing_with_config):
+    script_for_testing_with_config._save_config({"a": 6, "b": 8})
+
+    with open(script_for_testing_with_config._config_filename(), "r") as f:
+        assert f.read() == '{"a": 6, "b": 8}'
+
+    assert script_for_testing_with_config._load_config() == {"a": 6, "b": 8}
+
+
+def test_load_config_with_fallback_to_defaults(script_for_testing_with_config):
     script_for_testing_with_config._save_config({"a": 6})
 
     with open(script_for_testing_with_config._config_filename(), "r") as f:
         assert f.read() == '{"a": 6}'
 
-    assert script_for_testing_with_config._load_config() == {"a": 6}
+    assert script_for_testing_with_config._load_config() == {"a": 6, "b": 7}
