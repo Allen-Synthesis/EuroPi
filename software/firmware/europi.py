@@ -23,6 +23,8 @@ from machine import Pin
 
 from ssd1306 import SSD1306_I2C
 
+from version import __version__
+
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
 else:
@@ -86,6 +88,9 @@ def reset_state():
     [cv.off() for cv in cvs]
     [d.reset_handler() for d in (b1, b2, din)]
 
+def bootsplash():
+    """Display the EuroPi version when booting."""
+    oled.centre_text("EuroPi ver:\n{}".format(__version__))
 
 # Component classes.
 
@@ -529,3 +534,4 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Reset the module state upon import.
 reset_state()
+bootsplash()
