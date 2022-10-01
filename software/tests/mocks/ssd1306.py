@@ -16,3 +16,6 @@ class SSD1306_I2C:
 
     def text(self, *args):
         pass
+
+    def show(self, *args):
+        pass
