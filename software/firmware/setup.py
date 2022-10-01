@@ -1,7 +1,7 @@
 from setuptools import setup
 
-__version__ = ''
-exec(open('./version.py').read())
+__version__ = ""
+exec(open("./version.py").read())
 
 setup(
     name="micropython-europi",
