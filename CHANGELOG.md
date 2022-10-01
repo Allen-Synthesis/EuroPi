@@ -1,14 +1,29 @@
 # Change Log
 
-### 2022-06-
+### 2022-08-28
 
-- [api] New experimental package added including `LockableKnob` and `KnobBank`
-- [New Script] Turing Machine
+- [Release] version 0.6.1
+- [Bug Fix] Add new `experimental` package to firmware setup.py (https://github.com/Allen-Synthesis/EuroPi/issues/164)
+
+### 2022-08-28
+
+- [Release] version 0.6.0
+- [New Script] Turing Machine  (https://github.com/Allen-Synthesis/EuroPi/pull/114)
+- [New Script] Smooth random voltages  (https://github.com/Allen-Synthesis/EuroPi/pull/153)
+- [New Script] Probapoly - polyrhythmic gate patterns  (https://github.com/Allen-Synthesis/EuroPi/pull/161)
+- [Bug Fix] Consequencer - Added probability-based steps in patterns  (https://github.com/Allen-Synthesis/EuroPi/pull/158)
+- [Bug Fix] Consequencer - Increased reset_timeout to allow for slower BPMs  (https://github.com/Allen-Synthesis/EuroPi/pull/158)
+- [Bug Fix] Strange Attractor - init save state  (https://github.com/Allen-Synthesis/EuroPi/pull/157)
+- [Bug Fix] CVecorder - Updated loading screen to show progress to avoid a perception of a hang during load  (https://github.com/Allen-Synthesis/EuroPi/pull/161)
+- [Bug Fix] CVecorder - Reduced number of save-state loading retries for faster loading  (https://github.com/Allen-Synthesis/EuroPi/pull/161)
+- [Bug Fix] CVecorder - Fixed bug that caused recordings to be buggy if no save state file was found  (https://github.com/Allen-Synthesis/EuroPi/pull/161)
+- [API] New experimental package added including `LockableKnob` and `KnobBank`  (https://github.com/Allen-Synthesis/EuroPi/pull/155)
+- [Other] Add .vscode to gitignore to ignore user IDE settings
 
 ### 2022-05-24
 
 - [Release] version 0.5.0
-- [New Script] PolySquare 6 oscillator contrib script #141
+- [New Script] PolySquare 6 oscillator contrib script https://github.com/Allen-Synthesis/EuroPi/pull/141
 - [Bug Fix] Updated display to show pattern number, decrease loading times #146
 - [Bug Fix] Cvecorder bank clear remediation #139,
 - [Documentation] Contributing updates #138, #125
