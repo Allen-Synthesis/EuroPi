@@ -21,6 +21,12 @@ from machine import I2C
 from machine import PWM
 from machine import Pin
 
+# Overclock the Pico for improved performance.
+from machine import freq
+
+freq(250_000_000)
+# freq(125_000_000)  # Default clock speed.
+
 from ssd1306 import SSD1306_I2C
 
 from version import __version__
