@@ -448,7 +448,7 @@ class Display(SSD1306_I2C):
         for index, content in enumerate(lines):
             y_offset = int((index * 9) + padding_top) - 1
             self.centered_text_line(content, y_offset)
-        oled.show()
+        self.show()
 
     def centered_text_line(self, text, y, color=1):
         """Displays the given text horizontally centered on its line"""
