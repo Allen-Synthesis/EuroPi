@@ -450,13 +450,13 @@ class Display(SSD1306_I2C):
             self.centered_text_line(content, y_offset)
         oled.show()
 
-    def centered_text_line(self, s, y, color=1):
-        """Displays the given text centered on its line"""
-        x_offset = int((self.width - ((len(s) + 1) * 7)) / 2) - 1
-        self.text(s, x_offset, y, color)
+    def centered_text_line(self, text, y, color=1):
+        """Displays the given text horizontally centered on its line"""
+        x_offset = int((self.width - ((len(text) + 1) * 7)) / 2) - 1
+        self.text(text, x_offset, y, color)
 
     def arrow(self, y, x=2, direction="left", size=4, color=1):
-        """Display an arrow of the desired size and color pointing left or right"""
+        """Displays an arrow of the desired size and color pointing left or right"""
         for i in range(size):
             xi = x + i if direction == "left" else self.width - x - i
             self.line(xi, y - i, xi, y + i, color)
