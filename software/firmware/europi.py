@@ -70,6 +70,10 @@ MAX_OUTPUT_VOLTAGE = 10
 CHAR_WIDTH = 8
 CHAR_HEIGHT = 8
 
+# Digital input and output binary values.
+HIGH = 1
+LOW = 0
+
 
 # Helper functions.
 
@@ -262,33 +266,32 @@ class DigitalReader:
 
     def _bounce_wrapper(self, pin):
         """IRQ handler wrapper for falling and rising edge callback functions."""
-        if self.value() == 1:
+        if self.value() == HIGH:
             if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) < self.debounce_delay:
                 return
             self.last_rising_ms = time.ticks_ms()
             return self._rising_handler()
 
-        elif self.value() == 0:
-            if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
-                return
-            self.last_falling_ms = time.ticks_ms()
+        if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
+            return
+        self.last_falling_ms = time.ticks_ms()
 
-            # Check if 'other' pin is set and if 'other' pins is high and if this pin has been high for long enough.
-            if (
-                self._other
-                and self._other.value()
-                and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500
-            ):
-                return self._both_handler()
+        # Check if 'other' pin is set and if 'other' pins is high and if this pin has been high for long enough.
+        if (
+            self._other
+            and self._other.value()
+            and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500
+        ):
+            return self._both_handler()
 
-            return self._falling_handler()
+        return self._falling_handler()
 
     def value(self):
         """The current binary value, HIGH (1) or LOW (0)."""
         # Both the digital input and buttons are normally high, and 'pulled'
-        # low when on, so this is flipped to be more intuitive (1 when on, 0
-        # when off)
-        return 1 - self.pin.value()
+        # low when on, so this is flipped to be more intuitive
+        # (high when on, low when off)
+        return LOW if self.pin.value() else HIGH
 
     def handler(self, func):
         """Define the callback function to call when rising edge detected."""
@@ -504,7 +507,7 @@ class Output:
 
     def value(self, value):
         """Sets the output to 0V or 5V based on a binary input, 0 or 1."""
-        if value == 1:
+        if value == HIGH:
             self.on()
         else:
             self.off()
