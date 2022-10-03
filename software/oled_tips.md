@@ -34,12 +34,12 @@ The reason this isn't automatic is because the actual .show() method is quite CP
 There are also some methods provided in the EuroPi library, which are designed to make certain common uses of the OLED easier.  
 These can be accessed the same way as the predefined methods listed above, and you can even add your own to your own europi.py file if you wish.
 
-| Method             | Parameters                   | Function                                                                                                      |
-|--------------------|------------------------------|---------------------------------------------------------------------------------------------------------------|
-| centre_text        | string                       | Takes a string of up to 3 lines separated by '\n', and displays them centred vertically and horizontally      |
-| centered_text_line | string, y, color             | Centers a single line of text horizontally                                                                    |
-| arrow              | x, y, direction, size, color | Draws an arrow of the desired size and color pointing left, right, top or bottom                              |
-| clear              |                              | Clear the display upon calling this method. If you just need to clear the display buffer, use `oled.fill(0)`. |
+| Method            | Parameters                    | Function                                                                                                      |
+|-------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------|
+| centre_text       | string                        | Takes a string of up to 3 lines separated by '\n', and displays them centred vertically and horizontally      |
+| centred_text_line | string, y, colour             | Centers a single line of text horizontally                                                                    |
+| arrow             | x, y, direction, size, colour | Draws an arrow of the desired size and colour pointing left, right, top or bottom                             |
+| clear             |                               | Clear the display upon calling this method. If you just need to clear the display buffer, use `oled.fill(0)`. |
 
 ### `centre_text` example
 

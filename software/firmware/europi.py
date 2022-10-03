@@ -455,13 +455,13 @@ class Display(SSD1306_I2C):
             self.centered_text_line(content, y_offset)
         self.show()
 
-    def centered_text_line(self, text, y, color=1):
+    def centred_text_line(self, text, y, colour=1):
         """Displays the given text horizontally centered on its line."""
         x_offset = int((self.width - ((len(text) + 1) * 7)) / 2) - 1
-        self.text(text, x_offset, y, color)
+        self.text(text, x_offset, y, colour)
 
-    def arrow(self, x, y, direction=None, size=4, color=1):
-        """Displays an arrow of the desired size and color pointing left, right, top or bottom.
+    def arrow(self, x, y, direction=None, size=4, colour=1):
+        """Displays an arrow of the desired size and colour pointing left, right, top or bottom.
         Use the class constants DIRECTION_LEFT, DIRECTION_RIGHT, DIRECTION_TOP and DIRECTION_BOTTOM
         to set the direction."""
         direction = self.DIRECTION_LEFT if direction is None else direction
@@ -469,13 +469,13 @@ class Display(SSD1306_I2C):
         if direction in [self.DIRECTION_LEFT, self.DIRECTION_RIGHT]:
             for i in range(size):
                 xi = x + i if direction == self.DIRECTION_LEFT else self.width - x - i - 1
-                self.line(xi, y - i, xi, y + i, color)
+                self.line(xi, y - i, xi, y + i, colour)
 
             return
 
         for i in range(size):
             yi = y + i if direction == self.DIRECTION_TOP else self.height - y - i - 1
-            self.line(x + i, yi, x - i, yi, color)
+            self.line(x + i, yi, x - i, yi, colour)
 
 
 class Output:
