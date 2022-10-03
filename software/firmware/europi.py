@@ -412,6 +412,11 @@ class Display(SSD1306_I2C):
     `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
     """
 
+    DIRECTION_LEFT = 0
+    DIRECTION_RIGHT = 1
+    DIRECTION_TOP = 2
+    DIRECTION_BOTTOM = 3
+
     def __init__(
         self,
         sda,
@@ -451,15 +456,26 @@ class Display(SSD1306_I2C):
         self.show()
 
     def centered_text_line(self, text, y, color=1):
-        """Displays the given text horizontally centered on its line"""
+        """Displays the given text horizontally centered on its line."""
         x_offset = int((self.width - ((len(text) + 1) * 7)) / 2) - 1
         self.text(text, x_offset, y, color)
 
-    def arrow(self, y, x=2, direction="left", size=4, color=1):
-        """Displays an arrow of the desired size and color pointing left or right"""
+    def arrow(self, x, y, direction=None, size=4, color=1):
+        """Displays an arrow of the desired size and color pointing left, right, top or bottom.
+        Use the class constants DIRECTION_LEFT, DIRECTION_RIGHT, DIRECTION_TOP and DIRECTION_BOTTOM
+        to set the direction."""
+        direction = self.DIRECTION_LEFT if direction is None else direction
+
+        if direction in [self.DIRECTION_LEFT, self.DIRECTION_RIGHT]:
+            for i in range(size):
+                xi = x + i if direction == self.DIRECTION_LEFT else self.width - x - i - 1
+                self.line(xi, y - i, xi, y + i, color)
+
+            return
+
         for i in range(size):
-            xi = x + i if direction == "left" else self.width - x - i
-            self.line(xi, y - i, xi, y + i, color)
+            yi = y + i if direction == self.DIRECTION_TOP else self.height - y - i - 1
+            self.line(x + i, yi, x - i, yi, color)
 
 
 class Output:

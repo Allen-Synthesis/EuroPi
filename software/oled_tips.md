@@ -38,7 +38,7 @@ These can be accessed the same way as the predefined methods listed above, and y
 |--------------------|------------------------------|---------------------------------------------------------------------------------------------------------------|
 | centre_text        | string                       | Takes a string of up to 3 lines separated by '\n', and displays them centred vertically and horizontally      |
 | centered_text_line | string, y, color             | Centers a single line of text horizontally                                                                    |
-| arrow              | y, x, direction, size, color | Draws an arrow of the desired size and color pointing left or right                                           |
+| arrow              | x, y, direction, size, color | Draws an arrow of the desired size and color pointing left, right, top or bottom                              |
 | clear              |                              | Clear the display upon calling this method. If you just need to clear the display buffer, use `oled.fill(0)`. |
 
 ### `centre_text` example
@@ -54,3 +54,24 @@ oled.centre_text("this text\nhas been\ncentred")
 *OLED Result*
 
 ![imgur](https://i.imgur.com/Elljlt1.jpg)
+
+### `arrow` example
+
+*Python Program*
+
+```python
+from europi import *
+
+oled.fill(0)
+oled.arrow(0, 15)
+oled.arrow(0, 15, direction=oled.DIRECTION_RIGHT)
+oled.arrow(63, 0, direction=oled.DIRECTION_TOP)
+oled.arrow(63, 0, direction=oled.DIRECTION_BOTTOM)
+# Invert display to see exactly where the arrows start and end, you don't have to do that
+oled.invert(1)
+oled.show()
+```
+
+*OLED Result*
+
+![imgur](https://i.imgur.com/0qGkocG.jpeg)
