@@ -63,15 +63,17 @@ oled.centre_text("this text\nhas been\ncentred")
 from europi import *
 
 oled.fill(0)
+
 oled.arrow(0, 15)
-oled.arrow(0, 15, direction=oled.DIRECTION_RIGHT)
-oled.arrow(63, 0, direction=oled.DIRECTION_TOP)
-oled.arrow(63, 0, direction=oled.DIRECTION_BOTTOM)
-# Invert display to see exactly where the arrows start and end, you don't have to do that
+oled.arrow(0, 15, oled.DIRECTION_RIGHT, 16)
+oled.arrow(63, 0, oled.DIRECTION_TOP, 6)
+oled.arrow(63, 0, oled.DIRECTION_BOTTOM, 13)
+
+# Inverting display to see exactly where the arrows start and end, you don't have to do that
 oled.invert(1)
 oled.show()
 ```
 
 *OLED Result*
 
-![imgur](https://i.imgur.com/0qGkocG.jpeg)
+![imgur](https://i.imgur.com/pQIu4it.jpg)
