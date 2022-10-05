@@ -452,7 +452,7 @@ class Display(SSD1306_I2C):
         padding_top = (self.height - (len(lines) * 9)) / 2
         for index, content in enumerate(lines):
             y_offset = int((index * 9) + padding_top) - 1
-            self.centered_text_line(content, y_offset)
+            self.centred_text_line(content, y_offset)
         self.show()
 
     def centred_text_line(self, text, y, colour=1):
