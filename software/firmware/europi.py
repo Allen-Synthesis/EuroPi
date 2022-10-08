@@ -272,19 +272,20 @@ class DigitalReader:
             self.last_rising_ms = time.ticks_ms()
             return self._rising_handler()
 
-        if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
-            return
-        self.last_falling_ms = time.ticks_ms()
+        elif self.value() == LOW:
+            if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
+                return
+            self.last_falling_ms = time.ticks_ms()
 
-        # Check if 'other' pin is set and if 'other' pins is high and if this pin has been high for long enough.
-        if (
-            self._other
-            and self._other.value()
-            and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500
-        ):
-            return self._both_handler()
+            # Check if 'other' pin is set and if 'other' pins is high and if this pin has been high for long enough.
+            if (
+                self._other
+                and self._other.value()
+                and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500
+            ):
+                return self._both_handler()
 
-        return self._falling_handler()
+            return self._falling_handler()
 
     def value(self):
         """The current binary value, HIGH (1) or LOW (0)."""
