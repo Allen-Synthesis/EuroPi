@@ -20,12 +20,8 @@ from machine import ADC
 from machine import I2C
 from machine import PWM
 from machine import Pin
-
-# Overclock the Pico for improved performance.
 from machine import freq
 
-freq(250_000_000)
-# freq(125_000_000)  # Default clock speed.
 
 from ssd1306 import SSD1306_I2C
 
@@ -55,6 +51,8 @@ except ImportError:
         63475,
     ]
 
+# Pico machine CPU freq.
+CPU_FREQ = 250_000_000
 
 # OLED component display dimensions.
 OLED_WIDTH = 128
@@ -526,6 +524,8 @@ class Output:
             self.off()
 
 
+## Initialize EuroPi global singleton instance variables.
+
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(22)
 ain = AnalogueInput(26)
@@ -542,6 +542,10 @@ cv4 = Output(17)
 cv5 = Output(18)
 cv6 = Output(19)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
+
+# Overclock the Pico for improved performance.
+# Default clock speed is 125_000_000 (125mHz)
+freq(CPU_FREQ)
 
 # Reset the module state upon import.
 reset_state()
