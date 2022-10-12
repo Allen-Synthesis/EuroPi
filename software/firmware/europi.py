@@ -413,11 +413,6 @@ class Display(SSD1306_I2C):
     `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
     """
 
-    DIRECTION_LEFT = 0
-    DIRECTION_RIGHT = 1
-    DIRECTION_TOP = 2
-    DIRECTION_BOTTOM = 3
-
     def __init__(
         self,
         sda,
