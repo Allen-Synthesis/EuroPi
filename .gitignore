@@ -24,3 +24,5 @@ Temporary Items
 __pycache__
 venv
 .venv
+dist/
+*.egg-info/
