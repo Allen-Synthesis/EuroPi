@@ -19,3 +19,6 @@ class SSD1306_I2C:
 
     def show(self, *args):
         pass
+
+    def blit(self, *args):
+        pass
