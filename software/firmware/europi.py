@@ -31,7 +31,6 @@ if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
 else:
     TEST_ENV = True  # This var is set when we don't have any real hardware, for example in a test or doc generation setting
-
 try:
     from calibration_values import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
 except ImportError:
@@ -50,8 +49,6 @@ except ImportError:
         56950,
         63475,
     ]
-
-
 # OLED component display dimensions.
 OLED_WIDTH = 128
 OLED_HEIGHT = 32
@@ -93,16 +90,16 @@ def reset_state():
 
 def bootsplash():
     """Display the EuroPi version when booting."""
-    image = b'\x00\x00\x00\x01\xf0\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x02\x08\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x04\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\xc4\x04\x00\x18\x00\x00\x00p\x07\x00\x00\x00\x00\x00\x00\x0c$\x02\x00~\x0c\x18\xb9\x8c8\xc3\x00\x00\x00\x00\x00\x10\x14\x01\x00\xc3\x0c\x18\xc3\x060c\x00\x00\x00\x00\x00\x10\x0b\xc0\x80\x81\x8c\x18\xc2\x020#\x00\x00\x00\x00\x00 \x04\x00\x81\x81\x8c\x18\x82\x02 #\x00\x00\x00\x00\x00A\x8a|\x81\xff\x0c\x18\x82\x02 #\x00\x00\x00\x00\x00FJC\xc1\x80\x0c\x18\x82\x02 #\x00\x00\x00\x00\x00H\x898\x00\x80\x0c\x18\x83\x060c\x00\x00\x00\x00\x00S\x08\x87\x00\xc3\x060\x81\x8c8\xc3\x00\x00\x00\x00\x00d\x08\x00\xc0<\x01\xc0\x80p7\x03\x00\x00\x00\x00\x00X\x08p \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00#\x88H \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00L\xb8& \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\x91P\x11 \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\xa6\x91\x08\xa0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc9\x12\x84`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x12\x12C\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00$\x11 \x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00H\x0c\x90\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x12\x88\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00 \x12F\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x10A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10  \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08  \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04@@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc6\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x008\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    image = b"\x00\x00\x00\x01\xf0\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x02\x08\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x04\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\xc4\x04\x00\x18\x00\x00\x00p\x07\x00\x00\x00\x00\x00\x00\x0c$\x02\x00~\x0c\x18\xb9\x8c8\xc3\x00\x00\x00\x00\x00\x10\x14\x01\x00\xc3\x0c\x18\xc3\x060c\x00\x00\x00\x00\x00\x10\x0b\xc0\x80\x81\x8c\x18\xc2\x020#\x00\x00\x00\x00\x00 \x04\x00\x81\x81\x8c\x18\x82\x02 #\x00\x00\x00\x00\x00A\x8a|\x81\xff\x0c\x18\x82\x02 #\x00\x00\x00\x00\x00FJC\xc1\x80\x0c\x18\x82\x02 #\x00\x00\x00\x00\x00H\x898\x00\x80\x0c\x18\x83\x060c\x00\x00\x00\x00\x00S\x08\x87\x00\xc3\x060\x81\x8c8\xc3\x00\x00\x00\x00\x00d\x08\x00\xc0<\x01\xc0\x80p7\x03\x00\x00\x00\x00\x00X\x08p \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00#\x88H \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00L\xb8& \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\x91P\x11 \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\xa6\x91\x08\xa0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc9\x12\x84`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x12\x12C\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00$\x11 \x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00H\x0c\x90\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x12\x88\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00 \x12F\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x10A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10  \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08  \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04@@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc6\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x008\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     TH = bytearray(image)
-    fb = FrameBuffer(TH,128,32,MONO_HLSB)
-    oled.blit(fb,0,0)
-    
+    fb = FrameBuffer(TH, 128, 32, MONO_HLSB)
+    oled.blit(fb, 0, 0)
+
     version_str = str(__version__)
     version_length = len(version_str)
     offset = int(((150 - (version_length * CHAR_WIDTH)) / 2))
     oled.text(version_str, offset, 20, 1)
-    
+
     oled.show()
 
 
@@ -174,14 +171,18 @@ class AnalogueInput(AnalogueReader):
     wan't incredibly accurate (but quite slow) readings.
     """
 
-    def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
+    def __init__(
+        self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE
+    ):
         super().__init__(pin)
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
         self._gradients = []
         for index, value in enumerate(INPUT_CALIBRATION_VALUES[:-1]):
             try:
-                self._gradients.append(1 / (INPUT_CALIBRATION_VALUES[index + 1] - value))
+                self._gradients.append(
+                    1 / (INPUT_CALIBRATION_VALUES[index + 1] - value)
+                )
             except ZeroDivisionError:
                 raise Exception(
                     "The input calibration process did not complete properly. Please complete again with rack power turned on"
@@ -204,7 +205,9 @@ class AnalogueInput(AnalogueReader):
             cv = 10 * (reading / INPUT_CALIBRATION_VALUES[-1])
         else:
             index = int(percent * (len(INPUT_CALIBRATION_VALUES) - 1))
-            cv = index + (self._gradients[index] * (reading - INPUT_CALIBRATION_VALUES[index]))
+            cv = index + (
+                self._gradients[index] * (reading - INPUT_CALIBRATION_VALUES[index])
+            )
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
@@ -282,13 +285,18 @@ class DigitalReader:
     def _bounce_wrapper(self, pin):
         """IRQ handler wrapper for falling and rising edge callback functions."""
         if self.value() == 1:
-            if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) < self.debounce_delay:
+            if (
+                time.ticks_diff(time.ticks_ms(), self.last_rising_ms)
+                < self.debounce_delay
+            ):
                 return
             self.last_rising_ms = time.ticks_ms()
             return self._rising_handler()
-
         elif self.value() == 0:
-            if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
+            if (
+                time.ticks_diff(time.ticks_ms(), self.last_falling_ms)
+                < self.debounce_delay
+            ):
                 return
             self.last_falling_ms = time.ticks_ms()
 
@@ -299,7 +307,6 @@ class DigitalReader:
                 and time.ticks_diff(self.last_falling_ms, self.last_rising_ms) > 500
             ):
                 return self._both_handler()
-
             return self._falling_handler()
 
     def value(self):
@@ -446,7 +453,6 @@ class Display(SSD1306_I2C):
                 raise Exception(
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
                 )
-
         super().__init__(self.width, self.height, i2c)
 
     def centre_text(self, text):
@@ -459,7 +465,6 @@ class Display(SSD1306_I2C):
         maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
             raise Exception("Provided text exceeds available space on oled display.")
-
         padding_top = (self.height - (len(lines) * 9)) / 2
         for index, content in enumerate(lines):
             x_offset = int((self.width - ((len(content) + 1) * 7)) / 2) - 1
@@ -479,7 +484,9 @@ class Output:
     calibration is important if you want to be able to output precise voltages.
     """
 
-    def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
+    def __init__(
+        self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE
+    ):
         self.pin = PWM(Pin(pin))
         # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
         self.pin.freq(100_000)
@@ -501,10 +508,11 @@ class Output:
         """Set the output voltage to the provided value within the range of 0 to 10."""
         if voltage is None:
             return self._duty / MAX_UINT16
-
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
         index = int(voltage // 1)
-        self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (self._gradients[index] * (voltage % 1)))
+        self._set_duty(
+            OUTPUT_CALIBRATION_VALUES[index] + (self._gradients[index] * (voltage % 1))
+        )
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
