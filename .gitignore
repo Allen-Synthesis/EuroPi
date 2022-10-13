@@ -25,3 +25,5 @@ __pycache__
 venv
 .venv
 .idea
+dist/
+*.egg-info/
