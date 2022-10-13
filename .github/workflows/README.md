@@ -18,7 +18,7 @@ repositories. These distributions are described by the [`software/firmware/setup
 
 ### test.pypi.org
 
-Pushes to [test.pypi.org](https://test.pypi.org/project/micropython-europi/#history) occur on every commit in order to 
+Pushes to [test.pypi.org](https://test.pypi.org/project/micropython-europi/#history) occur on every commit in order to
 exercise the release process. Most of these will fail silently as a specific version can only be pushed to PyPi once.
 
 ### pypi.org
@@ -28,7 +28,7 @@ Pushes to the main [pypi.org](https://pypi.org/project/micropython-europi/#histo
 ### Release process
 
 1. Decide which version number to release.
-2. Update both `setup.py` files ([`software/firmware/setup.py`](software/firmware/setup.py) and [`software/setup.py`](software/setup.py)) with the new version number.
+2. Update [`software/firmware/version.py`](/software/firmware/version.py) with the new version number.
 3. Update [`changelog.md`](CHANGELOG.md) with a description of the release.
 4. Commit and push to `main`.
 5. Verify that the new release was pushed to [test.pypi.org](https://test.pypi.org/project/micropython-europi/#history). If it was not, look for errors associated with the commit on the [actions tab](https://github.com/Allen-Synthesis/EuroPi/actions). Commit new changes until a successful release is created.
