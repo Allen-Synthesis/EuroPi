@@ -1,4 +1,8 @@
 """See menu.md for details."""
+from europi import bootsplash
+
+bootsplash()
+
 from bootloader import BootloaderMenu
 
 from contrib.bernoulli_gates import BernoulliGates
