@@ -8,4 +8,3 @@ API
    europi_script
    ui
    experimental
-   experimental.knobs
