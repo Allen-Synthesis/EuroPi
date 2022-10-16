@@ -1,6 +1,6 @@
 from machine import ADC, Pin
 
-from europi import AnalogueReader, DigitalReader
+from europi import AnalogueReader, DigitalReader, Knob, MAX_UINT16, INPUT_CALIBRATION_VALUES
 
 
 class MockHardware:
