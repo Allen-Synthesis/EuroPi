@@ -11,25 +11,6 @@ def analogueReader():
 
 
 @pytest.mark.parametrize(
-    "percent, expected",
-    [
-        (0, 0.0000),
-        (0.1, 0.1000),
-        (0.25, 0.2500),
-        (0.3333, 0.3333),
-        (0.5, 0.5000),
-        (0.90, 0.9000),
-        (0.99, 0.99000),
-        (1, 1.0000),
-    ],
-)
-def test_set_percent(mockHardware: MockHardware, analogueReader, percent, expected):
-    mockHardware.set_percent(analogueReader, percent)
-
-    assert round(analogueReader.percent(), 4) == expected
-
-
-@pytest.mark.parametrize(
     "value, expected",
     [
         (0, 0.0000),

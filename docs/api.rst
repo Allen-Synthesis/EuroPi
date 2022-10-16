@@ -7,5 +7,3 @@ API
    europi
    europi_script
    ui
-   experimental
-   experimental.knobs
