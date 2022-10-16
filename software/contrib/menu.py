@@ -1,4 +1,8 @@
 """See menu.md for details."""
+from europi import bootsplash
+
+bootsplash()
+
 from bootloader import BootloaderMenu
 
 from contrib.bernoulli_gates import BernoulliGates
@@ -16,7 +20,6 @@ from contrib.poly_square import PolySquare
 from contrib.probapoly import Probapoly
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
-from contrib.turing_machine import TuringMachine
 from contrib.smooth_random_voltages import SmoothRandomVoltages
 from contrib.strange_attractor import StrangeAttractor
 from contrib.turing_machine import EuroPiTuringMachine
@@ -39,7 +42,6 @@ EUROPI_SCRIPT_CLASSES = [
     Probapoly,
     RadioScanner,
     Scope,
-    TuringMachine,
     SmoothRandomVoltages,
     StrangeAttractor,
     EuroPiTuringMachine,
