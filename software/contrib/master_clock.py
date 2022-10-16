@@ -251,7 +251,7 @@ class MasterClockInner(EuroPiScript):
     def lcm(self, li):
         lcm = 1
         for item in li:
-            lcm = lcm*item//self.computeGcd(lcm, item)
+            lcm = lcm*item//max(self.computeGcd(lcm, item), 1)
         return lcm
 
     ''' Triggered by main. Sends output pulses at required division '''
@@ -268,7 +268,7 @@ class MasterClockInner(EuroPiScript):
                         print(f'Task: {idx} is not done')
                     self.tasks[idx] = asyncio.create_task(self.outputPulse(cvs[idx]))
             else:
-                cvs[idx].value(randint(0, 1))
+                cvs[idx].off()
 
         # advance/reset clock step, resetting at the lowest common multiple
         if self.step < self.lcm(self.outputDivisions):
