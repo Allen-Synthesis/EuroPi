@@ -172,7 +172,7 @@ class MasterClockInner(EuroPiScript):
                 # update config value if k2 is unlocked
                 if self.k2Unlocked:
                     self.bpm = newBpm
-                    # calculate the new pulse widthin milliseconds based on the new bpm
+                    # calculate the new pulse width in milliseconds based on the new bpm
                     self.calcSleepTime()
                     self.getPulseWidth()
                     
@@ -243,6 +243,17 @@ class MasterClockInner(EuroPiScript):
         # Calc pulse width in milliseconds given the desired percentage. clamp ensures it is higher than MIN and lower than MAX
         self.pulseWidthMs = clamp((self.timeToSleepMs * (self.pulseWidthPercent)//100), self.MIN_PULSE_WIDTH, self.MAX_PULSE_WIDTH)
 
+    def computeGcd(self, x, y):
+        while(y):
+            x, y = y, x % y
+        return x
+
+    def lcm(self, li):
+        lcm = 1
+        for item in li:
+            lcm = lcm*item//self.computeGcd(lcm, item)
+        return lcm
+
     ''' Triggered by main. Sends output pulses at required division '''
     def clockTrigger(self):
 
@@ -259,8 +270,8 @@ class MasterClockInner(EuroPiScript):
             else:
                 cvs[idx].value(randint(0, 1))
 
-        # advance/reset clock step, resetting at the maximum configured division
-        if self.step < max(self.outputDivisions):
+        # advance/reset clock step, resetting at the lowest common multiple
+        if self.step < self.lcm(self.outputDivisions):
             self.step += 1
         else:
             self.completedCycles += 1
