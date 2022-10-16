@@ -81,7 +81,7 @@ class PresetManager(EuroPiScript):
                 self.old_k2 = k2.read_position(self.resolution)
             else:
                 if (
-                    abs(k2.read_position(self.resolution, 2048) - self.old_k2) > 4
+                    abs(k2.read_position(self.resolution, 512) - self.old_k2) > 4
                 ):  # k2 must change to allow value to be updated to prevent updating every value while scrolling
                     values[self.selected_preset] = k2.read_position(self.resolution)
         else:
