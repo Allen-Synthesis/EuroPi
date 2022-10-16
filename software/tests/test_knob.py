@@ -8,6 +8,22 @@ from mock_hardware import MockHardware
 @pytest.mark.parametrize(
     "value, expected",
     [
+        (1, 1.0000),
+        (0.75, 0.7500),
+        (0.66, 0.6600),
+        (0.5, 0.5000),
+        (0, 0.0000),
+    ],
+)
+def test_set_knob_percent(mockHardware: MockHardware, value, expected):
+    mockHardware.set_knob_percent(k1, value)
+
+    assert round(k1.percent(), 4) == expected
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
         (0, 1.0000),
         (MAX_UINT16 / 4, 0.7500),
         (MAX_UINT16 / 3, 0.6667),
