@@ -23,7 +23,7 @@ class PresetManager(EuroPiScript):
 
         self.old_k2 = 0
 
-        self.resolution = 128
+        self.resolution = 1000
 
         self.box_width = int(OLED_WIDTH / 3)
         self.box_height = int(OLED_HEIGHT / 2.8)
@@ -81,7 +81,7 @@ class PresetManager(EuroPiScript):
                 self.old_k2 = k2.read_position(self.resolution)
             else:
                 if (
-                    k2.read_position(self.resolution) != self.old_k2
+                    abs(k2.read_position(self.resolution, 2048) - self.old_k2) > 4
                 ):  # k2 must change to allow value to be updated to prevent updating every value while scrolling
                     values[self.selected_preset] = k2.read_position(self.resolution)
         else:
@@ -105,13 +105,21 @@ class PresetManager(EuroPiScript):
             ) if index != self.selected_preset else oled.fill_rect(
                 x, y, self.box_width, self.box_height, 1
             )
-            oled.text(str(value), (x + 2), (y + 2), 1 if index != self.selected_preset else 0)
+            oled.text(
+                str((self.value_to_voltage(value)))[:4],
+                (x + 2),
+                (y + 2),
+                1 if index != self.selected_preset else 0,
+            )
         oled.show()
+
+    def value_to_voltage(self, value):
+        return value * self.output_multiplier
 
     def update_outputs(self):
         values = self.presets[self.loaded_preset][1]
         for cv_value in zip(cvs, values):
-            cv_value[0].voltage((cv_value[1] * self.output_multiplier))
+            cv_value[0].voltage(self.value_to_voltage(cv_value[1]))
 
     def draw_preset_list(self):
         oled.fill(0)
