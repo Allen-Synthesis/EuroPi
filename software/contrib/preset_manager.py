@@ -8,9 +8,7 @@ class PresetManager(EuroPiScript):
         super().__init__()
         state = self.load_state_json()
 
-        self.blank_preset = ["blank preset", [0,0,0,0,0,0]]
-
-        self.presets = state.get("presets", [["preset one", [0,0,0,0,0,0]], ["preset two", [0,0,0,0,0,0]], ["preset three", [0,0,0,0,0,0]]]) # [[preset name, [preset values]], [preset name 2, [preset values 2]]
+        self.presets = state.get("presets", [create_blank_preset('preset one'), create_blank_preset('preset two'), create_blank_preset('preset three')]) # [[preset name, [preset values]], [preset name 2, [preset values 2]]
         self.loaded_preset = state.get("loaded preset", 0)
         self.selected_preset = k1.read_position(7) - 1
         self.selected_letter = 0
@@ -30,8 +28,12 @@ class PresetManager(EuroPiScript):
         b1.handler(self.back_button)
         b2.handler(self.enter_button)
         
-        self.characters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', ' ']
+        self.characters = 'abcdefghijklmnopqrstuvwxyz0123456789  '
         self.max_characters = 16
+
+    
+    def create_blank_preset(self, name):
+        return [str(name), [0, 0, 0, 0, 0, 0]]
 
 
     def save_state(self):
@@ -128,7 +130,7 @@ class PresetManager(EuroPiScript):
 
     def load_new_preset(self):
         if self.create_new_preset:
-            self.presets.append(self.blank_preset)
+            self.presets.append(self.create_blank_preset('blank preset'))
             self.loaded_preset = -1
         else:
             self.loaded_preset = self.hovered_preset
