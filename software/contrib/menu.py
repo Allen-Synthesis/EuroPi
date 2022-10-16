@@ -13,6 +13,7 @@ from contrib.master_clock import MasterClock
 from contrib.noddy_holder import NoddyHolder
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.poly_square import PolySquare
+from contrib.probapoly import Probapoly
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
 from contrib.turing_machine import TuringMachine
@@ -35,6 +36,7 @@ EUROPI_SCRIPT_CLASSES = [
     NoddyHolder,
     PolyrhythmSeq,
     PolySquare,
+    Probapoly,
     RadioScanner,
     Scope,
     TuringMachine,
