@@ -28,6 +28,8 @@ class PresetManager(EuroPiScript):
         b1.handler(self.back_button)
         b2.handler(self.enter_button)
         
+        self.confirm_delete = False
+        
         self.characters = 'aabcdefghijklmnopqrstuvwxyz0123456789  '
         self.number_of_characters = len(self.characters)
         self.max_characters = 16
@@ -55,9 +57,7 @@ class PresetManager(EuroPiScript):
         self.screen -= 1
         
         if self.screen == -3: #Confirm delete
-            self.presets.remove(self.presets[self.hovered_preset])
-            self.screen = 0
-            self.update_ui()
+            self.confirm_delete = True
             
             
     def enter_button(self):
@@ -173,6 +173,11 @@ class PresetManager(EuroPiScript):
 
 
     def update_ui(self):
+        if self.confirm_delete:
+            self.presets.remove(self.presets[self.hovered_preset])
+            self.screen = 0
+            self.confirm_delete = False
+        
         if self.screen == -2: #Delete
             self.draw_rename_screen()
             self.hover_delete()
