@@ -73,6 +73,14 @@ Quantised outputs are available, with the note for each step, and the polyrhythm
 <i>Author: [awonak](https://github.com/awonak)</i>
 <br><i>Labels: polyrhythms, sequencer, triggers</i>
 
+### Preset Manager \[ [documentation](/software/contrib/preset_manager.md) | [script](/software/contrib/preset_manager.md) \]
+An unlimited number of preset banks, each holding 6 CV values which will be instantly output upon preset load.
+  
+Each preset can be edited, renamed, deleted, and new presets created within the module itself.
+
+<i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
+<br><i>Labels: preset</i>
+
 ### Probapoly \[ [documentation](/software/contrib/probapoly.md) | [script](/software/contrib/probapoly.py) \]
 Creates interesting polyrhythmic gate patterns while also allowing probabilities to be set on gates.
 
