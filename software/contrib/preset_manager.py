@@ -8,7 +8,7 @@ class PresetManager(EuroPiScript):
         super().__init__()
         state = self.load_state_json()
 
-        self.presets = state.get("presets", [create_blank_preset('preset one'), create_blank_preset('preset two'), create_blank_preset('preset three')]) # [[preset name, [preset values]], [preset name 2, [preset values 2]]
+        self.presets = state.get("presets", [self.create_blank_preset('preset one'), self.create_blank_preset('preset two'), self.create_blank_preset('preset three')]) # [[preset name, [preset values]], [preset name 2, [preset values 2]]
         self.loaded_preset = state.get("loaded preset", 0)
         self.selected_preset = k1.read_position(7) - 1
         self.selected_letter = 0
@@ -28,7 +28,8 @@ class PresetManager(EuroPiScript):
         b1.handler(self.back_button)
         b2.handler(self.enter_button)
         
-        self.characters = 'abcdefghijklmnopqrstuvwxyz0123456789  '
+        self.characters = 'aabcdefghijklmnopqrstuvwxyz0123456789  '
+        self.number_of_characters = len(self.characters)
         self.max_characters = 16
 
     
@@ -74,11 +75,14 @@ class PresetManager(EuroPiScript):
     def update_current_value(self, values):
         old_selected_preset = self.selected_preset
         self.selected_preset = k1.read_position(7) - 1
-        if self.selected_preset != old_selected_preset: #When selected preset is changed, take a snapshot of k2
-            self.old_k2 = k2.read_position(self.resolution)
+        if self.selected_preset != -1:
+            if self.selected_preset != old_selected_preset: #When selected preset is changed, take a snapshot of k2
+                self.old_k2 = k2.read_position(self.resolution)
+            else:
+                if k2.read_position(self.resolution) != self.old_k2: #k2 must change to allow value to be updated to prevent updating every value while scrolling
+                    values[self.selected_preset] = k2.read_position(self.resolution)
         else:
-            if k2.read_position(self.resolution) != self.old_k2: #k2 must change to allow value to be updated to prevent updating every value while scrolling
-                values[self.selected_preset] = k2.read_position(self.resolution)
+            None
                 
 
     def draw_current_preset(self):
@@ -150,7 +154,7 @@ class PresetManager(EuroPiScript):
             self.old_k2 = k2.read_position(len(self.characters) + 1)
         else:
             if k2.read_position(len(self.characters) + 1) != self.old_k2:
-                name_list[self.selected_letter] = k2.choice(self.characters)
+                name_list[self.selected_letter] = self.characters[k2.read_position(self.number_of_characters)]
                 self.presets[self.hovered_preset][0] = ''.join(name_list)
         
         oled.fill_rect((self.selected_letter * CHAR_WIDTH), 0, CHAR_WIDTH, (CHAR_HEIGHT + 2), 1)
@@ -190,4 +194,5 @@ class PresetManager(EuroPiScript):
 
 if __name__ == "__main__":
     PresetManager().main()
+
 
