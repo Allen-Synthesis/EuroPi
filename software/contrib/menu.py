@@ -9,11 +9,13 @@ from contrib.diagnostic import Diagnostic
 from contrib.hamlet import Hamlet
 from contrib.harmonic_lfos import HarmonicLFOs
 from contrib.hello_world import HelloWorld
+from contrib.master_clock import MasterClock
 from contrib.noddy_holder import NoddyHolder
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.poly_square import PolySquare
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
+from contrib.turing_machine import TuringMachine
 from contrib.strange_attractor import StrangeAttractor
 from calibrate import Calibrate
 
@@ -33,6 +35,7 @@ EUROPI_SCRIPT_CLASSES = [
     PolySquare,
     RadioScanner,
     Scope,
+    TuringMachine,
     StrangeAttractor,
     Calibrate,
 ]
