@@ -151,29 +151,34 @@ class PresetManager(EuroPiScript):
             self.loaded_preset = self.hovered_preset
 
     def draw_rename_screen(self):
-        oled.fill(0)
+        if not self.create_new_preset:
+            oled.fill(0)
 
-        name = self.presets[self.hovered_preset][0]
-        name_list = list(name)
-        while len(name_list) < self.max_characters:
-            name_list.append(" ")
+            name = self.presets[self.hovered_preset][0]
+            name_list = list(name)
+            while len(name_list) < self.max_characters:
+                name_list.append(" ")
 
-        old_selected_letter = self.selected_letter
-        self.selected_letter = k1.read_position(self.max_characters)
-        if old_selected_letter != self.selected_letter:
-            self.old_k2 = k2.read_position(len(self.characters) + 1)
+            old_selected_letter = self.selected_letter
+            self.selected_letter = k1.read_position(self.max_characters)
+            if old_selected_letter != self.selected_letter:
+                self.old_k2 = k2.read_position(len(self.characters) + 1)
+            else:
+                if k2.read_position(len(self.characters) + 1) != self.old_k2:
+                    name_list[self.selected_letter] = self.characters[
+                        k2.read_position(self.number_of_characters)
+                    ]
+                    self.presets[self.hovered_preset][0] = "".join(name_list)
+
+            oled.fill_rect((self.selected_letter * CHAR_WIDTH), 0, CHAR_WIDTH, (CHAR_HEIGHT + 2), 1)
+            for index, letter in enumerate(name_list):
+                oled.text(
+                    letter, (index * CHAR_WIDTH), 1, 0 if self.selected_letter == index else 1
+                )
+
+            oled.text("< DELETE", 0, 24, 1)
         else:
-            if k2.read_position(len(self.characters) + 1) != self.old_k2:
-                name_list[self.selected_letter] = self.characters[
-                    k2.read_position(self.number_of_characters)
-                ]
-                self.presets[self.hovered_preset][0] = "".join(name_list)
-
-        oled.fill_rect((self.selected_letter * CHAR_WIDTH), 0, CHAR_WIDTH, (CHAR_HEIGHT + 2), 1)
-        for index, letter in enumerate(name_list):
-            oled.text(letter, (index * CHAR_WIDTH), 1, 0 if self.selected_letter == index else 1)
-
-        oled.text("< DELETE", 0, 24, 1)
+            self.screen = 0  # If a user tries to go to the rename screen while hovering over 'NEW PRESET' they are kept on the preset list screen
 
     def hover_delete(self):
         oled.fill(0)
