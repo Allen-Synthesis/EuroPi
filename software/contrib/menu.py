@@ -56,4 +56,3 @@ EUROPI_SCRIPT_CLASSES = [
 
 if __name__ == "__main__":
     BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
-
