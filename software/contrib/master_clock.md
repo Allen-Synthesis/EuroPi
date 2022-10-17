@@ -18,13 +18,13 @@ For wonky/more interesting clock patterns try these:
 
 Demo video: TBC
 
-digital_in: (optional) Reset step count on rising edge
+digital_in: (optional) Reset step count on rising edge. (optional) External clock
 analog_in: (optional) Adjust BPM
 
 knob_1: Screen 2: Adjust BPM. Screen 3: Select output to edit 
 knob_2: Screen 2: Adjust Pulse width. Screen 3: Adjust division of selected output 
 
-button_1: Start / Stop
+button_1: Short Press (<500ms): Start / Stop. Long Press (>500ms): Select clock source (Internal/External)
 button_2: Short Press (<500ms): Cycle through screens. Long Press (>500ms): Enter config mode
 
 Defaults:
@@ -48,8 +48,7 @@ Patch any module that uses gates/triggers to any output! By default the module w
 Use button 2 (right button) to cycle through screens 1 - 3. A description of each screen is shown below.
 Hold button 2 for 2 seconds to enter configuration mode when in screen 2 or 3.
 Configuration mode will exit when changing screens to avoid accidentally changing any values on the next screen.
-Also note that playback will stop when in config mode.
-Each screen has a small indicator on the bottom right to show the screen you are on.
+Also note that playback may stop when in config mode - this is by design for performance reasons.
 
 ## Screen 1
 - Top: Number of completed cycles since playback was last started, follewed by the current step in the cycle
@@ -57,7 +56,7 @@ Each screen has a small indicator on the bottom right to show the screen you are
 
 ## Screen 2
 - BPM
-- Pulse Width (PW) as a percentage of the output 1 division and also as milliseconds
+- PW:MS: Pulse Width (PW) as a percentage of the output 1 division. Milliseconds (MS) - the duration of each pulse
 
 Hold button 2 for 2 seconds to enter configuration mode, then use knob 1 (left) to adjust BPM and knob 2 (right) to adjust pulse width. To exit configuration mode, just press button 2 to move to the next screen.
 
@@ -69,3 +68,17 @@ To edit a clock division for an output:
 - Press and hold button 2 for 2 seconds to enter configuration mode
 - Use knob 2 to select the division you want that that output. Setting a division to zero will produce random fluctuations between 0V and +5V.
 - Exit configuration mode by pressing button 2 to move to the next screen
+
+# Selecting a Clock Source
+
+Master clock can generate its own clock, or use an external clock.
+Enter clock source configuration mode using a long press on button 1.
+Pressing either button 1 or button 2 will configure and save the clock source.
+
+If using an external clock, patch the clock source into the din jack - the clock source should ideally send a gate/trigger longer than 9ms to avoid issues.
+
+Note that when using an external clock, the reset functionality using the din jack is disabled.
+
+# Randomizing pulses
+
+Selecting a clock division of 'r' will cause pulses to be sent randomly from the configured output. Note that the 'r' option is at the end (far right) of the division options.
