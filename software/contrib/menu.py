@@ -1,5 +1,10 @@
 """See menu.md for details."""
-from europi import bootsplash
+
+from europi import bootsplash, Pin
+
+if Pin(24).value() == 1:
+    from time import sleep
+    sleep(0.5)
 
 bootsplash()
 
@@ -51,3 +56,4 @@ EUROPI_SCRIPT_CLASSES = [
 
 if __name__ == "__main__":
     BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
+
