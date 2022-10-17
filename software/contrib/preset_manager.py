@@ -189,7 +189,13 @@ class PresetManager(EuroPiScript):
 
     def update_ui(self):
         if self.confirm_delete:
-            self.presets.remove(self.presets[self.hovered_preset])
+            if len(self.presets) > 1:
+                if self.hovered_preset == self.loaded_preset:
+                    self.loaded_preset = 0
+                self.presets.remove(self.presets[self.hovered_preset])
+            else:
+                oled.centre_text('Cannot delete\nlast remaining\npreset!')
+                sleep(1)
             self.screen = 0
             self.confirm_delete = False
 
