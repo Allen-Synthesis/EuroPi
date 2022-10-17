@@ -29,14 +29,18 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
     ![Interpreter Select](https://i.imgur.com/XeRem1w.jpg)
 
-5. Click Tools -> Manage Packages to open the package manager.
-6. Type 'ssd1306' into the search box and click 'Search on PyPi'
-7. Click the result named 'micropython-ssd1306'.
+5. **Important**: Wait until the Shell window at the bottom shows the MicroPython version and the purple ```>>>``` symbol.
+
+    ![image](https://user-images.githubusercontent.com/79809962/196224993-70a7a662-90ca-45df-90f6-a2c1f1f70a9e.png)
+
+6. Click Tools -> Manage Packages to open the package manager.
+7. Type 'ssd1306' into the search box and click 'Search on PyPi'
+8. Click the result named 'micropython-ssd1306'.
 
     ![ssd1306 library](https://i.imgur.com/7t2mWHh.jpg)
 
-8. Click 'Install'.
-9. You will see that a folder has been created inside the Pico named 'lib', which contains the new file 'ssd1306.py'.
+9. Click 'Install'.
+10. You will see that a folder has been created inside the Pico named 'lib', which contains the new file 'ssd1306.py'.
 
     ![ssd1306 inside lib](https://i.imgur.com/jkmeaFM.jpg)
 
