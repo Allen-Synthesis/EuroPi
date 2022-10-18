@@ -2,6 +2,7 @@
 
 from europi import bootsplash, Pin
 
+#  This is a fix for a USB connection issue documented in GitHub issue #179, and its removal condition is set out in GitHub issue #184
 if Pin(24).value() == 1:
     from time import sleep
 
