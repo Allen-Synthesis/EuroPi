@@ -1,9 +1,9 @@
 """See menu.md for details."""
 
-from europi import bootsplash, Pin
+from europi import bootsplash, usb_connected
 
 #  This is a fix for a USB connection issue documented in GitHub issue #179, and its removal condition is set out in GitHub issue #184
-if Pin(24).value() == 1:
+if usb_connected.value() == 0:
     from time import sleep
 
     sleep(0.5)
