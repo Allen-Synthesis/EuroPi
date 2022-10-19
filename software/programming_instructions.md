@@ -11,7 +11,7 @@ If you already have any version of the firmware or any other code loaded onto yo
 
 ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
 
-3. Open your file manager and drag and drop the downloaded .uf2 onto the new drive named 'RPI-RP2'. This will wipe your Pico clean, ready for a new installation of the firmware.  
+3. Open your file manager and drag and drop the downloaded `flash_nuke.uf2` onto the new drive named 'RPI-RP2'. This will wipe your Pico clean, ready for a new installation of the firmware.  
 
 4. The Pico will automatically eject once the process is completed.  
   
