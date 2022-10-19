@@ -21,7 +21,7 @@ class HarmonicLFOs(EuroPiScript):
         #Use the saved values for the LFO divisions and mode if found in the save state file, using defaults if not
         self.divisions = state.get("divisions", [1, 3, 5, 7, 11, 13])
         self.modes = state.get("modes", [0, 0, 0, 0, 0, 0])
-        self.MODE_COUNT = 5
+        self.MODE_COUNT = 6
         
         #Initialise all the other variables
         self.degree = 0
@@ -146,6 +146,9 @@ class HarmonicLFOs(EuroPiScript):
             oled.pixel(14,29,1)
             oled.pixel(15,30,1)
             oled.pixel(16,30,1)
+        elif shape == 5:  # noise
+            for i in range(3, 17):
+                oled.pixel(i, randint(23, 31), 1)
         
     def display_selected_lfo(self):
         """Draw the current LFO's number and division to the OLED display"""
@@ -177,6 +180,8 @@ class HarmonicLFOs(EuroPiScript):
             voltage = 0
         elif lfo_mode == 4: #Random(ish). This is NOT actually random, it is the sum of 3 out of sync sine waves, but it produces a flucutating voltage that is near impossible to predict over time, and which can be clocked to be in time
             voltage = ((((0-(cos(self.rad*(1/multiplier)))+1)) * (MAX_VOLTAGE/2)) / 3) + ((((0-(cos(self.rad*(1/(multiplier*2.3))))+1)) * (MAX_VOLTAGE/2)) / 3) + ((((0-(cos(self.rad*(1/(multiplier*5.6))))+1)) * (MAX_VOLTAGE/2)) / 3)
+        elif lfo_mode == 5: #noise
+            voltage = MAX_VOLTAGE * randint(0, 1000) / 1000
         return voltage
         
     def display_graphic_lines(self):
