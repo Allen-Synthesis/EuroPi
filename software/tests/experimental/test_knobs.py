@@ -9,7 +9,7 @@ from mock_hardware import MockHardware
 
 
 @pytest.fixture
-def locked_knob(mockHardware: MockHardware):
+def lockable_knob(mockHardware: MockHardware):
     k = LockableKnob(k1)
 
     # start the knob in the middle
@@ -18,134 +18,134 @@ def locked_knob(mockHardware: MockHardware):
     return k
 
 
-def test_starting_state(locked_knob: LockableKnob):
-    assert locked_knob.state == LockableKnob.STATE_UNLOCKED
+def test_starting_state(lockable_knob: LockableKnob):
+    assert lockable_knob.state == LockableKnob.STATE_UNLOCKED
     assert LockableKnob(k1).state == LockableKnob.STATE_UNLOCKED
     assert LockableKnob(k1, initial_value=1).state == LockableKnob.STATE_LOCKED
 
 
-def test_unlocked_knob_changes_value(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert locked_knob.state == LockableKnob.STATE_UNLOCKED
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
+def test_unlocked_knob_changes_value(mockHardware: MockHardware, lockable_knob: LockableKnob):
+    assert lockable_knob.state == LockableKnob.STATE_UNLOCKED
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
 
-    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16 / 3)
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.67
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.67
-
-
-def test_locked_knob_stays_constant(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
-
-    locked_knob.lock()
-    assert locked_knob.state == LockableKnob.STATE_LOCKED
-
-    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16 / 3)
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
+    mockHardware.set_ADC_u16_value(lockable_knob, MAX_UINT16 / 3)
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.67
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.67
 
 
-def test_request_unlock_outside_threshold(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
+def test_locked_knob_stays_constant(mockHardware: MockHardware, lockable_knob: LockableKnob):
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
 
-    locked_knob.lock()
-    mockHardware.set_ADC_u16_value(locked_knob, 0)
-    locked_knob.request_unlock()
+    lockable_knob.lock()
+    assert lockable_knob.state == LockableKnob.STATE_LOCKED
 
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
-
-
-def test_request_unlock_within_threshold(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
-
-    locked_knob.lock()
-    mockHardware.set_ADC_u16_value(locked_knob, 0)
-    locked_knob.request_unlock()
-
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
-    assert locked_knob.state == LockableKnob.STATE_UNLOCK_REQUESTED
-
-    mockHardware.set_ADC_u16_value(locked_knob, (MAX_UINT16 / 2) + 10)
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
-    assert locked_knob.state == LockableKnob.STATE_UNLOCKED
+    mockHardware.set_ADC_u16_value(lockable_knob, MAX_UINT16 / 3)
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
 
 
-def test_state_changes(locked_knob: LockableKnob):
+def test_request_unlock_outside_threshold(mockHardware: MockHardware, lockable_knob: LockableKnob):
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
+
+    lockable_knob.lock()
+    mockHardware.set_ADC_u16_value(lockable_knob, 0)
+    lockable_knob.request_unlock()
+
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
+
+
+def test_request_unlock_within_threshold(mockHardware: MockHardware, lockable_knob: LockableKnob):
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
+
+    lockable_knob.lock()
+    mockHardware.set_ADC_u16_value(lockable_knob, 0)
+    lockable_knob.request_unlock()
+
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
+    assert lockable_knob.state == LockableKnob.STATE_UNLOCK_REQUESTED
+
+    mockHardware.set_ADC_u16_value(lockable_knob, (MAX_UINT16 / 2) + 10)
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
+    assert lockable_knob.state == LockableKnob.STATE_UNLOCKED
+
+
+def test_state_changes(lockable_knob: LockableKnob):
     # Unlocked
-    assert locked_knob.state == LockableKnob.STATE_UNLOCKED
+    assert lockable_knob.state == LockableKnob.STATE_UNLOCKED
 
-    locked_knob.request_unlock()
-    assert locked_knob.state == LockableKnob.STATE_UNLOCKED
+    lockable_knob.request_unlock()
+    assert lockable_knob.state == LockableKnob.STATE_UNLOCKED
 
-    locked_knob.lock()
-    assert locked_knob.state == LockableKnob.STATE_LOCKED
+    lockable_knob.lock()
+    assert lockable_knob.state == LockableKnob.STATE_LOCKED
 
     # locked
-    locked_knob.lock()
-    assert locked_knob.state == LockableKnob.STATE_LOCKED
+    lockable_knob.lock()
+    assert lockable_knob.state == LockableKnob.STATE_LOCKED
 
-    locked_knob.request_unlock()
-    assert locked_knob.state == LockableKnob.STATE_UNLOCK_REQUESTED
+    lockable_knob.request_unlock()
+    assert lockable_knob.state == LockableKnob.STATE_UNLOCK_REQUESTED
 
     # Unlock requested
 
-    locked_knob.request_unlock()
-    assert locked_knob.state == LockableKnob.STATE_UNLOCK_REQUESTED
+    lockable_knob.request_unlock()
+    assert lockable_knob.state == LockableKnob.STATE_UNLOCK_REQUESTED
 
-    locked_knob.lock()
-    assert locked_knob.state == LockableKnob.STATE_LOCKED
-
-
-def test_access_percent(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
-
-    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 0
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 0
-
-    mockHardware.set_ADC_u16_value(locked_knob, 0)
-    assert round(locked_knob.percent(deadzone=0.01), 2) == 1
-    assert round(locked_knob.percent(deadzone=0.0), 2) == 1
+    lockable_knob.lock()
+    assert lockable_knob.state == LockableKnob.STATE_LOCKED
 
 
-def test_access_choice(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert locked_knob.choice([1, 2, 3]) == 2
+def test_access_percent(mockHardware: MockHardware, lockable_knob: LockableKnob):
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0.50
 
-    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
-    assert locked_knob.choice([1, 2, 3]) == 1
+    mockHardware.set_ADC_u16_value(lockable_knob, MAX_UINT16)
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0
 
-    mockHardware.set_ADC_u16_value(locked_knob, 0)
-    assert locked_knob.choice([1, 2, 3]) == 3
-
-
-def test_access_range(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert locked_knob.range() == 49
-
-    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
-    assert locked_knob.range() == 0
-
-    mockHardware.set_ADC_u16_value(locked_knob, 0)
-    assert locked_knob.range() == 99
+    mockHardware.set_ADC_u16_value(lockable_knob, 0)
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 1
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 1
 
 
-def test_access_read_position(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert locked_knob.read_position(deadzone=0.01) == 49
-    assert locked_knob.read_position(deadzone=0.0) == 49
+def test_access_choice(mockHardware: MockHardware, lockable_knob: LockableKnob):
+    assert lockable_knob.choice([1, 2, 3]) == 2
 
-    mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
-    assert locked_knob.read_position(deadzone=0.01) == 0
-    assert locked_knob.read_position(deadzone=0.0) == 0
+    mockHardware.set_ADC_u16_value(lockable_knob, MAX_UINT16)
+    assert lockable_knob.choice([1, 2, 3]) == 1
 
-    mockHardware.set_ADC_u16_value(locked_knob, 0)
-    assert locked_knob.read_position(deadzone=0.01) == 99
-    assert locked_knob.read_position(deadzone=0.0) == 99
+    mockHardware.set_ADC_u16_value(lockable_knob, 0)
+    assert lockable_knob.choice([1, 2, 3]) == 3
+
+
+def test_access_range(mockHardware: MockHardware, lockable_knob: LockableKnob):
+    assert lockable_knob.range() == 49
+
+    mockHardware.set_ADC_u16_value(lockable_knob, MAX_UINT16)
+    assert lockable_knob.range() == 0
+
+    mockHardware.set_ADC_u16_value(lockable_knob, 0)
+    assert lockable_knob.range() == 99
+
+
+def test_access_read_position(mockHardware: MockHardware, lockable_knob: LockableKnob):
+    assert lockable_knob.read_position(deadzone=0.01) == 49
+    assert lockable_knob.read_position(deadzone=0.0) == 49
+
+    mockHardware.set_ADC_u16_value(lockable_knob, MAX_UINT16)
+    assert lockable_knob.read_position(deadzone=0.01) == 0
+    assert lockable_knob.read_position(deadzone=0.0) == 0
+
+    mockHardware.set_ADC_u16_value(lockable_knob, 0)
+    assert lockable_knob.read_position(deadzone=0.01) == 99
+    assert lockable_knob.read_position(deadzone=0.0) == 99
 
 
 # Disabled Knob Tests
