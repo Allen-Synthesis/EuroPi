@@ -24,9 +24,9 @@ https://github.com/Allen-Synthesis/EuroPi
 - knob_1: Not used
 - knob_2: Not used
 
-- button_1: Short Press: move left in Fibb sequence
+- button_1: Short Press: move left in Fibonacci sequence
   Long Press: Rotate triggers
-- button_2: Short Press: move right in Fibb sequence
+- button_2: Short Press: move right in Fibonacci sequence
   Long Press: Rotate triggers
 
 - output_1: trigger
