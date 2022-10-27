@@ -5,7 +5,7 @@ from random import randint, uniform, choice
 
 from europi_script import EuroPiScript
 
-'''
+"""
 Piconacci
 author: Sean Bechhofer (github.com/seanbechhofer)
 date: 2022-05
@@ -28,8 +28,7 @@ output_4: trigger
 output_5: trigger
 output_6: trigger
 
-'''
-
+"""
 
 
 # This probably works for most sensible circumstances. The 50th value
@@ -37,6 +36,7 @@ output_6: trigger
 # trigger every 300 years which is quite a lot even for slow moving
 # ambient pieces,
 MAX_FIB = 50
+
 
 class Piconacci(EuroPiScript):
     def __init__(self):
@@ -51,35 +51,35 @@ class Piconacci(EuroPiScript):
         # Overclock the Pico for improved performance.
         machine.freq(250_000_000)
         # List of fibonacci numbers.
-        self.fib = [1,1]
-        for i in range(0,MAX_FIB):
+        self.fib = [1, 1]
+        for i in range(0, MAX_FIB):
             self.fib.append(self.fib[-2] + self.fib[-1])
         # Strip off first 1
         self.fib = self.fib[1:]
-        
-        self.steps = [0]*6
+
+        self.steps = [0] * 6
 
         # Triggered when button 1 is released
-        # Short press: 
-        # Long press: 
+        # Short press:
+        # Long press:
         @b1.handler_falling
         def b1Pressed():
-            if ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
+            if ticks_diff(ticks_ms(), b1.last_pressed()) > 300:
                 # Rotate values left
-                self.rotate = (self.rotate-1) % 6
+                self.rotate = (self.rotate - 1) % 6
             else:
                 # Shift all the values left in the sequence
                 if self.offset > 0:
                     self.offset -= 1
 
         # Triggered when button 2 is released.
-        # Short press: 
-        # Long press: 
+        # Short press:
+        # Long press:
         @b2.handler_falling
         def b2Pressed():
-            if ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
+            if ticks_diff(ticks_ms(), b2.last_pressed()) > 300:
                 # Rotate values right
-                self.rotate = (self.rotate+1) % 6
+                self.rotate = (self.rotate + 1) % 6
             else:
                 # Shift all the values right in the sequence
                 if self.offset < MAX_FIB - 7:
@@ -88,7 +88,7 @@ class Piconacci(EuroPiScript):
         # Triggered on each clock into digital input. Output triggers.
         @din.handler
         def clockTrigger():
-            for tr in range(0,6):
+            for tr in range(0, 6):
                 self.steps[tr] += 1
                 if self.steps[tr] >= self.value(tr):
                     # Trigger on tr
@@ -97,14 +97,14 @@ class Piconacci(EuroPiScript):
                     # we may get slightly odd behaviour here,
                     # particularly if the values reduce.
                     self.steps[tr] = 0
-            
+
         @din.handler_falling
         def clockTriggerEnd():
             for cv in cvs:
                 cv.off()
 
-    def value(self,index):
-        values = self.fib[self.offset:self.offset+6]
+    def value(self, index):
+        values = self.fib[self.offset : self.offset + 6]
         return values[(index + self.rotate) % 6]
 
     def main(self):
@@ -114,7 +114,7 @@ class Piconacci(EuroPiScript):
 
     def updateScreen(self):
         oled.fill(0)
-        
+
         # Show the values.
         oled.text("Piconacci", 28, 0, 1)
         oled.text(str(self.value(0)), 10, 12, 1)
@@ -126,12 +126,9 @@ class Piconacci(EuroPiScript):
         oled.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Reset module display state.
     oled.fill(0)
     [cv.off() for cv in cvs]
     pc = Piconacci()
     pc.main()
-
-
-
