@@ -42,11 +42,6 @@ class HarmonicLFOs(EuroPiScript):
         self.selected_lfo = 0
         self.clock_division = self.selected_lfo_start_value = self.get_clock_division()
 
-        # Pre-calculate noise wave shape to save resources
-        self.noise_wave_shape = []
-        for i in range(0, 14):
-            self.noise_wave_shape.append(randint(23, 31))
-
         # Set the digital input and button handlers
         din.handler(self.reset)
         b1.handler(self.change_mode)
