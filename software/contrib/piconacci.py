@@ -40,6 +40,8 @@ MAX_FIB = 50
 
 class Piconacci(EuroPiScript):
     def __init__(self):
+        # Flag to indicate whether the display needs updating.
+        self.dirty = True
         # offset determines the sublist to be used for the values.
         self.offset = 0
         # rotate adjusts how the values are mapped to the cv
@@ -71,6 +73,8 @@ class Piconacci(EuroPiScript):
                 # Shift all the values left in the sequence
                 if self.offset > 0:
                     self.offset -= 1
+            # State has changed
+            self.dirty = True
 
         # Triggered when button 2 is released.
         # Short press:
@@ -84,6 +88,8 @@ class Piconacci(EuroPiScript):
                 # Shift all the values right in the sequence
                 if self.offset < MAX_FIB - 7:
                     self.offset += 1
+            # State has changed
+            self.dirty = True
 
         # Triggered on each clock into digital input. Output triggers.
         @din.handler
@@ -108,9 +114,15 @@ class Piconacci(EuroPiScript):
         return values[(index + self.rotate) % 6]
 
     def main(self):
-        self.reset_timeout = 500
+        # Reset module display state.
+        oled.fill(0)
+        # Reset all outputs
+        [cv.off() for cv in cvs]
         while True:
-            self.updateScreen()
+            # If the state has changed, update display
+            if self.dirty:
+                self.updateScreen()
+                self.dirty = False
 
     def updateScreen(self):
         oled.fill(0)
@@ -127,8 +139,7 @@ class Piconacci(EuroPiScript):
 
 
 if __name__ == "__main__":
-    # Reset module display state.
-    oled.fill(0)
-    [cv.off() for cv in cvs]
     pc = Piconacci()
     pc.main()
+
+
