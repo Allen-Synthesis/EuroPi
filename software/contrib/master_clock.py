@@ -197,18 +197,10 @@ class MasterClockInner(EuroPiScript):
         
         self.saveState()
 
-    def median(self, lst):
-        n = len(lst)
-        s = sorted(lst)
-        return (s[n//2-1]/2.0+s[n//2]/2.0, s[n//2])[n % 2] if n else None
-
     def bpmFromMs(self, ms):
         return int(((1/(ms/1000))*60)/4)
 
     def calculateBpm(self, list):
-        # Create a copy of the list, so the sort command does not affect the original list
-        lst = list[:]
-        lst.sort()
         self.averageDiff = self.average(list)
         return self.bpmFromMs(self.averageDiff)
 
