@@ -24,6 +24,7 @@ from contrib.smooth_random_voltages import SmoothRandomVoltages
 from contrib.strange_attractor import StrangeAttractor
 from contrib.turing_machine import EuroPiTuringMachine
 from calibrate import Calibrate
+from contrib.ota import OTA
 
 # Scripts that are included in the menu
 EUROPI_SCRIPT_CLASSES = [
@@ -46,6 +47,7 @@ EUROPI_SCRIPT_CLASSES = [
     StrangeAttractor,
     EuroPiTuringMachine,
     Calibrate,
+    OTA
 ]
 
 
