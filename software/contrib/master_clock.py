@@ -45,7 +45,7 @@ output_6: clock / 32
 
 Known Issues:
 - If playback is restarted while screen 2 is in config mode, playback will be slightly irratic, especially when moving knobs
-- BPM occasionally drifts by 1ms - possibly because asyncio is not truely async
+- BPM occasionally drifts by 1ms - possibly due to asyncio, pico performance limitations, or some other as-yet unknown error
 
 '''
 
@@ -175,7 +175,7 @@ class MasterClockInner(EuroPiScript):
             else:
                 self.step = 1
 
-    ''' Ask to use internal or external clock on boot'''
+    ''' Ask to use internal or external clock'''
     def getClockOption(self):
         self.clockSelectionScreenActive = True
         oled.fill(0)
@@ -413,8 +413,8 @@ class MasterClockInner(EuroPiScript):
                 else:
                     await asyncio.sleep_ms(int(self.mSBetweenClockCycles - self.msDriftCompensation))
             else:
-                # need to add this otherwise the async tasks never start - strange eh!
-                await asyncio.sleep_ms(1)
+                # need to add this otherwise the async tasks never start
+                await asyncio.sleep_ms(0)
 
 class MasterClock(EuroPiScript):
     def __init__(self):
