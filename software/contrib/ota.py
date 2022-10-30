@@ -29,7 +29,7 @@ class OTA(EuroPiScript):
 
     @classmethod
     def display_name(cls):
-        return "OTA Flash"
+        return "OTA"
 
     def main(self):
         if not "Raspberry Pi Pico W" in os.uname().machine:
