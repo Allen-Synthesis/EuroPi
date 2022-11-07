@@ -134,7 +134,8 @@ NOTE: If you have just installed the menu, simply run the calibration script and
 6. Once all the required voltages have been input, you now need to disconnect the analogue input from your voltage source, and instead connect it to CV output 1.
 7. Once you have connected the analogue input to CV output 1, press button 1
 8. Wait for each voltage up to 10V to complete. The module will tell you once it has completed.
-9. The calibration process is now complete! You now need to rename or delete the 'calibrate.py' program, however DO NOT delete the new file created called 'calibration_values.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
+9. NOTE: Skip this final step if you are running the calibration script from the menu system.  
+The calibration process is now complete! You now need to rename or delete the 'calibrate.py' program, however DO NOT delete the new file created called 'calibration_values.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
 
 
 # Programming Limitations
