@@ -21,7 +21,51 @@ def lockable_knob(mockHardware: MockHardware):
 def test_starting_state(lockable_knob: LockableKnob):
     assert lockable_knob.state == LockableKnob.STATE_UNLOCKED
     assert LockableKnob(k1).state == LockableKnob.STATE_UNLOCKED
-    assert LockableKnob(k1, initial_value=1).state == LockableKnob.STATE_LOCKED
+    assert LockableKnob(k1, initial_uint16_value=0).state == LockableKnob.STATE_LOCKED
+
+
+@pytest.mark.parametrize(
+    "initial_uint16_value, expected_percent",
+    [
+        (MAX_UINT16 / 1, 0.00),
+        (MAX_UINT16 / 3 * 2, 0.33),
+        (MAX_UINT16 / 2, 0.50),
+        (MAX_UINT16 / 3, 0.67),
+        (MAX_UINT16 / 4, 0.75),
+        (MAX_UINT16 * 0, 1.00),
+    ],
+)
+def test_initial_uint16_value(initial_uint16_value, expected_percent):
+    lockable_knob = LockableKnob(k1, initial_uint16_value=initial_uint16_value)
+    assert lockable_knob.state == LockableKnob.STATE_LOCKED
+    assert round(lockable_knob.percent(deadzone=0), 2) == expected_percent
+
+
+@pytest.mark.parametrize(
+    "initial_percentage_value, expected_percent, expected_percent_default_deadzone",
+    [
+        (0.0, 0.00, 0.00),
+        (0.33, 0.33, 0.33),
+        (0.50, 0.50, 0.50),
+        (0.67, 0.67, 0.67),
+        (0.75, 0.75, 0.76),
+        (1.00, 1.00, 1.00),
+    ],
+)
+def test_initial_percentage_value(
+    initial_percentage_value, expected_percent, expected_percent_default_deadzone
+):
+    lockable_knob = LockableKnob(k1, initial_percentage_value=initial_percentage_value)
+    assert lockable_knob.state == LockableKnob.STATE_LOCKED
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == expected_percent_default_deadzone
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == expected_percent
+
+
+def test_initial_uint16_value_overrides_percentage():
+    lockable_knob = LockableKnob(k1, initial_uint16_value=MAX_UINT16, initial_percentage_value=1)
+    assert lockable_knob.state == LockableKnob.STATE_LOCKED
+    assert round(lockable_knob.percent(deadzone=0.01), 2) == 0
+    assert round(lockable_knob.percent(deadzone=0.0), 2) == 0
 
 
 def test_unlocked_knob_changes_value(mockHardware: MockHardware, lockable_knob: LockableKnob):
@@ -160,7 +204,7 @@ def knob_bank(mockHardware: MockHardware):
         KnobBank.builder(k1)
         .with_disabled_knob()
         .with_unlocked_knob("param1")
-        .with_locked_knob("param2", MAX_UINT16)
+        .with_locked_knob("param2", initial_uint16_value=MAX_UINT16 / 3)
         .build()
     )
 
@@ -184,8 +228,8 @@ def test_access_by_name(mockHardware: MockHardware, knob_bank: KnobBank):
     # knob starts in the middle, knob 1
     assert round(knob_bank.param1.percent(deadzone=0.01), 2) == 0.50
     assert round(knob_bank.param1.percent(deadzone=0.0), 2) == 0.50
-    assert round(knob_bank.param2.percent(deadzone=0.01), 2) == 0
-    assert round(knob_bank.param2.percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.param2.percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.param2.percent(deadzone=0.0), 2) == 0.67
     assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.50
     assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.50
 
@@ -195,10 +239,10 @@ def test_access_by_name(mockHardware: MockHardware, knob_bank: KnobBank):
 
     assert round(knob_bank.param1.percent(deadzone=0.01), 2) == 0.50
     assert round(knob_bank.param1.percent(deadzone=0.0), 2) == 0.50
-    assert round(knob_bank.param2.percent(deadzone=0.01), 2) == 0
-    assert round(knob_bank.param2.percent(deadzone=0.0), 2) == 0
-    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0
-    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.param2.percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.param2.percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.67
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16)
 
@@ -225,8 +269,8 @@ def test_access_by_index(mockHardware: MockHardware, knob_bank: KnobBank):
     assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
     assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
     assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0
-    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
     assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.50
     assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.50
 
@@ -238,10 +282,10 @@ def test_access_by_index(mockHardware: MockHardware, knob_bank: KnobBank):
     assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
     assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
     assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0
-    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0
-    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0
-    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.67
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16)
 
@@ -334,7 +378,7 @@ def test_builder():
         KnobBank.builder(k1)
         .with_disabled_knob()
         .with_unlocked_knob("param1")
-        .with_locked_knob("param2", MAX_UINT16)
+        .with_locked_knob("param2", initial_uint16_value=MAX_UINT16)
         .build()
     )
 
@@ -347,7 +391,7 @@ def test_builder_threshold_from_choice_count():
     kb = (
         KnobBank.builder(k1)
         .with_unlocked_knob("param1", threshold_from_choice_count=7)
-        .with_locked_knob("param2", MAX_UINT16)
+        .with_locked_knob("param2", initial_uint16_value=MAX_UINT16)
         .build()
     )
 
