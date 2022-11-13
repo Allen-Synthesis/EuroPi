@@ -542,5 +542,7 @@ cv5 = Output(18)
 cv6 = Output(19)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
+usb_connected = DigitalReader(24, 0)
+
 # Reset the module state upon import.
 reset_state()
