@@ -2,6 +2,23 @@
 
 This document will take you through the steps to get your module ready to program.  
   
+## NOTE:
+If you already have any version of the firmware or any other code loaded onto your EuroPi and want to ensure a clean installation, or you just want to make sure you have all the most recent scripts available, first follow these instructions:
+
+1. Download [flash_nuke.uf2](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython) from Adafruit.
+  
+2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.  
+
+![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
+
+3. Open your file manager and drag and drop the downloaded `flash_nuke.uf2` onto the new drive named 'RPI-RP2'. This will wipe your Pico clean, ready for a new installation of the firmware.  
+
+4. The Pico will automatically eject once the process is completed.  
+  
+5. Continue to [Setting Up](#setting-up) as normal.
+
+  
+  
 ## Setting Up
   
 ### Downloading Thonny
