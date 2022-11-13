@@ -74,7 +74,7 @@ MIN_OUTPUT_VOLTAGE = 0
 MAX_OUTPUT_VOLTAGE = 10
 
 # PWM Frequency
-PWM_FREQ = 2_500_000
+PWM_FREQ = 100_000
 
 # Default font is 8x8 pixel monospaced font.
 CHAR_WIDTH = 8
