@@ -53,7 +53,7 @@ except ImportError:
     ]
 
 # Pico machine CPU freq.
-# Default clock speed is 125_000_000 (125mHz)
+# Default pico CPU freq is 125_000_000 (125mHz)
 CPU_FREQ = 250_000_000
 
 # OLED component display dimensions.
