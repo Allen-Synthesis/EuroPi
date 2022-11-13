@@ -53,6 +53,7 @@ except ImportError:
     ]
 
 # Pico machine CPU freq.
+# Default clock speed is 125_000_000 (125mHz)
 CPU_FREQ = 250_000_000
 
 # OLED component display dimensions.
@@ -487,7 +488,6 @@ class Output:
 
     def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
         self.pin = PWM(Pin(pin))
-        # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
         self.pin.freq(PWM_FREQ)
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
@@ -552,10 +552,3 @@ cv4 = Output(17)
 cv5 = Output(18)
 cv6 = Output(19)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
-
-# Overclock the Pico for improved performance.
-# Default clock speed is 125_000_000 (125mHz)
-freq(CPU_FREQ)
-
-# Reset the module state upon import.
-reset_state()
