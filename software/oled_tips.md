@@ -22,7 +22,7 @@ The pixels are indexed with (0, 0) at the top left, and (127, 31) at the bottom 
 |blit|buffer, x, y|Draws a bitmap based on a buffer, starting at (x, y)
 |scroll|x, y|Scrolls the contents of the display by (x, y)
 |invert|colour|Inverts the display
-|contrast|contrast|Changes the contrast based on a value
+|contrast|contrast|Changes the contrast based on a value between 0 and 255
 |show||Updates the physical display with the contents of the buffer
 
 ### Using .show()
@@ -52,3 +52,20 @@ oled.centre_text("this text\nhas been\ncentred")
 *OLED Result*
 
 ![imgur](https://i.imgur.com/Elljlt1.jpg)
+
+### Custom images
+
+  Custom images can be displayed using the blit function.
+ ```python
+from europi import *
+# The black and white image needs to be stored as bytearray:
+img=b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\x80\x00\x00~\x00\x00\x00<\x00\x00\x00<\x00\x00\x00<\x00\x00\x00>\x00\x00\x00>\x00\x00>>\x00\x00>>\x00\x00>?\x80\x00\x1d\xff\xff\xc0?\xff\xff\xfc\xff\xff\x80\x7f\xff\xff\x80\x7f?\xff\xff\xfc\x1d\xff\xff\xc0>?\x80\x00>>\x00\x00>>\x00\x00\x00>\x00\x00\x00>\x00\x00\x00<\x00\x00\x00<\x00\x00\x00<\x00\x00\x00~\x00\x00\x00\xff\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+imgBA = bytearray(img)
+# Then a small FrameBuffer needs to be created that shows the image:
+imgFB = FrameBuffer(imgBA, 32, 32, MONO_HLSB)
+# Finally the small FrameBuffer can be blit anywhere onto the display FrameBuffer
+oled.blit(imgFB,40,0)
+oled.show()
+```
+To generate the bytearray string from an jpg file this tool can be used:
+https://github.com/novaspirit/img2bytearray
