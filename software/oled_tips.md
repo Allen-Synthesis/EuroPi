@@ -68,4 +68,8 @@ oled.blit(imgFB,40,0)
 oled.show()
 ```
 To generate the bytearray string from an jpg file this tool can be used:
+
 https://github.com/novaspirit/img2bytearray
+
+Make sure your jpg has the right size and you use the same size when you run this tool und in the micropython code.
+Images will be inverted. So a black pixel on the jpg will be bright on the oled
