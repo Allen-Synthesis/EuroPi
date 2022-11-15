@@ -1,9 +1,5 @@
 # Creating a custom firmware.uf2 image for EuroPi
 
-author: redoxcode
-
-date: 2022-11-15
-
 ## Compiling the firmware
 ```
 # install extra tools if not already done so
