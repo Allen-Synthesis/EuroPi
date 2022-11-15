@@ -53,7 +53,7 @@ oled.centre_text("this text\nhas been\ncentred")
 
 ![imgur](https://i.imgur.com/Elljlt1.jpg)
 
-### Custom images
+## Custom images
 
   Custom images can be displayed using the blit function.
  ```python
