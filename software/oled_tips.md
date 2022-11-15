@@ -74,7 +74,7 @@ https://github.com/novaspirit/img2bytearray
 Make sure your jpg has the right size and you use the same size when you run this tool and in the micropython code.
 Images will be inverted. So a black pixel on the jpg will be bright on the oled
 
-# Burn in
+## Burn in
 If a script is left running for a long period of time, it can burn that screen into the oled and leave ghost images.
 To avoid this it is recommended to not leave the EuroPi screen on for very long periods of time with with something static on the display.
 If you write a script consider adding a 'screensaver' function (for example clear the screen if there was no user interaction for an extended time period).
