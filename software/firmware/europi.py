@@ -54,7 +54,8 @@ except ImportError:
 
 # Pico machine CPU freq.
 # Default pico CPU freq is 125_000_000 (125mHz)
-CPU_FREQ = 250_000_000
+DEFAULT_CPU_FREQ = 125_000_000
+OVERCLOCKED_CPU_FREQ = 250_000_000
 
 # OLED component display dimensions.
 OLED_WIDTH = 128
@@ -552,3 +553,9 @@ cv4 = Output(17)
 cv5 = Output(18)
 cv6 = Output(19)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
+
+# Overclock the Pico for improved performance.
+freq(OVERCLOCKED_CPU_FREQ)
+
+# Reset the module state upon import.
+reset_state()

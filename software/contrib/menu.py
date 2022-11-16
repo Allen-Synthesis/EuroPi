@@ -1,12 +1,7 @@
 """See menu.md for details."""
 # Reset the module state and display bootsplash screen.
-from europi import bootsplash, reset_state, CPU_FREQ
-reset_state()
+from europi import bootsplash
 bootsplash()
-
-# Overclock the Pico for improved performance.
-from machine import freq
-freq(CPU_FREQ)
 
 from bootloader import BootloaderMenu
 
