@@ -1,8 +1,7 @@
 from config_points import ConfigPointsBuilder
-from europi_script import EuroPiScript
 
 
-class EuroPiConfig(EuroPiScript):
+class EuroPiConfig:
     """This class provides EuroPi's global config points to the Config script. It is not intended to
     be run on its own."""
 

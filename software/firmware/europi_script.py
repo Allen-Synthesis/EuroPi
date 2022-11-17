@@ -3,6 +3,7 @@ import os
 import json
 from utime import ticks_diff, ticks_ms
 from config_points import ConfigPointsBuilder
+from europi_config import EuroPiConfig
 
 
 class EuroPiScript:
@@ -105,7 +106,7 @@ class EuroPiScript:
 
     def __init__(self):
         self._last_saved = 0
-        self.config = self._load_config()
+        self.config = self._load_config_with_system_defaults()
 
     def main(self):
         """Override this method with your script's main loop method."""
@@ -225,11 +226,7 @@ class EuroPiScript:
         """TODO"""
         return config_builder
 
-    @classmethod
-    def _build_config_points(cls):
-        return cls.config_points(ConfigPointsBuilder()).build()
-
-    @classmethod
+    @staticmethod
     def _config_filename(cls):
         return f"config/config_{cls.__qualname__}.json"
 
@@ -248,29 +245,41 @@ class EuroPiScript:
             os.mkdir("config")
         except OSError:
             pass
-        with open(cls._config_filename(), "w") as file:
+        with open(EuroPiScript._config_filename(cls), "w") as file:
             file.write(json_str)
 
-    @classmethod
-    def _load_config(cls):
+    @staticmethod
+    def _load_config(config_file_name: str, config_points: ConfigPointsBuilder):
         """If this class has config points, this method returns the config dictionary as saved in
         this class's config file, else, returns an empty dict."""
-        config_points = cls._build_config_points()
         if len(config_points):
-            data = cls._load_file(cls._config_filename())
+            data = EuroPiScript._load_file(config_file_name)
             config = config_points.default_config()
             if not data:
                 return config
             else:
-                saved_config = cls._load_json_data(data)
+                saved_config = EuroPiScript._load_json_data(data)
+                # TODO: only load config points that have been declared
                 config.update(saved_config)
                 return config
         else:
             return {}
 
+    @staticmethod
+    def _load_config_for_class(cls):
+        return EuroPiScript._load_config(
+            EuroPiScript._config_filename(cls), cls.config_points(ConfigPointsBuilder()).build()
+        )
+
+    @classmethod
+    def _load_config_with_system_defaults(cls):
+        base_config = cls._load_config_for_class(EuroPiConfig)
+        base_config.update(cls._load_config_for_class(cls))
+        return base_config
+
     def _delete_config(self):
         """Deletes the config file, effectively resetting to defaults."""
-        self._delete_file(self._config_filename())
+        self._delete_file(EuroPiScript._config_filename(self.__class__))
 
     # generic file methods #TODO move these elsewhere?
 

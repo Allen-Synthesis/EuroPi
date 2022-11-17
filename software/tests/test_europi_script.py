@@ -65,30 +65,50 @@ def test_save_load_state_bytes(script_for_testing):
 
 
 def test_config_file_name(script_for_testing):
-    assert script_for_testing._config_filename() == "config/config_ScriptForTesting.json"
+    assert (
+        EuroPiScript._config_filename(script_for_testing.__class__)
+        == "config/config_ScriptForTesting.json"
+    )
 
 
 def test_load_config_no_config(script_for_testing):
-    assert script_for_testing._load_config() == {}
+    assert EuroPiScript._load_config_for_class(script_for_testing.__class__) == {}
 
 
 def test_load_config_defaults(script_for_testing_with_config):
-    assert script_for_testing_with_config._load_config() == {"a": 5, "b": 7}
+    assert EuroPiScript._load_config_for_class(script_for_testing_with_config.__class__) == {
+        "a": 5,
+        "b": 7,
+    }
 
 
 def test_save_and_load_saved_config(script_for_testing_with_config):
     script_for_testing_with_config._save_config({"a": 6, "b": 8})
 
-    with open(script_for_testing_with_config._config_filename(), "r") as f:
+    with open(EuroPiScript._config_filename(script_for_testing_with_config.__class__), "r") as f:
         assert f.read() == '{"a": 6, "b": 8}'
 
-    assert script_for_testing_with_config._load_config() == {"a": 6, "b": 8}
+    assert EuroPiScript._load_config_for_class(script_for_testing_with_config.__class__) == {
+        "a": 6,
+        "b": 8,
+    }
 
 
 def test_load_config_with_fallback_to_defaults(script_for_testing_with_config):
     script_for_testing_with_config._save_config({"a": 6})
 
-    with open(script_for_testing_with_config._config_filename(), "r") as f:
+    with open(EuroPiScript._config_filename(script_for_testing_with_config.__class__), "r") as f:
         assert f.read() == '{"a": 6}'
 
-    assert script_for_testing_with_config._load_config() == {"a": 6, "b": 7}
+    assert EuroPiScript._load_config_for_class(script_for_testing_with_config.__class__) == {
+        "a": 6,
+        "b": 7,
+    }
+
+
+def test_load_config_with_system_defaults(script_for_testing_with_config):
+    assert script_for_testing_with_config._load_config_with_system_defaults() == {
+        "a": 5,
+        "b": 7,
+        "pico_model": "pico",
+    }
