@@ -3,6 +3,9 @@ from europi_script import EuroPiScript
 
 
 class EuroPiConfig(EuroPiScript):
+    """This class provides EuroPi's global config points to the Config script. It is not intended to
+    be run on its own."""
+
     @classmethod
     def display_name(cls):
         return "EuroPi"
