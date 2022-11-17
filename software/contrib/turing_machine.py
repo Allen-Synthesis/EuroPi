@@ -36,7 +36,7 @@ except ImportError:
     from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
     from experimental.knobs import KnobBank
 
-from config import ConfigPointsBuilder
+from config_points import ConfigPointsBuilder
 from europi_script import EuroPiScript
 
 # Customize pulses output here

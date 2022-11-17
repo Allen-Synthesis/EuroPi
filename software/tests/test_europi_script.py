@@ -1,5 +1,5 @@
 import pytest
-from firmware.config import ConfigPointsBuilder
+from firmware.config_points import ConfigPointsBuilder
 from europi_script import EuroPiScript
 from collections import namedtuple
 from struct import pack, unpack

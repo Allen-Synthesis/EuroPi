@@ -14,7 +14,7 @@ class ConfigPointsBuilder:
         self.points = {}
 
     def with_choice(self, name: str, choices: "List", default) -> "ConfigPointsBuilder":
-        self.points[name] = {"type": "choice", "choices": choices, "default": default}
+        self.points[name] = {"name": name, "type": "choice", "choices": choices, "default": default}
         return self
 
     def build(self) -> ConfigPoints:

@@ -2,7 +2,7 @@
 import os
 import json
 from utime import ticks_diff, ticks_ms
-from config import ConfigPointsBuilder
+from config_points import ConfigPointsBuilder
 
 
 class EuroPiScript:
@@ -230,8 +230,8 @@ class EuroPiScript:
         return cls.config_points(ConfigPointsBuilder()).build()
 
     @classmethod
-    def _config_filename(self):
-        return f"config_{self.__qualname__}.json"
+    def _config_filename(cls):
+        return f"config_{cls.__qualname__}.json"
 
     def _save_config(self, data: dict):
         """Take config as a dict and save to this class's config file.
@@ -246,16 +246,17 @@ class EuroPiScript:
         with open(self._config_filename(), "w") as file:
             file.write(json_str)
 
-    def _load_config(self):
+    @classmethod
+    def _load_config(cls):
         """If this class has config points, this method returns the config dictionary as saved in
         this class's config file, else, returns an empty dict."""
-        config_points = self._build_config_points()
+        config_points = cls._build_config_points()
         if len(config_points):
-            data = self._load_file(self._config_filename())
+            data = cls._load_file(cls._config_filename())
             if not data:
                 return config_points.default_config()
             else:
-                return self._load_json_data(data)
+                return cls._load_json_data(data)
         else:
             return {}
 
