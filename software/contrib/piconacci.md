@@ -43,7 +43,15 @@ https://github.com/Allen-Synthesis/EuroPi
 
 # Details
 
-Piconnaci emits triggers on each output with clock divisions based on values from the Fibonacci series. Those values are taken by selecting a "window" of six consecutive values and then assigning values to the outputs. The window can be moved and rotated through short and long button presses.
+Piconnaci emits triggers on each output with clock divisions based on
+values from the Fibonacci series. Those values are taken by selecting
+a "window" of six consecutive values and then assigning values to the
+outputs. The window can be moved and rotated through short and long
+button presses.
+
+In the diagrams below, the green boxes indicate the values in the
+Fibonacci series. The blue boxes indicate the active "window" with the
+numbers showing which division is used for each output. 
 
 ![pico drawio](https://user-images.githubusercontent.com/1035997/168587520-de2286af-1ae4-45be-a0f4-0aeb8128c4a9.png)
 

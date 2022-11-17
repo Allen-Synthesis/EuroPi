@@ -41,7 +41,7 @@ MAX_FIB = 50
 class Piconacci(EuroPiScript):
     def __init__(self):
         # Flag to indicate whether the display needs updating.
-        self.dirty = True
+        self.display_update_required = True
         # offset determines the sublist to be used for the values.
         self.offset = 0
         # rotate adjusts how the values are mapped to the cv
@@ -61,9 +61,6 @@ class Piconacci(EuroPiScript):
 
         self.steps = [0] * 6
 
-        # Triggered when button 1 is released
-        # Short press:
-        # Long press:
         @b1.handler_falling
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) > 300:
@@ -74,11 +71,8 @@ class Piconacci(EuroPiScript):
                 if self.offset > 0:
                     self.offset -= 1
             # State has changed
-            self.dirty = True
+            self.display_update_required = True
 
-        # Triggered when button 2 is released.
-        # Short press:
-        # Long press:
         @b2.handler_falling
         def b2Pressed():
             if ticks_diff(ticks_ms(), b2.last_pressed()) > 300:
@@ -89,7 +83,7 @@ class Piconacci(EuroPiScript):
                 if self.offset < MAX_FIB - 7:
                     self.offset += 1
             # State has changed
-            self.dirty = True
+            self.display_update_required = True
 
         # Triggered on each clock into digital input. Output triggers.
         @din.handler
@@ -110,19 +104,17 @@ class Piconacci(EuroPiScript):
                 cv.off()
 
     def value(self, index):
-        values = self.fib[self.offset : self.offset + 6]
-        return values[(index + self.rotate) % 6]
+        # Return a value from the series, taking into account offset and rotation
+        return self.fib[self.offset : self.offset + 6][(index + self.rotate) % 6]
 
     def main(self):
-        # Reset module display state.
-        oled.fill(0)
         # Reset all outputs
         [cv.off() for cv in cvs]
         while True:
             # If the state has changed, update display
-            if self.dirty:
+            if self.display_update_required:
                 self.updateScreen()
-                self.dirty = False
+                self.display_update_required = False
 
     def updateScreen(self):
         oled.fill(0)
@@ -141,5 +133,3 @@ class Piconacci(EuroPiScript):
 if __name__ == "__main__":
     pc = Piconacci()
     pc.main()
-
-
