@@ -46,9 +46,10 @@ jobs:
           BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
           EOF
 
-      - run: tree europi
+      - run: tree micropython/ports/rp2/modules
 
       - name: compile micropython and firmware modules
+        working-directory: micropython/ports/rp2
         run: make
 
       - name: make release asset
