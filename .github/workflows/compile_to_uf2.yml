@@ -23,8 +23,9 @@ jobs:
         with:
           repository: micropython/micropython
           ref: v1.19.1
+          path: micropython
 
-      - run: tree
+      - run: tree -L 2
 
       - name: prepare micropython build
         run: make -C micropython/ports/rp2 submodules && make -C micropython/mpy-cross
