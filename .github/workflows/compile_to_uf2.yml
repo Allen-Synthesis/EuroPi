@@ -1,10 +1,12 @@
 name: Create uf2 release for new version tag
 
-on:
-  push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+on: [push]
+
+# on:
+#   push:
+#     # Sequence of patterns matched against refs/tags
+#     tags:
+#     - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   compile-uf2:
