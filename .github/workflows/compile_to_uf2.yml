@@ -24,9 +24,10 @@ jobs:
           repository: micropython/micropython
           ref: v1.19.1
 
+      - run: tree
+
       - name: prepare micropython build
-        working-directory: micropython
-        run: make -C ports/rp2 submodules && make -C mpy-cross
+        run: make -C micropython/ports/rp2 submodules && make -C micropython/mpy-cross
 
       - name: copy europi into micropython modules
         run: |
