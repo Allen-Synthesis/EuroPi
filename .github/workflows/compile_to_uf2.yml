@@ -29,7 +29,8 @@ jobs:
         run: sudo apt-get install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
 
       - name: prepare micropython build
-        run: make -C micropython/ports/rp2 submodules && make -C micropython/mpy-cross
+        working-directory: micropython
+        run: make -C ports/rp2 submodules && make -C mpy-cross
 
       - name: copy europi into micropython modules
         run: |
@@ -50,6 +51,7 @@ jobs:
           EOF
 
       - run: tree micropython/ports/rp2/modules
+      - run: cat micropython/ports/rp2/modules/main.py
 
       - name: compile micropython and firmware modules
         working-directory: micropython/ports/rp2
@@ -60,23 +62,12 @@ jobs:
         run: |
           VERSION=`grep -oP '(?<=")[\d\.]+(?=")' micropython/ports/rp2/modules/version.py`
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+      
+      - run: cp micropython/ports/rp2/build-PICO/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
 
       - name: create github release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-
-      - name: upload release asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: micropython/ports/rp2/build-PICO/firmware.uf2
-          asset_name: europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
-          asset_content_type: application/octet-stream
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          draft: true
+          files: europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
