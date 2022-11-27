@@ -29,8 +29,8 @@ jobs:
 
       - name: copy europi into micropython modules
         run: |
-          mkdir contrib
-          mkdir experimental
+          mkdir micropython/ports/rp2/modules/contrib
+          mkdir micropython/ports/rp2/modules/experimental
           cp -r europi/software/firmware/*.py micropython/ports/rp2/modules
           cp -r europi/software/firmware/experimental micropython/ports/rp2/modules/experimental
           cp -r europi/software/contrib/*.py micropython/ports/rp2/modules/contrib
@@ -38,11 +38,11 @@ jobs:
         run: sed -i 's/progsize=256)/progsize=1024)/g' micropython/ports/rp2/modules/_boot.py
         run: |
           cat <<EOF >> micropython/ports/rp2/modules/main.py
-import gc
-gc.collect()
-from contrib.menu import *
-BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
-EOF
+          import gc
+          gc.collect()
+          from contrib.menu import *
+          BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
+          EOF
 
       - name: compile micropython and firmware modules
         run: make
