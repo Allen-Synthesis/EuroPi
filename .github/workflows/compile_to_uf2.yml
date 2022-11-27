@@ -55,12 +55,11 @@ jobs:
         working-directory: micropython/ports/rp2
         run: make
 
-      - name: make release asset
-        id: make-release-asset
+      - name: release asset version
+        id: release-asset-version
         run: |
-          export VERSION=`grep -oP '(?<=")[\d\.]+(?=")' micropython/ports/rp2/modules/version.py`
-          echo "::set-env name=VERSION::$VERSION"
-      - run: cp micropython/ports/rp2/build-PICO/firmware.uf2 europi-v${VERSION}.uf2
+          VERSION=`grep -oP '(?<=")[\d\.]+(?=")' micropython/ports/rp2/modules/version.py`
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: create github release
         id: create_release
@@ -78,5 +77,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./europi-v${VERSION}.uf2
-          asset_name: europi-v${VERSION}.uf2
+          asset_path: micropython/ports/rp2/build-PICO/firmware.uf2
+          asset_name: europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
