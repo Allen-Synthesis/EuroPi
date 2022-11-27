@@ -37,7 +37,7 @@ jobs:
           mkdir micropython/ports/rp2/modules/contrib
           mkdir micropython/ports/rp2/modules/experimental
           cp -r europi/software/firmware/*.py micropython/ports/rp2/modules
-          cp -r europi/software/firmware/experimental micropython/ports/rp2/modules/experimental
+          cp -r europi/software/firmware/experimental/*.py micropython/ports/rp2/modules/experimental
           cp -r europi/software/contrib/*.py micropython/ports/rp2/modules/contrib
         
       - run: wget https://raw.githubusercontent.com/stlehmann/micropython-ssd1306/master/ssd1306.py -O micropython/ports/rp2/modules/ssd1306.py
@@ -51,7 +51,6 @@ jobs:
           EOF
 
       - run: tree micropython/ports/rp2/modules
-      - run: cat micropython/ports/rp2/modules/main.py
 
       - name: compile micropython and firmware modules
         working-directory: micropython/ports/rp2
