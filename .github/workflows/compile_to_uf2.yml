@@ -25,8 +25,6 @@ jobs:
           ref: v1.19.1
           path: micropython
 
-      - run: tree -L 2
-
       - name: prepare micropython build
         run: make -C micropython/ports/rp2 submodules && make -C micropython/mpy-cross
 
@@ -38,7 +36,7 @@ jobs:
           cp -r europi/software/firmware/experimental micropython/ports/rp2/modules/experimental
           cp -r europi/software/contrib/*.py micropython/ports/rp2/modules/contrib
         
-      - run: wget https://raw.githubusercontent.com/stlehmann/micropython-ssd1306/master/ssd1306.py -O ports/rp2/modules/ssd1306.py
+      - run: wget https://raw.githubusercontent.com/stlehmann/micropython-ssd1306/master/ssd1306.py -O micropython/ports/rp2/modules/ssd1306.py
       - run: sed -i 's/progsize=256)/progsize=1024)/g' micropython/ports/rp2/modules/_boot.py
       - run: |
           cat <<EOF >> micropython/ports/rp2/modules/main.py
@@ -47,6 +45,8 @@ jobs:
           from contrib.menu import *
           BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
           EOF
+
+      - run: tree europi
 
       - name: compile micropython and firmware modules
         run: make
