@@ -1,0 +1,74 @@
+name: Create uf2 release for new version tag
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  compile-uf2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: clone EuroPi
+        uses: actions/checkout@v3
+        with:
+          path: europi
+
+      - name: clone micropython
+        uses: actions/checkout@v3
+        with:
+          repository: micropython/micropython
+          ref: v1.19.1
+
+      - name: prepare micropython build
+        working-directory: micropython
+        run: make -C ports/rp2 submodules
+        run: make -C mpy-cross
+
+      - name: copy europi into micropython modules
+        run: |
+          mkdir contrib
+          mkdir experimental
+          cp -r europi/software/firmware/*.py micropython/ports/rp2/modules
+          cp -r europi/software/firmware/experimental micropython/ports/rp2/modules/experimental
+          cp -r europi/software/contrib/*.py micropython/ports/rp2/modules/contrib
+        run: wget https://raw.githubusercontent.com/stlehmann/micropython-ssd1306/master/ssd1306.py -O ports/rp2/modules/ssd1306.py
+        run: sed -i 's/progsize=256)/progsize=1024)/g' micropython/ports/rp2/modules/_boot.py
+        run: |
+          cat <<EOF >> micropython/ports/rp2/modules/main.py
+import gc
+gc.collect()
+from contrib.menu import *
+BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
+EOF
+
+      - name: compile micropython and firmware modules
+        run: make
+
+      - name: make release asset
+        id: make-release-asset
+        run: |
+          export VERSION=`grep -oP '(?<=")[\d\.]+(?=")' micropython/ports/rp2/modules/version.py`
+          echo "::set-env name=VERSION::$VERSION"
+        run: cp micropython/ports/rp2/build-PICO/firmware.uf2 europi-v${VERSION}.uf2
+
+      - name: create github release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+
+      - name: upload release asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./europi-v${VERSION}.uf2
+          asset_name: europi-v${VERSION}.uf2
