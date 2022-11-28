@@ -49,19 +49,7 @@ micropython/ports/rp2/modules/
 │   ├── cvecorder.py
 │   ├── diagnostic.py
 │   ├── hamlet.py
-│   ├── harmonic_lfos.py
-│   ├── hello_world.py
-│   ├── master_clock.py
-│   ├── menu.py
-│   ├── noddy_holder.py
-│   ├── polyrhythmic_sequencer.py
-│   ├── poly_square.py
-│   ├── probapoly.py
-│   ├── radio_scanner.py
-│   ├── scope.py
-│   ├── smooth_random_voltages.py
-│   ├── strange_attractor.py
-│   └── turing_machine.py
+│   └── ...
 ├── europi.py
 ├── europi_script.py
 ├── experimental
@@ -93,7 +81,7 @@ main.py could look like this: (It's important to call the garbage collector to m
 ```
 import gc
 gc.collect()
-import contrib.menu
+from contrib.menu import *
 BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
 ```
 
