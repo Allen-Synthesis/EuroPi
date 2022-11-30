@@ -1,10 +1,9 @@
 name: Create uf2 release for new version tag
 
-on: push
-# on:
-#   push:
-#     tags:
-#       - "v*"
+on:
+  push:
+    tags:
+      - "v*"
 
 jobs:
   compile-uf2:
