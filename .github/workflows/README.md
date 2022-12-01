@@ -2,6 +2,12 @@
 
 This repository performs various jobs when actions are taken against this GIT repository. These jobs are documented below.
 
+## Compile to uf2
+
+When a new tag is pushed to the main repository, this workflow will freeze the EuroPi firmware, experimental, and contrib folders as a module in a clone of the MicroPython source. Then the source is compiled into a uf2 binary which includes the Menu script as a main entrypoint. This file is renamed to include the tag version and a release is created with that file attached.
+
+See  [`software/create_custom_firmware_uf2.md`](/software/create_custom_firmware_uf2.md) for more details on the steps to create a custom uf2 firmware file.
+
 ## Continuous Integration
 
 This is an encompassing workflow for the workflows that make up our continuous integration process. Currently it runs
@@ -14,7 +20,7 @@ To be completed.
 ## Publish To PyPi
 
 This workflow publishes the `micropython-europi` and `micropython-europi-contrib` distributions to the public PyPi
-repositories. These distributions are described by the [`software/firmware/setup.py`](software/firmware/setup.py) and [`software/setup.py`](software/setup.py) files respectively. 
+repositories. These distributions are described by the [`software/firmware/setup.py`](/software/firmware/setup.py) and [`software/setup.py`](/software/setup.py) files respectively. 
 
 ### test.pypi.org
 
