@@ -102,8 +102,6 @@ class KnobState:
 
 class PolySquare(EuroPiScript):
     def __init__(self):
-        # Settings for improved performance
-        machine.freq(250_000_000)
         k1.set_samples(256)
         k2.set_samples(256)        
         # PIO settings

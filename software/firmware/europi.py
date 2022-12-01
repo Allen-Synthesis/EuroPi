@@ -20,6 +20,8 @@ from machine import ADC
 from machine import I2C
 from machine import PWM
 from machine import Pin
+from machine import freq
+
 
 from ssd1306 import SSD1306_I2C
 
@@ -49,6 +51,12 @@ except ImportError:
         56950,
         63475,
     ]
+
+# Pico machine CPU freq.
+# Default pico CPU freq is 125_000_000 (125mHz)
+DEFAULT_CPU_FREQ = 125_000_000
+OVERCLOCKED_CPU_FREQ = 250_000_000
+
 # OLED component display dimensions.
 OLED_WIDTH = 128
 OLED_HEIGHT = 32
@@ -66,6 +74,9 @@ DEFAULT_SAMPLES = 32
 # Output voltage range
 MIN_OUTPUT_VOLTAGE = 0
 MAX_OUTPUT_VOLTAGE = 10
+
+# PWM Frequency
+PWM_FREQ = 100_000
 
 # Default font is 8x8 pixel monospaced font.
 CHAR_WIDTH = 8
@@ -478,8 +489,7 @@ class Output:
 
     def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
         self.pin = PWM(Pin(pin))
-        # Set freq to 1kHz as the default is too low and creates audible PWM 'hum'.
-        self.pin.freq(100_000)
+        self.pin.freq(PWM_FREQ)
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
@@ -525,6 +535,8 @@ class Output:
             self.off()
 
 
+## Initialize EuroPi global singleton instance variables.
+
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(22)
 ain = AnalogueInput(26)
@@ -543,6 +555,9 @@ cv6 = Output(19)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 usb_connected = DigitalReader(24, 0)
+
+# Overclock the Pico for improved performance.
+freq(OVERCLOCKED_CPU_FREQ)
 
 # Reset the module state upon import.
 reset_state()

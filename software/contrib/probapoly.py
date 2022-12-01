@@ -37,9 +37,6 @@ class Probapoly(EuroPiScript):
         # Needed if using europi_script
         super().__init__()
 
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-
         # Variables
         self.step = 1
         self.clockStep = 0

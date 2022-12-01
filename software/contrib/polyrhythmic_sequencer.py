@@ -139,8 +139,6 @@ class PolyrhythmSeq(EuroPiScript):
 
     def __init__(self):
         super().__init__()
-        # Overclock the Pico for improved performance.
-        machine.freq(250000000)
 
         # Configure EuroPi options to improve performance.
         b2.debounce_delay = 200
