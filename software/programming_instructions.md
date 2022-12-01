@@ -2,8 +2,7 @@
 
 This document will take you through the steps to get your module ready to program.  
   
-## NOTE:
-If you already have any version of the firmware or any other code loaded onto your EuroPi and want to ensure a clean installation, or you just want to make sure you have all the most recent scripts available, first follow these instructions:
+> **_NOTE:_**  If you already have any version of the firmware or any other code loaded onto your EuroPi and want to ensure a clean installation, or you just want to make sure you have all the most recent scripts available, first follow these instructions:
 
 1. Download [flash_nuke.uf2](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython#flash-resetting-uf2-3083182) from Adafruit.
   
@@ -17,7 +16,11 @@ If you already have any version of the firmware or any other code loaded onto yo
   
 5. Continue to [Setting Up](#setting-up) as normal.
 
-  
+ ## Quick start
+
+ The quickest way to get your EuroPi flashed with the latest firmware is to head over to the [releases](/releases) page and download the latest `europi-vX.Y.Z.uf2` file and follow the 'BOOTSEL' instructions above to flash it to your pico. You can now skip the **Setting Up** section and move to the [Next Steps](#next-steps) section.
+
+> **_NOTE:_**  The EuroPi firmware and contrib scripts will be installed and accessible via Thonny for writing custom scripts on the pico, however Thonny will not show those firmware and contrib files in the filesystem.
   
 ## Setting Up
   
