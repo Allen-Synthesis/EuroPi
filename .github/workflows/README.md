@@ -34,14 +34,14 @@ Pushes to the main [pypi.org](https://pypi.org/project/micropython-europi/#histo
 ### Release process
 
 1. Decide which version number to release.
-2. Update [`software/firmware/version.py`](/software/firmware/version.py) with the new version number.
-3. Update [`changelog.md`](CHANGELOG.md) with a description of the release.
-4. Commit and push to `main`.
-5. Verify that the new release was pushed to [test.pypi.org](https://test.pypi.org/project/micropython-europi/#history). If it was not, look for errors associated with the commit on the [actions tab](https://github.com/Allen-Synthesis/EuroPi/actions). Commit new changes until a successful release is created.
-6. Tag the release locally using `git tag -a <version_number> -m 'message'`, for example `git tag -a 0.0.1 -m 'release v0.0.1'`
-7. Push the tag to the remote repository with `git push origin <version_number>`, for example `git push origin 0.0.1`.
-8. Verify that the new release was pushed to [pypi.org](https://pypi.org/project/micropython-europi/#history) and is installable.
-9. Announce the release to the Discord server.
+1. Update [`software/firmware/version.py`](/software/firmware/version.py) with the new version number.
+1. Commit and push to `main`.
+1. Verify that the new release was pushed to [test.pypi.org](https://test.pypi.org/project/micropython-europi/#history). If it was not, look for errors associated with the commit on the [actions tab](https://github.com/Allen-Synthesis/EuroPi/actions). Commit new changes until a successful release is created.
+1. Tag the release locally using `git tag -a <version_number> -m 'message'`, for example `git tag -a 0.0.1 -m 'release v0.0.1'`
+1. Push the tag to the remote repository with `git push origin <version_number>`, for example `git push origin 0.0.1`.
+1. Verify that the new release was pushed to [pypi.org](https://pypi.org/project/micropython-europi/#history) and is installable.
+1. Update the generated Github Release with a description of the changes and publish.
+1. Announce the release to the Discord server.
 
 ## PyTest
 
