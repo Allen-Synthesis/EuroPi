@@ -40,7 +40,7 @@ Pushes to the main [pypi.org](https://pypi.org/project/micropython-europi/#histo
 1. Tag the release locally using `git tag -a <version_number> -m 'message'`, for example `git tag -a 0.0.1 -m 'release v0.0.1'`
 1. Push the tag to the remote repository with `git push origin <version_number>`, for example `git push origin 0.0.1`.
 1. Verify that the new release was pushed to [pypi.org](https://pypi.org/project/micropython-europi/#history) and is installable.
-1. Update the generated Github Release with a description of the changes and publish.
+1. Update the generated [GitHub Release](https://github.com/Allen-Synthesis/EuroPi/releases) with a description of the changes and publish.
 1. Announce the release to the Discord server.
 
 ## PyTest
