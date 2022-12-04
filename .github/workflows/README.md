@@ -20,7 +20,7 @@ To be completed.
 ## Publish To PyPi
 
 This workflow publishes the `micropython-europi` and `micropython-europi-contrib` distributions to the public PyPi
-repositories. These distributions are described by the [`software/firmware/setup.py`](/software/firmware/setup.py) and [`software/setup.py`](/software/setup.py) files respectively. 
+repositories. These distributions are described by the [`software/firmware/setup.py`](/software/firmware/setup.py) and [`software/setup.py`](/software/setup.py) files respectively.
 
 ### test.pypi.org
 
@@ -31,14 +31,14 @@ exercise the release process. Most of these will fail silently as a specific ver
 
 Pushes to the main [pypi.org](https://pypi.org/project/micropython-europi/#history) occur with each new tag.
 
-### Release process
+## Release process
 
 1. Decide which version number to release.
 1. Update [`software/firmware/version.py`](/software/firmware/version.py) with the new version number.
 1. Commit and push to `main`.
 1. Verify that the new release was pushed to [test.pypi.org](https://test.pypi.org/project/micropython-europi/#history). If it was not, look for errors associated with the commit on the [actions tab](https://github.com/Allen-Synthesis/EuroPi/actions). Commit new changes until a successful release is created.
-1. Tag the release locally using `git tag -a <version_number> -m 'message'`, for example `git tag -a 0.0.1 -m 'release v0.0.1'`
-1. Push the tag to the remote repository with `git push origin <version_number>`, for example `git push origin 0.0.1`.
+1. Tag the release locally using `git tag -a v<version_number> -m 'message'`, for example `git tag -a v0.0.1 -m 'release v0.0.1'`
+1. Push the tag to the remote repository with `git push origin <version_number>`, for example `git push origin v0.0.1`.
 1. Verify that the new release was pushed to [pypi.org](https://pypi.org/project/micropython-europi/#history) and is installable.
 1. Update the generated [GitHub Release](https://github.com/Allen-Synthesis/EuroPi/releases) with a description of the changes and publish.
 1. Announce the release to the Discord server.
