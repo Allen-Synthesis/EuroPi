@@ -7,7 +7,7 @@ on:
 
 jobs:
   compile-uf2:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: clone EuroPi
@@ -37,9 +37,14 @@ jobs:
           cp -r europi/software/firmware/experimental/*.py micropython/ports/rp2/modules/experimental
           cp -r europi/software/contrib/*.py micropython/ports/rp2/modules/contrib
         
-      - run: wget https://raw.githubusercontent.com/stlehmann/micropython-ssd1306/master/ssd1306.py -O micropython/ports/rp2/modules/ssd1306.py
-      - run: sed -i 's/progsize=256)/progsize=1024)/g' micropython/ports/rp2/modules/_boot.py
-      - run: |
+      - name: install ssd1306 library
+        run: wget https://raw.githubusercontent.com/stlehmann/micropython-ssd1306/master/ssd1306.py -O micropython/ports/rp2/modules/ssd1306.py
+
+      - name: increase virtual filesystem progsize
+        run: sed -i 's/progsize=256)/progsize=1024)/g' micropython/ports/rp2/modules/_boot.py
+
+      - name: create main.py entrypoint
+        run: |
           cat <<EOF >> micropython/ports/rp2/modules/main.py
           import gc
           gc.collect()
@@ -47,23 +52,24 @@ jobs:
           BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
           EOF
 
-      - run: tree micropython/ports/rp2/modules
+      - name: "[debug] print modules folder"
+        run: tree micropython/ports/rp2/modules
 
       - name: compile micropython and firmware modules
         working-directory: micropython/ports/rp2
         run: make
 
-      - name: release asset version
+      - name: create release asset version
         id: release-asset-version
         run: |
           VERSION=`grep -oP '(?<=")[\d\.]+(?=")' micropython/ports/rp2/modules/version.py`
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
       
-      - run: cp micropython/ports/rp2/build-PICO/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
+      - name: rename firmware file with version info
+        run: cp micropython/ports/rp2/build-PICO/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
 
       - name: create github release
-        uses: "marvinpinto/action-automatic-releases@latest"
+        uses: "marvinpinto/action-automatic-releases@v1.2.1"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          draft: true
           files: europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2

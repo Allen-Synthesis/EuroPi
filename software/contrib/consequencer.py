@@ -38,9 +38,6 @@ output_6: randomly generated CV (cycled by pushing button 2)
 
 class Consequencer(EuroPiScript):
     def __init__(self):
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-
         # Initialize sequencer pattern arrays   
         p = pattern()     
         self.BD=p.BD

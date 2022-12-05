@@ -154,9 +154,6 @@ class SingleBernoulliGate():
 
 class BernoulliGates(EuroPiScript):
     def __init__(self):
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-
         self.toss_flg = 0
         self.first_gate = SingleBernoulliGate(control_knob =  k1,
                                               control_port = ain,

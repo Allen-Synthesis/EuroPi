@@ -25,9 +25,6 @@ class HarmonicLFOs(EuroPiScript):
         # Retreive saved state information from file
         state = self.load_state_json()
         
-        # Overclock the Pico for improved performance
-        freq(250_000_000)
-        
         # Use the saved values for the LFO divisions and mode if found in the save state file, using defaults if not
         self.divisions = state.get("divisions", [1, 3, 5, 7, 11, 13])
         self.modes = state.get("modes", [self.MODES_SHAPES['SINE']] * 6)

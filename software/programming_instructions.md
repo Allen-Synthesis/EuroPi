@@ -2,8 +2,7 @@
 
 This document will take you through the steps to get your module ready to program.  
   
-## NOTE:
-If you already have any version of the firmware or any other code loaded onto your EuroPi and want to ensure a clean installation, or you just want to make sure you have all the most recent scripts available, first follow these instructions:
+> **_NOTE:_**  If you already have any version of the firmware or any other code loaded onto your EuroPi and want to ensure a clean installation, or you just want to make sure you have all the most recent scripts available, first follow these instructions:
 
 1. Download [flash_nuke.uf2](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython#flash-resetting-uf2-3083182) from Adafruit.
   
@@ -17,7 +16,11 @@ If you already have any version of the firmware or any other code loaded onto yo
   
 5. Continue to [Setting Up](#setting-up) as normal.
 
-  
+ ## Optional Quick start
+
+ The quickest way to get your EuroPi flashed with the latest firmware is to head over to the [releases](https://github.com/Allen-Synthesis/EuroPi/releases) page and download the latest `europi-vX.Y.Z.uf2` file. Then follow the 'BOOTSEL' instructions above to flash the EuroPi firmware to your pico.
+
+> **_NOTE:_**  This version of firmware will not let you override `main.py` so you cannot use this version of the firmware to write custom scripts for the EuroPi.
   
 ## Setting Up
   
@@ -27,7 +30,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
 ### Installing the firmware
-1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `19.1.1`.
+1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.19.1`.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
 
     ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
