@@ -1,8 +1,11 @@
 from setuptools import setup
 
+__version__ = ""
+exec(open("./firmware/version.py").read())
+
 setup(
     name="micropython-europi-contrib",
-    version="0.5.0",
+    version=__version__,
     description="Community Contributions to EuroPi module for MicroPython",
     long_description="Community Contributions to EuroPi module for MicroPython",
     url="https://github.com/Allen-Synthesis/EuroPi",

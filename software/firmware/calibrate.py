@@ -11,9 +11,6 @@ class Calibrate(EuroPiScript):
         return "~Calibrate"
 
     def main(self):
-        # Overclock for faster calibration
-        freq(250_000_000)
-
         ain = ADC(Pin(26, Pin.IN, Pin.PULL_DOWN))
         cv1 = PWM(Pin(21))
         usb = Pin(24, Pin.IN)

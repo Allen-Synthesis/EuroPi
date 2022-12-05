@@ -2,6 +2,26 @@
 
 This document will take you through the steps to get your module ready to program.  
   
+> **_NOTE:_**  If you already have any version of the firmware or any other code loaded onto your EuroPi and want to ensure a clean installation, or you just want to make sure you have all the most recent scripts available, first follow these instructions:
+
+1. Download [flash_nuke.uf2](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython#flash-resetting-uf2-3083182) from Adafruit.
+  
+2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.  
+
+![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
+
+3. Open your file manager and drag and drop the downloaded `flash_nuke.uf2` onto the new drive named 'RPI-RP2'. This will wipe your Pico clean, ready for a new installation of the firmware.  
+
+4. The Pico will automatically eject once the process is completed.  
+  
+5. Continue to [Setting Up](#setting-up) as normal.
+
+ ## Optional Quick start
+
+ The quickest way to get your EuroPi flashed with the latest firmware is to head over to the [releases](https://github.com/Allen-Synthesis/EuroPi/releases) page and download the latest `europi-vX.Y.Z.uf2` file. Then follow the 'BOOTSEL' instructions above to flash the EuroPi firmware to your pico.
+
+> **_NOTE:_**  This version of firmware will not let you override `main.py` so you cannot use this version of the firmware to write custom scripts for the EuroPi.
+  
 ## Setting Up
   
 ### Downloading Thonny
@@ -10,7 +30,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
 ### Installing the firmware
-1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website.
+1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.19.1`.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
 
     ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
@@ -29,14 +49,18 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
     ![Interpreter Select](https://i.imgur.com/XeRem1w.jpg)
 
-5. Click Tools -> Manage Packages to open the package manager.
-6. Type 'ssd1306' into the search box and click 'Search on PyPi'
-7. Click the result named 'micropython-ssd1306'.
+5. **Important**: Wait until the Shell window at the bottom shows the MicroPython version and the purple ```>>>``` symbol.
+
+    ![image](https://user-images.githubusercontent.com/79809962/196224993-70a7a662-90ca-45df-90f6-a2c1f1f70a9e.png)
+
+6. Click Tools -> Manage Packages to open the package manager.
+7. Type 'ssd1306' into the search box and click 'Search on PyPi'
+8. Click the result named 'micropython-ssd1306'.
 
     ![ssd1306 library](https://i.imgur.com/7t2mWHh.jpg)
 
-8. Click 'Install'.
-9. You will see that a folder has been created inside the Pico named 'lib', which contains the new file 'ssd1306.py'.
+9. Click 'Install'.
+10. You will see that a folder has been created inside the Pico named 'lib', which contains the new file 'ssd1306.py'.
 
     ![ssd1306 inside lib](https://i.imgur.com/jkmeaFM.jpg)
 
@@ -94,13 +118,18 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 
 1. Complete all of the steps for [Option 2](https://github.com/Allen-Synthesis/EuroPi/edit/release_prep/0.2.0/software/programming_instructions.md#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
 2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically. After you choose a program that will become the default program that runs when the module is connected to power, but you can still go back to the menu at any time by pressing and holding both buttons for >0.5s and then releasing.
+  
+One of the scripts that is installed with the menu system is named '~ Calibrate', and it requires you to send precise voltages to the module to calibrate it for the future, allowing you to input and output precise values from your module.  
+This is entirely optional and it will work with a usable degree of accuracy without calibration, however if you do want to then move to the ['Calibrate the module'](#calibrate-the-module) step.
 
 
 ### Calibrate the module
 
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
-
+  
+NOTE: If you have just installed the menu, simply run the calibration script and skip to step 2.
+  
 1. To begin, you need to choose the `calibrate.py` file and save it as `main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/calibrate.py).
 2. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
 3. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).  
@@ -112,4 +141,21 @@ If you do not wish to calibrate the module and don't mind your voltages being sl
 6. Once all the required voltages have been input, you now need to disconnect the analogue input from your voltage source, and instead connect it to CV output 1.
 7. Once you have connected the analogue input to CV output 1, press button 1
 8. Wait for each voltage up to 10V to complete. The module will tell you once it has completed.
-9. The calibration process is now complete! You now need to rename or delete the 'calibrate.py' program, however DO NOT delete the new file created called 'calibration_values.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
+9. NOTE: Skip this final step if you are running the calibration script from the menu system.  
+The calibration process is now complete! You now need to rename or delete the 'calibrate.py' program, however DO NOT delete the new file created called 'calibration_values.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
+
+
+# Programming Limitations
+
+As with all hardware, the EuroPi has certain limitations. Some are more obvious and are required knowledge for any user, and some are more in depth and are only relevant if you will be programming the module yourself.
+
+### Obvious Limitations
+- Analogue input is only 0-10V
+- Digital input can only detect signals above 0.7V (meaning it may trigger accidentally if you have a noisy 'low' state)
+- Outputs, analogue input, and knobs, have a maximum resolution of 12 bits (4096 steps)
+- Debouncing of the buttons means that very fast double presses may not be detected
+
+### In Depth Limitations
+- Clock pulses shorter than approximately 0.01s (10ms) will not be reliably detected (this depends on clock speed too)
+- Reading any analogue source, either the analogue input or knobs, will result in a slight delay of the script (this can be reduced by using fewer samples, at the cost of accuracy)
+
