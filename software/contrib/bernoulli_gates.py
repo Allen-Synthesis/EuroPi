@@ -50,10 +50,10 @@ class SingleBernoulliGate():
 
     def get_prob(self):
         if self.control_port:
-            self.right_possibility = self.control_knob.percent() + self.control_port.read_voltage()/12
+            self.right_possibility = (self.control_knob.read_position(100)/100) + self.control_port.read_voltage()/12
             self.left_possibility = 1 - self.right_possibility
         else:
-            self.right_possibility = self.control_knob.percent()
+            self.right_possibility = (self.control_knob.read_position(100)/100)
             self.left_possibility = 1 - self.right_possibility
 
     def probability_text_visualization(self):
