@@ -37,7 +37,7 @@ You can find more about this (including a project diary) and other projects of m
 **Software**: Before using any of the software, follow the instructions in [programming_instructions.md](software/programming_instructions.md) to set up and calibrate your module.
 
 A list of user contributed scripts and their usage can be found in [contrib/README.md](software/contrib/README.md).
-There is also a [youtube playlist](https://www.youtube.com/playlist?list=PLbingtr9KGPUdIODLWgzgAdIyN497YyEs) showcasing europi and some of the different scripts available.
+There is also a [youtube playlist](https://www.youtube.com/playlist?list=PLbingtr9KGPUdIODLWgzgAdIyN497YyEs) showcasing EuroPi and some of the different scripts available.
 
 The EuroPi firmware API documentation can be found at https://allen-synthesis.github.io/EuroPi/. This documentation will explain all of the available features of the EuroPi firmware API. It also includes some examples of how to use various features of the firmware as well as [interesting_things.md](software/interesting_things.md).
 
