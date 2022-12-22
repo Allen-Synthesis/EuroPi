@@ -2,6 +2,7 @@
 .DS_Store
 .AppleDouble
 .LSOverride
+.vscode
 
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
@@ -18,9 +19,11 @@
 Network Trash Folder
 Temporary Items
 .apdisk
-.gitignore
 
 # Python
 __pycache__
 venv
 .venv
+.idea
+dist/
+*.egg-info/

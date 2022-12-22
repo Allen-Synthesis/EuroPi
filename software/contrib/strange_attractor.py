@@ -236,9 +236,6 @@ def get_attractors():
 class StrangeAttractor(EuroPiScript):
     def __init__(self):
 
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-
         # Initialise and calculate ranges.
         # This will take around 30 seconds per unsaved attractor.
         self.attractors = get_attractors()
