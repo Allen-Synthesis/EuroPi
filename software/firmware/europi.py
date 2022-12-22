@@ -150,7 +150,7 @@ class AnalogueReader:
     def percent(self, samples=None):
         """Return the percentage of the component's current relative range."""
         value = self._sample_adc(samples) / MAX_UINT16
-        value = value*(1.0+2.0*deadzone)-deadzone
+        value = value*(1.0+2.0*self.deadzone)-self.deadzone
         return max(0.0,min(1.0,value))
 
     def range(self, steps=100, samples=None):
@@ -258,7 +258,7 @@ class Knob(AnalogueReader):
     """
 
     def __init__(self, pin):
-        super().__init__(pin)
+        super().__init__(pin,deadzone=0.01)
 
     def percent(self, samples=None):
         """Return the knob's position as relative percentage."""
