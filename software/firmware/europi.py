@@ -128,10 +128,11 @@ class AnalogueReader:
     not need to be used by user scripts.
     """
 
-    def __init__(self, pin, samples=DEFAULT_SAMPLES):
+    def __init__(self, pin, samples=DEFAULT_SAMPLES, deadzone=0.0):
         self.pin_id = pin
         self.pin = ADC(Pin(pin))
         self.set_samples(samples)
+        self.deadzone=deadzone
 
     def _sample_adc(self, samples=None):
         # Over-samples the ADC and returns the average.
@@ -148,7 +149,9 @@ class AnalogueReader:
 
     def percent(self, samples=None):
         """Return the percentage of the component's current relative range."""
-        return self._sample_adc(samples) / MAX_UINT16
+        value = self._sample_adc(samples) / MAX_UINT16
+        value = value*(1.0+2.0*deadzone)-deadzone
+        return max(0.0,min(1.0,value))
 
     def range(self, steps=100, samples=None):
         """Return a value (upper bound excluded) chosen by the current voltage value."""
