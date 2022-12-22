@@ -16,7 +16,7 @@ Send a clock to the digital input to start the sequence.
 Demo video: https://youtu.be/UwjajP6uiQU
 
 digital_in: clock in
-analog_in: randomness CV
+analog_in: Mode 1: Adjusts randonmess, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
 
 knob_1: randomness
 knob_2: select pre-loaded drum pattern
@@ -38,14 +38,17 @@ output_6: randomly generated CV (cycled by pushing button 2)
 
 class Consequencer(EuroPiScript):
     def __init__(self):
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-
         # Initialize sequencer pattern arrays   
         p = pattern()     
         self.BD=p.BD
         self.SN=p.SN
         self.HH=p.HH
+
+        # Enable pull-up function on pico pins to avoid phantom button presses
+        b1 = Button(4)
+        b1.pin=Pin(4, Pin.IN,Pin.PULL_UP)
+        b2 = Button(5)
+        b2.pin=Pin(5, Pin.IN,Pin.PULL_UP)
 
         # Initialize sequencer pattern probabiltiies
         self.BdProb = p.BdProb
@@ -73,11 +76,12 @@ class Consequencer(EuroPiScript):
         self.clock_step = 0
         self.pattern = 0
         self.random_HH = False
-        self.minAnalogInputVoltage = 0.9
+        self.minAnalogInputVoltage = 0.5
         self.randomness = 0
         self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
         self.reset_timeout = 1000
+        self.maxRandomPatterns = 40
 
         # option to always output a clock on output 4
         # this helps to sync Consequencer with other modules
@@ -103,11 +107,13 @@ class Consequencer(EuroPiScript):
                     self.analogInputMode += 1
                 else:
                     self.analogInputMode = 1
-            else:
-                # Move to next cv pattern if one already exists, otherwise create a new one
-                self.CvPattern += 1
-                if self.CvPattern == len(self.random4):
-                    self.generateNewRandomCVPattern()
+            else:            
+                if self.CvPattern < len(self.random4) and self.analogInputMode != 3: # change to next CV pattern
+                    self.CvPattern += 1
+                else:
+                    if len(self.random4) < self.maxRandomPatterns: # We need to try and generate a new CV value
+                        if self.generateNewRandomCVPattern():
+                            self.CvPattern += 1
             
         # Triggered when button 1 is released
         # Short press: Play previous CV pattern for cv4-6
@@ -189,9 +195,13 @@ class Consequencer(EuroPiScript):
                 cv4.off()
 
     def generateNewRandomCVPattern(self):
-        self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
-        self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
-        self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
+        try:
+            self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
+            self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
+            self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
+            return True
+        except Exception:
+            return False
 
     def getPattern(self):
         # If mode 2 and there is CV on the analogue input use it, if not use the knob position
@@ -205,16 +215,10 @@ class Consequencer(EuroPiScript):
 
     def getCvPattern(self):
         # If analogue input mode 3, get the CV pattern from CV input
-        if self.analogInputMode != 3:
-            return
-        else:
-            # Get the analogue input voltage as a percentage
-            CvpVal = 100 * ain.percent()
-            
-            # Is there a voltage on the analogue input and are we configured to use it?
-            if CvpVal > 0.4:
-                # Convert percentage value to a representative index of the pattern array
-                self.CvPattern = int((len(self.random4) / 100) * CvpVal)
+        val = 100 * ain.percent()
+        if self.analogInputMode == 3 and val > self.minAnalogInputVoltage:
+            # Convert percentage value to a representative index of the pattern array
+            self.CvPattern = int((len(self.random4) / 100) * val)
 
     def generateRandomPattern(self, length, min, max):
         self.t=[]
@@ -682,5 +686,4 @@ if __name__ == '__main__':
     [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()
-
 
