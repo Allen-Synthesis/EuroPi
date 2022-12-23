@@ -258,9 +258,9 @@ def test_access_by_index(mockHardware: MockHardware, knob_bank: KnobBank):
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 5)
 
     assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.80
+    assert round(knob_bank.knobs[1].percent(), 2) == 0.81
     assert round(knob_bank.knobs[2].percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0.80
+    assert round(knob_bank.current.percent(), 2) == 0.81
 
 
 # KnobBank.Builder tests
