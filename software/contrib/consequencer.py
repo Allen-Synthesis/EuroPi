@@ -44,11 +44,11 @@ class Consequencer(EuroPiScript):
         self.SN=p.SN
         self.HH=p.HH
 
-        # Enable pull-up function on pico pins to avoid phantom button presses
-        b1 = Button(4)
-        b1.pin=Pin(4, Pin.IN,Pin.PULL_UP)
-        b2 = Button(5)
-        b2.pin=Pin(5, Pin.IN,Pin.PULL_UP)
+        # # Enable pull-up function on pico pins to avoid phantom button presses
+        # b1 = Button(4)
+        # b1.pin=Pin(4, Pin.IN,Pin.PULL_UP)
+        # b2 = Button(5)
+        # b2.pin=Pin(5, Pin.IN,Pin.PULL_UP)
 
         # Initialize sequencer pattern probabiltiies
         self.BdProb = p.BdProb
