@@ -107,8 +107,11 @@ class Consequencer(EuroPiScript):
                     self.analogInputMode += 1
                 else:
                     self.analogInputMode = 1
-            else:            
-                if self.CvPattern < len(self.random4) and self.analogInputMode != 3: # change to next CV pattern
+            else:
+                if self.analogInputMode == 3: # Allow changed by CV only in mode 3
+                    return
+
+                if self.CvPattern < len(self.random4): # change to next CV pattern
                     self.CvPattern += 1
                 else:
                     if len(self.random4) < self.maxRandomPatterns: # We need to try and generate a new CV value
