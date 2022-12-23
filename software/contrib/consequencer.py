@@ -75,17 +75,17 @@ class Consequencer(EuroPiScript):
         self.trigger_duration_ms = 50
         self.clock_step = 0
         self.pattern = 0
-        self.random_HH = False
         self.minAnalogInputVoltage = 0.5
         self.randomness = 0
-        self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
         self.reset_timeout = 1000
         self.maxRandomPatterns = 40
 
-        # option to always output a clock on output 4
-        # this helps to sync Consequencer with other modules
-        self.output4isClock = False
+        # Moved these params into the save/load state pair
+        #self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
+        #self.random_HH = False
+        #self.output4isClock = False
+        self.loadState()
         
         # Calculate the longest pattern length to be used when generating random sequences
         self.maxStepLength = len(max(self.BD, key=len))
@@ -107,6 +107,7 @@ class Consequencer(EuroPiScript):
                     self.analogInputMode += 1
                 else:
                     self.analogInputMode = 1
+                self.saveState()
             else:
                 if self.analogInputMode == 3: # Allow changed by CV only in mode 3
                     return
@@ -125,8 +126,10 @@ class Consequencer(EuroPiScript):
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000:
                 self.output4isClock = not self.output4isClock
+                self.saveState()
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 self.random_HH = not self.random_HH
+                self.saveState()
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
                 if self.CvPattern != 0:
@@ -196,6 +199,24 @@ class Consequencer(EuroPiScript):
             cv3.off()
             if self.output4isClock:
                 cv4.off()
+
+    ''' Save working vars to a save state file'''
+    def saveState(self):
+        self.state = {
+            "analogInputMode": self.analogInputMode,
+            "random_HH": self.random_HH,
+            "output4isClock": self.output4isClock
+        }
+        self.save_state_json(self.state)
+
+
+    ''' Load a previously saved state, or initialize working vars, then save'''
+    def loadState(self):
+        self.state = self.load_state_json()
+        self.analogInputMode = self.state.get("analogInputMode", 1)
+        self.random_HH = self.state.get("random_HH", False)
+        self.output4isClock = self.state.get("output4isClock", False)
+        self.saveState()
 
     def generateNewRandomCVPattern(self):
         try:
