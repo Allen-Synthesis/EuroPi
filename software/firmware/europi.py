@@ -128,17 +128,18 @@ class AnalogueReader:
     not need to be used by user scripts.
     """
 
-    def __init__(self, pin, samples=DEFAULT_SAMPLES):
+    def __init__(self, pin, samples=DEFAULT_SAMPLES,deadzone=0.0):
         self.pin_id = pin
         self.pin = ADC(Pin(pin))
         self.set_samples(samples)
+        self.deadzone=deadzone
 
     def _sample_adc(self, samples=None):
         # Over-samples the ADC and returns the average.
-        values = []
+        value = 0
         for _ in range(samples or self._samples):
-            values.append(self.pin.read_u16())
-        return round(sum(values) / len(values))
+            value += self.pin.read_u16()
+        return round(value / (samples or self._samples))
 
     def set_samples(self, samples):
         """Override the default number of sample reads with the given value."""
@@ -148,7 +149,9 @@ class AnalogueReader:
 
     def percent(self, samples=None):
         """Return the percentage of the component's current relative range."""
-        return self._sample_adc(samples) / MAX_UINT16
+        value = self._sample_adc(samples) / MAX_UINT16
+        value = value*(1.0+2.0*self.deadzone)-self.deadzone
+        return max(0.0,min(1.0,value))
 
     def range(self, steps=100, samples=None):
         """Return a value (upper bound excluded) chosen by the current voltage value."""
@@ -187,7 +190,7 @@ class AnalogueInput(AnalogueReader):
     """
 
     def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
-        super().__init__(pin)
+        super().__init__(pin,deadzone=0.0)
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
         self._gradients = []
@@ -254,16 +257,13 @@ class Knob(AnalogueReader):
     would only return values which go up in steps of 2.
     """
 
-    def __init__(self, pin, deadzone=0.01):
+    def __init__(self, pin):
         super().__init__(pin)
-        self.deadzone=deadzone
 
     def percent(self, samples=None):
         """Return the knob's position as relative percentage."""
         # Reverse range to provide increasing range.
-        value = 1.0 - (self._sample_adc(samples) / MAX_UINT16)
-        value = value*(1.0+2.0*self.deadzone)-self.deadzone
-        return max(0.0,min(1.0,value))
+        return 1.0-super().percent(samples)
 
     def read_position(self, steps=100, samples=None):
         """Returns the position as a value between zero and provided integer."""
