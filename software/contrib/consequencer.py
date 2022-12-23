@@ -102,7 +102,7 @@ class Consequencer(EuroPiScript):
         @b2.handler_falling
         def b2Pressed():
             
-            if ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
+            if ticks_diff(ticks_ms(), b2.last_pressed()) > 300 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
                 if self.analogInputMode < 3:
                     self.analogInputMode += 1
                 else:
@@ -123,7 +123,7 @@ class Consequencer(EuroPiScript):
         # Long press: Toggle random high-hat mode
         @b1.handler_falling
         def b1Pressed():
-            if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000:
+            if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000:
                 self.output4isClock = not self.output4isClock
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 self.random_HH = not self.random_HH
