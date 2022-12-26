@@ -9,7 +9,7 @@ from mock_hardware import MockHardware
     "value, expected",
     [
         (1, 1.0000),
-        (0.75, 0.755),
+        (0.75, 0.7550),
         (0.66, 0.6632),
         (0.5, 0.5000),
         (0, 0.0000),
