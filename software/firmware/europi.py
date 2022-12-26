@@ -303,7 +303,7 @@ class DigitalReader:
                 return
             self.last_falling_ms = time.ticks_ms()
 
-            # Check if 'other' pin was set not long ago and still is set and this pin has been high for long enough.
+            # When this button is released after a short press, check if 'other' button is set and currently pressed not long ago.
             if (
                 self._other
                 and self._other.value()
