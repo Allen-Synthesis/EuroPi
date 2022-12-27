@@ -101,7 +101,6 @@ class Consequencer(EuroPiScript):
         # Long press: Change operating mode
         @b2.handler_falling
         def b2Pressed():
-            
             if ticks_diff(ticks_ms(), b2.last_pressed()) > 300 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
                 if self.analogInputMode < 3:
                     self.analogInputMode += 1
@@ -112,7 +111,7 @@ class Consequencer(EuroPiScript):
                 if self.analogInputMode == 3: # Allow changed by CV only in mode 3
                     return
 
-                if self.CvPattern < len(self.random4): # change to next CV pattern
+                if self.CvPattern < len(self.random4)-1: # change to next CV pattern
                     self.CvPattern += 1
                 else:
                     if len(self.random4) < self.maxRandomPatterns: # We need to try and generate a new CV value
@@ -146,8 +145,7 @@ class Consequencer(EuroPiScript):
             
             # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
             if self.step >= self.step_length:
-                self.step = 0 
-            
+                self.step = 0
             cv5.voltage(self.random5[self.CvPattern][self.step])
             cv6.voltage(self.random6[self.CvPattern][self.step])
 
@@ -378,27 +376,6 @@ class pattern:
     BD.append("10001000100010001000100010001010")
     SN.append("00100100101100000010010010110010")
     HH.append("10101010101010101010101010101011")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("00101011101000111010001110100010")
-    SN.append("00101011101000111010001110100010")
-    HH.append("00001000000010000000100000001000")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10101111101000111010001110101000")
-    SN.append("10101111101000111010001110101000")
-    HH.append("00000000101000001010000010100010")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10110110000011111011011000001111")
-    SN.append("10110110000011111011011000001111")
-    HH.append("11111010001011111010001110101100")
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
@@ -710,4 +687,5 @@ if __name__ == '__main__':
     [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()
+
 
