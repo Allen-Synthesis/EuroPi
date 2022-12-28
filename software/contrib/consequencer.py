@@ -44,12 +44,6 @@ class Consequencer(EuroPiScript):
         self.SN=p.SN
         self.HH=p.HH
 
-        # # Enable pull-up function on pico pins to avoid phantom button presses
-        # b1 = Button(4)
-        # b1.pin=Pin(4, Pin.IN,Pin.PULL_UP)
-        # b2 = Button(5)
-        # b2.pin=Pin(5, Pin.IN,Pin.PULL_UP)
-
         # Initialize sequencer pattern probabiltiies
         self.BdProb = p.BdProb
         self.SnProb = p.SnProb
@@ -79,7 +73,10 @@ class Consequencer(EuroPiScript):
         self.randomness = 0
         self.CvPattern = 0
         self.reset_timeout = 1000
-        self.maxRandomPatterns = 40
+        self.maxRandomPatterns = 40  # This prevents a memory allocation error
+        self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
+        self.gateVoltage = 10
+        self.gateVoltages = [0, self.gateVoltage]
 
         # Moved these params into the save/load state pair
         #self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
@@ -158,27 +155,27 @@ class Consequencer(EuroPiScript):
             randomNumber0_9 = randomNumber0_99 // 10
             if randomNumber0_99 < self.randomness:
                 if randomNumber0_9 <= int(self.BdProb[self.pattern][self.step]):
-                    cv1.value(randint(0, 1))
+                    cv1.voltage(self.gateVoltages[randint(0, 1)])
                 if randomNumber0_9 <= int(self.SnProb[self.pattern][self.step]):
-                    cv2.value(randint(0, 1))
+                    cv2.voltage(self.gateVoltages[randint(0, 1)])
                 if randomNumber0_9 <= int(self.HhProb[self.pattern][self.step]):
-                    cv3.value(randint(0, 1))
+                    cv3.voltage(self.gateVoltages[randint(0, 1)])
             else:
                 if randomNumber0_9 <= int(self.BdProb[self.pattern][self.step]):
-                    cv1.value(int(self.BD[self.pattern][self.step]))
+                    cv1.voltage(self.gateVoltages[int(self.BD[self.pattern][self.step])])
                 if randomNumber0_9 <= int(self.SnProb[self.pattern][self.step]):
-                    cv2.value(int(self.SN[self.pattern][self.step]))
+                    cv2.voltage(self.gateVoltages[int(self.SN[self.pattern][self.step])])
 
                 # If randomize HH is ON:
                 if self.random_HH:
                     cv3.value(randint(0, 1))
                 else:
                     if randomNumber0_9 <= int(self.HhProb[self.pattern][self.step]):
-                        cv3.value(int(self.HH[self.pattern][self.step]))
+                        cv3.voltage(self.gateVoltages[int(self.HH[self.pattern][self.step])])
 
             # Set cv4-6 voltage outputs based on previously generated random pattern
             if self.output4isClock:
-                cv4.value(1)
+                cv4.voltage(self.gateVoltage)
             else:
                 cv4.voltage(self.random4[self.CvPattern][self.step])
 
@@ -218,9 +215,9 @@ class Consequencer(EuroPiScript):
 
     def generateNewRandomCVPattern(self):
         try:
-            self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
-            self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
-            self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
+            self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
             return True
         except Exception:
             return False
