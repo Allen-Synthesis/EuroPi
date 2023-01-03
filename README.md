@@ -1,5 +1,17 @@
 # EuroPi
 
+<p>
+  <a href="https://discord.gg/JaQwtCnBV5">
+        <img src="https://discordapp.com/api/guilds/931297838804127794/widget.png?style=shield"
+            alt="chat on Discord">
+  </a>
+  <a href="https://www.reddit.com/r/EuroPi/">
+        <img src="https://img.shields.io/reddit/subreddit-subscribers/europi?style=social"
+            alt="chat on Discord">
+  </a>
+  
+</p>
+  
 The EuroPi is a fully user reprogrammable module based on the [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/), which allows users to process inputs and controls to produce outputs based on code written in Python. The entire project is open-source.
 
 
