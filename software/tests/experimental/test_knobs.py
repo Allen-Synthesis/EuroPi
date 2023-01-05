@@ -26,44 +26,53 @@ def test_starting_state(locked_knob: LockableKnob):
 
 def test_unlocked_knob_changes_value(mockHardware: MockHardware, locked_knob: LockableKnob):
     assert locked_knob.state == LockableKnob.STATE_UNLOCKED
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
 
     mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16 / 3)
-    assert round(locked_knob.percent(), 2) == 0.67
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.67
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.67
 
 
 def test_locked_knob_stays_constant(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
 
     locked_knob.lock()
     assert locked_knob.state == LockableKnob.STATE_LOCKED
 
     mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16 / 3)
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
 
 
 def test_request_unlock_outside_threshold(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
 
     locked_knob.lock()
     mockHardware.set_ADC_u16_value(locked_knob, 0)
     locked_knob.request_unlock()
 
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
 
 
 def test_request_unlock_within_threshold(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
 
     locked_knob.lock()
     mockHardware.set_ADC_u16_value(locked_knob, 0)
     locked_knob.request_unlock()
 
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
     assert locked_knob.state == LockableKnob.STATE_UNLOCK_REQUESTED
 
     mockHardware.set_ADC_u16_value(locked_knob, (MAX_UINT16 / 2) + 10)
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
     assert locked_knob.state == LockableKnob.STATE_UNLOCKED
 
 
@@ -94,13 +103,16 @@ def test_state_changes(locked_knob: LockableKnob):
 
 
 def test_access_percent(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert round(locked_knob.percent(), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0.50
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0.50
 
     mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
-    assert round(locked_knob.percent(), 2) == 0
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 0
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 0
 
     mockHardware.set_ADC_u16_value(locked_knob, 0)
-    assert round(locked_knob.percent(), 2) == 1
+    assert round(locked_knob.percent(deadzone=0.01), 2) == 1
+    assert round(locked_knob.percent(deadzone=0.0), 2) == 1
 
 
 def test_access_choice(mockHardware: MockHardware, locked_knob: LockableKnob):
@@ -167,100 +179,148 @@ def test_next_mode(knob_bank: KnobBank):
 
 def test_access_by_name(mockHardware: MockHardware, knob_bank: KnobBank):
     # knob starts in the middle, knob 1
-    assert round(knob_bank.param1.percent(), 2) == 0.50
-    assert round(knob_bank.param2.percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0.50
+    assert round(knob_bank.param1.percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.param1.percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.param2.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.param2.percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.50
 
     # change to knob 2, then move the knob
     knob_bank.next()
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 3)
 
-    assert round(knob_bank.param1.percent(), 2) == 0.50
-    assert round(knob_bank.param2.percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0
+    assert round(knob_bank.param1.percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.param1.percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.param2.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.param2.percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16)
 
-    assert round(knob_bank.param1.percent(), 2) == 0.50
-    assert round(knob_bank.param2.percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0
+    assert round(knob_bank.param1.percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.param1.percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.param2.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.param2.percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 3)
 
-    assert round(knob_bank.param1.percent(), 2) == 0.50
-    assert round(knob_bank.param2.percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0.67
+    assert round(knob_bank.param1.percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.param1.percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.param2.percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.param2.percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.67
 
 
 def test_access_by_index(mockHardware: MockHardware, knob_bank: KnobBank):
     # knob starts in the middle, knob 1
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0.50
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.50
 
     # change to knob 2, then move the knob
     knob_bank.next()
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 3)
 
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16)
 
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(), 2) == 0
-    assert round(knob_bank.current.percent(), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 3)
 
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0.67
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.67
 
     # change to knob 0 (disabled), then move the knob
     knob_bank.next()
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16)
 
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 4)
 
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0
 
     # change to knob 1, then move the knob
     knob_bank.next()
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 5)
 
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0.50
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.50
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 2)
 
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.50
-    assert round(knob_bank.knobs[2].percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0.50
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.50
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.50
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.50
 
     mockHardware.set_ADC_u16_value(knob_bank.current, MAX_UINT16 / 5)
 
-    assert round(knob_bank.knobs[0].percent(), 2) == 0
-    assert round(knob_bank.knobs[1].percent(), 2) == 0.81
-    assert round(knob_bank.knobs[2].percent(), 2) == 0.67
-    assert round(knob_bank.current.percent(), 2) == 0.81
+    assert round(knob_bank.knobs[0].percent(deadzone=0.01), 2) == 0
+    assert round(knob_bank.knobs[0].percent(deadzone=0.0), 2) == 0
+    assert round(knob_bank.knobs[1].percent(deadzone=0.01), 2) == 0.81
+    assert round(knob_bank.knobs[1].percent(deadzone=0.0), 2) == 0.80
+    assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
+    assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.81
+    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.80
 
 
 # KnobBank.Builder tests
