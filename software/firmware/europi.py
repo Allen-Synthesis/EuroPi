@@ -265,7 +265,7 @@ class Knob(AnalogueReader):
     """
 
     def __init__(self, pin, deadzone=0.01):
-        super().__init__(pin, deadzone)
+        super().__init__(pin, deadzone=deadzone)
 
     def percent(self, samples=None, deadzone=None):
         """Return the knob's position as relative percentage."""
