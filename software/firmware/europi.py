@@ -132,7 +132,7 @@ class AnalogueReader:
         self.pin_id = pin
         self.pin = ADC(Pin(pin))
         self.set_samples(samples)
-        self.deadzone = deadzone
+        self.set_deadzone(deadzone)
 
     def _sample_adc(self, samples=None):
         # Over-samples the ADC and returns the average.
@@ -146,27 +146,34 @@ class AnalogueReader:
         if not isinstance(samples, int):
             raise ValueError(f"set_samples expects an int value, got: {samples}")
         self._samples = samples
+       
+     def set_deadzone(self, deadzone):
+        """Override the default number of sample reads with the given value."""
+        if not isinstance(deadzone, float):
+            raise ValueError(f"set_deadzone expects an float value, got: {deadzone}")
+        self._deadzone = deadzone
 
-    def percent(self, samples=None):
+    def percent(self, samples=None, deadzone=None):
         """Return the percentage of the component's current relative range."""
+        dz = (deadzone or self._deadzone)
         value = self._sample_adc(samples) / MAX_UINT16
-        value = value * (1.0 + 2.0 * self.deadzone) - self.deadzone
-        return max(0.0, min(1.0, value))
+        value = value * (1.0 + 2.0 * dz) - dz
+        return clamp(value, 0.0, 1.0)
 
-    def range(self, steps=100, samples=None):
+    def range(self, steps=100, samples=None, deadzone=None):
         """Return a value (upper bound excluded) chosen by the current voltage value."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
-        percent = self.percent(samples)
+        percent = self.percent(samples,deadzone)
         if int(percent) == 1:
             return steps - 1
         return int(percent * steps)
 
-    def choice(self, values, samples=None):
+    def choice(self, values, samples=None, deadzone=None):
         """Return a value from a list chosen by the current voltage value."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
-        percent = self.percent(samples)
+        percent = self.percent(samples,deadzone)
         if percent == 1.0:
             return values[-1]
         return values[int(percent * len(values))]
@@ -257,13 +264,13 @@ class Knob(AnalogueReader):
     would only return values which go up in steps of 2.
     """
 
-    def __init__(self, pin):
-        super().__init__(pin, deadzone=0.01)
+    def __init__(self, pin, deadzone=0.01):
+        super().__init__(pin, deadzone)
 
-    def percent(self, samples=None):
+    def percent(self, samples=None,deadzone=None):
         """Return the knob's position as relative percentage."""
         # Reverse range to provide increasing range.
-        return 1.0 - super().percent(samples)
+        return 1.0 - super().percent(samples, deadzone)
 
     def read_position(self, steps=100, samples=None):
         """Returns the position as a value between zero and provided integer."""
@@ -301,7 +308,7 @@ class DigitalReader:
                 return
             self.last_rising_ms = time.ticks_ms()
             return self._rising_handler()
-        elif self.value() == LOW:
+        else:
             if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
                 return
             self.last_falling_ms = time.ticks_ms()
