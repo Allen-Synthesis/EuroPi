@@ -155,7 +155,9 @@ class AnalogueReader:
 
     def percent(self, samples=None, deadzone=None):
         """Return the percentage of the component's current relative range."""
-        dz = deadzone or self._deadzone
+        dz = self._deadzone
+        if deadzone is not None:
+            dz = deadzone
         value = self._sample_adc(samples) / MAX_UINT16
         value = value * (1.0 + 2.0 * dz) - dz
         return clamp(value, 0.0, 1.0)
