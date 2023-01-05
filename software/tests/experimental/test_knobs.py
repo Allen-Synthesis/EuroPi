@@ -320,7 +320,7 @@ def test_access_by_index(mockHardware: MockHardware, knob_bank: KnobBank):
     assert round(knob_bank.knobs[2].percent(deadzone=0.01), 2) == 0.67
     assert round(knob_bank.knobs[2].percent(deadzone=0.0), 2) == 0.67
     assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.81
-    assert round(knob_bank.current.percent(deadzone=0.01), 2) == 0.80
+    assert round(knob_bank.current.percent(deadzone=0.0), 2) == 0.80
 
 
 # KnobBank.Builder tests
