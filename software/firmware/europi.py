@@ -247,10 +247,10 @@ class Knob(AnalogueReader):
     The default ``samples`` value can also be set using the ``set_samples()``
     method, which will then be used on all analogue read calls for that
     component.
-    
+
     An optional ``deadzone`` parameter can be used to place deadzones at both
     positions (all the way left and right) of the knob to make sure the full range
-    is available on all builds. The default value is 0.01 (resulting in 1% of the 
+    is available on all builds. The default value is 0.01 (resulting in 1% of the
     travel used as deadzone on each side). There is usually no need to change this.
 
     Additionally, the ``choice()`` method can be used to select a value from a
