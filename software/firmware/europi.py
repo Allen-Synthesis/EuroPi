@@ -146,7 +146,7 @@ class AnalogueReader:
         if not isinstance(samples, int):
             raise ValueError(f"set_samples expects an int value, got: {samples}")
         self._samples = samples
-       
+
     def set_deadzone(self, deadzone):
         """Override the default number of sample reads with the given value."""
         if not isinstance(deadzone, float):
@@ -155,7 +155,7 @@ class AnalogueReader:
 
     def percent(self, samples=None, deadzone=None):
         """Return the percentage of the component's current relative range."""
-        dz = (deadzone or self._deadzone)
+        dz = deadzone or self._deadzone
         value = self._sample_adc(samples) / MAX_UINT16
         value = value * (1.0 + 2.0 * dz) - dz
         return clamp(value, 0.0, 1.0)
@@ -164,7 +164,7 @@ class AnalogueReader:
         """Return a value (upper bound excluded) chosen by the current voltage value."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
-        percent = self.percent(samples,deadzone)
+        percent = self.percent(samples, deadzone)
         if int(percent) == 1:
             return steps - 1
         return int(percent * steps)
@@ -173,7 +173,7 @@ class AnalogueReader:
         """Return a value from a list chosen by the current voltage value."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
-        percent = self.percent(samples,deadzone)
+        percent = self.percent(samples, deadzone)
         if percent == 1.0:
             return values[-1]
         return values[int(percent * len(values))]
@@ -267,7 +267,7 @@ class Knob(AnalogueReader):
     def __init__(self, pin, deadzone=0.01):
         super().__init__(pin, deadzone)
 
-    def percent(self, samples=None,deadzone=None):
+    def percent(self, samples=None, deadzone=None):
         """Return the knob's position as relative percentage."""
         # Reverse range to provide increasing range.
         return 1.0 - super().percent(samples, deadzone)
