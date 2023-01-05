@@ -147,7 +147,7 @@ class AnalogueReader:
             raise ValueError(f"set_samples expects an int value, got: {samples}")
         self._samples = samples
        
-     def set_deadzone(self, deadzone):
+    def set_deadzone(self, deadzone):
         """Override the default number of sample reads with the given value."""
         if not isinstance(deadzone, float):
             raise ValueError(f"set_deadzone expects an float value, got: {deadzone}")
