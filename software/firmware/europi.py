@@ -279,9 +279,9 @@ class Knob(AnalogueReader):
         # Reverse range to provide increasing range.
         return 1.0 - super().percent(samples, deadzone)
 
-    def read_position(self, steps=100, samples=None):
+    def read_position(self, steps=100, samples=None, deadzone=None):
         """Returns the position as a value between zero and provided integer."""
-        return self.range(steps, samples)
+        return self.range(steps, samples, deadzone)
 
 
 class DigitalReader:
