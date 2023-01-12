@@ -36,7 +36,7 @@ except ImportError:
     from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
     from experimental.knobs import KnobBank
 
-from config_points import ConfigPointsBuilder
+import configuration
 from europi_script import EuroPiScript
 
 INT_MAX_8 = 0xFF
@@ -277,14 +277,16 @@ class EuroPiTuringMachine(EuroPiScript):
         return "Turing Machine"
 
     @classmethod
-    def config_points(cls, config_builder: ConfigPointsBuilder):
-        return (
-            config_builder.with_choice(name="write_value", choices=[0, 1], default=0)
+    def config_points(cls):
+        bitcount_range = range(1, min(DEFAULT_BIT_COUNT, 8))
+
+        return [
+            configuration.choice(name="write_value", choices=[0, 1], default=0),
             # simulate the actual bits available in the pulses expander (1-7)
-            .with_int(name="cv1_pulse_bit", start=1, stop=min(DEFAULT_BIT_COUNT, 8), default=1)
-            .with_int(name="cv2_pulse_bit", start=1, stop=min(DEFAULT_BIT_COUNT, 8), default=2)
-            .with_int(name="cv3_pulse_bit", start=1, stop=min(DEFAULT_BIT_COUNT, 8), default=4)
-        )
+            configuration.integer(name="cv1_pulse_bit", range=bitcount_range, default=1),
+            configuration.integer(name="cv2_pulse_bit", range=bitcount_range, default=2),
+            configuration.integer(name="cv3_pulse_bit", range=bitcount_range, default=4),
+        ]
 
     def main(self):
         line1_y = 11

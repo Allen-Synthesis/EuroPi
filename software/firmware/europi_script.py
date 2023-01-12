@@ -2,8 +2,9 @@
 import os
 import json
 from utime import ticks_diff, ticks_ms
-from config_points import ConfigPointsBuilder
+from configuration import ConfigSpec, ConfigFile
 from europi_config import EuroPiConfig
+from file_utils import load_file, delete_file, load_json_data
 
 
 class EuroPiScript:
@@ -102,11 +103,40 @@ class EuroPiScript:
        EuroPiScripts should not call ``europi.reset_state()`` as this call would remove the button handlers that
        allow the user to exit the program and return to the menu. Similarly, EuroPiScripts should not override the
        handlers that provide this functionality.
+
+    **Configuration**
+
+    Optionally, you can add code to your script to allow for configuration of behavior outside of
+    the hardware UI. A script's configuration options are specified by the `config_points()` method.
+    The method returns a list of `ConfigPoint` objects, each of which describes a config point,
+    including its name, type, and valid values. See the method's docstrings for details. For
+    example, our hello world script could configure its language::
+
+        @classmethod
+        def config_points(cls):
+            return [configuration.choice(name="language", choices=["english", "french"], default="english")]
+
+    Our main method could then use the value of this configuration to display its greeting in the
+    configured language::
+
+        def main(self):
+            if self.config["language"] == "french":
+                oled.centre_text("Bonjour le monde")
+            else:
+                oled.centre_text("Hello world")
+
+    Configuration files are validated, so scripts do not need to worry about invalid values. Validation
+    failures raise exceptions with messages that will help the user correct their configurations.
+
+    Users can create and edit configuration files in order to change a script's configuration. The
+    files should be uploaded to the pico in the `/config` directory. To assist in generating initial
+    versions of these files, see `/scripts/generate_default_configs.py`.
     """
 
     def __init__(self):
         self._last_saved = 0
-        self.config = self._load_config_with_system_defaults()
+        self.config = EuroPiScript._load_config_for_class(self.__class__)
+        self.europi_config = EuroPiScript._load_config_for_class(EuroPiConfig)
 
     def main(self):
         """Override this method with your script's main loop method."""
@@ -202,14 +232,14 @@ class EuroPiScript:
         Check for a previously saved state. If it exists, return state as a
         dict. If no state is found, an empty dictionary will be returned.
         """
-        return self._load_json_data(self._load_state())
+        return load_json_data(self._load_state())
 
     def _load_state(self, mode: str = "r") -> any:
-        return self._load_file(self._state_filename, mode)
+        return load_file(self._state_filename, mode)
 
     def remove_state(self):
         """Remove the state file for this script."""
-        self._delete_file(self._state_filename)
+        delete_file(self._state_filename)
 
     def last_saved(self):
         """Return the ticks in milliseconds since last save."""
@@ -221,94 +251,11 @@ class EuroPiScript:
     # config methods
 
     @classmethod
-    def config_points(cls, config_builder: ConfigPointsBuilder):
-        # def config_points(cls, config_builder: ConfigPointsBuilder):
-        """TODO"""
-        return config_builder
-
-    @staticmethod
-    def _config_filename(cls):
-        return f"config/config_{cls.__qualname__}.json"
-
-    @classmethod
-    def _save_config(cls, data: dict):
-        """Take config as a dict and save to this class's config file.
-
-        .. note::
-            Be mindful of how often `_save_config()` is called because
-            writing to disk too often can slow down the performance of your
-            script. Only call save state when state has changed and consider
-            adding a time since last save check to reduce save frequency.
-        """
-        json_str = json.dumps(data)
-        try:
-            os.mkdir("config")
-        except OSError:
-            pass
-        with open(EuroPiScript._config_filename(cls), "w") as file:
-            file.write(json_str)
-
-    @staticmethod
-    def _load_config(config_file_name: str, config_points: ConfigPointsBuilder):
-        """If this class has config points, this method returns the config dictionary as saved in
-        this class's config file, else, returns an empty dict."""
-        if len(config_points):
-            data = EuroPiScript._load_file(config_file_name)
-            config = config_points.default_config()
-            if not data:
-                return config
-            else:
-                saved_config = EuroPiScript._load_json_data(data)
-                # TODO: only load config points that have been declared
-                config.update(saved_config)
-                return config
-        else:
-            return {}
+    def config_points(cls) -> "List[ConfigPoint]":
+        """Returns a list of ConfigPoints describing this script's configuration options. By default
+        this function returns an empty list. Override it if you'd like configuration points."""
+        return []
 
     @staticmethod
     def _load_config_for_class(cls):
-        return EuroPiScript._load_config(
-            EuroPiScript._config_filename(cls), cls.config_points(ConfigPointsBuilder()).build()
-        )
-
-    @classmethod
-    def _load_config_with_system_defaults(cls):
-        base_config = cls._load_config_for_class(EuroPiConfig)
-        base_config.update(cls._load_config_for_class(cls))
-        return base_config
-
-    def _delete_config(self):
-        """Deletes the config file, effectively resetting to defaults."""
-        self._delete_file(EuroPiScript._config_filename(self.__class__))
-
-    # generic file methods #TODO move these elsewhere?
-
-    @staticmethod
-    def _load_file(filename, mode: str = "r") -> any:
-        try:
-            with open(filename, mode) as file:
-                return file.read()
-        except OSError as e:
-            return ""
-
-    @staticmethod
-    def _load_json_data(json_str):
-        """Load previously saved json data as a dict.
-
-        Check for a previously saved data. If it exists, return data as a
-        dict. If no data is found, an empty dictionary will be returned.
-        """
-        if json_str == "":
-            return {}
-        try:
-            return json.loads(json_str)
-        except ValueError as e:
-            print(f"Unable to decode {json_str}: {e}")
-            return {}
-
-    @staticmethod
-    def _delete_file(filename):
-        try:
-            os.remove(filename)
-        except OSError:
-            pass
+        return ConfigFile.load_config(cls, ConfigSpec(cls.config_points()))

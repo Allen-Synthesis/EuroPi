@@ -1,16 +1,13 @@
-from config_points import ConfigPointsBuilder
+import configuration
 
 
 class EuroPiConfig:
-    """This class provides EuroPi's global config points to the Config script. It is not intended to
-    be run on its own."""
+    """This class provides EuroPi's global config points to the Config script."""
 
     @classmethod
     def display_name(cls):
         return "EuroPi"
 
     @classmethod
-    def config_points(cls, config_builder: ConfigPointsBuilder):
-        return config_builder.with_choice(
-            name="pico_model", choices=["pico", "pico w"], default="pico"
-        )
+    def config_points(cls):
+        return [configuration.choice(name="pico_model", choices=["pico", "pico w"], default="pico")]

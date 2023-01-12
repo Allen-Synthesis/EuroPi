@@ -19,7 +19,7 @@ from europi import (
     oled,
 )
 from europi_script import EuroPiScript
-from config_points import ConfigPointsBuilder
+import configuration
 
 """
 A diagnostic utility intended to help prove out a new EuroPi build and calibration. Each aspect of the EuroPi's hardware
@@ -52,8 +52,8 @@ class Diagnostic(EuroPiScript):
         self.use_fahrenheit = self.config["temp_units"] == "F"
 
     @classmethod
-    def config_points(cls, config_builder: ConfigPointsBuilder):
-        return config_builder.with_choice(name="temp_units", choices=["C", "F"], default="C")
+    def config_points(cls):
+        return [configuration.choice(name="temp_units", choices=["C", "F"], default="C")]
 
     def calc_temp(self):
         # see the pico's datasheet for the details of this calculation
