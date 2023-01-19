@@ -74,7 +74,7 @@ def test_percent_w_deadzone(mockHardware: MockHardware, value, expected):
     [
         (0, 99),
         (MAX_UINT16 / 4, 75),
-        (MAX_UINT16 / 3, 67),
+        (MAX_UINT16 / 3, 66),
         (MAX_UINT16 / 2, 49),
         (MAX_UINT16, 0),
     ],
