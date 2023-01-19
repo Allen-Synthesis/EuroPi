@@ -136,13 +136,16 @@ def test_access_range(mockHardware: MockHardware, locked_knob: LockableKnob):
 
 
 def test_access_read_position(mockHardware: MockHardware, locked_knob: LockableKnob):
-    assert locked_knob.read_position() == 49
+    assert locked_knob.read_position(deadzone=0.01) == 49
+    assert locked_knob.read_position(deadzone=0.0) == 49
 
     mockHardware.set_ADC_u16_value(locked_knob, MAX_UINT16)
-    assert locked_knob.read_position() == 0
+    assert locked_knob.read_position(deadzone=0.01) == 0
+    assert locked_knob.read_position(deadzone=0.0) == 0
 
     mockHardware.set_ADC_u16_value(locked_knob, 0)
-    assert locked_knob.read_position() == 99
+    assert locked_knob.read_position(deadzone=0.01) == 99
+    assert locked_knob.read_position(deadzone=0.0) == 99
 
 
 # Disabled Knob Tests
