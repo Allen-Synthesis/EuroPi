@@ -82,7 +82,23 @@ def test_percent_w_deadzone(mockHardware: MockHardware, value, expected):
 def test_read_position(mockHardware: MockHardware, value, expected):
     mockHardware.set_ADC_u16_value(k1, value)
 
-    assert k1.read_position() == expected
+    assert k1.read_position(deadzone=0.0) == expected
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (0, 99),
+        (MAX_UINT16 / 4, 75),
+        (MAX_UINT16 / 3, 67),
+        (MAX_UINT16 / 2, 49),
+        (MAX_UINT16, 0),
+    ],
+)
+def test_read_position_w_deadzone(mockHardware: MockHardware, value, expected):
+    mockHardware.set_ADC_u16_value(k1, value)
+
+    assert k1.read_position(deadzone=0.1) == expected
 
 
 def test_knobs_are_independent(mockHardware: MockHardware):
