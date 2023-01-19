@@ -98,7 +98,7 @@ def test_read_position(mockHardware: MockHardware, value, expected):
 def test_read_position_w_deadzone(mockHardware: MockHardware, value, expected):
     mockHardware.set_ADC_u16_value(k1, value)
 
-    assert k1.read_position(deadzone=0.1) == expected
+    assert k1.read_position(deadzone=0.01) == expected
 
 
 def test_knobs_are_independent(mockHardware: MockHardware):
