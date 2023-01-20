@@ -90,7 +90,7 @@ building multifunction knobs.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.choice">
-<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.choice" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.choice" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value from a list chosen by the current voltage value.</p>
 </dd></dl>
 
@@ -103,19 +103,19 @@ building multifunction knobs.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.percent">
-<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.percent" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.percent" title="Permalink to this definition"></a></dt>
 <dd><p>Return the knob’s position as relative percentage.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.range">
-<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.range" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.range" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.read_position">
-<span class="sig-name descname"><span class="pre">read_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.read_position" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">read_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.read_position" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the position as a value between zero and provided integer.</p>
 </dd></dl>
 
@@ -123,6 +123,12 @@ building multifunction knobs.</p>
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.request_unlock">
 <span class="sig-name descname"><span class="pre">request_unlock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.request_unlock" title="Permalink to this definition"></a></dt>
 <dd><p>LockedKnob can never be unlocked</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.set_deadzone">
+<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.set_deadzone" title="Permalink to this definition"></a></dt>
+<dd><p>Override the default deadzone with the given value.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -284,7 +290,7 @@ disassociated from the postition of the knob, as in after loading saved state.</
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob.choice">
-<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.choice" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.choice" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value from a list chosen by the current voltage value.</p>
 </dd></dl>
 
@@ -297,19 +303,19 @@ disassociated from the postition of the knob, as in after loading saved state.</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob.percent">
-<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.percent" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.percent" title="Permalink to this definition"></a></dt>
 <dd><p>Return the knob’s position as relative percentage.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob.range">
-<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.range" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.range" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob.read_position">
-<span class="sig-name descname"><span class="pre">read_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.read_position" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">read_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.read_position" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the position as a value between zero and provided integer.</p>
 </dd></dl>
 
@@ -320,6 +326,12 @@ disassociated from the postition of the knob, as in after loading saved state.</
 position is taken that is withing the threshold percentage of the locked value. That is,
 when the knob is moved close to the locked value. If <a class="reference internal" href="#experimental.knobs.LockableKnob.lock" title="experimental.knobs.LockableKnob.lock"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lock()</span></code></a> is called
 before the knob unlocks, the unlock is aborted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.LockableKnob.set_deadzone">
+<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.set_deadzone" title="Permalink to this definition"></a></dt>
+<dd><p>Override the default deadzone with the given value.</p>
 </dd></dl>
 
 <dl class="py method">

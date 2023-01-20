@@ -104,7 +104,7 @@ processor won’t bog down until you get way up into the thousands if you
 wan’t incredibly accurate (but quite slow) readings.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.AnalogueInput.choice">
-<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.choice" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.choice" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value from a list chosen by the current voltage value.</p>
 </dd></dl>
 
@@ -116,8 +116,14 @@ wan’t incredibly accurate (but quite slow) readings.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.AnalogueInput.range">
-<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.range" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.range" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi.AnalogueInput.set_deadzone">
+<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.set_deadzone" title="Permalink to this definition"></a></dt>
+<dd><p>Override the default deadzone with the given value.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -130,26 +136,32 @@ wan’t incredibly accurate (but quite slow) readings.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="europi.AnalogueReader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">AnalogueReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">AnalogueReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader" title="Permalink to this definition"></a></dt>
 <dd><p>A base class for common analogue read methods.</p>
 <p>This class in inherited by classes like Knob and AnalogueInput and does
 not need to be used by user scripts.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.AnalogueReader.choice">
-<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.choice" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.choice" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value from a list chosen by the current voltage value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.AnalogueReader.percent">
-<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.percent" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.percent" title="Permalink to this definition"></a></dt>
 <dd><p>Return the percentage of the component’s current relative range.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.AnalogueReader.range">
-<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.range" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.range" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi.AnalogueReader.set_deadzone">
+<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.set_deadzone" title="Permalink to this definition"></a></dt>
+<dd><p>Override the default deadzone with the given value.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -313,7 +325,7 @@ display every few steps to prevent lag.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="europi.Knob">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob" title="Permalink to this definition"></a></dt>
 <dd><p>A class for handling the reading of knob voltage and position.</p>
 <p>Read_position has a default value of 100, meaning if you simply use
 <code class="docutils literal notranslate"><span class="pre">kx.read_position()</span></code> you will return a whole number percent style value
@@ -328,6 +340,10 @@ higher samples (and probably a smaller number to divide the position by).
 The default <code class="docutils literal notranslate"><span class="pre">samples</span></code> value can also be set using the <code class="docutils literal notranslate"><span class="pre">set_samples()</span></code>
 method, which will then be used on all analogue read calls for that
 component.</p>
+<p>An optional <code class="docutils literal notranslate"><span class="pre">deadzone</span></code> parameter can be used to place deadzones at both
+positions (all the way left and right) of the knob to make sure the full range
+is available on all builds. The default value is 0.01 (resulting in 1% of the
+travel used as deadzone on each side). There is usually no need to change this.</p>
 <p>Additionally, the <code class="docutils literal notranslate"><span class="pre">choice()</span></code> method can be used to select a value from a
 list of values based on the knob’s position:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">clock_division</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -343,26 +359,32 @@ resolution, but will instead just go up in steps. For example using 8192
 would only return values which go up in steps of 2.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.Knob.choice">
-<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.choice" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.choice" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value from a list chosen by the current voltage value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.Knob.percent">
-<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.percent" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.percent" title="Permalink to this definition"></a></dt>
 <dd><p>Return the knob’s position as relative percentage.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.Knob.range">
-<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.range" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.range" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.Knob.read_position">
-<span class="sig-name descname"><span class="pre">read_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.read_position" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">read_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.read_position" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the position as a value between zero and provided integer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="europi.Knob.set_deadzone">
+<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.set_deadzone" title="Permalink to this definition"></a></dt>
+<dd><p>Override the default deadzone with the given value.</p>
 </dd></dl>
 
 <dl class="py method">
