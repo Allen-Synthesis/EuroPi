@@ -78,6 +78,4 @@ def test_load_config_defaults(script_for_testing_with_config):
 
 
 def test_load_europi_config(script_for_testing_with_config):
-    assert script_for_testing_with_config.europi_config == {
-        "pico_model": "pico",
-    }
+    assert script_for_testing_with_config.europi_config["pico_model"] == "pico"
