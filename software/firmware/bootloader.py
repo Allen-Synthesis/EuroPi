@@ -70,7 +70,6 @@ class BootloaderMenu(EuroPiScript):
             self.run_request = state
 
         else:
-
             # let the user make a selection
             old_selected = -1
             while not self.run_request:
