@@ -127,7 +127,7 @@ This is entirely optional and it will work with a usable degree of accuracy with
 
 To navigate the menu use the right knob. Turning clockwise will scroll down and turning anticlockwise will scroll up.
 
-To run the selected program, press the left button once.  The last-run program will automatically start the next time you power-on your EuroPi.
+To run the selected program, press the either button once.  The last-run program will automatically start the next time you power-on your EuroPi.
 
 To return to the main menu at any time, press and hold both buttons for 0.5s.
 
