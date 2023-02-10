@@ -5,7 +5,15 @@ from collections import OrderedDict
 import machine
 
 import europi
-from europi import CHAR_HEIGHT, CHAR_WIDTH, Button, reset_state
+from europi import (
+    CHAR_HEIGHT,
+    CHAR_WIDTH,
+    Button,
+    reset_state,
+    OLED_HEIGHT,
+    OLED_WIDTH,
+    oled,
+)
 from europi_script import EuroPiScript
 
 from ui import Menu
@@ -31,25 +39,41 @@ class BootloaderMenu(EuroPiScript):
 
     * Hold both buttons for at least 0.5s and release to return to the menu.
 
-    :param script_classes: a list of Classes implementing EuroPiScript to be included in the menu
+    :param scripts: a list of qualified class names of Classes implementing EuroPiScript to be included in the menu
     """
 
-    def __init__(self, script_classes):
-        self.scripts_config = BootloaderMenu._build_scripts_config(script_classes)
-        self.menu = Menu(
-            items=list(sorted(self.scripts_config.keys())),
-            select_func=self.launch,
-            select_knob=europi.k2,
-            choice_buttons=[europi.b1, europi.b2],
-        )
+    def __init__(self, scripts):
+        self.scripts = scripts
         self.run_request = None
+
+    @staticmethod
+    def show_progress(percentage):
+        oled.hline(0, OLED_HEIGHT - 1, int(OLED_WIDTH * percentage), 1)
+        oled.show()
+
+    @staticmethod
+    def get_class_for_name(script_class_name) -> type:
+        try:
+            module, clazz = script_class_name.rsplit(".", 1)
+            return getattr(__import__(module, None, None, [None]), clazz)
+        except Exception as e:
+            print(f"Ignoring bad qualified class name: {script_class_name}\ncaused by:\n{e}")
+            return None
+
+    @classmethod
+    def load_script_classes(cls, scripts) -> "dict(str, type)":
+        classes = {}
+        for i, script in enumerate(scripts):
+            classes[script] = cls.get_class_for_name(script)
+            cls.show_progress(i / len(scripts))
+        return classes
 
     @classmethod
     def _is_europi_script(cls, c):
         return issubclass(c, EuroPiScript)
 
     @staticmethod
-    def _build_scripts_config(classes):
+    def _build_scripts_mapping(classes):
         return OrderedDict(
             [(cls.display_name(), cls) for cls in classes if BootloaderMenu._is_europi_script(cls)]
         )
@@ -60,24 +84,39 @@ class BootloaderMenu(EuroPiScript):
     def exit_to_menu(self):
         self.remove_state()
         # Attempt to save the state of this script if it has been implemented.
-        self.save_state()
+        self.save_state()  # TODO: isn't this the wrong state?
         machine.reset()  # why doesn't machine.soft_reset() work anymore?
 
+    def run_menu(self) -> type:
+        # load menu classes
+        script_classes = self.load_script_classes(self.scripts)
+        scripts_mapping = BootloaderMenu._build_scripts_mapping(script_classes.values())
+        self.menu = Menu(
+            items=list(sorted(scripts_mapping.keys())),
+            select_func=self.launch,
+            select_knob=europi.k2,
+            choice_buttons=[europi.b1, europi.b2],
+        )
+
+        # let the user make a selection
+        old_selected = -1
+        while not self.run_request:
+            if old_selected != self.menu.selected:
+                old_selected = self.menu.selected
+                self.menu.draw_menu()
+            time.sleep(0.1)
+        return scripts_mapping[self.run_request]
+
     def main(self):
-        state = self.load_state_str()
+        script_class_name = self.load_state_str()
+        script_class = None
 
-        if state:
-            self.run_request = state
+        if script_class_name:
+            script_class = self.get_class_for_name(script_class_name)
 
-        else:
-            # let the user make a selection
-            old_selected = -1
-            while not self.run_request:
-                if old_selected != self.menu.selected:
-                    old_selected = self.menu.selected
-                    self.menu.draw_menu()
-                time.sleep(0.1)
-            self.save_state_str(self.run_request)
+        if not script_class:
+            script_class = self.run_menu()
+            self.save_state_str(f"{script_class.__module__}.{script_class.__name__}")
 
         # setup the exit handlers, and execute the selection
         reset_state()  # remove menu's button handlers
@@ -85,5 +124,4 @@ class BootloaderMenu(EuroPiScript):
         europi.b2._handler_both(europi.b1, self.exit_to_menu)
 
         time.sleep(0.25)
-        selected_class = self.scripts_config[self.run_request]
-        selected_class().main()
+        script_class().main()
