@@ -15,7 +15,6 @@ from bootloader import BootloaderMenu
 
 # Scripts that are included in the menu
 EUROPI_SCRIPTS = [
-    # TODO the test to catch bad imports here
     "contrib.bernoulli_gates.BernoulliGates",
     "contrib.coin_toss.CoinToss",
     "contrib.consequencer.Consequencer",

@@ -57,14 +57,19 @@ class BootloaderMenu(EuroPiScript):
             module, clazz = script_class_name.rsplit(".", 1)
             return getattr(__import__(module, None, None, [None]), clazz)
         except Exception as e:
-            print(f"Ignoring bad qualified class name: {script_class_name}\ncaused by:\n{e}")
+            print(
+                f"Warning: Ignoring bad qualified class name: {script_class_name}\n"
+                f"  caused by: {e}"
+            )
             return None
 
     @classmethod
     def load_script_classes(cls, scripts) -> "dict(str, type)":
         classes = {}
         for i, script in enumerate(scripts):
-            classes[script] = cls.get_class_for_name(script)
+            clazz = cls.get_class_for_name(script)
+            if clazz:
+                classes[script] = clazz
             cls.show_progress(i / len(scripts))
         return classes
 
