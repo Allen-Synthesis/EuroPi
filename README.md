@@ -9,9 +9,12 @@
         <img src="https://img.shields.io/reddit/subreddit-subscribers/europi?style=social"
             alt="chat on Discord">
   </a>
+  <a href="">
+        <img alt="GitHub repo file count (file extension)" src="https://img.shields.io/github/directory-file-count/Allen-Synthesis/EuroPi/software/contrib?extension=py&label=contrib scripts&type=file">
+  </a>
   
 </p>
-  
+
 The EuroPi is a fully user reprogrammable module based on the [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/), which allows users to process inputs and controls to produce outputs based on code written in Python. The entire project is open-source.
 
 
