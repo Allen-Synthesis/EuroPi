@@ -296,7 +296,7 @@ class Quantizer(EuroPiScript):
                     nearest_on_scale = note
                     best_delta = delta
             
-        self.current_note = nearest_on_scale + self.root
+        self.current_note = nearest_on_scale
         self.output_voltage = base_volts + (self.root + nearest_on_scale) * VOLTS_PER_SEMITONE
         
     def read_quantize_output(self):
