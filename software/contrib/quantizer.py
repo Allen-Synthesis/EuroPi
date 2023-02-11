@@ -83,7 +83,136 @@ class KeyboardScreen:
         oled.fill_rect(self.enable_marks[self.quantizer.highlight_note][0], 31, 7, 1, 1)
         
         oled.show()
+        
+    def on_button1(self):
+        self.quantizer.scale[self.quantizer.highlight_note] = not self.quantizer.scale[self.quantizer.highlight_note]
+
+class MenuScreen:
+    def __init__(self, quantizer):
+        self.quantizer = quantizer
+        
+        self.menu_items = [
+            ModeChooser(quantizer),
+            RootChooser(quantizer),
+            IntervalChooser(quantizer, 2),
+            IntervalChooser(quantizer, 3),
+            IntervalChooser(quantizer, 4),
+            IntervalChooser(quantizer, 5)
+        ]
+        
+    def draw(self):
+        self.menu_items[self.quantizer.menu_item].draw()
+        
+    def on_button1(self):
+        self.menu_items[self.quantizer.menu_item].on_button1()
+
+class ModeChooser:
+    def __init__(self, quantizer):
+        self.quantizer = quantizer
+        
+        self.mode_names = [
+            "Trig.",
+            "Cont."
+        ]
+        
+    def read_knob(self):
+        knob = k2.read_position()
+        new_mode = round(linear_rescale(knob, 0, 100, 0, 1))
+        return new_mode
+        
+    def on_button1(self):
+        new_mode = self.read_knob()
+        self.quantizer.mode = new_mode
+        
+    def draw(self):
+        new_mode = self.read_knob()
+        oled.fill(0)
+        oled.text(f"-- Mode --", 0, 0)
+        oled.text(f"{self.mode_names[self.quantizer.mode]} <- {self.mode_names[new_mode]}", 0, 10)
+        oled.show()
     
+class RootChooser:
+    def __init__(self, quantizer):
+        self.quantizer = quantizer
+        self.root_names = [
+            "C ",
+            "C#",
+            "D ",
+            "D#",
+            "E ",
+            "F ",
+            "F#",
+            "G ",
+            "G#",
+            "A ",
+            "A#",
+            "B "
+        ]
+        
+    def read_knob(self):
+        knob = k2.read_position()
+        new_root = round(linear_rescale(knob, 0, 100, 0, 11))
+        return new_root
+    
+    def on_button1(self):
+        new_root = self.read_knob()
+        self.quantizer.root = new_root
+        
+    def draw(self):
+        new_root = self.read_knob()
+        oled.fill(0)
+        oled.text(f"-- Root --", 0, 0)
+        oled.text(f"{self.root_names[self.quantizer.root]} <- {self.root_names[new_root]}", 0, 10)
+        oled.show()
+
+class IntervalChooser:
+    def __init__(self, quantizer, n):
+        self.quantizer = quantizer
+        self.n = n
+        self.interval_names = [
+            "-P8",
+            "-M7",
+            "-m7",
+            "-M6",
+            "-m6",
+            "-P5",
+            "-d5",
+            "-P4",
+            "-M3",
+            "-m3",
+            "-M2",
+            "-m2",
+            " P1",
+            "+m2",
+            "+M2",
+            "+m3",
+            "+M3",
+            "+P4",
+            "+d5",
+            "+P5",
+            "+m6",
+            "+M6",
+            "+m7",
+            "+M7",
+            "+P8"
+        ]
+        
+    def read_knob(self):
+        knob = k2.read_position()
+        new_interval = round(linear_rescale(knob, 0, 100, 0, len(self.interval_names)-1))
+        new_interval = new_interval - 12
+        return new_interval
+    
+    def on_button1(self):
+        new_interval = self.read_knob()
+        self.quantizer.intervals[self.n-2] = new_interval
+        
+    def draw(self):
+        new_interval = self.read_knob()
+        oled.fill(0)
+        oled.text(f"-- Output {self.n} --", 0, 0)
+        oled.text(f"{self.interval_names[self.quantizer.intervals[self.n-2]+12]} <- {self.interval_names[new_interval+12]}", 0, 10)
+        oled.show()
 
 class Quantizer(EuroPiScript):
     def __init__(self):
@@ -115,14 +244,15 @@ class Quantizer(EuroPiScript):
         
         # GUI/user interaction
         self.kb = KeyboardScreen(self)
+        self.menu = MenuScreen(self)
+        self.active_screen = self.menu
+        
         self.highlight_note = 0         # the note on the keyboard view we can toggle now
+        self.menu_item = 0              # the active item from the advanced menu
         
     @classmethod
     def display_name(cls):
         return "Quantizer"
-    
-    def draw_ui(self):
-        self.kb.draw()
         
     def quantize(self, analog_in):
         # first get the closest chromatic voltage to the input
@@ -164,7 +294,13 @@ class Quantizer(EuroPiScript):
             cv6.off()
             
     def on_button1(self):
-        self.scale[self.highlight_note] = not self.scale[self.highlight_note]
+        self.active_screen.on_button1()
+        
+    def on_button2(self):
+        if self.active_screen == self.kb:
+            self.active_screen = self.menu
+        else:
+            self.active_screen = self.kb
     
     def main(self):
         # connect the trigger handler here instead of the constructor
@@ -180,6 +316,10 @@ class Quantizer(EuroPiScript):
         @b1.handler
         def on_b1_press():
             self.on_button1()
+            
+        @b2.handler
+        def on_b2_press():
+            self.on_button2()
         
         while True:
             # Update at 100Hz
@@ -187,6 +327,7 @@ class Quantizer(EuroPiScript):
             sleep(CYCLE_RATE)
             
             self.highlight_note = round(linear_rescale(k1.read_position(), 0, 100, 0, len(self.scale)-1))
+            self.menu_item = round(linear_rescale(k1.read_position(), 0, 100, 0, len(self.menu.menu_items)-1))
             
             if self.mode == MODE_CONTINUOUS:
                 cv6.off()
@@ -196,7 +337,7 @@ class Quantizer(EuroPiScript):
                 if last_output != self.output_voltage:
                     cv6.on()
             
-            self.draw_ui()
+            self.active_screen.draw()
     
 if __name__ == "__main__":
     Quantizer().main()
