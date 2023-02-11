@@ -1,5 +1,6 @@
 """
-Variable-scale, equal-temperment quantizer for the EuroPi
+Equal-temperment quantizer for the EuroPi with configurable intervals
+for multiple outputs and customizable scale
 """
 
 from europi import *
@@ -11,6 +12,14 @@ from time import sleep
 VOLTS_PER_OCTAVE = 1.0
 SEMITONES_PER_OCTAVE = 12
 VOLTS_PER_SEMITONE = VOLTS_PER_OCTAVE / float(SEMITONES_PER_OCTAVE)
+
+# Operating modes; when in mode 0 we require a trigger signal
+# When in mode 1 we quantize continuously
+MODE_TRIGGERED=0
+MODE_CONTINUOUS=1
+
+def linear_rescale(x, old_min, old_max, new_min, new_max):
+    return (x-old_min) / (old_max-old_min) * (new_max - new_min) + new_min
 
 # Draws a pretty keyboard and indicates what notes are active
 # and what note is being played
@@ -69,12 +78,18 @@ class KeyboardScreen:
         k = self.quantizer.current_note
         oled.text('+', self.playing_marks[k][0], self.playing_marks[k][1], self.playing_marks[k][2])
         
+        # clear the bottom of the screen and mark the togglable key with a line
+        oled.fill_rect(0, 30, 128, 32, 0)
+        oled.fill_rect(self.enable_marks[self.quantizer.highlight_note][0], 31, 7, 1, 1)
+        
         oled.show()
     
 
 class Quantizer(EuroPiScript):
     def __init__(self):
         super().__init__()
+        
+        self.mode = MODE_TRIGGERED
         
         # What semitone is the root of the scale?
         # 0 = C, 1 = C#/Db, 2 = D, etc...
@@ -91,11 +106,16 @@ class Quantizer(EuroPiScript):
         # TODO: load the last-used scale from memory on startup
         self.scale = [True]*12
         
+        # The input/output voltages
         self.input_voltage = 0.0
-        self.current_note = 0
         self.output_voltage = 0.0
         
+        # The semitone we're currently outputting on cv1 (0-11)
+        self.current_note = 0
+        
+        # GUI/user interaction
         self.kb = KeyboardScreen(self)
+        self.highlight_note = 0         # the note on the keyboard view we can toggle now
         
     @classmethod
     def display_name(cls):
@@ -125,7 +145,7 @@ class Quantizer(EuroPiScript):
         self.current_note = nearest_on_scale
         self.output_voltage = base_volts + nearest_on_scale * VOLTS_PER_SEMITONE
         
-    def on_trigger(self):
+    def read_quantize_output(self):
         self.input_voltage = ain.read_voltage(128)
         self.quantize(self.input_voltage)
         
@@ -134,18 +154,48 @@ class Quantizer(EuroPiScript):
         for i in range(len(self.aux_outs)):
             self.aux_outs[i].voltage(self.output_voltage + self.intervals[i] * VOLTS_PER_SEMITONE)
     
+    def on_trigger(self):
+        if self.mode == MODE_TRIGGERED:
+            self.read_quantize_output()
+            cv6.on()
+            
+    def after_trigger(self):
+        if self.mode == MODE_TRIGGERED:
+            cv6.off()
+            
+    def on_button1(self):
+        self.scale[self.highlight_note] = not self.scale[self.highlight_note]
+    
     def main(self):
         # connect the trigger handler here instead of the constructor
         # otherwise it will start quantizing as soon as we instantiate the class
         @din.handler
         def on_rising_clock():
             self.on_trigger()
+            
+        @din.handler_falling
+        def on_falling_clock():
+            self.after_trigger()
+            
+        @b1.handler
+        def on_b1_press():
+            self.on_button1()
         
         while True:
-            # 5ms cycle rate
+            # Update at 100Hz
             CYCLE_RATE = 0.01
             sleep(CYCLE_RATE)
+            
+            self.highlight_note = round(linear_rescale(k1.read_position(), 0, 100, 0, len(self.scale)-1))
+            
+            if self.mode == MODE_CONTINUOUS:
+                cv6.off()
+                last_output = self.output_voltage
+                self.read_quantize_output()
                 
+                if last_output != self.output_voltage:
+                    cv6.on()
+            
             self.draw_ui()
     
 if __name__ == "__main__":
