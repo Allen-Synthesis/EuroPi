@@ -30,6 +30,29 @@ output note changes.
 In triggered mode output 6 will mirror the digital input.
 
 
+## Menu Operation
+
+To switch between the keyboard view and the advanced menu, press
+the button on the right.
+
+In keyboard view, use the left knob to select and note and press
+the left button to enable/disable it.  Enabled notes are marked
+with a small circle near the top of the keyboard.
+
+In the menu view, use the left knob to scroll through items.  Use
+the right knob to scroll through available options for the given
+item.  To apply the selection, press the left button.
+
+### Menu Items
+
+- Mode: either continuous or triggered (see Usage, above)
+- Root: used to transpose the selected notes on the keyboard up
+  or down.  Note that the keyboard view will remain unchanged;
+  only the output voltage(s) will be transposed
+- Output 2-5: set the interval between Output 1 and Output N.
+  The interval can be any semitone between -1 octave and +1
+  octave.
+
 ## Patch Idea
 
 Connect outputs 2-5 to a sequential switch, with the output of

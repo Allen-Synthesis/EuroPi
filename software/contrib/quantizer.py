@@ -86,6 +86,7 @@ class KeyboardScreen:
         
     def on_button1(self):
         self.quantizer.scale[self.quantizer.highlight_note] = not self.quantizer.scale[self.quantizer.highlight_note]
+        self.quantizer.save()
 
 class MenuScreen:
     def __init__(self, quantizer):
@@ -123,6 +124,7 @@ class ModeChooser:
     def on_button1(self):
         new_mode = self.read_knob()
         self.quantizer.mode = new_mode
+        self.quantizer.save()
         
     def draw(self):
         new_mode = self.read_knob()
@@ -157,6 +159,7 @@ class RootChooser:
     def on_button1(self):
         new_root = self.read_knob()
         self.quantizer.root = new_root
+        self.quantizer.save()
         
     def draw(self):
         new_root = self.read_knob()
@@ -206,6 +209,7 @@ class IntervalChooser:
     def on_button1(self):
         new_interval = self.read_knob()
         self.quantizer.intervals[self.n-2] = new_interval
+        self.quantizer.save()
         
     def draw(self):
         new_interval = self.read_knob()
@@ -222,7 +226,6 @@ class Quantizer(EuroPiScript):
         
         # What semitone is the root of the scale?
         # 0 = C, 1 = C#/Db, 2 = D, etc...
-        # NOT IMPLEMENTED YET
         self.root = 0
         
         # Outputs 2-5 output the same note, shifted up or down by
@@ -249,6 +252,25 @@ class Quantizer(EuroPiScript):
         
         self.highlight_note = 0         # the note on the keyboard view we can toggle now
         self.menu_item = 0              # the active item from the advanced menu
+        
+        self.load()
+        
+    def load(self):
+        state = self.load_state_json()
+        
+        self.scale = state.get("scale", self.scale)
+        self.root = state.get("root", self.root)
+        self.intervals = state.get("intervals", self.intervals)
+        self.mode = state.get("mode", self.mode)
+    
+    def save(self):
+        state = {
+            "scale": self.scale,
+            "root": self.root,
+            "intervals": self.intervals,
+            "mode": self.mode
+        }
+        self.save_state_json(state)
         
     @classmethod
     def display_name(cls):
