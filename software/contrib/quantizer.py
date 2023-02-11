@@ -245,7 +245,7 @@ class Quantizer(EuroPiScript):
         # GUI/user interaction
         self.kb = KeyboardScreen(self)
         self.menu = MenuScreen(self)
-        self.active_screen = self.menu
+        self.active_screen = self.kb
         
         self.highlight_note = 0         # the note on the keyboard view we can toggle now
         self.menu_item = 0              # the active item from the advanced menu
