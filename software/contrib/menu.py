@@ -25,6 +25,7 @@ from contrib.piconacci import Piconacci
 from contrib.polyrhythmic_sequencer import PolyrhythmSeq
 from contrib.poly_square import PolySquare
 from contrib.probapoly import Probapoly
+from contrib.quantizer import Quantizer
 from contrib.radio_scanner import RadioScanner
 from contrib.scope import Scope
 from contrib.smooth_random_voltages import SmoothRandomVoltages
@@ -48,6 +49,7 @@ EUROPI_SCRIPT_CLASSES = [
     PolyrhythmSeq,
     PolySquare,
     Probapoly,
+    Quantizer,
     RadioScanner,
     Scope,
     SmoothRandomVoltages,
