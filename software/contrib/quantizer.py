@@ -279,6 +279,9 @@ class Quantizer(EuroPiScript):
         # first get the closest chromatic voltage to the input
         nearest_chromatic_volt = round(analog_in / VOLTS_PER_SEMITONE) * VOLTS_PER_SEMITONE
         
+        # remove our transposition
+        nearest_chromatic_volt = nearest_chromatic_volt - self.root * VOLTS_PER_SEMITONE
+        
         # then convert that to a 0-12 value indicating the nearest semitone
         base_volts = int(nearest_chromatic_volt)
         nearest_semitone = (nearest_chromatic_volt - base_volts) / VOLTS_PER_SEMITONE
@@ -293,8 +296,8 @@ class Quantizer(EuroPiScript):
                     nearest_on_scale = note
                     best_delta = delta
             
-        self.current_note = nearest_on_scale
-        self.output_voltage = base_volts + nearest_on_scale * VOLTS_PER_SEMITONE
+        self.current_note = nearest_on_scale + self.root
+        self.output_voltage = base_volts + (self.root + nearest_on_scale) * VOLTS_PER_SEMITONE
         
     def read_quantize_output(self):
         self.input_voltage = ain.read_voltage(128)
