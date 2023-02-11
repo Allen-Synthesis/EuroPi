@@ -235,7 +235,6 @@ class Quantizer(EuroPiScript):
         
         # The current scale we're quantizing to
         # Initially a chromatic scale, but this can be changed
-        # TODO: load the last-used scale from memory on startup
         self.scale = [True]*12
         
         # The input/output voltages
