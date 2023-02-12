@@ -474,7 +474,6 @@ class Quantizer(EuroPiScript):
             # to prevent burn-in
             now = time.time()
             if now - self.last_interaction_time > SCREENSAVER_TIMEOUT_S:
-                self.asleep = True
                 self.active_screen = self.screensaver
             
             # read the encoder value from knob 1 and apply it to the
