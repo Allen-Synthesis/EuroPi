@@ -1,28 +1,73 @@
-"""
-Equal-temperment quantizer for the EuroPi with configurable intervals
-for multiple outputs and customizable scale
-"""
+## Equal-temperment quantizer for the EuroPi
+#
+#  Features configurable intervals for multiple outputs and customizable scale
+#
+#  \author Chris Iverach-Brereton <ve4cib@gmail.com>
+#  \date   2023-02-12
 
 from europi import *
 from europi_script import EuroPiScript
-from time import sleep
+import time
 
-# 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
-# Just in case someone needs Buchla compatibility, make this editable
+## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
+#
+#  Just in case someone needs Buchla compatibility, this is defined
+#  but nobody is likely to need this
 VOLTS_PER_OCTAVE = 1.0
-SEMITONES_PER_OCTAVE = 12
-VOLTS_PER_SEMITONE = VOLTS_PER_OCTAVE / float(SEMITONES_PER_OCTAVE)
 
-# Operating modes; when in mode 0 we require a trigger signal
-# When in mode 1 we quantize continuously
+## Standard wester music scale has 12 semitones per octave
+SEMITONES_PER_OCTAVE = 12
+
+## How many volts per semitone
+VOLTS_PER_SEMITONE = float(VOLTS_PER_OCTAVE) / float(SEMITONES_PER_OCTAVE)
+
+## Whe in triggered mode we only quantize when we receive an external clock signal
 MODE_TRIGGERED=0
+
+## In continuous mode the digital input is ignored and we quantize the input
+#  at the highest rate possible
 MODE_CONTINUOUS=1
 
-def linear_rescale(x, old_min, old_max, new_min, new_max):
-    return (x-old_min) / (old_max-old_min) * (new_max - new_min) + new_min
+## How many seconds of idleness do we need before we trigger the screensaver?
+#
+#  =20 minutes
+SCREENSAVER_TIMEOUT_S = 60 * 20
 
-# Draws a pretty keyboard and indicates what notes are active
-# and what note is being played
+## Convert a number in one range to another
+#
+#  \param x        The value to convert
+#  \param old_min  The old minimum value for x
+#  \param old_max  The old maximum value for x
+#  \param new_min  The new minimum value for x
+#  \param new_max  The new maximum value for x
+#  \param clip     If true, output is always between max and min. Otherwise it's extrapolated
+#
+#  \return x, linearly shifted to lie on the new scale
+def linear_rescale(x, old_min, old_max, new_min, new_max, clip=True):
+    if x < old_min and clip:
+        return new_min
+    elif x > old_max and clip:
+        return new_max
+    else:
+        return (x-old_min) / (old_max-old_min) * (new_max - new_min) + new_min
+
+## Blank the screen when idle
+#
+#  Eventually it might be neat to have an animation, but that's
+#  not necessary for now
+class ScreensaverScreen:
+    def __init__(self, quantizer):
+        self.quantizer = quantizer
+        
+    def on_button1(self):
+        self.quantizer.active_screen = self.quantizer.kb
+    
+    def draw(self):
+        oled.fill(0)
+        oled.show()
+
+## Draws a pretty keyboard and indicates what notes are active
+#  and what note is being played
 class KeyboardScreen:
     def __init__(self, quantizer):
         self.quantizer = quantizer
@@ -88,6 +133,7 @@ class KeyboardScreen:
         self.quantizer.scale[self.quantizer.highlight_note] = not self.quantizer.scale[self.quantizer.highlight_note]
         self.quantizer.save()
 
+## Advanced menu options screen
 class MenuScreen:
     def __init__(self, quantizer):
         self.quantizer = quantizer
@@ -108,6 +154,7 @@ class MenuScreen:
     def on_button1(self):
         self.menu_items[self.quantizer.menu_item].on_button1()
 
+## Used by MenuScreen to choose the operating mode
 class ModeChooser:
     def __init__(self, quantizer):
         self.quantizer = quantizer
@@ -134,6 +181,7 @@ class ModeChooser:
         oled.text(f"{self.mode_names[self.quantizer.mode]} <- {self.mode_names[new_mode]}", 0, 10)
         oled.show()
     
+## Used by MenuScreen to choose the transposition offset
 class RootChooser:
     def __init__(self, quantizer):
         self.quantizer = quantizer
@@ -169,6 +217,7 @@ class RootChooser:
         oled.text(f"{self.root_names[self.quantizer.root]} <- {self.root_names[new_root]}", 0, 10)
         oled.show()
 
+## Used by MenuScreen to choose the octave offset
 class OctaveChooser:
     def __init__(self, quantizer):
         self.quantizer = quantizer
@@ -190,6 +239,8 @@ class OctaveChooser:
         oled.text(f"{self.quantizer.octave} <- {new_octave}", 0, 10)
         oled.show()
 
+## Used by MenuScreen to choose the interval offset for
+#  a given output
 class IntervalChooser:
     def __init__(self, quantizer, n):
         self.quantizer = quantizer
@@ -240,10 +291,21 @@ class IntervalChooser:
         oled.text(f"{self.interval_names[self.quantizer.intervals[self.n-2]+12]} <- {self.interval_names[new_interval+12]}", 0, 10)
         oled.show()
 
+## The main workhorse of the whole module
+#
+#  Provides the ability to quantize input analog voltages to a scale and output
+#  the resulting voltage to cv1. cv2-5 output the same signal shifted
+#  up or down a number of semitones. cv6 outputs a trigger either when the
+#  note changes (in continuous mode) or mirrors the input clock.
 class Quantizer(EuroPiScript):
     def __init__(self):
         super().__init__()
         
+        # keep track of the last time the user interacted with the module
+        # if we're idle for too long, start the screensaver
+        self.last_interaction_time = time.time()
+        
+        # Continious quantizing, or only on an external trigger?
         self.mode = MODE_TRIGGERED
         
         # What semitone is the root of the scale?
@@ -273,6 +335,7 @@ class Quantizer(EuroPiScript):
         # GUI/user interaction
         self.kb = KeyboardScreen(self)
         self.menu = MenuScreen(self)
+        self.screensaver = ScreensaverScreen(self)
         self.active_screen = self.kb
         
         self.highlight_note = 0         # the note on the keyboard view we can toggle now
@@ -280,6 +343,7 @@ class Quantizer(EuroPiScript):
         
         self.load()
         
+    ## Load the persistent settings from storage and apply them
     def load(self):
         state = self.load_state_json()
         
@@ -289,6 +353,7 @@ class Quantizer(EuroPiScript):
         self.intervals = state.get("intervals", self.intervals)
         self.mode = state.get("mode", self.mode)
     
+    ## Save the current settings to persistent storage
     def save(self):
         state = {
             "scale": self.scale,
@@ -303,6 +368,9 @@ class Quantizer(EuroPiScript):
     def display_name(cls):
         return "Quantizer"
         
+    ## Take an analog signal and process it
+    #
+    #  Sets self.current_note and self.output_voltage
     def quantize(self, analog_in):
         # first get the closest chromatic voltage to the input
         nearest_chromatic_volt = round(analog_in / VOLTS_PER_SEMITONE) * VOLTS_PER_SEMITONE
@@ -324,6 +392,10 @@ class Quantizer(EuroPiScript):
         self.current_note = nearest_on_scale
         self.output_voltage = base_volts + (self.root + nearest_on_scale) * VOLTS_PER_SEMITONE + self.octave * VOLTS_PER_OCTAVE
         
+    ## Read the input signal, quantize it, set outputs 1-5 accordingly
+    #
+    #  Called by the main loop in continuous mode or the rising clock handler
+    #  in triggered mode
     def read_quantize_output(self):
         self.input_voltage = ain.read_voltage(128)
         self.quantize(self.input_voltage)
@@ -333,24 +405,40 @@ class Quantizer(EuroPiScript):
         for i in range(len(self.aux_outs)):
             self.aux_outs[i].voltage(self.output_voltage + self.intervals[i] * VOLTS_PER_SEMITONE)
     
+    ## Handler for the rising edge of the input clock
     def on_trigger(self):
         if self.mode == MODE_TRIGGERED:
             self.read_quantize_output()
             cv6.on()
             
+    ## Handler for the falling edge of the input clock
     def after_trigger(self):
         if self.mode == MODE_TRIGGERED:
             cv6.off()
             
+    ## Handler for pressing button 1
+    #
+    #  Button 1 is used for the main interaction and is passed to
+    #  the current display for user interaction
     def on_button1(self):
+        self.last_interaction_time = time.time()
         self.active_screen.on_button1()
         
+    ## Handler for pressing button 2
+    #
+    #  Button 2 is used to cycle between screens
     def on_button2(self):
+        self.last_interaction_time = time.time()
+        
         if self.active_screen == self.kb:
             self.active_screen = self.menu
         else:
             self.active_screen = self.kb
     
+    ## The main loop
+    #
+    #  Connects event handlers for clock-in and button presses
+    #  and runs the main loop
     def main(self):
         # connect the trigger handler here instead of the constructor
         # otherwise it will start quantizing as soon as we instantiate the class
@@ -373,8 +461,16 @@ class Quantizer(EuroPiScript):
         while True:
             # Update at 100Hz
             CYCLE_RATE = 0.01
-            sleep(CYCLE_RATE)
+            time.sleep(CYCLE_RATE)
             
+            # Check if we've been idle for too long; if so, blank the screen
+            # to prevent burn-in
+            now = time.time()
+            if now - self.last_interaction_time > SCREENSAVER_TIMEOUT_S:
+                self.asleep = True
+                self.active_screen = self.screensaver
+            
+            # read the encoder value from knob 1
             self.highlight_note = round(linear_rescale(k1.read_position(), 0, 100, 0, len(self.scale)-1))
             self.menu_item = round(linear_rescale(k1.read_position(), 0, 100, 0, len(self.menu.menu_items)-1))
             

@@ -43,6 +43,7 @@ In the menu view, use the left knob to scroll through items.  Use
 the right knob to scroll through available options for the given
 item.  To apply the selection, press the left button.
 
+
 ### Menu Items
 
 - Mode: either continuous or triggered (see Usage, above)
@@ -59,6 +60,16 @@ item.  To apply the selection, press the left button.
   octave.  Note that if the input signal is less than 1 volt
   and the octave is set to 0, negative intervals may be
   clipped.
+
+
+## Screensaver
+
+After 20 minutes of idleness the screen on the EuroPi will go blank
+to prevent burn-in.  It will continue to quantize inputs normally,
+just without visual feedback.
+
+To wake the screen back up, simply press either button once.
+
 
 ## Patch Idea
 
