@@ -31,7 +31,7 @@ MODE_CONTINUOUS=1
 ## How many microseconds of idleness do we need before we trigger the screensaver?
 #
 #  =20 minutes
-SCREENSAVER_TIMEOUT_S = 1000000 * 60 * 20
+SCREENSAVER_TIMEOUT_US = 1000000 * 60 * 20
 
 ## Convert a number in one range to another
 #
@@ -428,14 +428,14 @@ class Quantizer(EuroPiScript):
     #  Button 1 is used for the main interaction and is passed to
     #  the current display for user interaction
     def on_button1(self):
-        self.last_interaction_time = time.time()
+        self.last_interaction_time = time.ticks_us()
         self.active_screen.on_button1()
         
     ## Handler for pressing button 2
     #
     #  Button 2 is used to cycle between screens
     def on_button2(self):
-        self.last_interaction_time = time.time()
+        self.last_interaction_time = time.ticks_us()
         
         if self.active_screen == self.kb:
             self.active_screen = self.menu
@@ -472,8 +472,8 @@ class Quantizer(EuroPiScript):
             
             # Check if we've been idle for too long; if so, blank the screen
             # to prevent burn-in
-            now = time.time()
-            if now - self.last_interaction_time > SCREENSAVER_TIMEOUT_S:
+            now = time.ticks_us()
+            if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_US:
                 self.active_screen = self.screensaver
             
             # read the encoder value from knob 1 and apply it to the
