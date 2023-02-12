@@ -28,10 +28,10 @@ MODE_TRIGGERED=0
 #  at the highest rate possible
 MODE_CONTINUOUS=1
 
-## How many seconds of idleness do we need before we trigger the screensaver?
+## How many microseconds of idleness do we need before we trigger the screensaver?
 #
 #  =20 minutes
-SCREENSAVER_TIMEOUT_S = 60 * 20
+SCREENSAVER_TIMEOUT_S = 1000000 * 60 * 20
 
 ## Convert a number in one range to another
 #
@@ -310,7 +310,7 @@ class Quantizer(EuroPiScript):
         
         # keep track of the last time the user interacted with the module
         # if we're idle for too long, start the screensaver
-        self.last_interaction_time = time.time()
+        self.last_interaction_time = time.ticks_us()
         
         # Continious quantizing, or only on an external trigger?
         self.mode = MODE_TRIGGERED
