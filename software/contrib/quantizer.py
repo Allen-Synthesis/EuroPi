@@ -173,7 +173,7 @@ class OctaveChooser:
     def __init__(self, quantizer):
         self.quantizer = quantizer
         
-    ef read_knob(self):
+    def read_knob(self):
         knob = k2.read_position()
         new_octave = round(linear_rescale(knob, 0, 100, -1, 2))
         return new_octave
@@ -187,7 +187,7 @@ class OctaveChooser:
         new_octave = self.read_knob()
         oled.fill(0)
         oled.text(f"-- Octave --", 0, 0)
-        oled.text(f"{self.root_names[self.quantizer.octave]} <- {new_octave}", 0, 10)
+        oled.text(f"{self.quantizer.octave} <- {new_octave}", 0, 10)
         oled.show()
 
 class IntervalChooser:
