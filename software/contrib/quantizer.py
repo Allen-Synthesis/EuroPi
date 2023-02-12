@@ -95,6 +95,7 @@ class MenuScreen:
         self.menu_items = [
             ModeChooser(quantizer),
             RootChooser(quantizer),
+            OctaveChooser(quantizer),
             IntervalChooser(quantizer, 2),
             IntervalChooser(quantizer, 3),
             IntervalChooser(quantizer, 4),
@@ -164,8 +165,29 @@ class RootChooser:
     def draw(self):
         new_root = self.read_knob()
         oled.fill(0)
-        oled.text(f"-- Root --", 0, 0)
+        oled.text(f"-- Transpose --", 0, 0)
         oled.text(f"{self.root_names[self.quantizer.root]} <- {self.root_names[new_root]}", 0, 10)
+        oled.show()
+
+class OctaveChooser:
+    def __init__(self, quantizer):
+        self.quantizer = quantizer
+        
+    ef read_knob(self):
+        knob = k2.read_position()
+        new_octave = round(linear_rescale(knob, 0, 100, -1, 2))
+        return new_octave
+    
+    def on_button1(self):
+        new_octave = self.read_knob()
+        self.quantizer.octave = new_octave
+        self.quantizer.save()
+        
+    def draw(self):
+        new_octave = self.read_knob()
+        oled.fill(0)
+        oled.text(f"-- Octave --", 0, 0)
+        oled.text(f"{self.root_names[self.quantizer.octave]} <- {new_octave}", 0, 10)
         oled.show()
 
 class IntervalChooser:
@@ -226,7 +248,11 @@ class Quantizer(EuroPiScript):
         
         # What semitone is the root of the scale?
         # 0 = C, 1 = C#/Db, 2 = D, etc...
+        # This is used to transpose the output up the given number of semitones
         self.root = 0
+        
+        # What octave are we outputting?
+        self.octave = 0
         
         # Outputs 2-5 output the same note, shifted up or down by
         # a fixed number of semitones
@@ -259,6 +285,7 @@ class Quantizer(EuroPiScript):
         
         self.scale = state.get("scale", self.scale)
         self.root = state.get("root", self.root)
+        self.octave = state.get("octave", self.octave)
         self.intervals = state.get("intervals", self.intervals)
         self.mode = state.get("mode", self.mode)
     
@@ -266,6 +293,7 @@ class Quantizer(EuroPiScript):
         state = {
             "scale": self.scale,
             "root": self.root,
+            "octave": self.octave,
             "intervals": self.intervals,
             "mode": self.mode
         }
@@ -278,9 +306,6 @@ class Quantizer(EuroPiScript):
     def quantize(self, analog_in):
         # first get the closest chromatic voltage to the input
         nearest_chromatic_volt = round(analog_in / VOLTS_PER_SEMITONE) * VOLTS_PER_SEMITONE
-        
-        # remove our transposition
-        nearest_chromatic_volt = nearest_chromatic_volt - self.root * VOLTS_PER_SEMITONE
         
         # then convert that to a 0-12 value indicating the nearest semitone
         base_volts = int(nearest_chromatic_volt)
@@ -297,7 +322,7 @@ class Quantizer(EuroPiScript):
                     best_delta = delta
             
         self.current_note = nearest_on_scale
-        self.output_voltage = base_volts + (self.root + nearest_on_scale) * VOLTS_PER_SEMITONE
+        self.output_voltage = base_volts + (self.root + nearest_on_scale) * VOLTS_PER_SEMITONE + self.octave * VOLTS_PER_OCTAVE
         
     def read_quantize_output(self):
         self.input_voltage = ain.read_voltage(128)

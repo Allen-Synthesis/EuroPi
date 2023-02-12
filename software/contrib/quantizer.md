@@ -46,12 +46,19 @@ item.  To apply the selection, press the left button.
 ### Menu Items
 
 - Mode: either continuous or triggered (see Usage, above)
-- Root: used to transpose the selected notes on the keyboard up
-  or down.  Note that the keyboard view will remain unchanged;
-  only the output voltage(s) will be transposed
+- Transpose: used to transpose the output voltage up a set
+  number of semitones. Note that the keyboard view will remain
+  unchanged; only the output voltage(s) will be transposed
+- Octave: used to shift the output voltage up or down a number
+  of octaves.  Because the module cannot output negative
+  voltages, if your auxilliary outputs are set to negative
+  intervals they may be clipped to zero if the octave is not
+  raised (-1 to +2).
 - Output 2-5: set the interval between Output 1 and Output N.
   The interval can be any semitone between -1 octave and +1
-  octave.
+  octave.  Note that if the input signal is less than 1 volt
+  and the octave is set to 0, negative intervals may be
+  clipped.
 
 ## Patch Idea
 
