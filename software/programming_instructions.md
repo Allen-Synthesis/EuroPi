@@ -116,11 +116,20 @@ Now you have access to the inputs and outputs using easy methods, which you can 
   
 ### Install the contrib scripts and setup the menu
 
-1. Complete all of the steps for [Option 2](https://github.com/Allen-Synthesis/EuroPi/edit/release_prep/0.2.0/software/programming_instructions.md#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
-2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically. After you choose a program that will become the default program that runs when the module is connected to power, but you can still go back to the menu at any time by pressing and holding both buttons for >0.5s and then releasing.
-  
+1. Complete all of the steps for [Option 2](#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
+2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically.
+
 One of the scripts that is installed with the menu system is named '~ Calibrate', and it requires you to send precise voltages to the module to calibrate it for the future, allowing you to input and output precise values from your module.  
 This is entirely optional and it will work with a usable degree of accuracy without calibration, however if you do want to then move to the ['Calibrate the module'](#calibrate-the-module) step.
+
+
+#### Navigating the menu
+
+To navigate the menu use the right knob. Turning clockwise will scroll down and turning anticlockwise will scroll up.
+
+To run the selected program, press the either button once.  The last-run program will automatically start the next time you power-on your EuroPi.
+
+To return to the main menu at any time, press and hold both buttons for 0.5s.
 
 
 ### Calibrate the module
