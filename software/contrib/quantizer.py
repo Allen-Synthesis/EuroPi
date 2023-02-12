@@ -51,6 +51,17 @@ def linear_rescale(x, old_min, old_max, new_min, new_max, clip=True):
     else:
         return (x-old_min) / (old_max-old_min) * (new_max - new_min) + new_min
 
+## Wrapper for linear_rescale specifically for scaling knob values
+#
+#  \param knob  Either europi.k1 or europi.k2; the knob whose value we'll read and rescale
+#  \param new_min  The new minimum value for x
+#  \param new_max  The new maximum value for x
+#
+#  \return The knob's current position, linearly rescaled to lie between new_min and new_max
+def knob_rescale(knob, new_min, new_max):
+    return linear_rescale(knob.read_position(), 0, 100, new_min, new_max, True)
+    
+
 ## Blank the screen when idle
 #
 #  Eventually it might be neat to have an animation, but that's
@@ -165,8 +176,7 @@ class ModeChooser:
         ]
         
     def read_knob(self):
-        knob = k2.read_position()
-        new_mode = round(linear_rescale(knob, 0, 100, 0, 1))
+        new_mode = round(knob_rescale(k2, 0, 1))
         return new_mode
         
     def on_button1(self):
@@ -201,8 +211,7 @@ class RootChooser:
         ]
         
     def read_knob(self):
-        knob = k2.read_position()
-        new_root = round(linear_rescale(knob, 0, 100, 0, 11))
+        new_root = round(knob_rescale(k2, 0, len(self.root_names)-1))
         return new_root
     
     def on_button1(self):
@@ -223,8 +232,7 @@ class OctaveChooser:
         self.quantizer = quantizer
         
     def read_knob(self):
-        knob = k2.read_position()
-        new_octave = round(linear_rescale(knob, 0, 100, -1, 2))
+        new_octave = round(knob_rescale(k2, -1, 2))
         return new_octave
     
     def on_button1(self):
@@ -274,8 +282,7 @@ class IntervalChooser:
         ]
         
     def read_knob(self):
-        knob = k2.read_position()
-        new_interval = round(linear_rescale(knob, 0, 100, 0, len(self.interval_names)-1))
+        new_interval = round(knob_rescale(k2, 0, len(self.interval_names)-1))
         new_interval = new_interval - 12
         return new_interval
     
@@ -470,9 +477,10 @@ class Quantizer(EuroPiScript):
                 self.asleep = True
                 self.active_screen = self.screensaver
             
-            # read the encoder value from knob 1
-            self.highlight_note = round(linear_rescale(k1.read_position(), 0, 100, 0, len(self.scale)-1))
-            self.menu_item = round(linear_rescale(k1.read_position(), 0, 100, 0, len(self.menu.menu_items)-1))
+            # read the encoder value from knob 1 and apply it to the
+            # active menu items for the UI
+            self.highlight_note = round(knob_rescale(k1, 0, len(self.scale)-1))
+            self.menu_item = round(knob_rescale(k1, 0, len(self.menu.menu_items)-1))
             
             if self.mode == MODE_CONTINUOUS:
                 cv6.off()
