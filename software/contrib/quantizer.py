@@ -28,10 +28,10 @@ MODE_TRIGGERED=0
 #  at the highest rate possible
 MODE_CONTINUOUS=1
 
-## How many microseconds of idleness do we need before we trigger the screensaver?
+## How many milliseconds of idleness do we need before we trigger the screensaver?
 #
 #  =20 minutes
-SCREENSAVER_TIMEOUT_US = 1000000 * 60 * 20
+SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 
 ## Convert a number in one range to another
 #
@@ -310,7 +310,7 @@ class Quantizer(EuroPiScript):
         
         # keep track of the last time the user interacted with the module
         # if we're idle for too long, start the screensaver
-        self.last_interaction_time = time.ticks_us()
+        self.last_interaction_time = time.ticks_ms()
         
         # Continious quantizing, or only on an external trigger?
         self.mode = MODE_TRIGGERED
@@ -428,14 +428,14 @@ class Quantizer(EuroPiScript):
     #  Button 1 is used for the main interaction and is passed to
     #  the current display for user interaction
     def on_button1(self):
-        self.last_interaction_time = time.ticks_us()
+        self.last_interaction_time = time.ticks_ms()
         self.active_screen.on_button1()
         
     ## Handler for pressing button 2
     #
     #  Button 2 is used to cycle between screens
     def on_button2(self):
-        self.last_interaction_time = time.ticks_us()
+        self.last_interaction_time = time.ticks_ms()
         
         if self.active_screen == self.kb:
             self.active_screen = self.menu
@@ -472,8 +472,8 @@ class Quantizer(EuroPiScript):
             
             # Check if we've been idle for too long; if so, blank the screen
             # to prevent burn-in
-            now = time.ticks_us()
-            if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_US:
+            now = time.ticks_ms()
+            if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
                 self.active_screen = self.screensaver
             
             # read the encoder value from knob 1 and apply it to the
@@ -493,3 +493,4 @@ class Quantizer(EuroPiScript):
     
 if __name__ == "__main__":
     Quantizer().main()
+
