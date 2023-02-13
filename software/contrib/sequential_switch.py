@@ -260,10 +260,18 @@ class SequentialSwitch(EuroPiScript):
             self.on_button2()
         
         while True:
-            input_volts = ain.read_voltage()
-            
+            # keep the menu items sync'd with the left knob
             self.menu_item = round(knob_rescale(k1, 0, len(self.menu_screen.menu_items)-1))
             
+            # check if we've been idle for too long; if so, blank the screen
+            # to prevent burn-in
+            now = time.ticks_ms()
+            if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
+                self.active_screen = self.screensaver
+            
+            # read the input and send it to the current output
+            # all other outputs should be zero
+            input_volts = ain.read_voltage()
             for i in range(len(self.outputs)):
                 if i == self.current_output:
                     self.outputs[i].voltage(input_volts)
