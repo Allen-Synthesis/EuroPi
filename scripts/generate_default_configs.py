@@ -3,6 +3,8 @@
 This script can be used to generate default configuration files for all EuroPiScripts that use the 
 configuration feature. Simply execute this script from the root of the project directory.
 
+   $ python3 scripts/generate_default_configs.py
+
 The config files will be generated in the a `config` directory. The files can be edited and then
 loaded onto the pico in a `config` directory in the root of the pico's file system.
 """
