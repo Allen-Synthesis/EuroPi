@@ -17,12 +17,15 @@
   <a href="">
         <img alt="GitHub repo file count (file extension)" src="https://img.shields.io/github/directory-file-count/Allen-Synthesis/EuroPi/software/contrib?extension=py&label=contrib scripts&type=file">
   </a>
+  <a href="">
+        <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/Allen-Synthesis/Europi">
+  </a>
   
 </p>
 
 ---
 
-
+![GitHub release (latest SemVer)]()
 
 This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The repository for this (now deprecated) module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
 
