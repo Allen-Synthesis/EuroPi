@@ -18,9 +18,9 @@ This document will take you through the steps to get your module ready to progra
 
  ## Optional Quick start
 
- The quickest way to get your EuroPi flashed with the latest firmware is to head over to the [releases](https://github.com/Allen-Synthesis/EuroPi/releases) page and download the latest `europi-vX.Y.Z.uf2` file. Then follow the 'BOOTSEL' instructions above to flash the EuroPi firmware to your pico.
+> **_NOTE:_**  - ⚠️ This version of firmware will not let you override `main.py` nor can you modify existing scripts. Do not use this version of the firmware if you plan to write custom scripts for the EuroPi.
 
-> **_NOTE:_**  This version of firmware will not let you override `main.py` so you cannot use this version of the firmware to write custom scripts for the EuroPi.
+The quickest way to get your EuroPi flashed with the latest firmware is to head over to the [releases](https://github.com/Allen-Synthesis/EuroPi/releases) page and download the latest `europi-vX.Y.Z.uf2` file. Then follow the 'BOOTSEL' instructions above to flash the EuroPi firmware to your pico.
   
 ## Setting Up
   
