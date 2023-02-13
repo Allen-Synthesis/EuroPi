@@ -1,7 +1,8 @@
-## Sequential switch for the EuroPi
-#
-#  \author Chris Iverach-Brereton <ve4cib@gmail.com>
-#  \date   2023-02-13
+"""Sequential switch for the EuroPi
+
+    @author Chris Iverach-Brereton <ve4cib@gmail.com>
+    @date   2023-02-13
+"""
 
 from europi import *
 from europi_script import EuroPiScript
@@ -20,17 +21,17 @@ MODE_RANDOM=1
 #  =20 minutes
 SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 
-## Convert a number in one range to another
-#
-#  \param x        The value to convert
-#  \param old_min  The old minimum value for x
-#  \param old_max  The old maximum value for x
-#  \param new_min  The new minimum value for x
-#  \param new_max  The new maximum value for x
-#  \param clip     If true, output is always between max and min. Otherwise it's extrapolated
-#
-#  \return x, linearly shifted to lie on the new scale
 def linear_rescale(x, old_min, old_max, new_min, new_max, clip=True):
+    """Convert a number in one range to another
+
+    @param x        The value to convert
+    @param old_min  The old minimum value for x
+    @param old_max  The old maximum value for x
+    @param new_min  The new minimum value for x
+    @param new_max  The new maximum value for x
+    @param clip     If true, output is always between max and min. Otherwise it's extrapolated
+    @return x, linearly shifted to lie on the new scale
+    """
     if x < old_min and clip:
         return new_min
     elif x > old_max and clip:
@@ -38,22 +39,22 @@ def linear_rescale(x, old_min, old_max, new_min, new_max, clip=True):
     else:
         return (x-old_min) / (old_max-old_min) * (new_max - new_min) + new_min
 
-## Wrapper for linear_rescale specifically for scaling knob values
-#
-#  \param knob  Either europi.k1 or europi.k2; the knob whose value we'll read and rescale
-#  \param new_min  The new minimum value for x
-#  \param new_max  The new maximum value for x
-#
-#  \return The knob's current position, linearly rescaled to lie between new_min and new_max
 def knob_rescale(knob, new_min, new_max):
+    """Wrapper for linear_rescale specifically for scaling knob values
+    @param knob  Either europi.k1 or europi.k2; the knob whose value we'll read and rescale
+    @param new_min  The new minimum value for x
+    @param new_max  The new maximum value for x
+    @return The knob's current position, linearly rescaled to lie between new_min and new_max
+    """
     return linear_rescale(knob.read_position(), 0, 100, new_min, new_max, True)
     
 
-## Blank the screen when idle
-#
-#  Eventually it might be neat to have an animation, but that's
-#  not necessary for now
 class ScreensaverScreen:
+    """Blank the screen when idle
+    Eventually it might be neat to have an animation, but that's
+    not necessary for now
+    """
+    
     def __init__(self, parent):
         self.parent = parent
         
@@ -65,8 +66,10 @@ class ScreensaverScreen:
         oled.fill(0)
         oled.show()
 
-## Default display: shows what output is currently active
 class SwitchScreen:
+    """Default display: shows what output is currently active
+    """
+    
     def __init__(self, parent):
         self.parent = parent
         
@@ -98,8 +101,9 @@ class SwitchScreen:
         
         oled.show()
 
-## Advanced menu options screen
 class MenuScreen:
+    """Advanced menu options screen
+    """
     def __init__(self, parent):
         self.parent = parent
         
@@ -114,30 +118,32 @@ class MenuScreen:
     def on_button1(self):
         self.menu_items[self.parent.menu_item].on_button1()
 
-## Used by MenuScreen to choose the number of outputs
 class NumOutsChooser:
+    """Used by MenuScreen to choose the number of outputs
+    """
+    
     def __init__(self, parent):
         self.parent = parent
         
-    def read_knob(self):
-        num_outs = round(knob_rescale(k2, 2, 6)) # 2-6 outputs; 1 output would be useless!
-        return num_outs
+    def read_num_outs(self):
+        return round(knob_rescale(k2, 2, 6)) # 2-6 outputs; 1 output would be useless!
         
     def on_button1(self):
-        num_outs = self.read_knob()
+        num_outs = self.read_num_outs()
         self.parent.num_outputs = num_outs
         self.parent.current_output = self.parent.current_output % num_outs
         self.parent.save()
         
     def draw(self):
-        num_outs = self.read_knob()
+        num_outs = self.read_num_outs()
         oled.fill(0)
         oled.text(f"-- # Outputs --", 0, 0)
         oled.text(f"{self.parent.num_outputs} <- {num_outs}", 0, 10)
         oled.show()
     
-## Used by MenuScreen to choose the operating mode
 class ModeChooser:
+    """Used by MenuScreen to choose the operating mode
+    """
     def __init__(self, parent):
         self.parent = parent
         
@@ -146,27 +152,28 @@ class ModeChooser:
             "Rand."
         ]
         
-    def read_knob(self):
-        new_mode = round(knob_rescale(k2, 0, len(self.mode_names)-1))
-        return new_mode
+    def read_mode(self):
+        return round(knob_rescale(k2, 0, len(self.mode_names)-1))
         
     def on_button1(self):
-        new_mode = self.read_knob()
+        new_mode = self.read_mode()
         self.parent.mode = new_mode
         self.parent.save()
         
     def draw(self):
-        new_mode = self.read_knob()
+        new_mode = self.read_mode()
         oled.fill(0)
         oled.text(f"-- Mode --", 0, 0)
         oled.text(f"{self.mode_names[self.parent.mode]} <- {self.mode_names[new_mode]}", 0, 10)
         oled.show()
 
-## The main workhorse of the whole module
-#
-#  Copies the analog input to one of the 6 outputs, cycling which output
-#  whenever a trigger is received
 class SequentialSwitch(EuroPiScript):
+    """The main workhorse of the whole module
+
+    Copies the analog input to one of the 6 outputs, cycling which output
+    whenever a trigger is received
+    """
+    
     def __init__(self):
         super().__init__()
         
@@ -196,16 +203,18 @@ class SequentialSwitch(EuroPiScript):
         self.menu_item = 0              # the active item from the advanced menu
         
         self.load()
-        
-    ## Load the persistent settings from storage and apply them
+       
     def load(self):
+        """Load the persistent settings from storage and apply them
+        """
         state = self.load_state_json()
         
         self.mode = state.get("mode", self.mode)
         self.num_outputs = state.get("num_outputs", self.num_outputs)
     
-    ## Save the current settings to persistent storage
     def save(self):
+        """Save the current settings to persistent storage
+        """
         state = {
             "mode": self.mode,
             "num_outputs": self.num_outputs
@@ -216,49 +225,41 @@ class SequentialSwitch(EuroPiScript):
     def display_name(cls):
         return "Seq. Switch"
     
-    ## Handler for the rising edge of the input clock
     def on_trigger(self):
+        """Handler for the rising edge of the input clock
+
+        Also used for manually advancing the output on a button press
+        """
         if self.mode == MODE_SEQUENTIAL:
             self.current_output = (self.current_output + 1) % self.num_outputs
         else:
             self.current_output = random.randint(0, self.num_outputs-1)
-            
-    ## Handler for pressing button 1
-    #
-    #  Button 1 is used for the main interaction and is passed to
-    #  the current display for user interaction
-    def on_button1(self):
-        self.last_interaction_time = time.ticks_ms()
-        self.active_screen.on_button1()
-        
-    ## Handler for pressing button 2
-    #
-    #  Button 2 is used to cycle between screens
-    def on_button2(self):
-        self.last_interaction_time = time.ticks_ms()
-        
-        if self.active_screen == self.switch_screen:
-            self.active_screen = self.menu_screen
-        else:
-            self.active_screen = self.switch_screen
     
-    ## The main loop
-    #
-    #  Connects event handlers for clock-in and button presses
-    #  and runs the main loop
     def main(self):
+        """The main loop
+
+        Connects event handlers for clock-in and button presses
+        and runs the main loop
+        """
+        
         @din.handler
         def on_rising_clock():
             self.on_trigger()
             
         @b1.handler
         def on_b1_press():
-            self.on_button1()
+            self.last_interaction_time = time.ticks_ms()
+            self.active_screen.on_button1()
             
         @b2.handler
         def on_b2_press():
-            self.on_button2()
+            self.last_interaction_time = time.ticks_ms()
         
+            if self.active_screen == self.switch_screen:
+                self.active_screen = self.menu_screen
+            else:
+                self.active_screen = self.switch_screen
+            
         while True:
             # keep the menu items sync'd with the left knob
             self.menu_item = round(knob_rescale(k1, 0, len(self.menu_screen.menu_items)-1))
