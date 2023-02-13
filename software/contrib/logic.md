@@ -3,10 +3,16 @@
 This program implements six digital logic operations, with each
 operation's result sent to a different output jack.
 
-The analogue input is treated as a digital low/high signal.  If
-the analogue input's value is > 0.8V it is treated as ON.
-Otherwise it is treated as off.  (Note: this is the same voltage
-threshold used on the digital input.)
+- `ain`: the first boolean input; any signal above 0.8V is treated
+  as ON, anything below that is OFF. (Note: this is the same voltage
+  threshold used on the digital input.)
+- `din`: the second boolean input
+- `cv1`: `ain` AND `din`
+- `cv2`: `ain` OR `din`
+- `cv3`: `ain` XOR `din`
+- `cv4`: `ain` NAND `din`
+- `cv5`: `ain` NOR `din`
+- `cv6`: `ain` XNOR `din`
 
 The outputs are as follows:
 
@@ -28,3 +34,8 @@ input combination:
 |  0  |  1  |  0  |  1 |  1  |  1   |  0  |  0   |
 |  1  |  0  |  0  |  1 |  1  |  1   |  0  |  0   |
 |  1  |  1  |  1  |  1 |  0  |  0   |  0  |  1   |
+
+The screen will go to sleep after 20 minutes of inactivity. Pressing
+either button will wake the screen up.
+
+The knobs are not used in this program.

@@ -1,9 +1,10 @@
-## Logic gates for the EuroPi
-#
-#  Treats ain as a digital input with a threshold of 0.8V
-#
-#  \author Chris Iverach-Brereton <ve4cib@gmail.com>
-#  \date   2023-02-13
+"""Logic gates for the EuroPi
+
+Treats ain as a digital input with a threshold of 0.8V
+
+@author Chris Iverach-Brereton <ve4cib@gmail.com>
+@date   2023-02-13
+"""
 
 from europi import *
 from europi_script import EuroPiScript
@@ -17,11 +18,12 @@ SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 #  input
 AIN_VOLTAGE_CUTOFF = 0.8
 
-## The main workhorse of the whole module
-#
-#  Does all 6 basic logic operations, sending the result to each of the
-#  6 outputs
 class Logic(EuroPiScript):
+    """The main workhorse of the whole module
+
+    Does all 6 basic logic operations, sending the result to each of the
+    6 outputs
+    """
     def __init__(self):
         super().__init__()
         
@@ -32,24 +34,21 @@ class Logic(EuroPiScript):
     @classmethod
     def display_name(cls):
         return "Logic"
-            
-    ## Handler for pressing either button; just wake the screen up
-    def on_button(self):
-        self.last_interaction_time = time.ticks_ms()
     
-    ## The main loop
-    #
-    #  Connects event handlers for clock-in and button presses
-    #  and runs the main loop
     def main(self):
-            
+        """The main loop
+
+        Connects event handlers for clock-in and button presses
+        and runs the main loop
+        """
+        
         @b1.handler
         def on_b1_press():
-            self.on_button()
+            self.last_interaction_time = time.ticks_ms()
             
         @b2.handler
         def on_b2_press():
-            self.on_button()
+            self.last_interaction_time = time.ticks_ms()
         
         while True:
             
