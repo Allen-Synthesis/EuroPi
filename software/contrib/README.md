@@ -98,12 +98,6 @@ The outputs can also be rotated as inspired by the 4MS Rotating Clock Divider
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: n/a</i>
 
-### Sequential Switch \[ [documentation](/software/contrib/sequential_switch.md) | [script](/software/contrib/sequential_switch.py) \]
-A 2-6 output sequential switch.  The analogue input is mirrored to one of the outputs, with the specific output changed every time a trigger is received.
-
-<i>Author: [chrisib](https://github.com/chrisib)</i>
-<br><i>Labels: random, sequential switch</i>
-
 ### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
 Random CV with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw.
 
