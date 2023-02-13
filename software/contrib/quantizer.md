@@ -7,6 +7,22 @@ For best results make sure your EuroPi is well-calibrated.
 The quantizer can operate in two modes: triggered (default)
 and continuous.
 
+- `ain`: the analog input to be quantized
+- `din`: when in triggered mode, the trigger to quantize is
+  received on this input
+- `cv1`: the quantized output
+- `cv2-5`: the quantized output, shifted up or down a fixed
+  number of semitones
+- `cv6`: a trigger when the output note changes (in continuous
+  mode) or a copy of the signal sent to `din` (in triggered mode)
+- `button 1`: toggle note (on keyboard screen) or apply new
+  setting (on menu screen)
+- `button 2`: toggle between the keyboard & menu screens
+- `knob 1`: cycle through the note to toggle (on keyboard
+  screen) or the menu items (on menu screen)
+- `knob 2`: cycle through available options for the current
+  setting (on menu screen). Unused on keyboard screen
+
 
 ## Usage
 
@@ -33,15 +49,15 @@ In triggered mode output 6 will mirror the digital input.
 ## Menu Operation
 
 To switch between the keyboard view and the advanced menu, press
-the button on the right.
+button 2.
 
-In keyboard view, use the left knob to select and note and press
-the left button to enable/disable it.  Enabled notes are marked
+In keyboard view, use knob 1 to select and note and press
+button 1 to enable/disable it.  Enabled notes are marked
 with a small circle near the top of the keyboard.
 
-In the menu view, use the left knob to scroll through items.  Use
-the right knob to scroll through available options for the given
-item.  To apply the selection, press the left button.
+In the menu view, use knob 1 to scroll through items.  Use
+knob 2 to scroll through available options for the given
+item.  To apply the selection, press button 1.
 
 
 ### Menu Items
