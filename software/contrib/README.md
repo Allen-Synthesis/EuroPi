@@ -48,6 +48,13 @@ The division of the master clock that each LFO runs at, as well as each of their
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: LFO</i>
 
+### Logic \[ [documentation](/software/contrib/logic.md) | [script](/software/contrib/logic.py) \]
+
+Treats both inputs as digital on/off signals and outputs the results of binary AND, OR, XOR, NAND, NOR, and XNOR operations on outputs 1-6.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: logic, gates, binary operators</i>
+
 ### Noddy Holder \[ [documentation](/software/contrib/noddy_holder.md) | [script](/software/contrib/noddy_holder.py) \]
 Two channels of sample/track and hold based on a single trigger and CV source
 
@@ -95,7 +102,7 @@ The outputs can also be rotated as inspired by the 4MS Rotating Clock Divider
 A 2-6 output sequential switch.  The analogue input is mirrored to one of the outputs, with the specific output changed every time a trigger is received.
 
 <i>Author: [chrisib](https://github.com/chrisib)</i>
-<br><i>Labels: sequential switch</i>
+<br><i>Labels: random, sequential switch</i>
 
 ### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
 Random CV with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw.
