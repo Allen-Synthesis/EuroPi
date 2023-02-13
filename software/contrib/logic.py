@@ -89,5 +89,5 @@ class Logic(EuroPiScript):
             oled.show()
     
 if __name__ == "__main__":
-    SequentialSwitch().main()
+    Logic().main()
 
