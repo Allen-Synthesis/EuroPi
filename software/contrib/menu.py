@@ -19,7 +19,6 @@ from contrib.diagnostic import Diagnostic
 from contrib.hamlet import Hamlet
 from contrib.harmonic_lfos import HarmonicLFOs
 from contrib.hello_world import HelloWorld
-from contrib.logic import Logic
 from contrib.master_clock import MasterClock
 from contrib.noddy_holder import NoddyHolder
 from contrib.piconacci import Piconacci
@@ -44,7 +43,6 @@ EUROPI_SCRIPT_CLASSES = [
     Hamlet,
     HarmonicLFOs,
     HelloWorld,
-    Logic,
     MasterClock,
     NoddyHolder,
     Piconacci,
