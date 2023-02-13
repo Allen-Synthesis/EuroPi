@@ -1,9 +1,10 @@
-## Equal-temperment quantizer for the EuroPi
-#
-#  Features configurable intervals for multiple outputs and customizable scale
-#
-#  \author Chris Iverach-Brereton <ve4cib@gmail.com>
-#  \date   2023-02-12
+"""Equal-temperment quantizer for the EuroPi
+
+Features configurable intervals for multiple outputs and customizable scale
+
+  @author Chris Iverach-Brereton <ve4cib@gmail.com>
+  @date   2023-02-12
+"""
 
 from europi import *
 from europi_script import EuroPiScript
@@ -33,17 +34,18 @@ MODE_CONTINUOUS=1
 #  =20 minutes
 SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 
-## Convert a number in one range to another
-#
-#  \param x        The value to convert
-#  \param old_min  The old minimum value for x
-#  \param old_max  The old maximum value for x
-#  \param new_min  The new minimum value for x
-#  \param new_max  The new maximum value for x
-#  \param clip     If true, output is always between max and min. Otherwise it's extrapolated
-#
-#  \return x, linearly shifted to lie on the new scale
 def linear_rescale(x, old_min, old_max, new_min, new_max, clip=True):
+    """Convert a number in one range to another
+
+    @param x        The value to convert
+    @param old_min  The old minimum value for x
+    @param old_max  The old maximum value for x
+    @param new_min  The new minimum value for x
+    @param new_max  The new maximum value for x
+    @param clip     If true, output is always between max and min. Otherwise it's extrapolated
+
+    @return x, linearly shifted to lie on the new scale
+    """
     if x < old_min and clip:
         return new_min
     elif x > old_max and clip:
@@ -51,22 +53,24 @@ def linear_rescale(x, old_min, old_max, new_min, new_max, clip=True):
     else:
         return (x-old_min) / (old_max-old_min) * (new_max - new_min) + new_min
 
-## Wrapper for linear_rescale specifically for scaling knob values
-#
-#  \param knob  Either europi.k1 or europi.k2; the knob whose value we'll read and rescale
-#  \param new_min  The new minimum value for x
-#  \param new_max  The new maximum value for x
-#
-#  \return The knob's current position, linearly rescaled to lie between new_min and new_max
 def knob_rescale(knob, new_min, new_max):
+    """Wrapper for linear_rescale specifically for scaling knob values
+
+    @param knob  Either europi.k1 or europi.k2; the knob whose value we'll read and rescale
+    @param new_min  The new minimum value for x
+    @param new_max  The new maximum value for x
+
+    @return The knob's current position, linearly rescaled to lie between new_min and new_max
+    """
     return linear_rescale(knob.read_position(), 0, 100, new_min, new_max, True)
     
 
-## Blank the screen when idle
-#
-#  Eventually it might be neat to have an animation, but that's
-#  not necessary for now
 class ScreensaverScreen:
+    """Blank the screen when idle
+
+    Eventually it might be neat to have an animation, but that's
+    not necessary for now
+    """
     def __init__(self, quantizer):
         self.quantizer = quantizer
         
@@ -77,9 +81,11 @@ class ScreensaverScreen:
         oled.fill(0)
         oled.show()
 
-## Draws a pretty keyboard and indicates what notes are active
-#  and what note is being played
 class KeyboardScreen:
+    """Draws a pretty keyboard and indicates what notes are enabled
+    and what note is being played as the primary output
+    """
+    
     def __init__(self, quantizer):
         self.quantizer = quantizer
         
@@ -128,9 +134,9 @@ class KeyboardScreen:
         # mark the enabled notes with a .
         for i in range(len(self.quantizer.scale)):
             if self.quantizer.scale[i]:
-                oled.text('.', self.enable_marks[i][0], self.enable_marks[i][1], self.enable_marks[i][2])
+                oled.text('.', *self.enable_marks[i])
         
-        # mark the active note with a @
+        # mark the active note with a +
         k = self.quantizer.current_note
         oled.text('+', self.playing_marks[k][0], self.playing_marks[k][1], self.playing_marks[k][2])
         
@@ -144,8 +150,10 @@ class KeyboardScreen:
         self.quantizer.scale[self.quantizer.highlight_note] = not self.quantizer.scale[self.quantizer.highlight_note]
         self.quantizer.save()
 
-## Advanced menu options screen
 class MenuScreen:
+    """Advanced menu options screen
+    """
+    
     def __init__(self, quantizer):
         self.quantizer = quantizer
         
@@ -165,8 +173,9 @@ class MenuScreen:
     def on_button1(self):
         self.menu_items[self.quantizer.menu_item].on_button1()
 
-## Used by MenuScreen to choose the operating mode
 class ModeChooser:
+    """Used by MenuScreen to choose the operating mode
+    """
     def __init__(self, quantizer):
         self.quantizer = quantizer
         
@@ -175,24 +184,24 @@ class ModeChooser:
             "Cont."
         ]
         
-    def read_knob(self):
-        new_mode = round(knob_rescale(k2, 0, 1))
-        return new_mode
+    def read_mode(self):
+        return round(knob_rescale(k2, 0, 1))
         
     def on_button1(self):
-        new_mode = self.read_knob()
+        new_mode = self.read_mode()
         self.quantizer.mode = new_mode
         self.quantizer.save()
         
     def draw(self):
-        new_mode = self.read_knob()
+        new_mode = self.read_mode()
         oled.fill(0)
         oled.text(f"-- Mode --", 0, 0)
         oled.text(f"{self.mode_names[self.quantizer.mode]} <- {self.mode_names[new_mode]}", 0, 10)
         oled.show()
     
-## Used by MenuScreen to choose the transposition offset
 class RootChooser:
+    """Used by MenuScreen to choose the transposition offset
+    """
     def __init__(self, quantizer):
         self.quantizer = quantizer
         self.root_names = [
@@ -210,46 +219,45 @@ class RootChooser:
             "B "
         ]
         
-    def read_knob(self):
-        new_root = round(knob_rescale(k2, 0, len(self.root_names)-1))
-        return new_root
+    def read_root(self):
+        return round(knob_rescale(k2, 0, len(self.root_names)-1))
     
     def on_button1(self):
-        new_root = self.read_knob()
+        new_root = self.read_root()
         self.quantizer.root = new_root
         self.quantizer.save()
         
     def draw(self):
-        new_root = self.read_knob()
+        new_root = self.read_root()
         oled.fill(0)
         oled.text(f"-- Transpose --", 0, 0)
         oled.text(f"{self.root_names[self.quantizer.root]} <- {self.root_names[new_root]}", 0, 10)
         oled.show()
 
-## Used by MenuScreen to choose the octave offset
 class OctaveChooser:
+    """Used by MenuScreen to choose the octave offset
+    """
     def __init__(self, quantizer):
         self.quantizer = quantizer
         
-    def read_knob(self):
-        new_octave = round(knob_rescale(k2, -1, 2))
-        return new_octave
+    def read_octave(self):
+        return round(knob_rescale(k2, -1, 2))
     
     def on_button1(self):
-        new_octave = self.read_knob()
+        new_octave = self.read_octave()
         self.quantizer.octave = new_octave
         self.quantizer.save()
         
     def draw(self):
-        new_octave = self.read_knob()
+        new_octave = self.read_octave()
         oled.fill(0)
         oled.text(f"-- Octave --", 0, 0)
         oled.text(f"{self.quantizer.octave} <- {new_octave}", 0, 10)
         oled.show()
 
-## Used by MenuScreen to choose the interval offset for
-#  a given output
 class IntervalChooser:
+    """Used by MenuScreen to choose the interval offset for a given output
+    """
     def __init__(self, quantizer, n):
         self.quantizer = quantizer
         self.n = n
@@ -281,30 +289,29 @@ class IntervalChooser:
             "+P8"
         ]
         
-    def read_knob(self):
-        new_interval = round(knob_rescale(k2, 0, len(self.interval_names)-1))
-        new_interval = new_interval - 12
-        return new_interval
+    def read_interval(self):
+        return = round(knob_rescale(k2, 0, len(self.interval_names)-1)) - 12
     
     def on_button1(self):
-        new_interval = self.read_knob()
+        new_interval = self.read_interval()
         self.quantizer.intervals[self.n-2] = new_interval
         self.quantizer.save()
         
     def draw(self):
-        new_interval = self.read_knob()
+        new_interval = self.read_interval()
         oled.fill(0)
         oled.text(f"-- Output {self.n} --", 0, 0)
         oled.text(f"{self.interval_names[self.quantizer.intervals[self.n-2]+12]} <- {self.interval_names[new_interval+12]}", 0, 10)
         oled.show()
 
-## The main workhorse of the whole module
-#
-#  Provides the ability to quantize input analog voltages to a scale and output
-#  the resulting voltage to cv1. cv2-5 output the same signal shifted
-#  up or down a number of semitones. cv6 outputs a trigger either when the
-#  note changes (in continuous mode) or mirrors the input clock.
 class Quantizer(EuroPiScript):
+    """The main workhorse of the whole module
+
+    Provides the ability to quantize input analog voltages to a scale and output
+    the resulting voltage to cv1. cv2-5 output the same signal shifted
+    up or down a number of semitones. cv6 outputs a trigger either when the
+    note changes (in continuous mode) or mirrors the input clock.
+    """
     def __init__(self):
         super().__init__()
         
@@ -350,8 +357,9 @@ class Quantizer(EuroPiScript):
         
         self.load()
         
-    ## Load the persistent settings from storage and apply them
     def load(self):
+        """Load the persistent settings from storage and apply them
+        """
         state = self.load_state_json()
         
         self.scale = state.get("scale", self.scale)
@@ -360,8 +368,9 @@ class Quantizer(EuroPiScript):
         self.intervals = state.get("intervals", self.intervals)
         self.mode = state.get("mode", self.mode)
     
-    ## Save the current settings to persistent storage
     def save(self):
+        """Save the current settings to persistent storage
+        """
         state = {
             "scale": self.scale,
             "root": self.root,
@@ -374,11 +383,13 @@ class Quantizer(EuroPiScript):
     @classmethod
     def display_name(cls):
         return "Quantizer"
-        
-    ## Take an analog signal and process it
-    #
-    #  Sets self.current_note and self.output_voltage
+       
     def quantize(self, analog_in):
+        """Take an analog signal and process it
+
+        Sets self.current_note and self.output_voltage
+        """
+        
         # first get the closest chromatic voltage to the input
         nearest_chromatic_volt = round(analog_in / VOLTS_PER_SEMITONE) * VOLTS_PER_SEMITONE
         
@@ -398,12 +409,13 @@ class Quantizer(EuroPiScript):
             
         self.current_note = nearest_on_scale
         self.output_voltage = base_volts + (self.root + nearest_on_scale) * VOLTS_PER_SEMITONE + self.octave * VOLTS_PER_OCTAVE
-        
-    ## Read the input signal, quantize it, set outputs 1-5 accordingly
-    #
-    #  Called by the main loop in continuous mode or the rising clock handler
-    #  in triggered mode
+       
     def read_quantize_output(self):
+        """Read the input signal, quantize it, set outputs 1-5 accordingly
+
+        Called by the main loop in continuous mode or the rising clock handler
+        in triggered mode
+        """
         self.input_voltage = ain.read_voltage(128)
         self.quantize(self.input_voltage)
         
@@ -412,58 +424,51 @@ class Quantizer(EuroPiScript):
         for i in range(len(self.aux_outs)):
             self.aux_outs[i].voltage(self.output_voltage + self.intervals[i] * VOLTS_PER_SEMITONE)
     
-    ## Handler for the rising edge of the input clock
-    def on_trigger(self):
-        if self.mode == MODE_TRIGGERED:
-            self.read_quantize_output()
-            cv6.on()
-            
-    ## Handler for the falling edge of the input clock
-    def after_trigger(self):
-        if self.mode == MODE_TRIGGERED:
-            cv6.off()
-            
-    ## Handler for pressing button 1
-    #
-    #  Button 1 is used for the main interaction and is passed to
-    #  the current display for user interaction
-    def on_button1(self):
-        self.last_interaction_time = time.ticks_ms()
-        self.active_screen.on_button1()
-        
-    ## Handler for pressing button 2
-    #
-    #  Button 2 is used to cycle between screens
-    def on_button2(self):
-        self.last_interaction_time = time.ticks_ms()
-        
-        if self.active_screen == self.kb:
-            self.active_screen = self.menu
-        else:
-            self.active_screen = self.kb
-    
-    ## The main loop
-    #
-    #  Connects event handlers for clock-in and button presses
-    #  and runs the main loop
     def main(self):
+        """The main loop
+
+        Connects event handlers for clock-in and button presses
+        and runs the main loop
+        """
         # connect the trigger handler here instead of the constructor
         # otherwise it will start quantizing as soon as we instantiate the class
         @din.handler
         def on_rising_clock():
-            self.on_trigger()
+            """Handler for the rising edge of the input clock
+            """
+            if self.mode == MODE_TRIGGERED:
+                self.read_quantize_output()
+                cv6.on()
             
         @din.handler_falling
         def on_falling_clock():
-            self.after_trigger()
+            """Handler for the falling edge of the input clock
+            """
+            if self.mode == MODE_TRIGGERED:
+                cv6.off()
             
         @b1.handler
         def on_b1_press():
-            self.on_button1()
+            """Handler for pressing button 1
+
+            Button 1 is used for the main interaction and is passed to
+            the current display for user interaction
+            """
+            self.last_interaction_time = time.ticks_ms()
+            self.active_screen.on_button1()
             
         @b2.handler
         def on_b2_press():
-            self.on_button2()
+            """Handler for pressing button 2
+
+            Button 2 is used to cycle between screens
+            """
+            self.last_interaction_time = time.ticks_ms()
+            
+            if self.active_screen == self.kb:
+                self.active_screen = self.menu
+            else:
+                self.active_screen = self.kb
         
         while True:
             # Update at 100Hz
