@@ -11,8 +11,11 @@ of the valid values that it may have. There are several different types of COnfi
 import os
 import json
 from file_utils import load_file, delete_file, load_json_data
+from collections import namedtuple
 
-VALID = (True, "Valid.")
+Validation = namedtuple("Validation", "is_valid message")
+
+VALID = Validation(is_valid=True, message="Valid.")
 
 
 class ConfigPoint:
@@ -28,9 +31,9 @@ class ConfigPoint:
         self.type = type
         self.default = default
 
-    def validate(self, value) -> "(bool, str)":
-        """Validates the given value with this ConfigPoint. Returns a tuple containing the validation
-        result, as well as an error message containing the reason for a validation failure.
+    def validate(self, value) -> Validation:
+        """Validates the given value with this ConfigPoint. Returns a `Validation` containing the
+        validation result, as well as an error message containing the reason for a validation failure.
         """
         raise NotImplementedError
 
@@ -50,12 +53,12 @@ class ChoiceConfigPoint(ConfigPoint):
         super().__init__(name=name, type="choice", default=default)
         self.choices = choices
 
-    def validate(self, value) -> "(bool, str)":
+    def validate(self, value) -> Validation:
         result = value in self.choices
         if not result:
-            return (
-                result,
-                f"Value '{value}' does not exist in valid choices: [{', '.join(str(c) for c in self.choices)}]",
+            return Validation(
+                is_valid=result,
+                message=f"Value '{value}' does not exist in valid choices: [{', '.join(str(c) for c in self.choices)}]",
             )
         return VALID
 
@@ -117,17 +120,17 @@ class ConfigSpec:
         """Returns the default configuration for this spec."""
         return {point.name: point.default for point in self.points.values()}
 
-    def validate(self, configuration) -> "(bool, str)":
-        """Validates the given configuration with this spec. Returns a tuple containing the validation
-        result, as well as an error message containing the reason for a validation failure.
+    def validate(self, configuration) -> Validation:
+        """Validates the given configuration with this spec. Returns a `Validation` containing the
+        validation result, as well as an error message containing the reason for a validation failure.
         """
         for name, value in configuration.items():
             if name not in self.points:
-                return False, f"ConfigPoint '{name}' is not defined."
+                return Validation(is_valid=False, message=f"ConfigPoint '{name}' is not defined.")
 
-            result, message = self.points[name].validate(value)
-            if not result:
-                return result, message
+            validation = self.points[name].validate(value)
+            if not validation.is_valid:
+                return validation
 
         return VALID
 
@@ -169,10 +172,10 @@ class ConfigFile:
                 return config
             else:
                 saved_config = load_json_data(data)
-                valid, message = config_spec.validate(saved_config)
+                validation = config_spec.validate(saved_config)
 
-                if not valid:
-                    raise ValueError(message)
+                if not validation.is_valid:
+                    raise ValueError(validation.message)
 
                 config.update(saved_config)
 

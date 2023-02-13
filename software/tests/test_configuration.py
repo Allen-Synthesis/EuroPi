@@ -1,7 +1,7 @@
 import pytest
 
 from firmware import configuration as config
-from firmware.configuration import ConfigSpec, ConfigFile
+from firmware.configuration import ConfigSpec, ConfigFile, Validation
 
 
 class AClassWithConfig:
@@ -41,28 +41,28 @@ def test_duplicate_config_point_raises():
         )
 
 
-def test_validate_with_valid_configuration(simple_config_spec):
+def test_validate_with_valid_configuration(simple_config_spec: ConfigSpec):
     c = simple_config_spec.default_config()
 
-    result, _ = simple_config_spec.validate(c)
+    validation = simple_config_spec.validate(c)
 
-    assert result
+    assert validation.is_valid
 
 
-def test_validate_with_empty_configuration(simple_config_spec):
+def test_validate_with_empty_configuration(simple_config_spec: ConfigSpec):
     c = {}
 
-    result, _ = simple_config_spec.validate(c)
+    validation = simple_config_spec.validate(c)
 
-    assert result
+    assert validation.is_valid
 
 
-def test_validate_with_invalid_configuration(simple_config_spec):
+def test_validate_with_invalid_configuration(simple_config_spec: ConfigSpec):
     c = {"a": 4}
 
-    result, _ = simple_config_spec.validate(c)
+    validation = simple_config_spec.validate(c)
 
-    assert not result
+    assert not validation.is_valid
 
 
 def test_helper_choice():
