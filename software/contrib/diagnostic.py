@@ -49,7 +49,8 @@ class Diagnostic(EuroPiScript):
             5,
             10,  # max
         ]
-        self.use_fahrenheit = self.config["temp_units"] == "F"
+        self.temp_units = self.config["temp_units"]
+        self.use_fahrenheit = self.temp_units == "F"
 
     @classmethod
     def config_points(cls):
@@ -69,12 +70,10 @@ class Diagnostic(EuroPiScript):
         self.voltages = self.voltages[1:] + self.voltages[:1]
 
     def main(self):
-
         b1.handler(self.rotate_l)
         b2.handler(self.rotate_r)
 
         while True:
-
             # Set the outputs to useful values
             cv1.voltage(self.voltages[0])
             cv2.voltage(self.voltages[1])
@@ -87,7 +86,7 @@ class Diagnostic(EuroPiScript):
 
             # calc and format temp
             t = self.calc_temp()
-            formatted_temp = f"{int(t)}{self.config['temp_units']}"
+            formatted_temp = f"{int(t)}{self.temp_units}"
 
             # display the input values
             oled.text(f"ain: {ain.read_voltage():5.2f}v {formatted_temp}", 2, 3, 1)
