@@ -290,7 +290,7 @@ class IntervalChooser:
         ]
         
     def read_interval(self):
-        return = round(knob_rescale(k2, 0, len(self.interval_names)-1)) - 12
+        return round(knob_rescale(k2, 0, len(self.interval_names)-1)) - 12
     
     def on_button1(self):
         new_interval = self.read_interval()
