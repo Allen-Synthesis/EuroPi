@@ -304,13 +304,62 @@ class IntervalChooser:
         oled.text(f"{self.interval_names[self.quantizer.intervals[self.n-2]+12]} <- {self.interval_names[new_interval+12]}", 0, 10)
         oled.show()
 
-class Quantizer(EuroPiScript):
-    """The main workhorse of the whole module
+class Scale:
+    """A scale consisting of 0-12 semitones that can be toggled on or off
 
-    Provides the ability to quantize input analog voltages to a scale and output
-    the resulting voltage to cv1. cv2-5 output the same signal shifted
-    up or down a number of semitones. cv6 outputs a trigger either when the
-    note changes (in continuous mode) or mirrors the input clock.
+    By default this represents a chromatic scale, with all notes enabled.  Notes can be changed
+    by setting scale[n] = True/False, where n is the index of the semitone to toggle
+    """
+    
+    def __init__(self, notes=[True]*12):
+        self.notes = notes
+        
+    def __getitem__(self, n):
+        return self.notes[n]
+    
+    def __setitem__(self, n, value):
+        self.notes[n] = value
+        
+    def __len__(self):
+        return len(self.notes)
+        
+    def quantize(self, analog_in):
+        """Take an analog input voltage and round it to the nearest note on our scale
+
+        @param analog_in  The input voltage to quantize, as a float
+        
+        @return A tuple of the form (voltage, note) where voltage is
+                the raw voltage to output, and note is a value from
+                0-11 indicating the semitone
+        """
+        # first get the closest chromatic voltage to the input
+        nearest_chromatic_volt = round(analog_in / VOLTS_PER_SEMITONE) * VOLTS_PER_SEMITONE
+        
+        # then convert that to a 0-12 value indicating the nearest semitone
+        base_volts = int(nearest_chromatic_volt)
+        nearest_semitone = (nearest_chromatic_volt - base_volts) / VOLTS_PER_SEMITONE
+        
+        # go through our scale and determine the nearest on-scale note
+        nearest_on_scale = 0
+        best_delta = 255
+        for note in range(len(self.notes)):
+            if self.notes[note]:
+                delta = abs(nearest_semitone - note)
+                if delta < best_delta:
+                    nearest_on_scale = note
+                    best_delta = delta
+           
+        volts = base_volts + nearest_on_scale * VOLTS_PER_SEMITONE
+        
+        return (volts, nearest_on_scale)
+    
+
+class Quantizer(EuroPiScript):
+    """The main EuroPi program. Uses Scale to quantize incoming analog voltages
+    and round them to the nearest note on the scale.
+
+    Primary output is on cv1, with cv2-5 as aux outputs shifted up/down a fixed
+    number of semitones.  cv6 outputs a gate/trigger.
     """
     def __init__(self):
         super().__init__()
@@ -336,8 +385,7 @@ class Quantizer(EuroPiScript):
         self.aux_outs = [cv2, cv3, cv4, cv5]
         
         # The current scale we're quantizing to
-        # Initially a chromatic scale, but this can be changed
-        self.scale = [True]*12
+        self.scale = Scale()
         
         # The input/output voltages
         self.input_voltage = 0.0
@@ -357,81 +405,8 @@ class Quantizer(EuroPiScript):
         
         self.load()
         
-    def load(self):
-        """Load the persistent settings from storage and apply them
-        """
-        state = self.load_state_json()
+        # connect event handlers for the rising & falling clock edges + button presses
         
-        self.scale = state.get("scale", self.scale)
-        self.root = state.get("root", self.root)
-        self.octave = state.get("octave", self.octave)
-        self.intervals = state.get("intervals", self.intervals)
-        self.mode = state.get("mode", self.mode)
-    
-    def save(self):
-        """Save the current settings to persistent storage
-        """
-        state = {
-            "scale": self.scale,
-            "root": self.root,
-            "octave": self.octave,
-            "intervals": self.intervals,
-            "mode": self.mode
-        }
-        self.save_state_json(state)
-        
-    @classmethod
-    def display_name(cls):
-        return "Quantizer"
-       
-    def quantize(self, analog_in):
-        """Take an analog signal and process it
-
-        Sets self.current_note and self.output_voltage
-        """
-        
-        # first get the closest chromatic voltage to the input
-        nearest_chromatic_volt = round(analog_in / VOLTS_PER_SEMITONE) * VOLTS_PER_SEMITONE
-        
-        # then convert that to a 0-12 value indicating the nearest semitone
-        base_volts = int(nearest_chromatic_volt)
-        nearest_semitone = (nearest_chromatic_volt - base_volts) / VOLTS_PER_SEMITONE
-        
-        # go through our scale and determine the nearest on-scale note
-        nearest_on_scale = 0
-        best_delta = 255
-        for note in range(len(self.scale)):
-            if self.scale[note]:
-                delta = abs(nearest_semitone - note)
-                if delta < best_delta:
-                    nearest_on_scale = note
-                    best_delta = delta
-            
-        self.current_note = nearest_on_scale
-        self.output_voltage = base_volts + (self.root + nearest_on_scale) * VOLTS_PER_SEMITONE + self.octave * VOLTS_PER_OCTAVE
-       
-    def read_quantize_output(self):
-        """Read the input signal, quantize it, set outputs 1-5 accordingly
-
-        Called by the main loop in continuous mode or the rising clock handler
-        in triggered mode
-        """
-        self.input_voltage = ain.read_voltage(128)
-        self.quantize(self.input_voltage)
-        
-        cv1.voltage(self.output_voltage)
-        
-        for i in range(len(self.aux_outs)):
-            self.aux_outs[i].voltage(self.output_voltage + self.intervals[i] * VOLTS_PER_SEMITONE)
-    
-    def main(self):
-        """The main loop
-
-        Connects event handlers for clock-in and button presses
-        and runs the main loop
-        """
-        # connect the trigger handler here instead of the constructor
-        # otherwise it will start quantizing as soon as we instantiate the class
         @din.handler
         def on_rising_clock():
             """Handler for the rising edge of the input clock
@@ -469,6 +444,67 @@ class Quantizer(EuroPiScript):
                 self.active_screen = self.menu
             else:
                 self.active_screen = self.kb
+        
+    def load(self):
+        """Load the persistent settings from storage and apply them
+        """
+        state = self.load_state_json()
+        
+        loaded_scale = state.get("scale", [True]*12)  # default to a chromatic scale
+        self.scale.notes = loaded_scale
+        
+        self.root = state.get("root", self.root)
+        self.octave = state.get("octave", self.octave)
+        self.intervals = state.get("intervals", self.intervals)
+        self.mode = state.get("mode", self.mode)
+    
+    def save(self):
+        """Save the current settings to persistent storage
+        """
+        state = {
+            "scale": self.scale.notes,
+            "root": self.root,
+            "octave": self.octave,
+            "intervals": self.intervals,
+            "mode": self.mode
+        }
+        self.save_state_json(state)
+        
+    @classmethod
+    def display_name(cls):
+        return "Quantizer"
+       
+    def quantize(self, analog_in):
+        """Take an analog signal and process it
+
+        Sets self.current_note and self.output_voltage
+        """
+        
+        (volts, semitone) = self.scale.quantize(analog_in)
+        
+        # apply our octave & transposition offsets
+        volts = volts + self.octave * VOLTS_PER_OCTAVE + self.root * VOLTS_PER_SEMITONE
+        
+        self.output_voltage = volts
+        self.current_note = semitone
+       
+    def read_quantize_output(self):
+        """Read the input signal, quantize it, set outputs 1-5 accordingly
+
+        Called by the main loop in continuous mode or the rising clock handler
+        in triggered mode
+        """
+        self.input_voltage = ain.read_voltage(128)
+        self.quantize(self.input_voltage)
+        
+        cv1.voltage(self.output_voltage)
+        
+        for i in range(len(self.aux_outs)):
+            self.aux_outs[i].voltage(self.output_voltage + self.intervals[i] * VOLTS_PER_SEMITONE)
+    
+    def main(self):
+        """The main loop; reads from ain, sets the output voltages
+        """
         
         while True:
             # Update at 100Hz
