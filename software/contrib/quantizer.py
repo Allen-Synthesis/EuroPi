@@ -311,8 +311,11 @@ class Scale:
     by setting scale[n] = True/False, where n is the index of the semitone to toggle
     """
     
-    def __init__(self, notes=[True]*12):
-        self.notes = notes
+    def __init__(self, notes=None):
+        if notes is None:
+            self.notes = [True]*12
+        else:
+            self.notes = notes
         
     def __getitem__(self, n):
         return self.notes[n]
