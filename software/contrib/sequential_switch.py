@@ -12,9 +12,15 @@ import random
 ## Whe in triggered mode we only quantize when we receive an external clock signal
 MODE_SEQUENTIAL=0
 
+## Same as MODE_SEQUENTIAL, but goes backwards
+MODE_REVERSE=1
+
+## Goes back and forth through the outputs
+MODE_PINGPONG=2
+
 ## In continuous mode the digital input is ignored and we quantize the input
 #  at the highest rate possible
-MODE_RANDOM=1
+MODE_RANDOM=3
 
 ## How many milliseconds of idleness do we need before we trigger the screensaver?
 #
@@ -149,6 +155,8 @@ class ModeChooser:
         
         self.mode_names = [
             "Seq.",
+            "Rev.",
+            "P-P",
             "Rand."
         ]
         
@@ -193,6 +201,10 @@ class SequentialSwitch(EuroPiScript):
         # The outputs as an array for convenience
         self.outputs = [cv1, cv2, cv3, cv4, cv5, cv6]
         
+        # For MODE_PINGPONG, this indicates the direction of travel
+        # it will always be +1 or -1
+        self.direction = 1
+        
         # GUI/user interaction
         self.switch_screen = SwitchScreen(self)
         self.menu_screen = MenuScreen(self)
@@ -230,10 +242,32 @@ class SequentialSwitch(EuroPiScript):
 
         Also used for manually advancing the output on a button press
         """
+        # to save on clock cycles, don't use modular arithmetic
+        # instead just to integer math and handle roll-over manually
+        next_out = self.current_output
         if self.mode == MODE_SEQUENTIAL:
-            self.current_output = (self.current_output + 1) % self.num_outputs
+            next_out = next_out + 1
+        elif self.mode == MODE_REVERSE:
+            next_out = next_out - 1
+        elif self.mode == MODE_PINGPONG:
+            next_out = next_out + self.direction
         else:
-            self.current_output = random.randint(0, self.num_outputs-1)
+            next_out = random.randint(0, self.num_outputs-1)
+            
+        if next_out < 0:
+            if self.mode == MODE_REVERSE:
+                next_out = self.num_outputs-1
+            else:
+                next_out = -next_out
+                self.direction = -self.direction
+        elif next_out >= self.num_outputs:
+            if self.mode == MODE_SEQUENTIAL:
+                next_out = 0
+            else:
+                next_out = self.num_outputs-2
+                self.direction = -self.direction
+                
+        self.current_output = next_out
     
     def main(self):
         """The main loop

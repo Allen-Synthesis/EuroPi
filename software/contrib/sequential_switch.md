@@ -22,12 +22,21 @@ current selection.  Pressing button 2 will return to the default view.
 
 Options:
 - number of outputs: 2-6, determines the number of output ports used
-- mode: either sequential or random.  In sequential mode the output port changes
-  in order 1->2->3->4->5->6->1->.... In random order the output port is randomly
-  chosen, and has a 1/n chance of being the same port already in-use.
-  
+- mode: one of:
+    - sequential: port changes in order 1->2->3->4->5->6->1->....
+    - reverse: port changes in order 1->6->5->4->3->2->1->6->....
+    - ping-pong: port changes in order 1->2->3->4->5->6->5->4->...
+    - random: port changes randomly, with a 1/n chance of repeating
+      the current port
+
 After 20 minutes of idle time the screen will go blank. While blank the module
 will continue to operate normally.
 
 Pressing button 1 while the screen is blank will wake the module up
 _and_ advance the output.  Pressing button 2 will only wake up the screen.
+
+
+## Patch Idea
+Patch a constant voltage into `ain`.  Every time the output changes it will
+effectively trigger a gate that will last until the next cycle. This will let
+you trigger effects, envelopes, etc... in sequence.
