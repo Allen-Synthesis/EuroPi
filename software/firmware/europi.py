@@ -468,7 +468,7 @@ class Display(SSD1306_I2C):
         i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
         self.height = height
-        self.writers = {}   # re-usable large font writer instances
+        self.writers = {}  # re-usable large font writer instances
         if len(i2c.scan()) == 0:
             if not TEST_ENV:
                 raise Exception(

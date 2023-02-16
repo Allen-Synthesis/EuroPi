@@ -20,7 +20,6 @@ import framebuf
 
 
 class Writer:
-
     def __init__(self, device, font):
         """Initialize the Writer.
 
@@ -32,7 +31,7 @@ class Writer:
         if font.hmap():
             self.map = framebuf.MONO_HMSB if font.reverse() else framebuf.MONO_HLSB
         else:
-            raise ValueError('Font must be horizontally mapped.')
+            raise ValueError("Font must be horizontally mapped.")
         self.screenwidth = device.width  # In pixels
         self.screenheight = device.height
 
@@ -41,7 +40,7 @@ class Writer:
         With invert=True, the text is display as black text on white background.
         """
         for char in string:
-            if char == '\n':    # line breaks are ignored
+            if char == "\n":  # line breaks are ignored
                 return
             glyph, char_height, char_width = self.font.get_ch(char)
             # If the text does not fit in the display, the text is not displayed.
@@ -52,7 +51,7 @@ class Writer:
             buf = bytearray(glyph)
             if invert:
                 for i, v in enumerate(buf):
-                    buf[i] = 0xFF & ~ v
+                    buf[i] = 0xFF & ~v
             fbc = framebuf.FrameBuffer(buf, char_width, char_height, self.map)
             self.device.blit(fbc, x, y)
             x += char_width
@@ -66,7 +65,7 @@ class Writer:
 
     def _char_len(self, char):
         """Returns the length of char in pixels."""
-        if char == '\n':
+        if char == "\n":
             char_width = 0
         else:
             _, _, char_width = self.font.get_ch(char)
