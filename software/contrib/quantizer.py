@@ -488,6 +488,9 @@ class QuantizerScript(EuroPiScript):
         
         while True:
             # Update at 100Hz
+            #
+            # This update rate controls the duration of the trigger on cv6
+            # that occurs whenever the note changes in continuous mode
             CYCLE_RATE = 0.01
             time.sleep(CYCLE_RATE)
             
