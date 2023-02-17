@@ -9,17 +9,16 @@ from europi_script import EuroPiScript
 import time
 import random
 
-## Whe in triggered mode we only quantize when we receive an external clock signal
+## Move in order 1>2>3>4>5>6>1>2>...
 MODE_SEQUENTIAL=0
 
-## Same as MODE_SEQUENTIAL, but goes backwards
+## Move in order 1>6>5>4>3>2>1>6>...
 MODE_REVERSE=1
 
-## Goes back and forth through the outputs
+## Move in order 1>2>3>4>5>6>5>4>...
 MODE_PINGPONG=2
 
-## In continuous mode the digital input is ignored and we quantize the input
-#  at the highest rate possible
+## Pick a random output, which can be the same as the one we're currently using
 MODE_RANDOM=3
 
 ## How many milliseconds of idleness do we need before we trigger the screensaver?
@@ -198,9 +197,6 @@ class SequentialSwitch(EuroPiScript):
         # The index of the current outputs
         self.current_output = 0
         
-        # The outputs as an array for convenience
-        self.outputs = [cv1, cv2, cv3, cv4, cv5, cv6]
-        
         # For MODE_PINGPONG, this indicates the direction of travel
         # it will always be +1 or -1
         self.direction = 1
@@ -307,11 +303,11 @@ class SequentialSwitch(EuroPiScript):
             # read the input and send it to the current output
             # all other outputs should be zero
             input_volts = ain.read_voltage()
-            for i in range(len(self.outputs)):
+            for i in range(len(cvs)):
                 if i == self.current_output:
-                    self.outputs[i].voltage(input_volts)
+                    cvs[i].voltage(input_volts)
                 else:
-                    self.outputs[i].voltage(0)
+                    cvs[i].voltage(0)
             
             self.active_screen.draw()
     
