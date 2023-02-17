@@ -487,13 +487,6 @@ class QuantizerScript(EuroPiScript):
         """
         
         while True:
-            # Update at 100Hz
-            #
-            # This update rate controls the duration of the trigger on cv6
-            # that occurs whenever the note changes in continuous mode
-            CYCLE_RATE = 0.01
-            time.sleep(CYCLE_RATE)
-            
             # Check if we've been idle for too long; if so, blank the screen
             # to prevent burn-in
             now = time.ticks_ms()
@@ -506,12 +499,24 @@ class QuantizerScript(EuroPiScript):
             self.menu_item = k1.range(len(self.menu.menu_items))
             
             if self.mode == MODE_CONTINUOUS:
+                # clear the previous trigger
                 cv6.off()
+                
+                # Read the new voltage and output it
                 last_output = self.output_voltage
                 self.read_quantize_output()
                 
                 if last_output != self.output_voltage:
                     cv6.on()
+                    
+                # In continuous mode we fall back to a 100Hz internal clock
+                # that effectively simulates a very high-speed input trigger
+                # Note that this rate has to be long enough for the trigger on
+                # cv6 to be useful to other modules.  A 10ms trigger is a
+                # reasonable compromise between high-speed input signal processing
+                # and keeping the code simple
+                CYCLE_RATE = 0.01
+                time.sleep(CYCLE_RATE)
             
             self.active_screen.draw()
     
