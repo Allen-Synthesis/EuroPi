@@ -34,36 +34,6 @@ MODE_CONTINUOUS=1
 #  =20 minutes
 SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 
-def linear_rescale(x, old_min, old_max, new_min, new_max, clip=True):
-    """Convert a number in one range to another
-
-    @param x        The value to convert
-    @param old_min  The old minimum value for x
-    @param old_max  The old maximum value for x
-    @param new_min  The new minimum value for x
-    @param new_max  The new maximum value for x
-    @param clip     If true, output is always between max and min. Otherwise it's extrapolated
-
-    @return x, linearly shifted to lie on the new scale
-    """
-    if x < old_min and clip:
-        return new_min
-    elif x > old_max and clip:
-        return new_max
-    else:
-        return (x-old_min) / (old_max-old_min) * (new_max - new_min) + new_min
-
-def knob_rescale(knob, new_min, new_max):
-    """Wrapper for linear_rescale specifically for scaling knob values
-
-    @param knob  Either europi.k1 or europi.k2; the knob whose value we'll read and rescale
-    @param new_min  The new minimum value for x
-    @param new_max  The new maximum value for x
-
-    @return The knob's current position, linearly rescaled to lie between new_min and new_max
-    """
-    return linear_rescale(knob.read_position(), 0, 100, new_min, new_max, True)
-    
 
 class ScreensaverScreen:
     """Blank the screen when idle
@@ -185,7 +155,7 @@ class ModeChooser:
         ]
         
     def read_mode(self):
-        return round(knob_rescale(k2, 0, 1))
+        return k2.range(len(self.mode_names))
         
     def on_button1(self):
         new_mode = self.read_mode()
@@ -220,7 +190,7 @@ class RootChooser:
         ]
         
     def read_root(self):
-        return round(knob_rescale(k2, 0, len(self.root_names)-1))
+        return k2.range(len(self.root_names))
     
     def on_button1(self):
         new_root = self.read_root()
@@ -241,7 +211,7 @@ class OctaveChooser:
         self.quantizer = quantizer
         
     def read_octave(self):
-        return round(knob_rescale(k2, -1, 2))
+        return k2.range(4) - 1  # result should be -1 to +2
     
     def on_button1(self):
         new_octave = self.read_octave()
@@ -290,7 +260,7 @@ class IntervalChooser:
         ]
         
     def read_interval(self):
-        return round(knob_rescale(k2, 0, len(self.interval_names)-1)) - 12
+        return k2.range(len(self.interval_names)) - 12
     
     def on_button1(self):
         new_interval = self.read_interval()
@@ -519,8 +489,8 @@ class Quantizer(EuroPiScript):
             
             # read the encoder value from knob 1 and apply it to the
             # active menu items for the UI
-            self.highlight_note = round(knob_rescale(k1, 0, len(self.scale)-1))
-            self.menu_item = round(knob_rescale(k1, 0, len(self.menu.menu_items)-1))
+            self.highlight_note = k1.range(len(self.scale))
+            self.menu_item = k1.range(len(self.menu.menu_items))
             
             if self.mode == MODE_CONTINUOUS:
                 cv6.off()
@@ -534,4 +504,3 @@ class Quantizer(EuroPiScript):
     
 if __name__ == "__main__":
     Quantizer().main()
-
