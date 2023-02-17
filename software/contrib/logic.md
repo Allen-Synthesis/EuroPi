@@ -28,7 +28,7 @@ The outputs are as follows:
 The following table shows the value for each operation for every
 input combination:
 
-| Ain | Din | AND | OR | XOR | NAND | NOR | XNOR |
+| Din | Ain | AND | OR | XOR | NAND | NOR | XNOR |
 |-----|-----|-----|----|-----|------|-----|------|
 |  0  |  0  |  0  |  0 |  0  |  1   |  1  |  1   |
 |  0  |  1  |  0  |  1 |  1  |  1   |  0  |  0   |
