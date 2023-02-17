@@ -274,14 +274,21 @@ class IntervalChooser:
         oled.text(f"{self.interval_names[self.quantizer.intervals[self.n-2]+12]} <- {self.interval_names[new_interval+12]}", 0, 10)
         oled.show()
 
-class Scale:
-    """A scale consisting of 0-12 semitones that can be toggled on or off
+class Quantizer:
+    """Represents a set of semitones we can quantize input voltages to
 
     By default this represents a chromatic scale, with all notes enabled.  Notes can be changed
     by setting scale[n] = True/False, where n is the index of the semitone to toggle
     """
     
     def __init__(self, notes=None):
+        """Constructor; can specify what notes are enabled/disabled
+
+        Undesired results may happen if you use an array that's not of length 12
+
+        @param notes  A boolean array of length 12 indicating what semitones are enabled (True)
+                      or disabled (False)
+        """
         if notes is None:
             self.notes = [True]*12
         else:
@@ -327,7 +334,7 @@ class Scale:
         return (volts, nearest_on_scale)
     
 
-class Quantizer(EuroPiScript):
+class QuantizerScript(EuroPiScript):
     """The main EuroPi program. Uses Scale to quantize incoming analog voltages
     and round them to the nearest note on the scale.
 
@@ -358,7 +365,7 @@ class Quantizer(EuroPiScript):
         self.aux_outs = [cv2, cv3, cv4, cv5]
         
         # The current scale we're quantizing to
-        self.scale = Scale()
+        self.scale = Quantizer()
         
         # The input/output voltages
         self.input_voltage = 0.0
@@ -506,4 +513,4 @@ class Quantizer(EuroPiScript):
             self.active_screen.draw()
     
 if __name__ == "__main__":
-    Quantizer().main()
+    QuantizerScript().main()
