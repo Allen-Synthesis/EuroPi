@@ -14,8 +14,14 @@ from file_utils import load_file, delete_file, load_json_data
 from collections import namedtuple
 
 Validation = namedtuple("Validation", "is_valid message")
+"""A class containing configuration validation results.
+
+    :param is_valid: True if the validation was successful, False otherwise.
+    :param message: If `is_valid` is false this filed will contain a explanation message.
+"""
 
 VALID = Validation(is_valid=True, message="Valid.")
+"""The default successful validation."""
 
 
 class ConfigPoint:
