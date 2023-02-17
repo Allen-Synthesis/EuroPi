@@ -28,6 +28,7 @@ from ssd1306 import SSD1306_I2C
 from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
+from europi_config import load_europi_config
 
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
@@ -52,10 +53,6 @@ except ImportError:
         63475,
     ]
 
-# Pico machine CPU freq.
-# Default pico CPU freq is 125_000_000 (125mHz)
-DEFAULT_CPU_FREQ = 125_000_000
-OVERCLOCKED_CPU_FREQ = 250_000_000
 
 # OLED component display dimensions.
 OLED_WIDTH = 128
@@ -554,6 +551,8 @@ class Output:
 
 ## Initialize EuroPi global singleton instance variables.
 
+europi_config = load_europi_config()
+
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(22)
 ain = AnalogueInput(26)
@@ -574,7 +573,7 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 usb_connected = DigitalReader(24, 0)
 
 # Overclock the Pico for improved performance.
-freq(OVERCLOCKED_CPU_FREQ)
+freq(europi_config["cpu_freq"])
 
 # Reset the module state upon import.
 reset_state()
