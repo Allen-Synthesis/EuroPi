@@ -207,7 +207,6 @@ class SequentialSwitch(EuroPiScript):
         self.screensaver = ScreensaverScreen(self)
         self.active_screen = self.switch_screen
         
-        self.highlight_note = 0         # the note on the keyboard view we can toggle now
         self.menu_item = 0              # the active item from the advanced menu
         
         self.load()
