@@ -26,34 +26,6 @@ MODE_RANDOM=3
 #  =20 minutes
 SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 
-def linear_rescale(x, old_min, old_max, new_min, new_max, clip=True):
-    """Convert a number in one range to another
-
-    @param x        The value to convert
-    @param old_min  The old minimum value for x
-    @param old_max  The old maximum value for x
-    @param new_min  The new minimum value for x
-    @param new_max  The new maximum value for x
-    @param clip     If true, output is always between max and min. Otherwise it's extrapolated
-    @return x, linearly shifted to lie on the new scale
-    """
-    if x < old_min and clip:
-        return new_min
-    elif x > old_max and clip:
-        return new_max
-    else:
-        return (x-old_min) / (old_max-old_min) * (new_max - new_min) + new_min
-
-def knob_rescale(knob, new_min, new_max):
-    """Wrapper for linear_rescale specifically for scaling knob values
-    @param knob  Either europi.k1 or europi.k2; the knob whose value we'll read and rescale
-    @param new_min  The new minimum value for x
-    @param new_max  The new maximum value for x
-    @return The knob's current position, linearly rescaled to lie between new_min and new_max
-    """
-    return linear_rescale(knob.read_position(), 0, 100, new_min, new_max, True)
-    
-
 class ScreensaverScreen:
     """Blank the screen when idle
     Eventually it might be neat to have an animation, but that's
@@ -131,7 +103,7 @@ class NumOutsChooser:
         self.parent = parent
         
     def read_num_outs(self):
-        return round(knob_rescale(k2, 2, 6)) # 2-6 outputs; 1 output would be useless!
+        return k2.range(5) + 2 # result should be 2-6
         
     def on_button1(self):
         num_outs = self.read_num_outs()
@@ -160,7 +132,7 @@ class ModeChooser:
         ]
         
     def read_mode(self):
-        return round(knob_rescale(k2, 0, len(self.mode_names)-1))
+        return k2.range(len(self.mode_names))
         
     def on_button1(self):
         new_mode = self.read_mode()
@@ -291,7 +263,7 @@ class SequentialSwitch(EuroPiScript):
             
         while True:
             # keep the menu items sync'd with the left knob
-            self.menu_item = round(knob_rescale(k1, 0, len(self.menu_screen.menu_items)-1))
+            self.menu_item = k1.range(len(self.menu_screen.menu_items))
             
             # check if we've been idle for too long; if so, blank the screen
             # to prevent burn-in
