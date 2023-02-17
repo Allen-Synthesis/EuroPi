@@ -58,6 +58,7 @@ class KeyboardScreen:
     
     def __init__(self, quantizer):
         self.quantizer = quantizer
+        self.highlight_note = 0
         
         # X, Y, bw
         self.enable_marks = [
@@ -96,6 +97,9 @@ class KeyboardScreen:
         # and https://github.com/novaspirit/img2bytearray
         kb=b'\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xc0\x7f\xe0?\xfe\xff\xf8\x0f\xfc\x07\xfe\x03\xff\xe0\x07\xff\xfb\xff\xfd\xff\xfe\xff\xff\x7f\xff\xbf\xff\xdf\xff\xe0\x07\xff\xfb\xff\xfd\xff\xfe\xff\xff\x7f\xff\xbf\xff\xdf\xff\xe0\x07\xff\xfb\xff\xfd\xff\xfe\xff\xff\x7f\xff\xbf\xff\xdf\xff\xe0\x07\xff\xfb\xff\xfd\xff\xfe\xff\xff\x7f\xff\xbf\xff\xdf\xff\xe0\x07\xff\xfb\xff\xfd\xff\xfe\xff\xff\x7f\xff\xbf\xff\xdf\xff\xe0\x07\xff\xfb\xff\xfd\xff\xfe\xff\xff\x7f\xff\xbf\xff\xdf\xff\xe0\x07\xff\xfb\xff\xfd\xff\xfe\xff\xff\x7f\xff\xbf\xff\xdf\xff\xe0\x07\xff\xfb\xff\xfd\xff\xfe\xff\xff\x7f\xff\xbf\xff\xdf\xff\xe0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
         
+        # read the encoder value from knob 1 so we know what key to highlight
+        self.highlight_note = k1.range(len(self.quantizer.scale))
+        
         # draw the keyboard image to the screen
         img = bytearray(kb)
         imgFB = FrameBuffer(img, 128, 32, MONO_HLSB)
@@ -112,12 +116,12 @@ class KeyboardScreen:
         
         # clear the bottom of the screen and mark the togglable key with a line
         oled.fill_rect(0, 30, 128, 32, 0)
-        oled.fill_rect(self.enable_marks[self.quantizer.highlight_note][0], 31, 7, 1, 1)
+        oled.fill_rect(self.enable_marks[self.highlight_note][0], 31, 7, 1, 1)
         
         oled.show()
         
     def on_button1(self):
-        self.quantizer.scale[self.quantizer.highlight_note] = not self.quantizer.scale[self.quantizer.highlight_note]
+        self.quantizer.scale[self.highlight_note] = not self.quantizer.scale[self.highlight_note]
         self.quantizer.save()
 
 class MenuScreen:
@@ -126,6 +130,7 @@ class MenuScreen:
     
     def __init__(self, quantizer):
         self.quantizer = quantizer
+        self.menu_item = 0
         
         self.menu_items = [
             ModeChooser(quantizer),
@@ -138,10 +143,11 @@ class MenuScreen:
         ]
         
     def draw(self):
-        self.menu_items[self.quantizer.menu_item].draw()
+        self.menu_item = k1.range(len(self.menu_items))
+        self.menu_items[self.menu_item].draw()
         
     def on_button1(self):
-        self.menu_items[self.quantizer.menu_item].on_button1()
+        self.menu_items[self.menu_item].on_button1()
 
 class ModeChooser:
     """Used by MenuScreen to choose the operating mode
@@ -380,9 +386,6 @@ class QuantizerScript(EuroPiScript):
         self.screensaver = ScreensaverScreen(self)
         self.active_screen = self.kb
         
-        self.highlight_note = 0         # the note on the keyboard view we can toggle now
-        self.menu_item = 0              # the active item from the advanced menu
-        
         self.load()
         
         # connect event handlers for the rising & falling clock edges + button presses
@@ -492,11 +495,6 @@ class QuantizerScript(EuroPiScript):
             now = time.ticks_ms()
             if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
                 self.active_screen = self.screensaver
-            
-            # read the encoder value from knob 1 and apply it to the
-            # active menu items for the UI
-            self.highlight_note = k1.range(len(self.scale))
-            self.menu_item = k1.range(len(self.menu.menu_items))
             
             if self.mode == MODE_CONTINUOUS:
                 # clear the previous trigger
