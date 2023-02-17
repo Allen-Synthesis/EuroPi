@@ -188,7 +188,7 @@ class SequentialSwitch(EuroPiScript):
         # if we're idle for too long, start the screensaver
         self.last_interaction_time = time.ticks_ms()
         
-        # Continious quantizing, or only on an external trigger?
+        # How do we advance the output?
         self.mode = MODE_SEQUENTIAL
         
         # Use all 6 outputs by default
