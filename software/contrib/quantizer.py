@@ -477,7 +477,7 @@ class QuantizerScript(EuroPiScript):
         Called by the main loop in continuous mode or the rising clock handler
         in triggered mode
         """
-        self.input_voltage = ain.read_voltage(128)
+        self.input_voltage = ain.read_voltage(500)   # increase the number of samples to help reduce noise
         self.quantize(self.input_voltage)
         
         cv1.voltage(self.output_voltage)
