@@ -53,6 +53,8 @@ class Calibrate(EuroPiScript):
             while b1.value() != value:
                 sleep(0.05)
 
+        # Test if /lib exists. If not: Create it
+
         try:
             stat("/lib")
         except OSError:
