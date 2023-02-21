@@ -480,14 +480,15 @@ class Display(SSD1306_I2C):
             self.writers[n] = Writer(self, font)
         return self.writers[n]
 
-    def text(self, s, x, y, c=None, font=None):
+    def text(self, s, x, y, c=1, font=None):
         """Display the string s using the x, y coordinates as the upper-left corner of the text.
 
         When using a custom font, the text is not displayed if it does not fit in the display.
         """
         if font is None:
-            return super().text(s, x, y)
-        self.writer(font).print(s, x, y)
+            return super().text(s, x, y, c)
+        self.writer(font).print(s, x, y, c)
+
 
     def centre_text(self, text, font=None):
         """Split the provided text across up to 3 lines of display.
