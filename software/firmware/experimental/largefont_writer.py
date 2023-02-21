@@ -35,9 +35,9 @@ class Writer:
         self.screenwidth = device.width  # In pixels
         self.screenheight = device.height
 
-    def print(self, string, x, y, invert=False):
+    def print(self, string, x, y, c=1):
         """Print the string using the x, y coordinates as the upper-left corner of the text.
-        With invert=True, the text is display as black text on white background.
+        With c=0, the text is display as black text on white background.
         """
         for char in string:
             if char == "\n":  # line breaks are ignored
@@ -49,7 +49,7 @@ class Writer:
             if x + char_width > self.screenwidth:
                 return
             buf = bytearray(glyph)
-            if invert:
+            if c != 1:
                 for i, v in enumerate(buf):
                     buf[i] = 0xFF & ~v
             fbc = framebuf.FrameBuffer(buf, char_width, char_height, self.map)
