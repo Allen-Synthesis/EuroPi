@@ -25,7 +25,7 @@ from machine import freq
 
 from ssd1306 import SSD1306_I2C
 
-from experimental.largefont_writer import Writer
+from largefont_writer import Writer
 from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
@@ -479,6 +479,13 @@ class Display(SSD1306_I2C):
         if n not in self.writers:
             self.writers[n] = Writer(self, font)
         return self.writers[n]
+
+    def text_len(self, s, font=None):
+        """Returns the length of the string s in pixels."""
+        if font is None:
+            return len(s) * 8
+        else:
+            return self.writer(font).string_len(s)
 
     def text(self, s, x, y, c=1, font=None):
         """Display the string s using the x, y coordinates as the upper-left corner of the text.
