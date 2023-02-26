@@ -2,6 +2,7 @@ from machine import Pin, ADC, PWM, freq
 from time import sleep
 from europi import oled, b1, b2
 from europi_script import EuroPiScript
+from os import stat, mkdir
 
 
 class Calibrate(EuroPiScript):
@@ -51,6 +52,13 @@ class Calibrate(EuroPiScript):
         def wait_for_b1(value):
             while b1.value() != value:
                 sleep(0.05)
+
+        # Test if /lib exists. If not: Create it
+
+        try:
+            stat("/lib")
+        except OSError:
+            mkdir("/lib")
 
         # Calibration start
 
