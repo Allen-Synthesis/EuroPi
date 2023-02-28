@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -41,6 +43,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
@@ -77,10 +80,10 @@
            <div itemprop="articleBody">
              
   <section id="module-experimental.knobs">
-<span id="experimental-knobs"></span><h1>experimental.knobs<a class="headerlink" href="#module-experimental.knobs" title="Permalink to this headline"></a></h1>
+<span id="experimental-knobs"></span><h1>experimental.knobs<a class="headerlink" href="#module-experimental.knobs" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">DisabledKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">europi.Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">DisabledKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob" title="Permalink to this definition"></a></dt>
 <dd><p>A <a class="reference internal" href="#experimental.knobs.LockableKnob" title="experimental.knobs.LockableKnob"><code class="xref py py-class docutils literal notranslate"><span class="pre">LockableKnob</span></code></a> that cannot be unlocked and whose value is unimportant. Useful when
 building multifunction knobs.</p>
 <dl class="field-list simple">
@@ -141,7 +144,7 @@ building multifunction knobs.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">KnobBank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">europi.Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">virtual_knobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_selection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">KnobBank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">virtual_knobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_selection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank" title="Permalink to this definition"></a></dt>
 <dd><p>A <code class="docutils literal notranslate"><span class="pre">KnobBank</span></code> is a group of named ‘virtual’ :class”<code class="docutils literal notranslate"><span class="pre">LockableKnobs</span></code> that share the same
 physical knob. Only one of these knobs is active (unlocked) at a time. This allows for a single
 knob to be used to control many parameters.</p>
@@ -198,11 +201,11 @@ the knob state in a main loop. The workaround is to set a flag in the button han
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank.Builder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">europi.Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank.Builder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank.Builder" title="Permalink to this definition"></a></dt>
 <dd><p>A convenient interface for creating a <a class="reference internal" href="#experimental.knobs.KnobBank" title="experimental.knobs.KnobBank"><code class="xref py py-class docutils literal notranslate"><span class="pre">KnobBank</span></code></a> with consistent initial state.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank.Builder.build">
-<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#experimental.knobs.KnobBank" title="experimental.knobs.KnobBank"><span class="pre">experimental.knobs.KnobBank</span></a></span></span><a class="headerlink" href="#experimental.knobs.KnobBank.Builder.build" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#experimental.knobs.KnobBank" title="experimental.knobs.KnobBank"><span class="pre">KnobBank</span></a></span></span><a class="headerlink" href="#experimental.knobs.KnobBank.Builder.build" title="Permalink to this definition"></a></dt>
 <dd><p>Create the <a class="reference internal" href="#experimental.knobs.KnobBank" title="experimental.knobs.KnobBank"><code class="xref py py-class docutils literal notranslate"><span class="pre">KnobBank</span></code></a> with the specified knobs.</p>
 </dd></dl>
 
@@ -256,7 +259,7 @@ an appropriate threshhold value will be calculated.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank.current">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#experimental.knobs.LockableKnob" title="experimental.knobs.LockableKnob"><span class="pre">experimental.knobs.LockableKnob</span></a></em><a class="headerlink" href="#experimental.knobs.KnobBank.current" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#experimental.knobs.LockableKnob" title="experimental.knobs.LockableKnob"><span class="pre">LockableKnob</span></a></em><a class="headerlink" href="#experimental.knobs.KnobBank.current" title="Permalink to this definition"></a></dt>
 <dd><p>The currently active knob.</p>
 </dd></dl>
 
@@ -271,7 +274,7 @@ the bank.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">LockableKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">europi.Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">LockableKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob" title="Permalink to this definition"></a></dt>
 <dd><p>A Knob whose state can be locked on the current value. Once locked, reading the knob’s
 position will always return the locked value. When unlocking the knob, the value still doesn’t
 change until the position of the knob moves to within <code class="docutils literal notranslate"><span class="pre">threshold</span></code> percent of the value. This

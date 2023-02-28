@@ -1,0 +1,6 @@
+﻿configuration
+=============
+
+.. automodule:: configuration
+    :members:
+    :inherited-members:
