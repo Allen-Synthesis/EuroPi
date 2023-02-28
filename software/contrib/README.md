@@ -88,6 +88,12 @@ Given values for and upper and lower rhythmic ratios, Probapoly will create a lo
 <i>Author: [gamecat69](https://github.com/gamecat69)</i>
 <br><i>Labels: sequencer, performance, gates, polyrhythm, probability</i>
 
+### Quantizer \[ [documentation](/software/contrib/quantizer.md) | [script](/software/contrib/quantizer.py) \]
+Quantizes input analog signals to a customizable scale.  Additional signals output the same note shifted up or down to create harmonies across multiple oscillators.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: quantizer</i>
+
 ### Radio Scanner \[ [documentation](/software/contrib/radio_scanner.md) | [script](/software/contrib/radio_scanner.py) \]
 A tool for exploring sounds and control voltage combinations by navigating a 2D plane
 
