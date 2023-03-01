@@ -5,12 +5,14 @@ from europi import bootsplash, usb_connected
 #  This is a fix for a USB connection issue documented in GitHub issue #179, and its removal condition is set out in GitHub issue #184
 if usb_connected.value() == 0:
     from time import sleep
+
     sleep(0.5)
 
 bootsplash()
 
 from bootloader import BootloaderMenu
 
+# from contrib.knob_playground import KnobPlayground
 from contrib.bernoulli_gates import BernoulliGates
 from contrib.coin_toss import CoinToss
 from contrib.consequencer import Consequencer
@@ -37,6 +39,7 @@ from calibrate import Calibrate
 
 # Scripts that are included in the menu
 EUROPI_SCRIPT_CLASSES = [
+    # KnobPlayground,
     BernoulliGates,
     CoinToss,
     Consequencer,
