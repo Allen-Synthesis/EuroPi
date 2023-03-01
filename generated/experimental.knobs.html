@@ -153,7 +153,7 @@ knob to be used to control many parameters.</p>
     <span class="n">KnobBank</span><span class="o">.</span><span class="n">builder</span><span class="p">(</span><span class="n">k1</span><span class="p">)</span>
     <span class="o">.</span><span class="n">with_disabled_knob</span><span class="p">()</span>
     <span class="o">.</span><span class="n">with_unlocked_knob</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">with_locked_knob</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">with_locked_knob</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">initial_percentage_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="p">)</span>
 </pre></div>
@@ -178,9 +178,9 @@ the knob state in a main loop. The workaround is to set a flag in the button han
 
         <span class="bp">self</span><span class="o">.</span><span class="n">kb1</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">KnobBank</span><span class="o">.</span><span class="n">builder</span><span class="p">(</span><span class="n">k1</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">with_locked_knob</span><span class="p">(</span><span class="s2">&quot;p1&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold_percentage</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">with_locked_knob</span><span class="p">(</span><span class="s2">&quot;p2&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">with_locked_knob</span><span class="p">(</span><span class="s2">&quot;p3&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">with_locked_knob</span><span class="p">(</span><span class="s2">&quot;p1&quot;</span><span class="p">,</span> <span class="n">initial_percentage_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold_percentage</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">with_locked_knob</span><span class="p">(</span><span class="s2">&quot;p2&quot;</span><span class="p">,</span> <span class="n">initial_percentage_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">with_locked_knob</span><span class="p">(</span><span class="s2">&quot;p3&quot;</span><span class="p">,</span> <span class="n">initial_percentage_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="o">.</span><span class="n">build</span><span class="p">()</span>
         <span class="p">)</span>
 
@@ -218,12 +218,12 @@ be changed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank.Builder.with_locked_knob">
-<span class="sig-name descname"><span class="pre">with_locked_knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_from_choice_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#experimental.knobs.KnobBank.Builder" title="experimental.knobs.KnobBank.Builder"><span class="pre">Builder</span></a></span></span><a class="headerlink" href="#experimental.knobs.KnobBank.Builder.with_locked_knob" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">with_locked_knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_percentage_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_uint16_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_from_choice_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#experimental.knobs.KnobBank.Builder" title="experimental.knobs.KnobBank.Builder"><span class="pre">Builder</span></a></span></span><a class="headerlink" href="#experimental.knobs.KnobBank.Builder.with_locked_knob" title="Permalink to this definition"></a></dt>
 <dd><p>Add a <a class="reference internal" href="#experimental.knobs.LockableKnob" title="experimental.knobs.LockableKnob"><code class="xref py py-class docutils literal notranslate"><span class="pre">LockableKnob</span></code></a> to the bank whose initial state is locked.</p>
 <p><cite>threshold_from_choice_count</cite> is a convenience parameter to be used in the case where
 this knob will be used to select from a relatively few number of choices, via the
 <a class="reference internal" href="europi.html#europi.Knob.choice" title="europi.Knob.choice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choice()</span></code></a> method. Pass the number of choices to this parameter and
-an appropriate threshhold value will be calculated.</p>
+an appropriate threshold value will be calculated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -243,7 +243,7 @@ will be active. Only one unlocked knob may be added to the bank.</p>
 <p><cite>threshold_from_choice_count</cite> is a convenience parameter to be used in the case where
 this knob will be used to select from a relatively few number of choices, via the
 <a class="reference internal" href="europi.html#europi.Knob.choice" title="europi.Knob.choice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choice()</span></code></a> method. Pass the number of choices to this parameter and
-an appropriate threshhold value will be calculated.</p>
+an appropriate threshold value will be calculated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -274,19 +274,31 @@ the bank.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">LockableKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">LockableKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_percentage_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_uint16_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob" title="Permalink to this definition"></a></dt>
 <dd><p>A Knob whose state can be locked on the current value. Once locked, reading the knob’s
 position will always return the locked value. When unlocking the knob, the value still doesn’t
 change until the position of the knob moves to within <code class="docutils literal notranslate"><span class="pre">threshold</span></code> percent of the value. This
 prevents large jumps in a stetting when the knob is unlocked.</p>
 <p>This class is useful for cases where you want to have a single physical knob control several
 parameters (see also the <a class="reference internal" href="#experimental.knobs.KnobBank" title="experimental.knobs.KnobBank"><code class="xref py py-class docutils literal notranslate"><span class="pre">KnobBank</span></code></a> class). Or where the value of a parameter needs to be
-disassociated from the postition of the knob, as in after loading saved state.</p>
+disassociated from the position of the knob, as in after loading saved state.</p>
+<p>This class accepts two different parameters to specify it’s initial value,
+<cite>initial_uint16_value</cite> and <cite>initial_percentage_value</cite>. Only one initial value may be specified.
+If both are specified, <cite>initial_percentage_value</cite> is ignored. The percentage value is more
+useful if you would like to hardcode a starting value for a knob in the code in a readable way.
+The uint16 value uses the knob’s internal representation and is more appropriate for use when
+loading a saved knob position. If your script would like to read the internal representation of
+current position of a <cite>LockableKnob</cite>, first lock the knob, then read it’s value.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lockable_knob</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
+<span class="n">internal_rep</span> <span class="o">=</span> <span class="n">lockable_knob</span><span class="o">.</span><span class="n">value</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>knob</strong> – The knob to wrap.</p></li>
-<li><p><strong>initial_value</strong> – The value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.</p></li>
+<li><p><strong>initial_uint16_value</strong> – The UINT16 (0-<cite>europi.MAXINT16</cite>) value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.</p></li>
+<li><p><strong>initial_percentage_value</strong> – The percentage (as a decimal 0-1) value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.</p></li>
 <li><p><strong>threshold</strong> – a decimal between 0 and 1 representing how close the knob must be to the locked value in order to unlock. The percentage is in terms of the knobs full range. Defaults to 5% (0.05)</p></li>
 </ul>
 </dd>
