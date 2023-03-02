@@ -6,9 +6,6 @@ import machine
 
 import europi
 from europi import (
-    CHAR_HEIGHT,
-    CHAR_WIDTH,
-    Button,
     reset_state,
     OLED_HEIGHT,
     OLED_WIDTH,
@@ -77,8 +74,7 @@ class BootloaderMenu(EuroPiScript):
             return getattr(__import__(module, None, None, [None]), clazz)
         except Exception as e:
             print(
-                f"Warning: Ignoring bad qualified class name: {script_class_name}\n"
-                f"  caused by: {e}"
+                f"Warning: Ignoring bad qualified class name: {script_class_name}\n  caused by: {e}"
             )
             return None
 
