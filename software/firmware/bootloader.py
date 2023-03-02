@@ -1,4 +1,4 @@
-import os
+import gc
 import time
 from collections import OrderedDict
 
@@ -20,6 +20,25 @@ from ui import Menu
 
 SCRIPT_DIR = "/lib/contrib/"
 REG_FILE_CODE = 0x8000
+DEBUG = False
+
+
+class PrintMemoryUse:
+    def __init__(self, label=""):
+        self.label = label
+
+    def __enter__(self):
+        gc.collect()  # Note that preemptive GC is required to get all of the scripts loaded
+        if DEBUG:
+            self.before = gc.mem_free()
+
+    def __exit__(self, *args):
+        if DEBUG:
+            gc.collect()
+            after = gc.mem_free()
+            print(
+                f"free: {after/1024: >6.2f}k, used: {(self.before - after)/1024: >6.2f}k   {self.label}"
+            )
 
 
 class BootloaderMenu(EuroPiScript):
@@ -67,7 +86,8 @@ class BootloaderMenu(EuroPiScript):
     def load_script_classes(cls, scripts) -> "dict(str, type)":
         classes = {}
         for i, script in enumerate(scripts):
-            clazz = cls.get_class_for_name(script)
+            with PrintMemoryUse(script):
+                clazz = cls.get_class_for_name(script)
             if clazz:
                 classes[script] = clazz
             cls.show_progress(i / len(scripts))
