@@ -232,6 +232,7 @@ class Consequencer(EuroPiScript):
         val = 100 * ain.percent()
         if self.analogInputMode == 2 and val > self.minAnalogInputVoltage:
             self.pattern = int((len(self.BD) / 100) * val)
+            self.pattern = min(int((len(self.BD) / 100) * val) + k2.read_position(len(self.BD)), len(self.BD)-1)
         else:
             self.pattern = k2.read_position(len(self.BD))
         
