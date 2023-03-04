@@ -1,7 +1,27 @@
 # EuroPi
 
+
 The EuroPi is a fully user reprogrammable module based on the [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/), which allows users to process inputs and controls to produce outputs based on code written in Python. The entire project is open-source.
 
+<p>
+  <a href="https://discord.gg/JaQwtCnBV5">
+        <img src="https://discordapp.com/api/guilds/931297838804127794/widget.png?style=shield"
+            alt="chat on Discord">
+  </a>
+  <a href="https://www.reddit.com/r/EuroPi/">
+        <img src="https://img.shields.io/reddit/subreddit-subscribers/europi?style=social"
+            alt="chat on Discord">
+  </a>
+  <a href="https://github.com/Allen-Synthesis/EuroPi/tree/main/software/contrib">
+        <img alt="GitHub repo file count (file extension)" src="https://img.shields.io/github/directory-file-count/Allen-Synthesis/EuroPi/software/contrib?extension=py&label=contrib scripts&type=file">
+  </a>
+  <a href="https://github.com/Allen-Synthesis/EuroPi/releases/">
+        <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/Allen-Synthesis/Europi">
+  </a>
+  
+</p>
+
+---
 
 This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The repository for this (now deprecated) module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
 

@@ -2,7 +2,8 @@
 
 This document will take you through the steps to get your module ready to program.  
   
-> **_NOTE:_**  If you already have any version of the firmware or any other code loaded onto your EuroPi and want to ensure a clean installation, or you just want to make sure you have all the most recent scripts available, first follow these instructions:
+> **Note**  
+> If you already have any version of the firmware or any other code loaded onto your EuroPi and want to ensure a clean installation, or you just want to make sure you have all the most recent scripts available, first follow these instructions:
 
 1. Download [flash_nuke.uf2](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython#flash-resetting-uf2-3083182) from Adafruit.
   
@@ -18,9 +19,10 @@ This document will take you through the steps to get your module ready to progra
 
  ## Optional Quick start
 
- The quickest way to get your EuroPi flashed with the latest firmware is to head over to the [releases](https://github.com/Allen-Synthesis/EuroPi/releases) page and download the latest `europi-vX.Y.Z.uf2` file. Then follow the 'BOOTSEL' instructions above to flash the EuroPi firmware to your pico.
+> **Warning**  
+> This version of firmware will not let you override `main.py` nor can you modify existing scripts. Do not use this version of the firmware if you plan to write custom scripts for the EuroPi.
 
-> **_NOTE:_**  This version of firmware will not let you override `main.py` so you cannot use this version of the firmware to write custom scripts for the EuroPi.
+The quickest way to get your EuroPi flashed with the latest firmware is to head over to the [releases](https://github.com/Allen-Synthesis/EuroPi/releases) page and download the latest `europi-vX.Y.Z.uf2` file. Then follow the 'BOOTSEL' instructions above to flash the EuroPi firmware to your pico.
   
 ## Setting Up
   
@@ -116,11 +118,20 @@ Now you have access to the inputs and outputs using easy methods, which you can 
   
 ### Install the contrib scripts and setup the menu
 
-1. Complete all of the steps for [Option 2](https://github.com/Allen-Synthesis/EuroPi/edit/release_prep/0.2.0/software/programming_instructions.md#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
-2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically. After you choose a program that will become the default program that runs when the module is connected to power, but you can still go back to the menu at any time by pressing and holding both buttons for >0.5s and then releasing.
-  
+1. Complete all of the steps for [Option 2](#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
+2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically.
+
 One of the scripts that is installed with the menu system is named '~ Calibrate', and it requires you to send precise voltages to the module to calibrate it for the future, allowing you to input and output precise values from your module.  
 This is entirely optional and it will work with a usable degree of accuracy without calibration, however if you do want to then move to the ['Calibrate the module'](#calibrate-the-module) step.
+
+
+#### Navigating the menu
+
+To navigate the menu use the right knob. Turning clockwise will scroll down and turning anticlockwise will scroll up.
+
+To run the selected program, press the either button once.  The last-run program will automatically start the next time you power-on your EuroPi.
+
+To return to the main menu at any time, press and hold both buttons for 0.5s.
 
 
 ### Calibrate the module
@@ -128,7 +139,8 @@ This is entirely optional and it will work with a usable degree of accuracy with
 To use the module for accurately reading and outputting voltages, you need to complete a calibration process. This will allow your specific module to account for any differences in components, such as resistor tolerances.  
 If you do not wish to calibrate the module and don't mind your voltages being slightly inaccurate, simply skip to the programming step and your module will use default values.
   
-NOTE: If you have just installed the menu, simply run the calibration script and skip to step 2.
+> **Note**  
+> If you have just installed the menu, simply run the calibration script and skip to step 2.
   
 1. To begin, you need to choose the `calibrate.py` file and save it as `main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/calibrate.py).
 2. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.

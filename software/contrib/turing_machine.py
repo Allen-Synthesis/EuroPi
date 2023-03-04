@@ -6,13 +6,13 @@ din - clock
 ain - cv control over the big knob, added to the knobs value
 k1 - the big knob (probability that the sequence changes)
 k2 - output scale (0-10v)  or sequence length (2-16 steps)
-b1 - write (clear bits)
+b1 - write (clear bits) (or config value write_value)
 b2 - change k2 function
-cv1 - pulse 1
-cv2 - pulse 2
-cv3 - pulse 4
-cv4 - pulse 1 & 2
-cv5 - pulse 1 & 2 & 4
+cv1 - pulse 1 (or config value cv1_pulse_bit)
+cv2 - pulse 2 (or config value cv2_pulse_bit)
+cv3 - pulse 4 (or config value cv3_pulse_bit)
+cv4 - pulse cv1 & cv2
+cv5 - pulse cv2 & cv3
 cv6 - sequence out
 
 If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT` 
@@ -36,12 +36,8 @@ except ImportError:
     from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
     from experimental.knobs import KnobBank
 
+import configuration
 from europi_script import EuroPiScript
-
-# Customize pulses output here
-CV1_PULSE_BIT = 1
-CV2_PULSE_BIT = 2
-CV3_PULSE_BIT = 4
 
 INT_MAX_8 = 0xFF
 DEFAULT_BIT_COUNT = 16
@@ -69,17 +65,28 @@ class TuringMachine:
     explicitly sub-classing the `TuringMachine` class. See `EuroPiTuringMachine` for a more detailed example.
     """
 
-    def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
+    def __init__(
+        self,
+        bit_count=DEFAULT_BIT_COUNT,
+        max_output_voltage=MAX_OUTPUT_VOLTAGE,
+        clear_on_write=True,
+        flip_probability=0,
+        scale=MAX_OUTPUT_VOLTAGE,
+        length=DEFAULT_BIT_COUNT,
+    ):
         """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8.
-        The maximum output voltage is also configurable and defaults to `europi.MAX_OUTPUT_VOLTAGE`"""
+        The maximum output voltage is also configurable and defaults to `europi.MAX_OUTPUT_VOLTAGE`
+        """
+
         if bit_count < 8:
             raise ValueError(f"Specified bit_count ({bit_count}) is less than the minimum (8).")
         self.bit_count = bit_count
         self.bits = getrandbits(self.bit_count)
-        self._flip_probability = 0
+        self._flip_probability = flip_probability
         self.max_output_voltage = max_output_voltage
-        self._scale = max_output_voltage
-        self._length = bit_count
+        self.clear_on_write = clear_on_write
+        self._scale = scale
+        self._length = length
         self._write = False
 
         self.flip_probability_getter = lambda: self._flip_probability
@@ -101,14 +108,18 @@ class TuringMachine:
         """
         self._rotate_bits()
         if self.write:
-            self.bits = self.bits & ~1
+            if self.clear_on_write:
+                self.bits = self.bits & ~1
+            else:
+                self.bits = self.bits | (1 << 0)
+
         if randint(0, 99) < self.flip_probability:
             self.bits = self.bits ^ 0b1
         self.step_handler()
 
     def get_8_bits(self):
         """Returns the least significant eight bits from the internal bit register, which are the same bits used to
-        determine the voltage returned by `get_voltage()`. This method is useful when diplaying the current state in a
+        determine the voltage returned by `get_voltage()`. This method is useful when displaying the current state in a
         UI."""
         return self.bits & 0xFF
 
@@ -178,7 +189,8 @@ class TuringMachine:
     @property
     def write(self):
         """Returns the current value of the 'write switch'. When true the least significant bit will be cleared during
-        rotation, regardless of the `flip_probability`. This allows for real-time user manipulation of the sequence."""
+        rotation, regardless of the `flip_probability`. This allows for real-time user manipulation of the sequence.
+        """
         return self.write_getter()
 
     @write.setter
@@ -189,7 +201,19 @@ class TuringMachine:
 
 class EuroPiTuringMachine(EuroPiScript):
     def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
-        self.tm = TuringMachine(bit_count, max_output_voltage)
+        super().__init__()
+
+        self.LENGTH_CHOICES = [2, 3, 4, 5, 6, 8, 12, 16]  # TODO: vary based on bit_count?
+        initial_scale_percent = 0.5  # TODO: load from saved state
+        initial_length = 8  # TODO: load from saved state
+
+        self.tm = TuringMachine(
+            bit_count=bit_count,
+            max_output_voltage=max_output_voltage,
+            clear_on_write=self.config["write_value"] == 0,
+            length=initial_length,
+            scale=MAX_OUTPUT_VOLTAGE * initial_scale_percent,
+        )
         self.tm.flip_probability_getter = self.flip_probability
         self.tm.scale_getter = self.scale
         self.tm.length_getter = self.length
@@ -199,10 +223,18 @@ class EuroPiTuringMachine(EuroPiScript):
         self.kb2 = (
             KnobBank.builder(k2)
             .with_disabled_knob()
-            .with_locked_knob("scale", initial_value=0)
-            .with_locked_knob("length", initial_value=0)
+            .with_locked_knob("scale", initial_percentage_value=initial_scale_percent)
+            .with_locked_knob(
+                "length",
+                initial_percentage_value=(self.LENGTH_CHOICES.index(initial_length) * 2 + 1)
+                / (len(self.LENGTH_CHOICES) * 2),
+            )
             .build()
         )
+
+        self.cv1_pulse_bit = self.config["cv1_pulse_bit"]
+        self.cv2_pulse_bit = self.config["cv2_pulse_bit"]
+        self.cv3_pulse_bit = self.config["cv3_pulse_bit"]
 
         @din.handler
         def clock():
@@ -221,11 +253,11 @@ class EuroPiTuringMachine(EuroPiScript):
         self.request_next_k2 = False
 
     def step_handler(self):
-        cv1.value(self.tm.get_bit(CV1_PULSE_BIT))
-        cv2.value(self.tm.get_bit(CV2_PULSE_BIT))
-        cv3.value(self.tm.get_bit(CV3_PULSE_BIT))
-        cv4.value(self.tm.get_bit_and(CV1_PULSE_BIT, CV2_PULSE_BIT))
-        cv5.value(self.tm.get_bit_and(CV1_PULSE_BIT, CV2_PULSE_BIT, CV3_PULSE_BIT))
+        cv1.value(self.tm.get_bit(self.cv1_pulse_bit))
+        cv2.value(self.tm.get_bit(self.cv2_pulse_bit))
+        cv3.value(self.tm.get_bit(self.cv3_pulse_bit))
+        cv4.value(self.tm.get_bit_and(self.cv1_pulse_bit, self.cv2_pulse_bit))
+        cv5.value(self.tm.get_bit_and(self.cv2_pulse_bit, self.cv3_pulse_bit))
         cv6.voltage(self.tm.get_voltage())
 
     def flip_probability(self):
@@ -239,9 +271,7 @@ class EuroPiTuringMachine(EuroPiScript):
 
     def length(self):
         if self.kb2.current_name == "length":
-            return self.kb2.length.choice(
-                [2, 3, 4, 5, 6, 8, 12, 16]  # TODO: vary based on bit_count?
-            )
+            return self.kb2.length.choice(self.LENGTH_CHOICES)
         else:
             return self.tm._length
 
@@ -261,6 +291,18 @@ class EuroPiTuringMachine(EuroPiScript):
     @classmethod
     def display_name(cls):
         return "Turing Machine"
+
+    @classmethod
+    def config_points(cls):
+        bitcount_range = range(1, min(DEFAULT_BIT_COUNT, 8))
+
+        return [
+            configuration.choice(name="write_value", choices=[0, 1], default=0),
+            # simulate the actual bits available in the pulses expander (1-7)
+            configuration.integer(name="cv1_pulse_bit", range=bitcount_range, default=1),
+            configuration.integer(name="cv2_pulse_bit", range=bitcount_range, default=2),
+            configuration.integer(name="cv3_pulse_bit", range=bitcount_range, default=4),
+        ]
 
     def main(self):
         line1_y = 11

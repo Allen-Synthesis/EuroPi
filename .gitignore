@@ -27,3 +27,4 @@ venv
 .idea
 dist/
 *.egg-info/
+config
