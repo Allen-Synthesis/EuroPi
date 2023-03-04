@@ -16,7 +16,7 @@ Send a clock to the digital input to start the sequence.
 Demo video: https://youtu.be/UwjajP6uiQU
 
 digital_in: clock in
-analog_in: Mode 1: Adjusts randonmess, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
+analog_in: Mode 1: Adjusts randomness, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
 
 knob_1: randomness
 knob_2: select pre-loaded drum pattern
@@ -34,6 +34,11 @@ output_4: randomly generated CV (cycled by pushing button 2)
 output_5: randomly generated CV (cycled by pushing button 2)
 output_6: randomly generated CV (cycled by pushing button 2)
 
+'''
+
+'''
+Version History
+2.0 Randomness Value is now a sum of ain and k1
 '''
 
 class Consequencer(EuroPiScript):
@@ -250,7 +255,7 @@ class Consequencer(EuroPiScript):
         # If mode 1 and there is CV on the analogue input use it, if not use the knob position
         val = 100 * ain.percent()
         if self.analogInputMode == 1 and val > self.minAnalogInputVoltage:
-            self.randomness = val
+            self.randomness = min(val + k1.read_position(), 99)
         else:
             self.randomness = k1.read_position()
 
