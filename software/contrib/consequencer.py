@@ -38,7 +38,10 @@ output_6: randomly generated CV (cycled by pushing button 2)
 
 '''
 Version History
-2.0 Randomness Value is now a sum of ain and k1
+2.0 decreased maxRandomPatterns to 32 to avoid crashes on some systems
+    pattern is now sum of ain and k2
+    randomness now sum of ain and k1
+
 '''
 
 class Consequencer(EuroPiScript):
