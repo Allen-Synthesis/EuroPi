@@ -78,7 +78,7 @@ class Consequencer(EuroPiScript):
         self.randomness = 0
         self.CvPattern = 0
         self.reset_timeout = 1000
-        self.maxRandomPatterns = 40  # This prevents a memory allocation error
+        self.maxRandomPatterns = 32  # This prevents a memory allocation error
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
         self.gateVoltage = 10
         self.gateVoltages = [0, self.gateVoltage]
