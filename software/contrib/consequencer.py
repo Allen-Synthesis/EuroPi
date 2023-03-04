@@ -3,6 +3,7 @@ import machine
 from time import ticks_diff, ticks_ms
 from random import randint, uniform
 from europi_script import EuroPiScript
+import gc
 
 '''
 Consequencer
@@ -41,7 +42,7 @@ Version History
 2.0 decreased maxRandomPatterns to 32 to avoid crashes on some systems
     pattern is now sum of ain and k2
     randomness now sum of ain and k1
-
+    added garbage collection to avoid memory allocation errors when creating new random sequences
 '''
 
 class Consequencer(EuroPiScript):
@@ -223,6 +224,7 @@ class Consequencer(EuroPiScript):
 
     def generateNewRandomCVPattern(self):
         try:
+            gc.collect()
             self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
             self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
             self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
