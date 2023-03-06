@@ -62,7 +62,7 @@ micropython/ports/rp2/modules/
 ├── ui.py
 └── version.py
 ```
-_boot.py should be modefied to look like this: (increase progsize)
+_boot.py should be modified to look like this: (increase progsize)
 ``` Python
 import os
 import machine, rp2
@@ -82,7 +82,7 @@ main.py could look like this: (It's important to call the garbage collector to m
 import gc
 gc.collect()
 from contrib.menu import *
-BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
+BootloaderMenu(EUROPI_SCRIPTS).main()
 ```
 
 ## Import priority

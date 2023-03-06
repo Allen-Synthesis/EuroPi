@@ -32,7 +32,7 @@ class EuroPiScript:
        if __name__ == "__main__":  # 4
            HelloWorld().main()
 
-    To include your script in the menu it must be added to the ``EUROPI_SCRIPT_CLASSES`` list in ``contrib/menu.py``.
+    To include your script in the menu it must be added to the ``EUROPI_SCRIPTS`` list in ``contrib/menu.py``.
 
     **Save/Load Script State**
 
