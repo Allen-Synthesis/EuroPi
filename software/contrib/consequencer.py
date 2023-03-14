@@ -43,6 +43,7 @@ Version History
     pattern is now sum of ain and k2
     randomness now sum of ain and k1
     added garbage collection to avoid memory allocation errors when creating new random sequences
+    scroll pattern on display
 '''
 
 class Consequencer(EuroPiScript):
@@ -291,9 +292,10 @@ class Consequencer(EuroPiScript):
         oled.fill(0)
 
         # Show selected pattern visually
-        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), 0, 0, 1)
-        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), 0, 10, 1)
-        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), 0, 20, 1)
+        lpos = 8-(self.step*8)
+        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), lpos, 0, 1)
+        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), lpos, 10, 1)
+        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), lpos, 20, 1)
 
         # If the random toggle is on, show a rectangle
         if self.random_HH:
