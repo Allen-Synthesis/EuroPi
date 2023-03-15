@@ -109,7 +109,7 @@
     <span class="n">HelloWorld</span><span class="p">()</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>To include your script in the menu it must be added to the <code class="docutils literal notranslate"><span class="pre">EUROPI_SCRIPT_CLASSES</span></code> list in <code class="docutils literal notranslate"><span class="pre">contrib/menu.py</span></code>.</p>
+<p>To include your script in the menu it must be added to the <code class="docutils literal notranslate"><span class="pre">EUROPI_SCRIPTS</span></code> list in <code class="docutils literal notranslate"><span class="pre">contrib/menu.py</span></code>.</p>
 <p><strong>Save/Load Script State</strong></p>
 <p>Optionally, you can add a bit of code to enable your script to save state, and load previous state at startup. By default, when exiting the script to menu selection, <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> will be called. Additionally, you can add calls to <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> whenever state changes.</p>
 <p>When adding <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> calls to your script, there are a few important considerations to keep in mind:</p>
