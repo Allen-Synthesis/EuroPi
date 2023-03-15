@@ -22,3 +22,6 @@ class SSD1306_I2C:
 
     def blit(self, *args):
         pass
+
+    def hline(self, *args):
+        pass

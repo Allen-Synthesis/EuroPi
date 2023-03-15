@@ -28,10 +28,10 @@ def test_is_europi_script(cls, expected):
     assert BootloaderMenu._is_europi_script(cls) == expected
 
 
-def test_build_scripts_config():
+def test_build_scripts_mapping():
     scripts = [GoodTestScript1, GoodTestScript2, BadTestScript]
 
-    config = BootloaderMenu._build_scripts_config(scripts)
+    config = BootloaderMenu._build_scripts_mapping(scripts)
 
     assert len(config) == 2
     assert list(config.keys()) == ["GoodTestScript1", "GoodTestScript2"]
