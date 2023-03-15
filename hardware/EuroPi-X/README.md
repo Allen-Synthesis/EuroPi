@@ -3,7 +3,7 @@
 The EuroPi X is an improved hardware version of the EuroPi. Its exact feature set is yet to be decided, but likely additions are more inputs, more outputs, better noise performance for inputs, better accuracy for outputs, a larger display, and larger flash storage.
 
 Suggested features:
-- RGB LED per output
+- RGB LED (Neopixel?) per output (matches output type, e.g. red for gates, blue for cv, green for 1v/oct)
 - Output LEDs separately controlled to the output voltage
 - DAC outputs (>=12 bit)
 - More inputs
