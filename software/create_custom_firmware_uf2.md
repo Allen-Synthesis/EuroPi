@@ -1,5 +1,11 @@
 # Creating a custom firmware.uf2 image for EuroPi
 
+The instructions below describe the steps needed to build the uf2 locally on your machine for
+development purposes. Alternatively you can run the script `software/uf2_build/build_uf2.sh` to
+build the image in a docker container. You will need to have docker installed and running. See the
+script for execution details.
+
+
 ## Compiling the firmware
 ``` Bash
 # install extra tools if not already done so
