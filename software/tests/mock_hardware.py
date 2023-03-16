@@ -22,12 +22,8 @@ class MockHardware:
         self._patch()
 
     def _patch(self):
-        self._monkeypatch.setattr(
-            ADC, "read_u16", lambda pin: self._adc_pin_values[pin]
-        )
-        self._monkeypatch.setattr(
-            Pin, "value", lambda pin: self._digital_pin_values[pin]
-        )
+        self._monkeypatch.setattr(ADC, "read_u16", lambda pin: self._adc_pin_values[pin])
+        self._monkeypatch.setattr(Pin, "value", lambda pin: self._digital_pin_values[pin])
 
     def set_ADC_u16_value(self, reader: AnalogueReader, value: int):
         """Sets the value that will be returned by a call to `read_u16` on the given AnalogueReader."""
