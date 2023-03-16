@@ -25,7 +25,7 @@ The EuroPi is a fully user reprogrammable module based on the [Raspberry Pi Pico
 
 This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The repository for this (now deprecated) module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
 
-You can find more about this (including a project diary) and other projects of mine on [my website](https://www.allensynthesis.co.uk)
+You can find more about this and other projects of mine on [my website](https://www.allensynthesis.co.uk)
 
 ![github banner](https://user-images.githubusercontent.com/79809962/157898134-44cc0534-ac3b-4051-9773-a3be95ba4602.jpg)
 
@@ -51,7 +51,7 @@ You can find more about this (including a project diary) and other projects of m
 
 ### Documentation
 
-**Hardware**: Details of the hardware can be found at [hardware README](hardware/README.md). Additionally the [BoM](hardware/bill_of_materials.md) and the [build guide](hardware/build_guide.md) can be found in the hardware folder.
+**Hardware**: Details of the hardware can be found at [hardware README](hardware/EuroPi/README.md). Additionally the [BoM](hardware/EuroPi/bill_of_materials.md) and the [build guide](hardware/EuroPi/build_guide.md) can be found in the hardware folder.
 
 
 **Software**: Before using any of the software, follow the instructions in [programming_instructions.md](software/programming_instructions.md) to set up and calibrate your module.
