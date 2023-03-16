@@ -70,19 +70,23 @@ class TuringMachine:
         bit_count=DEFAULT_BIT_COUNT,
         max_output_voltage=MAX_OUTPUT_VOLTAGE,
         clear_on_write=True,
+        flip_probability=0,
+        scale=MAX_OUTPUT_VOLTAGE,
+        length=DEFAULT_BIT_COUNT,
     ):
         """Create a new TuringMachine with a shift register of the specified bit count. Default is 16, minimum is 8.
-        The maximum output voltage is also configurable and defaults to `europi.MAX_OUTPUT_VOLTAGE`"""
+        The maximum output voltage is also configurable and defaults to `europi.MAX_OUTPUT_VOLTAGE`
+        """
 
         if bit_count < 8:
             raise ValueError(f"Specified bit_count ({bit_count}) is less than the minimum (8).")
         self.bit_count = bit_count
         self.bits = getrandbits(self.bit_count)
-        self._flip_probability = 0
+        self._flip_probability = flip_probability
         self.max_output_voltage = max_output_voltage
-        self._scale = max_output_voltage
-        self._length = bit_count
         self.clear_on_write = clear_on_write
+        self._scale = scale
+        self._length = length
         self._write = False
 
         self.flip_probability_getter = lambda: self._flip_probability
@@ -185,7 +189,8 @@ class TuringMachine:
     @property
     def write(self):
         """Returns the current value of the 'write switch'. When true the least significant bit will be cleared during
-        rotation, regardless of the `flip_probability`. This allows for real-time user manipulation of the sequence."""
+        rotation, regardless of the `flip_probability`. This allows for real-time user manipulation of the sequence.
+        """
         return self.write_getter()
 
     @write.setter
@@ -197,8 +202,17 @@ class TuringMachine:
 class EuroPiTuringMachine(EuroPiScript):
     def __init__(self, bit_count=DEFAULT_BIT_COUNT, max_output_voltage=MAX_OUTPUT_VOLTAGE):
         super().__init__()
+
+        self.LENGTH_CHOICES = [2, 3, 4, 5, 6, 8, 12, 16]  # TODO: vary based on bit_count?
+        initial_scale_percent = 0.5  # TODO: load from saved state
+        initial_length = 8  # TODO: load from saved state
+
         self.tm = TuringMachine(
-            bit_count, max_output_voltage, clear_on_write=self.config["write_value"] == 0
+            bit_count=bit_count,
+            max_output_voltage=max_output_voltage,
+            clear_on_write=self.config["write_value"] == 0,
+            length=initial_length,
+            scale=MAX_OUTPUT_VOLTAGE * initial_scale_percent,
         )
         self.tm.flip_probability_getter = self.flip_probability
         self.tm.scale_getter = self.scale
@@ -209,8 +223,12 @@ class EuroPiTuringMachine(EuroPiScript):
         self.kb2 = (
             KnobBank.builder(k2)
             .with_disabled_knob()
-            .with_locked_knob("scale", initial_value=0)
-            .with_locked_knob("length", initial_value=0)
+            .with_locked_knob("scale", initial_percentage_value=initial_scale_percent)
+            .with_locked_knob(
+                "length",
+                initial_percentage_value=(self.LENGTH_CHOICES.index(initial_length) * 2 + 1)
+                / (len(self.LENGTH_CHOICES) * 2),
+            )
             .build()
         )
 
@@ -253,9 +271,7 @@ class EuroPiTuringMachine(EuroPiScript):
 
     def length(self):
         if self.kb2.current_name == "length":
-            return self.kb2.length.choice(
-                [2, 3, 4, 5, 6, 8, 12, 16]  # TODO: vary based on bit_count?
-            )
+            return self.kb2.length.choice(self.LENGTH_CHOICES)
         else:
             return self.tm._length
 

@@ -21,7 +21,7 @@ jobs:
           repository: micropython/micropython
           ref: v1.19.1
           path: micropython
-      
+
       - name: install os deps
         run: sudo apt-get install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
 
@@ -36,7 +36,7 @@ jobs:
           cp -r europi/software/firmware/*.py micropython/ports/rp2/modules
           cp -r europi/software/firmware/experimental/*.py micropython/ports/rp2/modules/experimental
           cp -r europi/software/contrib/*.py micropython/ports/rp2/modules/contrib
-        
+
       - name: install ssd1306 library
         run: wget https://raw.githubusercontent.com/stlehmann/micropython-ssd1306/master/ssd1306.py -O micropython/ports/rp2/modules/ssd1306.py
 
@@ -49,7 +49,7 @@ jobs:
           import gc
           gc.collect()
           from contrib.menu import *
-          BootloaderMenu(EUROPI_SCRIPT_CLASSES).main()
+          BootloaderMenu(EUROPI_SCRIPTS).main()
           EOF
 
       - name: "[debug] print modules folder"
@@ -64,7 +64,7 @@ jobs:
         run: |
           VERSION=`grep -oP '(?<=")[\d\.]+(?=")' micropython/ports/rp2/modules/version.py`
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-      
+
       - name: rename firmware file with version info
         run: cp micropython/ports/rp2/build-PICO/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
 

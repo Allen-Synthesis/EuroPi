@@ -69,7 +69,7 @@ class Calibrate(EuroPiScript):
 
         text_wait("Calibration\nMode", 3)
 
-        oled.centre_text("Choose Process\n\n1         2")
+        oled.centre_text("Choose Process\n\n1:LOW    2:HIGH")
         while True:
             if b1.value() == 1:
                 chosen_process = 1

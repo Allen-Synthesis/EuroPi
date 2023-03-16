@@ -5,7 +5,7 @@ API
    :toctree: generated
 
    europi
-   config
+   configuration
    europi_script
    ui
    experimental
