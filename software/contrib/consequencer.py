@@ -44,7 +44,6 @@ March-23    decreased maxRandomPatterns to 32 to avoid crashes on some systems
             randomness is now sum of ain and k1
             added garbage collection to avoid memory allocation errors when creating new random sequences
             scroll pattern on display
-            added garbage collection before attempting to create a new pattern
             minor pattern updates and reshuffled the order
 '''
 
