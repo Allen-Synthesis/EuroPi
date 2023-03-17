@@ -39,11 +39,13 @@ output_6: randomly generated CV (cycled by pushing button 2)
 
 '''
 Version History
-2.0 decreased maxRandomPatterns to 32 to avoid crashes on some systems
-    pattern is now sum of ain and k2
-    randomness now sum of ain and k1
-    added garbage collection to avoid memory allocation errors when creating new random sequences
-    scroll pattern on display
+March-23    decreased maxRandomPatterns to 32 to avoid crashes on some systems
+            pattern is now sum of ain and k2
+            randomness is now sum of ain and k1
+            added garbage collection to avoid memory allocation errors when creating new random sequences
+            scroll pattern on display
+            added garbage collection before attempting to create a new pattern
+            minor pattern updates and reshuffled the order
 '''
 
 class Consequencer(EuroPiScript):
@@ -332,80 +334,7 @@ class pattern:
     SnProb = []
     HhProb = []
 
-    # Mixed probability patterns
-    BD.append("10111111111100001011000000110000")
-    SN.append("10001000100010001010000001001000")
-    HH.append("10101010101010101010101010101010")
-    BdProb.append("99992111129999999999999999969999")
-    SnProb.append("95")
-    HhProb.append("92939495969792939495969792939492")
-
-    BD.append("10111111111100001011000000110000")
-    SN.append("10001000100010001010000001001000")
-    HH.append("11111111111111111111111111111111")
-    BdProb.append("99992222229999999999999999999999")
-    SnProb.append("95")
-    HhProb.append("44449999555599996666999922229999")
-
-    BD.append("1000100010001000")
-    SN.append("0000101001001000")
-    HH.append("0101010101010101")
-    BdProb.append("999995")
-    SnProb.append("5")
-    HhProb.append("99995")
-
-    BD.append("1000110010001100")
-    SN.append("0000101001001000")
-    HH.append("1111111111111111")
-    BdProb.append("9999939999999299")
-    SnProb.append("9")
-    HhProb.append("9293949592939495")
-
-    # African Patterns
-    BD.append("10110000001100001011000000110000")
-    SN.append("10001000100010001010100001001010")
-    HH.append("00001011000010110000101100001011")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10101010101010101010101010101010")
-    SN.append("00001000000010000000100000001001")
-    HH.append("10100010101000101010001010100000")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("11000000101000001100000010100000")
-    SN.append("00001000000010000000100000001010")
-    HH.append("10111001101110011011100110111001")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10001000100010001000100010001010")
-    SN.append("00100100101100000010010010110010")
-    HH.append("10101010101010101010101010101011")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10010100100101001001010010010100")
-    SN.append("00100010001000100010001000100010")
-    HH.append("01010101010101010101010101010101")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    # 0,1,1,2,3,5,8,12
-    BD.append("0101011011101111")
-    SN.append("1010100100010000")
-    HH.append("1110100100010000")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    # Add patterns
+    # 11 interesting patterns
     BD.append("1000100010001000")
     SN.append("0000000000000000")
     HH.append("0000000000000000")
@@ -457,7 +386,7 @@ class pattern:
 
     BD.append("1000100010001000")
     SN.append("0000100000001000")
-    HH.append("0101010101010101")
+    HH.append("1010101010101010")
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
@@ -478,18 +407,12 @@ class pattern:
 
     BD.append("1000100010001000")
     SN.append("0000100000000000")
-    HH.append("0001000000000000")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("1000100010001000")
-    SN.append("0000100000000000")
     HH.append("0001001000000000")
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
 
+    # 10 commonly found patterns
     # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
     BD.append("1000000010000000")
     SN.append("0000100000001000")
@@ -561,11 +484,10 @@ class pattern:
     SnProb.append("9")
     HhProb.append("9")
 
-    # End external patterns
-
+    # 5 interesting patterns?
     BD.append("1000100010001000")
     SN.append("0000101001001000")
-    HH.append("0101010101010101")
+    HH.append("1010101010101010")
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
@@ -598,7 +520,79 @@ class pattern:
     SnProb.append("9")
     HhProb.append("9")
 
-    # Be warned patterns < 16 steps can sound disjointed when using CV to select the pattern!
+    # 5 Mixed probability patterns
+    BD.append("10111111111100001011000000110000")
+    SN.append("10001000100010001010000001001000")
+    HH.append("10101010101010101010101010101010")
+    BdProb.append("99992111129999999999999999969999")
+    SnProb.append("95")
+    HhProb.append("92939495969792939495969792939492")
+
+    BD.append("10111111111100001011000000110000")
+    SN.append("10001000100010001010000001001000")
+    HH.append("11111111111111111111111111111111")
+    BdProb.append("99992222229999999999999999999999")
+    SnProb.append("95")
+    HhProb.append("44449999555599996666999922229999")
+
+    BD.append("1000100010001000")
+    SN.append("0000101001001000")
+    HH.append("0101010101010101")
+    BdProb.append("999995")
+    SnProb.append("5")
+    HhProb.append("99995")
+
+    BD.append("1000110010001100")
+    SN.append("0000101001001000")
+    HH.append("1111111111111111")
+    BdProb.append("9999939999999299")
+    SnProb.append("9")
+    HhProb.append("9293949592939495")
+
+    BD.append("1000100010001000")
+    SN.append("0000101000001000")
+    HH.append("1111111111111111")
+    BdProb.append("9")
+    SnProb.append("9999995999999999")
+    HhProb.append("9293949592939495")
+
+    # 5 African Patterns
+    BD.append("10110000001100001011000000110000")
+    SN.append("10001000100010001010100001001010")
+    HH.append("00001011000010110000101100001011")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    BD.append("10101010101010101010101010101010")
+    SN.append("00001000000010000000100000001001")
+    HH.append("10100010101000101010001010100000")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    BD.append("11000000101000001100000010100000")
+    SN.append("00001000000010000000100000001010")
+    HH.append("10111001101110011011100110111001")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    BD.append("10001000100010001000100010001010")
+    SN.append("00100100101100000010010010110010")
+    HH.append("10101010101010101010101010101011")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    BD.append("10010100100101001001010010010100")
+    SN.append("00100010001000100010001000100010")
+    HH.append("01010101010101010101010101010101")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    # 13 patterns with < 16 steps - can sound disjointed when using CV to select the pattern!
 
     BD.append("10010000010010")
     SN.append("00010010000010")
@@ -690,7 +684,6 @@ class pattern:
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
-
 
 if __name__ == '__main__':
     # Reset module display state.
