@@ -1,6 +1,8 @@
 import sys
 import pytest
 import utime
+from contrib.menu import EUROPI_SCRIPTS
+from bootloader import BootloaderMenu
 
 
 @pytest.fixture
@@ -11,4 +13,7 @@ def mock_time_module(monkeypatch):
 
 
 def test_menu_imports(mock_time_module):
-    import contrib.menu
+    """User the bootloader code to test that every script declared in EUROPI_SCRIPTS can be imported."""
+    bootloader = BootloaderMenu(EUROPI_SCRIPTS)
+    classes = bootloader.load_script_classes(bootloader.scripts)
+    assert EUROPI_SCRIPTS == list(classes.keys()), "Some EUROPI_SCRIPTs were not able to be loaded."

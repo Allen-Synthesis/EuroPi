@@ -3,6 +3,21 @@ from setuptools import setup
 __version__ = ""
 exec(open("./version.py").read())
 
+
+def build_firmware_module_list():
+    import os
+
+    dirs = {"experimental"}
+    excluded = {"__init__.py", "setup.py"}
+
+    return [f[:-3] for f in os.listdir(".") if f.endswith(".py") and f not in excluded] + [
+        ".".join([d, f[:-3]])
+        for d in dirs
+        for f in os.listdir(d)
+        if f.endswith(".py") and f not in excluded
+    ]
+
+
 setup(
     name="micropython-europi",
     version=__version__,
@@ -12,14 +27,6 @@ setup(
     author="Allen Synthesis",
     author_email="contact@allensynthesis.co.uk",
     license="Apache 2.0",
-    py_modules=[
-        "bootloader",
-        "calibrate",
-        "europi_script",
-        "europi",
-        "ui",
-        "version",
-        "experimental.knobs",
-    ],
+    py_modules=build_firmware_module_list(),
     install_requires=[],
 )

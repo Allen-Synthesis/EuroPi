@@ -3,6 +3,7 @@ import machine
 from time import ticks_diff, ticks_ms
 from random import randint, uniform
 from europi_script import EuroPiScript
+import gc
 
 '''
 Consequencer
@@ -16,7 +17,7 @@ Send a clock to the digital input to start the sequence.
 Demo video: https://youtu.be/UwjajP6uiQU
 
 digital_in: clock in
-analog_in: randomness CV
+analog_in: Mode 1: Adjusts randomness, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
 
 knob_1: randomness
 knob_2: select pre-loaded drum pattern
@@ -34,6 +35,16 @@ output_4: randomly generated CV (cycled by pushing button 2)
 output_5: randomly generated CV (cycled by pushing button 2)
 output_6: randomly generated CV (cycled by pushing button 2)
 
+'''
+
+'''
+Version History
+March-23    decreased maxRandomPatterns to 32 to avoid crashes on some systems
+            pattern is now sum of ain and k2
+            randomness is now sum of ain and k1
+            added garbage collection to avoid memory allocation errors when creating new random sequences
+            scroll pattern on display
+            minor pattern updates and reshuffled the order
 '''
 
 class Consequencer(EuroPiScript):
@@ -69,16 +80,20 @@ class Consequencer(EuroPiScript):
         self.trigger_duration_ms = 50
         self.clock_step = 0
         self.pattern = 0
-        self.random_HH = False
-        self.minAnalogInputVoltage = 0.9
+        self.minAnalogInputVoltage = 0.5
         self.randomness = 0
-        self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
         self.CvPattern = 0
         self.reset_timeout = 1000
+        self.maxRandomPatterns = 32  # This prevents a memory allocation error
+        self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
+        self.gateVoltage = 10
+        self.gateVoltages = [0, self.gateVoltage]
 
-        # option to always output a clock on output 4
-        # this helps to sync Consequencer with other modules
-        self.output4isClock = False
+        # Moved these params into the save/load state pair
+        #self.analogInputMode = 1 # 1: Randomness, 2: Pattern, 3: CV Pattern
+        #self.random_HH = False
+        #self.output4isClock = False
+        self.loadState()
         
         # Calculate the longest pattern length to be used when generating random sequences
         self.maxStepLength = len(max(self.BD, key=len))
@@ -94,27 +109,34 @@ class Consequencer(EuroPiScript):
         # Long press: Change operating mode
         @b2.handler_falling
         def b2Pressed():
-            
-            if ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
+            if ticks_diff(ticks_ms(), b2.last_pressed()) > 300 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
                 if self.analogInputMode < 3:
                     self.analogInputMode += 1
                 else:
                     self.analogInputMode = 1
+                self.saveState()
             else:
-                # Move to next cv pattern if one already exists, otherwise create a new one
-                self.CvPattern += 1
-                if self.CvPattern == len(self.random4):
-                    self.generateNewRandomCVPattern()
+                if self.analogInputMode == 3: # Allow changed by CV only in mode 3
+                    return
+
+                if self.CvPattern < len(self.random4)-1: # change to next CV pattern
+                    self.CvPattern += 1
+                else:
+                    if len(self.random4) < self.maxRandomPatterns: # We need to try and generate a new CV value
+                        if self.generateNewRandomCVPattern():
+                            self.CvPattern += 1
             
         # Triggered when button 1 is released
         # Short press: Play previous CV pattern for cv4-6
         # Long press: Toggle random high-hat mode
         @b1.handler_falling
         def b1Pressed():
-            if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000:
+            if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000:
                 self.output4isClock = not self.output4isClock
+                self.saveState()
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 self.random_HH = not self.random_HH
+                self.saveState()
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
                 if self.CvPattern != 0:
@@ -131,8 +153,7 @@ class Consequencer(EuroPiScript):
             
             # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
             if self.step >= self.step_length:
-                self.step = 0 
-            
+                self.step = 0
             cv5.voltage(self.random5[self.CvPattern][self.step])
             cv6.voltage(self.random6[self.CvPattern][self.step])
 
@@ -145,27 +166,27 @@ class Consequencer(EuroPiScript):
             randomNumber0_9 = randomNumber0_99 // 10
             if randomNumber0_99 < self.randomness:
                 if randomNumber0_9 <= int(self.BdProb[self.pattern][self.step]):
-                    cv1.value(randint(0, 1))
+                    cv1.voltage(self.gateVoltages[randint(0, 1)])
                 if randomNumber0_9 <= int(self.SnProb[self.pattern][self.step]):
-                    cv2.value(randint(0, 1))
+                    cv2.voltage(self.gateVoltages[randint(0, 1)])
                 if randomNumber0_9 <= int(self.HhProb[self.pattern][self.step]):
-                    cv3.value(randint(0, 1))
+                    cv3.voltage(self.gateVoltages[randint(0, 1)])
             else:
                 if randomNumber0_9 <= int(self.BdProb[self.pattern][self.step]):
-                    cv1.value(int(self.BD[self.pattern][self.step]))
+                    cv1.voltage(self.gateVoltages[int(self.BD[self.pattern][self.step])])
                 if randomNumber0_9 <= int(self.SnProb[self.pattern][self.step]):
-                    cv2.value(int(self.SN[self.pattern][self.step]))
+                    cv2.voltage(self.gateVoltages[int(self.SN[self.pattern][self.step])])
 
                 # If randomize HH is ON:
                 if self.random_HH:
                     cv3.value(randint(0, 1))
                 else:
                     if randomNumber0_9 <= int(self.HhProb[self.pattern][self.step]):
-                        cv3.value(int(self.HH[self.pattern][self.step]))
+                        cv3.voltage(self.gateVoltages[int(self.HH[self.pattern][self.step])])
 
             # Set cv4-6 voltage outputs based on previously generated random pattern
             if self.output4isClock:
-                cv4.value(1)
+                cv4.voltage(self.gateVoltage)
             else:
                 cv4.voltage(self.random4[self.CvPattern][self.step])
 
@@ -185,16 +206,40 @@ class Consequencer(EuroPiScript):
             if self.output4isClock:
                 cv4.off()
 
+    ''' Save working vars to a save state file'''
+    def saveState(self):
+        self.state = {
+            "analogInputMode": self.analogInputMode,
+            "random_HH": self.random_HH,
+            "output4isClock": self.output4isClock
+        }
+        self.save_state_json(self.state)
+
+
+    ''' Load a previously saved state, or initialize working vars, then save'''
+    def loadState(self):
+        self.state = self.load_state_json()
+        self.analogInputMode = self.state.get("analogInputMode", 1)
+        self.random_HH = self.state.get("random_HH", False)
+        self.output4isClock = self.state.get("output4isClock", False)
+        self.saveState()
+
     def generateNewRandomCVPattern(self):
-        self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
-        self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
-        self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, 9))
+        try:
+            gc.collect()
+            self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            return True
+        except Exception:
+            return False
 
     def getPattern(self):
         # If mode 2 and there is CV on the analogue input use it, if not use the knob position
         val = 100 * ain.percent()
         if self.analogInputMode == 2 and val > self.minAnalogInputVoltage:
             self.pattern = int((len(self.BD) / 100) * val)
+            self.pattern = min(int((len(self.BD) / 100) * val) + k2.read_position(len(self.BD)), len(self.BD)-1)
         else:
             self.pattern = k2.read_position(len(self.BD))
         
@@ -202,16 +247,10 @@ class Consequencer(EuroPiScript):
 
     def getCvPattern(self):
         # If analogue input mode 3, get the CV pattern from CV input
-        if self.analogInputMode != 3:
-            return
-        else:
-            # Get the analogue input voltage as a percentage
-            CvpVal = 100 * ain.percent()
-            
-            # Is there a voltage on the analogue input and are we configured to use it?
-            if CvpVal > 0.4:
-                # Convert percentage value to a representative index of the pattern array
-                self.CvPattern = int((len(self.random4) / 100) * CvpVal)
+        val = 100 * ain.percent()
+        if self.analogInputMode == 3 and val > self.minAnalogInputVoltage:
+            # Convert percentage value to a representative index of the pattern array
+            self.CvPattern = int((len(self.random4) / 100) * val)
 
     def generateRandomPattern(self, length, min, max):
         self.t=[]
@@ -224,7 +263,7 @@ class Consequencer(EuroPiScript):
         # If mode 1 and there is CV on the analogue input use it, if not use the knob position
         val = 100 * ain.percent()
         if self.analogInputMode == 1 and val > self.minAnalogInputVoltage:
-            self.randomness = val
+            self.randomness = min(val + k1.read_position(), 99)
         else:
             self.randomness = k1.read_position()
 
@@ -254,9 +293,10 @@ class Consequencer(EuroPiScript):
         oled.fill(0)
 
         # Show selected pattern visually
-        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), 0, 0, 1)
-        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), 0, 10, 1)
-        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), 0, 20, 1)
+        lpos = 8-(self.step*8)
+        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), lpos, 0, 1)
+        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), lpos, 10, 1)
+        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), lpos, 20, 1)
 
         # If the random toggle is on, show a rectangle
         if self.random_HH:
@@ -293,101 +333,7 @@ class pattern:
     SnProb = []
     HhProb = []
 
-    # Mixed probability patterns
-    BD.append("10111111111100001011000000110000")
-    SN.append("10001000100010001010000001001000")
-    HH.append("10101010101010101010101010101010")
-    BdProb.append("99992111129999999999999999969999")
-    SnProb.append("95")
-    HhProb.append("92939495969792939495969792939492")
-
-    BD.append("10111111111100001011000000110000")
-    SN.append("10001000100010001010000001001000")
-    HH.append("11111111111111111111111111111111")
-    BdProb.append("99992222229999999999999999999999")
-    SnProb.append("95")
-    HhProb.append("44449999555599996666999922229999")
-
-    BD.append("1000100010001000")
-    SN.append("0000101001001000")
-    HH.append("0101010101010101")
-    BdProb.append("999995")
-    SnProb.append("5")
-    HhProb.append("99995")
-
-    BD.append("1000110010001100")
-    SN.append("0000101001001000")
-    HH.append("1111111111111111")
-    BdProb.append("9999939999999299")
-    SnProb.append("9")
-    HhProb.append("9293949592939495")
-
-    # African Patterns
-    BD.append("10110000001100001011000000110000")
-    SN.append("10001000100010001010100001001010")
-    HH.append("00001011000010110000101100001011")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10101010101010101010101010101010")
-    SN.append("00001000000010000000100000001001")
-    HH.append("10100010101000101010001010100000")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("11000000101000001100000010100000")
-    SN.append("00001000000010000000100000001010")
-    HH.append("10111001101110011011100110111001")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10001000100010001000100010001010")
-    SN.append("00100100101100000010010010110010")
-    HH.append("10101010101010101010101010101011")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("00101011101000111010001110100010")
-    SN.append("00101011101000111010001110100010")
-    HH.append("00001000000010000000100000001000")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10101111101000111010001110101000")
-    SN.append("10101111101000111010001110101000")
-    HH.append("00000000101000001010000010100010")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10110110000011111011011000001111")
-    SN.append("10110110000011111011011000001111")
-    HH.append("11111010001011111010001110101100")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("10010100100101001001010010010100")
-    SN.append("00100010001000100010001000100010")
-    HH.append("01010101010101010101010101010101")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    # 0,1,1,2,3,5,8,12
-    BD.append("0101011011101111")
-    SN.append("1010100100010000")
-    HH.append("1110100100010000")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    # Add patterns
+    # 11 interesting patterns
     BD.append("1000100010001000")
     SN.append("0000000000000000")
     HH.append("0000000000000000")
@@ -439,7 +385,7 @@ class pattern:
 
     BD.append("1000100010001000")
     SN.append("0000100000001000")
-    HH.append("0101010101010101")
+    HH.append("1010101010101010")
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
@@ -460,18 +406,12 @@ class pattern:
 
     BD.append("1000100010001000")
     SN.append("0000100000000000")
-    HH.append("0001000000000000")
-    BdProb.append("9")
-    SnProb.append("9")
-    HhProb.append("9")
-
-    BD.append("1000100010001000")
-    SN.append("0000100000000000")
     HH.append("0001001000000000")
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
 
+    # 10 commonly found patterns
     # Source: https://docs.google.com/spreadsheets/d/19_3BxUMy3uy1Gb0V8Wc-TcG7q16Amfn6e8QVw4-HuD0/edit#gid=0
     BD.append("1000000010000000")
     SN.append("0000100000001000")
@@ -543,11 +483,10 @@ class pattern:
     SnProb.append("9")
     HhProb.append("9")
 
-    # End external patterns
-
+    # 5 interesting patterns?
     BD.append("1000100010001000")
     SN.append("0000101001001000")
-    HH.append("0101010101010101")
+    HH.append("1010101010101010")
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
@@ -580,7 +519,79 @@ class pattern:
     SnProb.append("9")
     HhProb.append("9")
 
-    # Be warned patterns < 16 steps can sound disjointed when using CV to select the pattern!
+    # 5 Mixed probability patterns
+    BD.append("10111111111100001011000000110000")
+    SN.append("10001000100010001010000001001000")
+    HH.append("10101010101010101010101010101010")
+    BdProb.append("99992111129999999999999999969999")
+    SnProb.append("95")
+    HhProb.append("92939495969792939495969792939492")
+
+    BD.append("10111111111100001011000000110000")
+    SN.append("10001000100010001010000001001000")
+    HH.append("11111111111111111111111111111111")
+    BdProb.append("99992222229999999999999999999999")
+    SnProb.append("95")
+    HhProb.append("44449999555599996666999922229999")
+
+    BD.append("1000100010001000")
+    SN.append("0000101001001000")
+    HH.append("0101010101010101")
+    BdProb.append("999995")
+    SnProb.append("5")
+    HhProb.append("99995")
+
+    BD.append("1000110010001100")
+    SN.append("0000101001001000")
+    HH.append("1111111111111111")
+    BdProb.append("9999939999999299")
+    SnProb.append("9")
+    HhProb.append("9293949592939495")
+
+    BD.append("1000100010001000")
+    SN.append("0000101000001000")
+    HH.append("1111111111111111")
+    BdProb.append("9")
+    SnProb.append("9999995999999999")
+    HhProb.append("9293949592939495")
+
+    # 5 African Patterns
+    BD.append("10110000001100001011000000110000")
+    SN.append("10001000100010001010100001001010")
+    HH.append("00001011000010110000101100001011")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    BD.append("10101010101010101010101010101010")
+    SN.append("00001000000010000000100000001001")
+    HH.append("10100010101000101010001010100000")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    BD.append("11000000101000001100000010100000")
+    SN.append("00001000000010000000100000001010")
+    HH.append("10111001101110011011100110111001")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    BD.append("10001000100010001000100010001010")
+    SN.append("00100100101100000010010010110010")
+    HH.append("10101010101010101010101010101011")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    BD.append("10010100100101001001010010010100")
+    SN.append("00100010001000100010001000100010")
+    HH.append("01010101010101010101010101010101")
+    BdProb.append("9")
+    SnProb.append("9")
+    HhProb.append("9")
+
+    # 13 patterns with < 16 steps - can sound disjointed when using CV to select the pattern!
 
     BD.append("10010000010010")
     SN.append("00010010000010")
@@ -672,7 +683,6 @@ class pattern:
     BdProb.append("9")
     SnProb.append("9")
     HhProb.append("9")
-
 
 if __name__ == '__main__':
     # Reset module display state.

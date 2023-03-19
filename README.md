@@ -1,11 +1,31 @@
 # EuroPi
 
+
 The EuroPi is a fully user reprogrammable module based on the [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/), which allows users to process inputs and controls to produce outputs based on code written in Python. The entire project is open-source.
 
+<p>
+  <a href="https://discord.gg/JaQwtCnBV5">
+        <img src="https://discordapp.com/api/guilds/931297838804127794/widget.png?style=shield"
+            alt="chat on Discord">
+  </a>
+  <a href="https://www.reddit.com/r/EuroPi/">
+        <img src="https://img.shields.io/reddit/subreddit-subscribers/europi?style=social"
+            alt="chat on Discord">
+  </a>
+  <a href="https://github.com/Allen-Synthesis/EuroPi/tree/main/software/contrib">
+        <img alt="GitHub repo file count (file extension)" src="https://img.shields.io/github/directory-file-count/Allen-Synthesis/EuroPi/software/contrib?extension=py&label=contrib scripts&type=file">
+  </a>
+  <a href="https://github.com/Allen-Synthesis/EuroPi/releases/">
+        <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/Allen-Synthesis/Europi">
+  </a>
+  
+</p>
+
+---
 
 This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The repository for this (now deprecated) module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
 
-You can find more about this (including a project diary) and other projects of mine on [my website](https://www.allensynthesis.co.uk)
+You can find more about this and other projects of mine on [my website](https://www.allensynthesis.co.uk)
 
 ![github banner](https://user-images.githubusercontent.com/79809962/157898134-44cc0534-ac3b-4051-9773-a3be95ba4602.jpg)
 
@@ -31,7 +51,7 @@ You can find more about this (including a project diary) and other projects of m
 
 ### Documentation
 
-**Hardware**: Details of the hardware can be found at [hardware README](hardware/README.md). Additionally the [BoM](hardware/bill_of_materials.md) and the [build guide](hardware/build_guide.md) can be found in the hardware folder.
+**Hardware**: Details of the hardware can be found at [hardware README](hardware/EuroPi/README.md). Additionally the [BoM](hardware/EuroPi/bill_of_materials.md) and the [build guide](hardware/EuroPi/build_guide.md) can be found in the hardware folder.
 
 
 **Software**: Before using any of the software, follow the instructions in [programming_instructions.md](software/programming_instructions.md) to set up and calibrate your module.

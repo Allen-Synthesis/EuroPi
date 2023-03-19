@@ -197,8 +197,16 @@ def test_bad_length(turing_machine):
         turing_machine.length = DEFAULT_BIT_COUNT + 1
 
 
-def test_write(turing_machine):
+def test_write_0(turing_machine):
     turing_machine.write = True
     for _ in range(16):
         turing_machine.step()
     assert get_bit_string(turing_machine) == "0000000000000000"
+
+
+def test_write_1(turing_machine):
+    turing_machine.clear_on_write = False
+    turing_machine.write = True
+    for _ in range(16):
+        turing_machine.step()
+    assert get_bit_string(turing_machine) == "1111111111111111"

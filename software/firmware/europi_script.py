@@ -2,6 +2,9 @@
 import os
 import json
 from utime import ticks_diff, ticks_ms
+from configuration import ConfigSpec, ConfigFile
+from europi_config import EuroPiConfig
+from file_utils import load_file, delete_file, load_json_data
 
 
 class EuroPiScript:
@@ -29,7 +32,7 @@ class EuroPiScript:
        if __name__ == "__main__":  # 4
            HelloWorld().main()
 
-    To include your script in the menu it must be added to the ``EUROPI_SCRIPT_CLASSES`` list in ``contrib/menu.py``.
+    To include your script in the menu it must be added to the ``EUROPI_SCRIPTS`` list in ``contrib/menu.py``.
 
     **Save/Load Script State**
 
@@ -100,10 +103,40 @@ class EuroPiScript:
        EuroPiScripts should not call ``europi.reset_state()`` as this call would remove the button handlers that
        allow the user to exit the program and return to the menu. Similarly, EuroPiScripts should not override the
        handlers that provide this functionality.
+
+    **Configuration**
+
+    Optionally, you can add code to your script to allow for configuration of behavior outside of
+    the hardware UI. A script's configuration options are specified by the `config_points()` method.
+    The method returns a list of `ConfigPoint` objects, each of which describes a config point,
+    including its name, type, and valid values. See the method's docstrings for details. For
+    example, our hello world script could configure its language::
+
+        @classmethod
+        def config_points(cls):
+            return [configuration.choice(name="language", choices=["english", "french"], default="english")]
+
+    Our main method could then use the value of this configuration to display its greeting in the
+    configured language::
+
+        def main(self):
+            if self.config["language"] == "french":
+                oled.centre_text("Bonjour le monde")
+            else:
+                oled.centre_text("Hello world")
+
+    Configuration files are validated, so scripts do not need to worry about invalid values. Validation
+    failures raise exceptions with messages that will help the user correct their configurations.
+
+    Users can create and edit configuration files in order to change a script's configuration. The
+    files should be uploaded to the pico in the `/config` directory. To assist in generating initial
+    versions of these files, see `/scripts/generate_default_configs.py`.
     """
 
     def __init__(self):
         self._last_saved = 0
+        self.config = EuroPiScript._load_config_for_class(self.__class__)
+        self.europi_config = EuroPiScript._load_config_for_class(EuroPiConfig)
 
     def main(self):
         """Override this method with your script's main loop method."""
@@ -199,28 +232,14 @@ class EuroPiScript:
         Check for a previously saved state. If it exists, return state as a
         dict. If no state is found, an empty dictionary will be returned.
         """
-        json_str = self._load_state()
-        if json_str == "":
-            return {}
-        try:
-            return json.loads(json_str)
-        except ValueError as e:
-            print(f"Unable to decode {json_str}: {e}")
-            return {}
+        return load_json_data(self._load_state())
 
     def _load_state(self, mode: str = "r") -> any:
-        try:
-            with open(self._state_filename, mode) as file:
-                return file.read()
-        except OSError as e:
-            return ""
+        return load_file(self._state_filename, mode)
 
     def remove_state(self):
         """Remove the state file for this script."""
-        try:
-            os.remove(self._state_filename)
-        except OSError:
-            pass
+        delete_file(self._state_filename)
 
     def last_saved(self):
         """Return the ticks in milliseconds since last save."""
@@ -228,3 +247,15 @@ class EuroPiScript:
             return ticks_diff(ticks_ms(), self._last_saved)
         except AttributeError:
             raise Exception("EuroPiScript classes must call `super().__init__()`.")
+
+    # config methods
+
+    @classmethod
+    def config_points(cls) -> "List[ConfigPoint]":
+        """Returns a list of ConfigPoints describing this script's configuration options. By default
+        this function returns an empty list. Override it if you'd like configuration points."""
+        return []
+
+    @staticmethod
+    def _load_config_for_class(cls):
+        return ConfigFile.load_config(cls, ConfigSpec(cls.config_points()))

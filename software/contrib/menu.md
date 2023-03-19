@@ -1,6 +1,6 @@
 # Menu 
 A Menu which allows the user to select and execute one of the scripts available to this EuroPi. The menu will 
-include the ``EuroPiScripts`` included in the ``EUROPI_SCRIPT_CLASSES`` List. Button press handlers are added that allow
+include the ``EuroPiScripts`` included in the ``EUROPI_SCRIPTS`` List. Button press handlers are added that allow
 the user to exit the script and return to the menu by holding both buttons down for a short period of time. If the 
 module is restarted while a script is running it will boot right back into that same script.
 
