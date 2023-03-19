@@ -28,6 +28,7 @@ from ssd1306 import SSD1306_I2C
 from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
+from europi_config import load_europi_config
 
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
@@ -52,10 +53,6 @@ except ImportError:
         63475,
     ]
 
-# Pico machine CPU freq.
-# Default pico CPU freq is 125_000_000 (125mHz)
-DEFAULT_CPU_FREQ = 125_000_000
-OVERCLOCKED_CPU_FREQ = 250_000_000
 
 # OLED component display dimensions.
 OLED_WIDTH = 128
@@ -128,17 +125,18 @@ class AnalogueReader:
     not need to be used by user scripts.
     """
 
-    def __init__(self, pin, samples=DEFAULT_SAMPLES):
+    def __init__(self, pin, samples=DEFAULT_SAMPLES, deadzone=0.0):
         self.pin_id = pin
         self.pin = ADC(Pin(pin))
         self.set_samples(samples)
+        self.set_deadzone(deadzone)
 
     def _sample_adc(self, samples=None):
         # Over-samples the ADC and returns the average.
-        values = []
+        value = 0
         for _ in range(samples or self._samples):
-            values.append(self.pin.read_u16())
-        return round(sum(values) / len(values))
+            value += self.pin.read_u16()
+        return round(value / (samples or self._samples))
 
     def set_samples(self, samples):
         """Override the default number of sample reads with the given value."""
@@ -146,24 +144,35 @@ class AnalogueReader:
             raise ValueError(f"set_samples expects an int value, got: {samples}")
         self._samples = samples
 
-    def percent(self, samples=None):
-        """Return the percentage of the component's current relative range."""
-        return self._sample_adc(samples) / MAX_UINT16
+    def set_deadzone(self, deadzone):
+        """Override the default deadzone with the given value."""
+        if not isinstance(deadzone, float):
+            raise ValueError(f"set_deadzone expects an float value, got: {deadzone}")
+        self._deadzone = deadzone
 
-    def range(self, steps=100, samples=None):
+    def percent(self, samples=None, deadzone=None):
+        """Return the percentage of the component's current relative range."""
+        dz = self._deadzone
+        if deadzone is not None:
+            dz = deadzone
+        value = self._sample_adc(samples) / MAX_UINT16
+        value = value * (1.0 + 2.0 * dz) - dz
+        return clamp(value, 0.0, 1.0)
+
+    def range(self, steps=100, samples=None, deadzone=None):
         """Return a value (upper bound excluded) chosen by the current voltage value."""
         if not isinstance(steps, int):
             raise ValueError(f"range expects an int value, got: {steps}")
-        percent = self.percent(samples)
+        percent = self.percent(samples, deadzone)
         if int(percent) == 1:
             return steps - 1
         return int(percent * steps)
 
-    def choice(self, values, samples=None):
+    def choice(self, values, samples=None, deadzone=None):
         """Return a value from a list chosen by the current voltage value."""
         if not isinstance(values, list):
             raise ValueError(f"choice expects a list, got: {values}")
-        percent = self.percent(samples)
+        percent = self.percent(samples, deadzone)
         if percent == 1.0:
             return values[-1]
         return values[int(percent * len(values))]
@@ -203,20 +212,30 @@ class AnalogueInput(AnalogueReader):
     def percent(self, samples=None):
         """Current voltage as a relative percentage of the component's range."""
         # Determine the percent value from the max calibration value.
-        reading = self._sample_adc(samples)
-        max_value = max(reading, INPUT_CALIBRATION_VALUES[-1])
-        return reading / max_value
+        reading = self._sample_adc(samples) - INPUT_CALIBRATION_VALUES[0]
+        max_value = max(
+            reading,
+            INPUT_CALIBRATION_VALUES[-1] - INPUT_CALIBRATION_VALUES[0],
+        )
+        return max(reading / max_value, 0.0)
 
     def read_voltage(self, samples=None):
-        reading = self._sample_adc(samples)
-        max_value = max(reading, INPUT_CALIBRATION_VALUES[-1])
-        percent = reading / max_value
+        raw_reading = self._sample_adc(samples)
+        reading = raw_reading - INPUT_CALIBRATION_VALUES[0]
+        max_value = max(
+            reading,
+            INPUT_CALIBRATION_VALUES[-1] - INPUT_CALIBRATION_VALUES[0],
+        )
+        percent = max(reading / max_value, 0.0)
         # low precision vs. high precision
         if len(self._gradients) == 2:
-            cv = 10 * (reading / INPUT_CALIBRATION_VALUES[-1])
+            cv = 10 * max(
+                reading / (INPUT_CALIBRATION_VALUES[-1] - INPUT_CALIBRATION_VALUES[0]),
+                0.0,
+            )
         else:
             index = int(percent * (len(INPUT_CALIBRATION_VALUES) - 1))
-            cv = index + (self._gradients[index] * (reading - INPUT_CALIBRATION_VALUES[index]))
+            cv = index + (self._gradients[index] * (raw_reading - INPUT_CALIBRATION_VALUES[index]))
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
@@ -238,6 +257,11 @@ class Knob(AnalogueReader):
     method, which will then be used on all analogue read calls for that
     component.
 
+    An optional ``deadzone`` parameter can be used to place deadzones at both
+    positions (all the way left and right) of the knob to make sure the full range
+    is available on all builds. The default value is 0.01 (resulting in 1% of the
+    travel used as deadzone on each side). There is usually no need to change this.
+
     Additionally, the ``choice()`` method can be used to select a value from a
     list of values based on the knob's position::
 
@@ -254,17 +278,17 @@ class Knob(AnalogueReader):
     would only return values which go up in steps of 2.
     """
 
-    def __init__(self, pin):
-        super().__init__(pin)
+    def __init__(self, pin, deadzone=0.01):
+        super().__init__(pin, deadzone=deadzone)
 
-    def percent(self, samples=None):
+    def percent(self, samples=None, deadzone=None):
         """Return the knob's position as relative percentage."""
         # Reverse range to provide increasing range.
-        return 1 - (self._sample_adc(samples) / MAX_UINT16)
+        return 1.0 - super().percent(samples, deadzone)
 
-    def read_position(self, steps=100, samples=None):
+    def read_position(self, steps=100, samples=None, deadzone=None):
         """Returns the position as a value between zero and provided integer."""
-        return self.range(steps, samples)
+        return self.range(steps, samples, deadzone)
 
 
 class DigitalReader:
@@ -298,7 +322,7 @@ class DigitalReader:
                 return
             self.last_rising_ms = time.ticks_ms()
             return self._rising_handler()
-        elif self.value() == LOW:
+        else:
             if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
                 return
             self.last_falling_ms = time.ticks_ms()
@@ -537,6 +561,8 @@ class Output:
 
 ## Initialize EuroPi global singleton instance variables.
 
+europi_config = load_europi_config()
+
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(22)
 ain = AnalogueInput(26)
@@ -557,7 +583,7 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 usb_connected = DigitalReader(24, 0)
 
 # Overclock the Pico for improved performance.
-freq(OVERCLOCKED_CPU_FREQ)
+freq(europi_config["cpu_freq"])
 
 # Reset the module state upon import.
 reset_state()

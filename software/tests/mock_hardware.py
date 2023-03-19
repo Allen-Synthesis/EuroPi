@@ -1,6 +1,12 @@
 from machine import ADC, Pin
 
-from europi import AnalogueReader, DigitalReader, Knob, MAX_UINT16, INPUT_CALIBRATION_VALUES
+from europi import (
+    AnalogueReader,
+    DigitalReader,
+    Knob,
+    MAX_UINT16,
+    INPUT_CALIBRATION_VALUES,
+)
 
 
 class MockHardware:
@@ -31,7 +37,11 @@ class MockHardware:
         self.set_ADC_u16_value(reader, value * MAX_UINT16)
 
     def set_analogue_input_percent(self, reader: AnalogueReader, value: float):
-        self.set_ADC_u16_value(reader, value * INPUT_CALIBRATION_VALUES[-1])
+        self.set_ADC_u16_value(
+            reader,
+            value * (INPUT_CALIBRATION_VALUES[-1] - INPUT_CALIBRATION_VALUES[0])
+            + INPUT_CALIBRATION_VALUES[0],
+        )
 
     def set_knob_percent(self, knob: Knob, value: float):
         self.set_ADC_u16_value(knob, (1 - value) * MAX_UINT16)

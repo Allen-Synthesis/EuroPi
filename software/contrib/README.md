@@ -48,6 +48,13 @@ The division of the master clock that each LFO runs at, as well as each of their
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: LFO</i>
 
+### Logic \[ [documentation](/software/contrib/logic.md) | [script](/software/contrib/logic.py) \]
+
+Treats both inputs as digital on/off signals and outputs the results of binary AND, OR, XOR, NAND, NOR, and XNOR operations on outputs 1-6.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: logic, gates, binary operators</i>
+
 ### Noddy Holder \[ [documentation](/software/contrib/noddy_holder.md) | [script](/software/contrib/noddy_holder.py) \]
 Two channels of sample/track and hold based on a single trigger and CV source
 
@@ -81,6 +88,12 @@ Given values for and upper and lower rhythmic ratios, Probapoly will create a lo
 <i>Author: [gamecat69](https://github.com/gamecat69)</i>
 <br><i>Labels: sequencer, performance, gates, polyrhythm, probability</i>
 
+### Quantizer \[ [documentation](/software/contrib/quantizer.md) | [script](/software/contrib/quantizer.py) \]
+Quantizes input analog signals to a customizable scale.  Additional signals output the same note shifted up or down to create harmonies across multiple oscillators.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: quantizer</i>
+
 ### Radio Scanner \[ [documentation](/software/contrib/radio_scanner.md) | [script](/software/contrib/radio_scanner.py) \]
 A tool for exploring sounds and control voltage combinations by navigating a 2D plane
 
@@ -90,6 +103,12 @@ The outputs can also be rotated as inspired by the 4MS Rotating Clock Divider
 
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: n/a</i>
+
+### Sequential Switch \[ [documentation](/software/contrib/sequential_switch.md) | [script](/software/contrib/sequential_switch.py) \]
+A 2-6 output sequential switch.  The analogue input is mirrored to one of the outputs, with the specific output changed every time a trigger is received.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: random, sequential switch</i>
 
 ### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
 Random CV with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw.

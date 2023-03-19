@@ -2,6 +2,7 @@ from machine import Pin, ADC, PWM, freq
 from time import sleep
 from europi import oled, b1, b2
 from europi_script import EuroPiScript
+from os import stat, mkdir
 
 
 class Calibrate(EuroPiScript):
@@ -52,6 +53,13 @@ class Calibrate(EuroPiScript):
             while b1.value() != value:
                 sleep(0.05)
 
+        # Test if /lib exists. If not: Create it
+
+        try:
+            stat("/lib")
+        except OSError:
+            mkdir("/lib")
+
         # Calibration start
 
         if usb.value() == 1:
@@ -61,7 +69,7 @@ class Calibrate(EuroPiScript):
 
         text_wait("Calibration\nMode", 3)
 
-        oled.centre_text("Choose Process\n\n1         2")
+        oled.centre_text("Choose Process\n\n1:LOW    2:HIGH")
         while True:
             if b1.value() == 1:
                 chosen_process = 1

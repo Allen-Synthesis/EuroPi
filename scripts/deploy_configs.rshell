@@ -1,0 +1,2 @@
+mkdir /pyboard/config
+cp ./config/*.json /pyboard/config
