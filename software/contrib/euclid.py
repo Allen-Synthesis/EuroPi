@@ -36,6 +36,8 @@ def generate_euclidean_pattern(steps, pulses, rot=0):
         raise ValueError
     if rot > steps or steps < 0:
         raise ValueError
+    if steps == 0:
+        return []
     pattern = []    
     counts = []
     remainders = []
@@ -79,35 +81,41 @@ class EuclidGenerator:
     """Generates the euclidean rhythm for a single output
     """
     
-    def __init__(self, cv_pin):
+    def __init__(self, cv_pin, steps=1, pulses=0, rotation=0, skip=0):
         """Create a generator that sends its output to the given pin
 
         @param cv_pin  One of the six output jacks (cv1..cv6)
+        @param steps  The initial number of steps (1-32)
+        @param pulses  The initial number of pulses (0-32)
+        @param rotation  The initial rotation (0-32)
+        @param skip  The skip probability (0-1)
         """
         
         ## The CV output this generator controls
-        self.cv = output_pin
+        self.cv = cv_pin
         
         ## The current position within the pattern
         self.position = 0
         
         ## The number of steps in the pattern
-        self.steps = 0
+        self.steps = steps
         
         ## The number of triggers in the pattern
-        self.pulses = 0
+        self.pulses = pulses
         
         ## The rotation of the pattern
-        self.rotation = 0
+        self.rotation = rotation
         
         ## The probability that we skip any given step when it triggers
         #
         #  Must be in the range [0, 1], where 0 means never skip and
         #  1 means always skip
-        self.skip = 0
+        self.skip = skip
         
         ## The on/off pattern we generate
         self.pattern = []
+        
+        self.regenerate()
         
     def __str__(self):
         """Return a string representation of the pattern
@@ -122,7 +130,7 @@ class EuclidGenerator:
         is currently playing
         """
         s = ""
-        for i in range(len(self.pattern))
+        for i in range(len(self.pattern)):
             if i == self.position:
                 if self.pattern[i] == 0:
                     s = s+"v"
@@ -144,8 +152,8 @@ class EuclidGenerator:
         Changing the pattern will reset the position to zero
         """
         
-        self.pattern = generate_euclidean_pattern(self.steps, self.pulses, self.rotation)
         self.position = 0
+        self.pattern = generate_euclidean_pattern(self.steps, self.pulses, self.rotation)
         
     def advance(self):
         """Advance to the next step in the pattern and set the CV output
@@ -158,7 +166,7 @@ class EuclidGenerator:
         if self.position >= len(self.pattern):
             self.position = 0
             
-        if self.pattern[self.position] == 0:
+        if self.steps == 0 or self.pattern[self.position] == 0:
             self.cv.off()
         else:
             if self.skip > random.random():
@@ -180,10 +188,18 @@ class ChannelMenu:
     def draw(self):
         generator_index = k1.range(len(self.script.generators))
         g = self.script.generators[generator_index]
+        pattern_str = str(g)
         
         oled.fill(0)
         oled.text(f"-- CV {generator_index+1} --", 0, 0)
-        oled.text(f"{g}", 0, 10)
+        if len(pattern_str) > 16:
+            pattern_row1 = pattern_str[0:16]
+            pattern_row2 = pattern_str[16:]
+            oled.text(f"{pattern_row1}", 0, 10)
+            oled.text(f"{pattern_row2}", 0, 20)
+        else:
+            oled.text(f"{pattern_str}", 0, 10)
+        
         oled.show()
 
 class SettingsMenu:
@@ -227,18 +243,18 @@ class SettingsMenu:
         current_setting = 0
         
         if menu_item == self.MENU_ITEMS_STEPS:
-            lower_bound = 0
+            lower_bound = 1
             upper_bound = 32
             current_setting = self.generator.steps
         elif menu_item == self.MENU_ITEMS_PULSES:
             lower_bound = 0
             upper_bound = self.generator.steps
             current_setting = self.generator.pulses
-        elif menu_item == self.MENU_ITEM.ROTATION:
+        elif menu_item == self.MENU_ITEMS_ROTATION:
             lower_bound = 0
             upper_bound = self.generator.steps
             current_setting = self.generator.rotation
-        elif menu_item == self.MENU_ITEM_SKIP:
+        elif menu_item == self.MENU_ITEMS_SKIP:
             lower_bound = 0
             upper_bound = 100
             current_setting = int(self.generator.skip * 100)
@@ -268,9 +284,9 @@ class SettingsMenu:
                 self.generator.rotation = new_setting
         elif menu_item == self.MENU_ITEMS_PULSES:
             self.generator.pulses = new_setting
-        elif menu_item == self.MENU_ITEM.ROTATION:
+        elif menu_item == self.MENU_ITEMS_ROTATION:
             self.generator.rotation = new_setting
-        elif menu_item == self.MENU_ITEM_SKIP:
+        elif menu_item == self.MENU_ITEMS_SKIP:
             self.generator.skip = new_setting / 100.0
             
         self.generator.regenerate()
@@ -286,21 +302,24 @@ class EuclideanRhythms(EuroPiScript):
         super().__init__()
         
         ## The euclidean pattern generators for each CV output
+        #
+        #  We pre-load the defaults with some interesting patterns so the script
+        #  does _something_ out of the box
         self.generators = [
-            EuclidGenerator(cv1),
-            EuclidGenerator(cv2),
-            EuclidGenerator(cv3),
-            EuclidGenerator(cv4),
-            EuclidGenerator(cv5),
-            EuclidGenerator(cv6)
+            EuclidGenerator(cv1, 8, 5),
+            EuclidGenerator(cv2, 16, 7),
+            EuclidGenerator(cv3, 16, 11),
+            EuclidGenerator(cv4, 32, 9),
+            EuclidGenerator(cv5, 32, 15),
+            EuclidGenerator(cv6, 32, 19)
         ]
         
         self.load()
         
-        self.cv_menu = ChannelMenu(self)
+        self.channel_menu = ChannelMenu(self)
         self.settings_menu = SettingsMenu(self)
         
-        self.active_screen = self.cv_menu
+        self.active_screen = self.channel_menu
         
         @din.handler
         def on_rising_clock():
@@ -324,7 +343,7 @@ class EuclideanRhythms(EuroPiScript):
         def on_b1_press():
             """Handler for pressing button 1
             """
-            if self.active_screen == self.cv_menu:
+            if self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.settings_menu.apply_setting()
@@ -334,7 +353,7 @@ class EuclideanRhythms(EuroPiScript):
         def on_b2_press():
             """Handler for pressing button 2
             """
-            if self.active_screen == self.cv_menu:
+            if self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.activate_channel_menu()
@@ -343,7 +362,7 @@ class EuclideanRhythms(EuroPiScript):
     def display_name(cls):
         return "Euclid"
     
-    def active_settings_menu(self):
+    def activate_settings_menu(self):
         """ Change the active screen to the settings menu
         """
         channel_index = k1.range(len(self.generators))
@@ -374,7 +393,7 @@ class EuclideanRhythms(EuroPiScript):
     def save(self):
         """Write the current settings to the persistent storage
         """
-        state = []
+        rhythms = []
         for i in range(len(self.generators)):
             d = {
                 "id": i,
@@ -383,7 +402,11 @@ class EuclideanRhythms(EuroPiScript):
                 "rotation": self.generators[i].rotation,
                 "skip": self.generators[i].skip
             }
-            state.append(d)
+            rhythms.append(d)
+            
+        state = {
+            "rhythms": rhythms
+        }
         self.save_state_json(state)
         
     def main(self):

@@ -10,7 +10,7 @@ of each pattern can be independently adjusted.
 - `din`: external clock input
 - `b1`: Open the settings menu for the selected CV channel, or apply the current
   option if we're already in the settings menu
-- `b2`: Toggle between the CV channel select & settings menu for that channel
+- `b2`: Toggle between the CV channel select menu & settings menu for that channel
 - `k1`: Scroll between the CV channels in the main menu, or the available settings
   for that channel in the settings menu
 - `k2`: Scroll through the options for the current setting in the settings menu
@@ -18,4 +18,22 @@ of each pattern can be independently adjusted.
 
 ## Settings
 
-- Length: the numb
+- Steps: the number of steps in the pattern (1-32)
+- Pulses: the number of pulses in the pattern (0-steps)
+- Rotation: rotate the pattern a set number of steps (0-steps)
+- Skip %: The probability that any given pulse will be skipped
+
+## Defaults
+
+The script will initialize the six outputs with the following patterns by default:
+- CV1: 8 steps, 5 pulses
+- CV2: 16 steps, 7 pulses
+- CV3: 16 steps, 11 pulses
+- CV4: 32 steps, 9 pulses
+- CV5: 32 steps, 15 pulses
+- CV6: 32 steps, 19 pulses
+
+The default patterns all have the rotation and skip set to zero.
+
+The defaults can be edited through the settings menu, with any custom settings
+re-applied automatically when the script restarts.
