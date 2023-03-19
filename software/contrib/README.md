@@ -30,6 +30,12 @@ Recording of CV can be primed so that you can record a movement without missing 
 <i>Author: [anselln](https://github.com/anselln)</i>
 <br><i>Labels: sequencer, CV, performance</i>
 
+### Euclid \[ [documentation](/software/contrib/euclid.md) | [script](/software/contrib/euclid.py) \]
+Euclidean rhythm generator. Each channel can generate an independent euclidean rhythm.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: sequencer, gates, triggers, euclidean</i>
+
 ### Hamlet \[ [documentation](/software/contrib/hamlet.md) | [script](/software/contrib/hamlet.py) \]
 A variation of the Consequencer script specifically geared towards driving voices
 
