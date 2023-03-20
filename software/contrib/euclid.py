@@ -115,6 +115,12 @@ class EuclidGenerator:
         ## The on/off pattern we generate
         self.pattern = []
         
+        ## Cached copy of the string representation
+        #
+        #  __str__(self) will do some extra string processing
+        #  if this is None; otherwise its value is simply returned
+        self.str = None
+        
         self.regenerate()
         
     def __str__(self):
@@ -129,19 +135,22 @@ class EuclidGenerator:
         e.g. |.|.^|.|.||. is a 7/12 pattern, where the 5th note
         is currently playing
         """
-        s = ""
-        for i in range(len(self.pattern)):
-            if i == self.position:
-                if self.pattern[i] == 0:
-                    s = s+"v"
+        
+        if self.str is None:
+            s = ""
+            for i in range(len(self.pattern)):
+                if i == self.position:
+                    if self.pattern[i] == 0:
+                        s = s+"v"
+                    else:
+                        s = s+"^"
                 else:
-                    s = s+"^"
-            else:
-                if self.pattern[i] == 0:
-                    s = s+"."
-                else:
-                    s = s+"|"
-        return s
+                    if self.pattern[i] == 0:
+                        s = s+"."
+                    else:
+                        s = s+"|"
+            self.str = s
+        return self.str
         
     def regenerate(self):
         """Re-calculate the pattern for this generator
@@ -154,6 +163,9 @@ class EuclidGenerator:
         
         self.position = 0
         self.pattern = generate_euclidean_pattern(self.steps, self.pulses, self.rotation)
+        
+        # clear the cached string representation
+        self.str = None
         
     def advance(self):
         """Advance to the next step in the pattern and set the CV output
@@ -173,6 +185,9 @@ class EuclidGenerator:
                 self.cv.off()
             else:
                 self.cv.on()
+                
+        # clear the cached string representation
+        self.str = None
         
 
 class ChannelMenu:
