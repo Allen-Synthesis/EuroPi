@@ -35,6 +35,10 @@ MODE_CONTINUOUS=1
 SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 
 
+SELECT_OPTION_Y = 16
+HALF_CHAR_WIDTH = int(CHAR_WIDTH / 2)
+
+
 class ScreensaverScreen:
     """Blank the screen when idle
 
@@ -156,12 +160,15 @@ class ModeChooser:
         self.quantizer = quantizer
         
         self.mode_names = [
-            "Trig.",
-            "Cont."
+            "Triggered",
+            "Continuous"
         ]
         
-    def read_mode(self):
-        return k2.range(len(self.mode_names))
+    def read_mode(self, mode='integer'):
+        if mode == 'string':
+            return k2.choice(self.mode_names)
+        else:
+            return k2.range(len(self.mode_names))
         
     def on_button1(self):
         new_mode = self.read_mode()
@@ -169,10 +176,13 @@ class ModeChooser:
         self.quantizer.save()
         
     def draw(self):
-        new_mode = self.read_mode()
         oled.fill(0)
-        oled.text(f"-- Mode --", 0, 0)
-        oled.text(f"{self.mode_names[self.quantizer.mode]} <- {self.mode_names[new_mode]}", 0, 10)
+        oled.text(f"Mode", 0, 0)
+        
+        current_mode = self.mode_names[self.quantizer.mode]
+        new_mode = self.read_mode(mode='string')
+        QuantizerScript.choose_option(self, new_mode, current_mode, self.mode_names)
+        
         oled.show()
     
 class RootChooser:
@@ -195,8 +205,11 @@ class RootChooser:
             "B "
         ]
         
-    def read_root(self):
-        return k2.range(len(self.root_names))
+    def read_root(self, mode='integer'):
+        if mode == 'string':
+            return k2.choice(self.root_names)
+        else:
+            return k2.range(len(self.root_names))
     
     def on_button1(self):
         new_root = self.read_root()
@@ -204,10 +217,13 @@ class RootChooser:
         self.quantizer.save()
         
     def draw(self):
-        new_root = self.read_root()
         oled.fill(0)
-        oled.text(f"-- Transpose --", 0, 0)
-        oled.text(f"{self.root_names[self.quantizer.root]} <- {self.root_names[new_root]}", 0, 10)
+        oled.text(f"Transpose", 0, 0)
+        
+        new_root = self.read_root(mode='string')
+        current_root = self.root_names[self.quantizer.root]
+        QuantizerScript.choose_option(self, new_root, current_root, self.root_names)
+        
         oled.show()
 
 class OctaveChooser:
@@ -215,9 +231,14 @@ class OctaveChooser:
     """
     def __init__(self, quantizer):
         self.quantizer = quantizer
+        self.octave_texts = ['-4', '-3', '-2', '-1', '0', '+1', '+2', '+3', '+4']
+        self.octave_text_y = 12
         
-    def read_octave(self):
-        return k2.range(4) - 1  # result should be -1 to +2
+    def read_octave(self, mode='integer'):
+        if mode == 'string':
+            return k2.choice(self.octave_texts)
+        else:
+            return k2.range(9) - 4  # result should be -1 to +2
     
     def on_button1(self):
         new_octave = self.read_octave()
@@ -225,10 +246,19 @@ class OctaveChooser:
         self.quantizer.save()
         
     def draw(self):
-        new_octave = self.read_octave()
         oled.fill(0)
-        oled.text(f"-- Octave --", 0, 0)
-        oled.text(f"{self.quantizer.octave} <- {new_octave}", 0, 10)
+        oled.text(f"Octave", 0, 0)
+        
+        new_octave = self.read_octave(mode='string')
+        current_octave = self.quantizer.octave
+        
+        if current_octave > 0:
+            current_octave = '+' + str(current_octave)
+        else:
+            current_octave = str(current_octave)
+            
+        QuantizerScript.choose_option(self, new_octave, current_octave, self.octave_texts)
+            
         oled.show()
 
 class IntervalChooser:
@@ -238,35 +268,39 @@ class IntervalChooser:
         self.quantizer = quantizer
         self.n = n
         self.interval_names = [
-            "-P8",
-            "-M7",
-            "-m7",
-            "-M6",
-            "-m6",
-            "-P5",
-            "-d5",
-            "-P4",
-            "-M3",
-            "-m3",
-            "-M2",
-            "-m2",
-            " P1",
-            "+m2",
-            "+M2",
-            "+m3",
-            "+M3",
-            "+P4",
-            "+d5",
-            "+P5",
-            "+m6",
-            "+M6",
-            "+m7",
-            "+M7",
-            "+P8"
+            "-Pe 8",
+            "-MA 7",
+            "-mi 7",
+            "-MA 6",
+            "-mi 6",
+            "-Pe 5",
+            "-Di 5",
+            "-Per 4",
+            "-MA 3",
+            "-mi 3",
+            "-MA 2",
+            "-mi 2",
+            "Pe 1",
+            "+mi 2",
+            "+MA 2",
+            "+mi 3",
+            "+MA 3",
+            "+Per 4",
+            "+Di 5",
+            "+Pe 5",
+            "+mi 6",
+            "+MA 6",
+            "+mi 7",
+            "+MA 7",
+            "+Pe 8"
         ]
         
-    def read_interval(self):
-        return k2.range(len(self.interval_names)) - 12
+        
+    def read_interval(self, mode='integer'):
+        if mode == 'string':
+            return k2.choice(self.interval_names)
+        else:
+            return k2.range(len(self.interval_names)) - 12
     
     def on_button1(self):
         new_interval = self.read_interval()
@@ -274,10 +308,13 @@ class IntervalChooser:
         self.quantizer.save()
         
     def draw(self):
-        new_interval = self.read_interval()
         oled.fill(0)
-        oled.text(f"-- Output {self.n} --", 0, 0)
-        oled.text(f"{self.interval_names[self.quantizer.intervals[self.n-2]+12]} <- {self.interval_names[new_interval+12]}", 0, 10)
+        oled.text(f"Output {self.n}", 0, 0)
+        
+        new_interval = self.read_interval(mode='string')
+        current_interval = self.interval_names[self.quantizer.intervals[self.n-2]+12]
+        QuantizerScript.choose_option(self, new_interval, current_interval, self.interval_names)
+        
         oled.show()
 
 class Quantizer:
@@ -386,6 +423,8 @@ class QuantizerScript(EuroPiScript):
         self.screensaver = ScreensaverScreen(self)
         self.active_screen = self.kb
         
+        self.screen_centre = int(OLED_WIDTH / 2)
+        
         self.load()
         
         # connect event handlers for the rising & falling clock edges + button presses
@@ -484,6 +523,27 @@ class QuantizerScript(EuroPiScript):
         
         for i in range(len(self.aux_outs)):
             self.aux_outs[i].voltage(self.output_voltage + self.intervals[i] * VOLTS_PER_SEMITONE)
+    
+    def choose_option(self, new_item, current_item, all_items):
+        item_widths = []
+        for item_text in all_items:
+            if item_text == new_item:
+                offset = -int(sum(item_widths) + (CHAR_WIDTH * (len(item_widths))) + (CHAR_WIDTH * (len(item_text) / 2)) - (OLED_WIDTH / 2))
+            item_widths.append(len(item_text) * CHAR_WIDTH)
+        
+        x = offset
+
+        for index, item_text in enumerate(all_items):
+            item_text_width = item_widths[index]
+            if item_text == current_item:
+                oled.fill_rect((x - 1), SELECT_OPTION_Y, (item_text_width + 3), (CHAR_HEIGHT + 4), 1)
+                oled.text(item_text, x, (SELECT_OPTION_Y + 2), 0)
+            elif item_text == new_item:
+                oled.rect((x - 1), SELECT_OPTION_Y, (item_text_width + 3), (CHAR_HEIGHT + 4), 1)
+                oled.text(item_text, x, (SELECT_OPTION_Y + 2), 1)
+            else:
+                oled.text(item_text, x, (SELECT_OPTION_Y + 2), 1)
+            x += item_text_width + CHAR_WIDTH
     
     def main(self):
         """The main loop; reads from ain, sets the output voltages
