@@ -14,6 +14,9 @@ from europi_script import EuroPiScript
 import random
 import time
 
+## Duration before we blank the screen
+SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
+
 def generate_euclidean_pattern(steps, pulses, rot=0):
     """Generates an array indicating the on/off steps of Euclid(k, n)
 
@@ -307,6 +310,16 @@ class SettingsMenu:
         self.generator.regenerate()
         
 
+class Screensaver:
+    """Blanks the screen to prevent burn-in
+    """
+    def __init__(self):
+        pass
+    
+    def draw(self):
+        oled.fill(0);
+        oled.show()
+
 class EuclideanRhythms(EuroPiScript):
     """Generates 6 different Euclidean rhythms, one per output
 
@@ -333,8 +346,11 @@ class EuclideanRhythms(EuroPiScript):
         
         self.channel_menu = ChannelMenu(self)
         self.settings_menu = SettingsMenu(self)
+        self.screensaver = Screensaver()
         
         self.active_screen = self.channel_menu
+        
+        self.last_interaction_time = time.ticks_ms()
         
         @din.handler
         def on_rising_clock():
@@ -357,8 +373,12 @@ class EuclideanRhythms(EuroPiScript):
         @b1.handler
         def on_b1_press():
             """Handler for pressing button 1
-            """
-            if self.active_screen == self.channel_menu:
+            """            
+            self.last_interaction_time = time.ticks_ms()
+            
+            if self.active_screen == self.screensaver:
+                self.active_screen = self.channel_menu
+            elif self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.settings_menu.apply_setting()
@@ -367,8 +387,12 @@ class EuclideanRhythms(EuroPiScript):
         @b2.handler
         def on_b2_press():
             """Handler for pressing button 2
-            """
-            if self.active_screen == self.channel_menu:
+            """            
+            self.last_interaction_time = time.ticks_ms()
+            
+            if self.active_screen == self.screensaver:
+                self.active_screen = self.channel_menu
+            elif self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.activate_channel_menu()
@@ -426,6 +450,11 @@ class EuclideanRhythms(EuroPiScript):
         
     def main(self):
         while True:
+            # check if we've been idle for long enough to trigger the screensaver
+            now = time.ticks_ms()
+            if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
+                self.active_screen = self.screensaver
+                
             self.active_screen.draw()
     
 if __name__=="__main__":
