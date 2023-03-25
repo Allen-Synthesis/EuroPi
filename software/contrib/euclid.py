@@ -105,10 +105,10 @@ class EuclidGenerator:
     """Generates the euclidean rhythm for a single output
     """
     
-    def __init__(self, cv_pin, steps=1, pulses=0, rotation=0, skip=0):
-        """Create a generator that sends its output to the given pin
+    def __init__(self, cv_out, steps=1, pulses=0, rotation=0, skip=0):
+        """Create a generator that sends its output to the given CV output
 
-        @param cv_pin  One of the six output jacks (cv1..cv6)
+        @param cv_out  One of the six output jacks (cv1..cv6)
         @param steps  The initial number of steps (1-32)
         @param pulses  The initial number of pulses (0-32)
         @param rotation  The initial rotation (0-32)
@@ -116,7 +116,7 @@ class EuclidGenerator:
         """
         
         ## The CV output this generator controls
-        self.cv = cv_pin
+        self.cv = cv_out
         
         ## The current position within the pattern
         self.position = 0
