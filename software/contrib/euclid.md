@@ -37,3 +37,8 @@ The default patterns all have the rotation and skip set to zero.
 
 The defaults can be edited through the settings menu, with any custom settings
 re-applied automatically when the script restarts.
+
+## Screensaver
+
+After 20 minutes the screen will automatically go blank.  Pressing either button
+will wake the screen up and return to the channel menu.
