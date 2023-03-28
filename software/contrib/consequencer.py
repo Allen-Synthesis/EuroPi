@@ -294,10 +294,16 @@ class Consequencer(EuroPiScript):
 
         # Show selected pattern visually
         
+        # Calculate the length of the current pattern
         current_pattern_length = len(self.BD[self.pattern])
+        
+        # Calculate the width of one full pattern in pixels
         lpos_offset = current_pattern_length * CHAR_WIDTH
+        
+        # Calculate the x position of the first pattern to be drawn
         normal_lpos = lpos = 8-(self.step*8)
         
+        # Calculate the number of patterns required to fill the OLED width
         number_of_offset_patterns = max(int(OLED_WIDTH / lpos_offset), 1)
         
         # Draw as many offset patterns as required to fill the OLED
