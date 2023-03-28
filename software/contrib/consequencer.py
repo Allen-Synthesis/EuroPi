@@ -298,9 +298,9 @@ class Consequencer(EuroPiScript):
         lpos_offset = current_pattern_length * CHAR_WIDTH
         normal_lpos = lpos = 8-(self.step*8)
         
-        number_of_offset_patterns = int(OLED_WIDTH / lpos_offset)
-        print(number_of_offset_patterns)
+        number_of_offset_patterns = max(int(OLED_WIDTH / lpos_offset), 1)
         
+        # Draw as many offset patterns as required to fill the OLED
         for offset_pattern in range(number_of_offset_patterns):
             # Draw the current pattern, as well as a copy that is offset by one full pattern's width
             for lpos in [normal_lpos, (normal_lpos + lpos_offset)]:
