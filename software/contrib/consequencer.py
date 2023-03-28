@@ -293,10 +293,11 @@ class Consequencer(EuroPiScript):
         oled.fill(0)
 
         # Show selected pattern visually
-        lpos = 8-(self.step*8)
-        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), lpos, 0, 1)
-        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), lpos, 10, 1)
-        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), lpos, 20, 1)
+        normal_lpos = lpos = 8-(self.step*8)
+        for lpos in [normal_lpos, (normal_lpos + OLED_WIDTH)]:
+            oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), lpos, 0, 1)
+            oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), lpos, 10, 1)
+            oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), lpos, 20, 1)
 
         # If the random toggle is on, show a rectangle
         if self.random_HH:
