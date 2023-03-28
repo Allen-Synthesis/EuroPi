@@ -218,6 +218,9 @@ class AnalogueInput(AnalogueReader):
             INPUT_CALIBRATION_VALUES[-1] - INPUT_CALIBRATION_VALUES[0],
         )
         value = reading / max_value
+        dz = self._deadzone
+        if deadzone is not None:
+        deadzonesdz = deadzone
         value = value * (1.0 + 2.0 * dz) - dz
         return clamp(value, 0.0, 1.0)
 
