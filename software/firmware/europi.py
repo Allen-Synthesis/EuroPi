@@ -209,7 +209,7 @@ class AnalogueInput(AnalogueReader):
                 )
         self._gradients.append(self._gradients[-1])
 
-    def percent(self, samples=None):
+    def percent(self, samples=None, deadzone=None):
         """Current voltage as a relative percentage of the component's range."""
         # Determine the percent value from the max calibration value.
         reading = self._sample_adc(samples) - INPUT_CALIBRATION_VALUES[0]
