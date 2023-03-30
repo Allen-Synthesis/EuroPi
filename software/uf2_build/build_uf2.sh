@@ -2,7 +2,7 @@
 set -e
 
 # Run this script from the repo's root directory as `$ ./software/uf2_build/build_uf2.sh`.
-# requires docker is installed and running.
+# requires docker is installed and running. For docker help: https://docs.docker.com/get-started/
 
 # Build the `europi_buildenv`` docker image. Subsequent builds will reuse the same image.
 docker build -t europi_buildenv -f software/uf2_build/Dockerfile ./
