@@ -28,7 +28,6 @@ from ssd1306 import SSD1306_I2C
 from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
-from largefont_writer import Writer
 from europi_config import load_europi_config
 
 if sys.implementation.name == "micropython":
@@ -213,20 +212,30 @@ class AnalogueInput(AnalogueReader):
     def percent(self, samples=None):
         """Current voltage as a relative percentage of the component's range."""
         # Determine the percent value from the max calibration value.
-        reading = self._sample_adc(samples)
-        max_value = max(reading, INPUT_CALIBRATION_VALUES[-1])
-        return reading / max_value
+        reading = self._sample_adc(samples) - INPUT_CALIBRATION_VALUES[0]
+        max_value = max(
+            reading,
+            INPUT_CALIBRATION_VALUES[-1] - INPUT_CALIBRATION_VALUES[0],
+        )
+        return max(reading / max_value, 0.0)
 
     def read_voltage(self, samples=None):
-        reading = self._sample_adc(samples)
-        max_value = max(reading, INPUT_CALIBRATION_VALUES[-1])
-        percent = reading / max_value
+        raw_reading = self._sample_adc(samples)
+        reading = raw_reading - INPUT_CALIBRATION_VALUES[0]
+        max_value = max(
+            reading,
+            INPUT_CALIBRATION_VALUES[-1] - INPUT_CALIBRATION_VALUES[0],
+        )
+        percent = max(reading / max_value, 0.0)
         # low precision vs. high precision
         if len(self._gradients) == 2:
-            cv = 10 * (reading / INPUT_CALIBRATION_VALUES[-1])
+            cv = 10 * max(
+                reading / (INPUT_CALIBRATION_VALUES[-1] - INPUT_CALIBRATION_VALUES[0]),
+                0.0,
+            )
         else:
             index = int(percent * (len(INPUT_CALIBRATION_VALUES) - 1))
-            cv = index + (self._gradients[index] * (reading - INPUT_CALIBRATION_VALUES[index]))
+            cv = index + (self._gradients[index] * (raw_reading - INPUT_CALIBRATION_VALUES[index]))
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
@@ -465,7 +474,6 @@ class Display(SSD1306_I2C):
         i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
         self.height = height
-        self.writers = {}  # re-usable large font writer instances
 
         if len(i2c.scan()) == 0:
             if not TEST_ENV:
@@ -474,57 +482,21 @@ class Display(SSD1306_I2C):
                 )
         super().__init__(self.width, self.height, i2c)
 
-    def writer(self, font):
-        """Returns the large font writer for the specified font."""
-        n = font.__name__
-        if n not in self.writers:
-            self.writers[n] = Writer(self, font)
-        return self.writers[n]
-
-    def text_len(self, s, font=None):
-        """Returns the length of the string s in pixels."""
-        if font is None:
-            return len(s) * 8
-        else:
-            return self.writer(font).string_len(s)
-
-    def text(self, s, x, y, c=1, font=None):
-        """Display the string s using the x, y coordinates as the upper-left corner of the text.
-        When using a custom font, the text is not displayed if it does not fit in the display.
-        """
-        if font is None:
-            return super().text(s, x, y, c)
-        self.writer(font).print(s, x, y, c)
-
-    def centre_text(self, text, font=None):
-        """Split the provided text across up to 3 lines of display.
-        If a font module reference is passed as parameter, this font is used
-        instead of the default 8x8 font. If the text rendered with the specified
-        font is too large for the display, it will not be displayed.
-        """
+    def centre_text(self, text):
+        """Split the provided text across 3 lines of display."""
         self.fill(0)
         # Default font is 8x8 pixel monospaced font which can be split to a
         # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
         # for readability.
         lines = str(text).split("\n")
-        if font is None:
-            h = CHAR_HEIGHT + 1
-        else:
-            h = font.height() + 1
-        maximum_lines = self.height // h
+        maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
             raise Exception("Provided text exceeds available space on oled display.")
-        padding_top = (self.height - (len(lines) * h)) // 2
+        padding_top = (self.height - (len(lines) * 9)) / 2
         for index, content in enumerate(lines):
-            if font is None:
-                w = (len(content) + 1) * 7
-                x_offset = int((self.width - w) / 2) - 1
-                y_offset = index * h + padding_top - 1
-            else:
-                w = self.writer(font).string_len(content)
-                x_offset = int((self.width - w) / 2) - 1
-                y_offset = index * h + padding_top
-            self.text(content, x_offset, y_offset, font=font)
+            x_offset = int((self.width - ((len(content) + 1) * 7)) / 2) - 1
+            y_offset = int((index * 9) + padding_top) - 1
+            self.text(content, x_offset, y_offset)
         self.show()
 
 
