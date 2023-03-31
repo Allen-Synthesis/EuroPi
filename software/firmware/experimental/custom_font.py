@@ -34,11 +34,6 @@ class CustomFontWriter:
             if char == "\n":  # line breaks are ignored
                 return
             glyph, char_height, char_width = self.font.get_ch(char)
-            # If the text does not fit in the display, the text is not displayed.
-            # if y + char_height > self.screenheight:
-            #     return
-            # if x + char_width > self.screenwidth:
-            #     return
             buf = bytearray(glyph)
             if c != 1:
                 for i, v in enumerate(buf):
@@ -74,7 +69,7 @@ class Display(SSD1306_I2C):
 
     To clear the display, simply fill the display with the colour black by using ``oled.fill(0)``
 
-    More explanations and tips about the the display can be found in the oled_tips file
+    More explanations and tips about the display can be found in the oled_tips file
     `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
     """
 
@@ -93,8 +88,6 @@ class Display(SSD1306_I2C):
         self.height = height
         self.writers = {}  # re-usable large font writer instances
         self.default_font = default_font
-        # if default_font:
-        #     self.writers(default_font)
         if len(i2c.scan()) == 0:
             if not TEST_ENV:
                 raise Exception(
@@ -111,9 +104,6 @@ class Display(SSD1306_I2C):
 
     def text_width(self, s, font=None):
         """Returns the length of the string s in pixels."""
-        # if font is None and self.default_font is None:
-        #     raise Exception("No default font specified.")
-        # return self.writer(font or self.default_font).string_len(s)
         if font or self.default_font:
             return self.writer(font or self.default_font).string_len(s)
         else:
@@ -135,11 +125,7 @@ class Display(SSD1306_I2C):
 
     def text(self, s, x, y, c=1, font=None):
         """Display the string s using the x, y coordinates as the upper-left corner of the text.
-
-        TODO: he text is not displayed if it does not fit in the display.
         """
-        # if font is None and self.default_font is None:
-        #     raise Exception("No default font specified.")
         if font or self.default_font:
             self.writer(font or self.default_font).print(s, x, y, c)
         else:
