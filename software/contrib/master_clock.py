@@ -322,6 +322,7 @@ class MasterClockInner(EuroPiScript):
             bpm = self.state.get("bpm", 100)
         
         if self.bpm != bpm:
+            self.bpm = bpm
             self.calcSleepTime()
             self.getPulseWidth()
             self._updateUI = True
