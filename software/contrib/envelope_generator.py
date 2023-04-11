@@ -10,29 +10,34 @@ class EnvelopeGenerator(EuroPiScript):
     def __init__(self):
         super().__init__()
         state = self.load_state_json()
+        
+        self.sustain_mode = state.get("sustain_mode", 1)
+        self.looping_mode = state.get("looping_mode", 0)
 
         self.max_output_voltage = 10
-        self.envelope_value = 0
-        self.direction = 1
         
-        self.voltage_threshold = 0.1		#Distance of envelope voltage from max voltage/0 before 'jumping' to it - prevents large logarithmic calculations
+        #Distance of envelope voltage from max voltage/0 before 'jumping' to it - prevents large logarithmic calculations
+        self.voltage_threshold = 0.1
         
-        self.max_increment_factor = 256		#Length of the longest envelope (not in any meaningful unit)
+        #Length of the longest possible envelope (not in any meaningful unit)
+        self.max_increment_factor = 256
         self.update_increment_factor()
-        self.increment_delay = 1			#Time in ms between incrementing value of envelope
         
-        self.last_refreshed_display = 30
+        #Time in ms between incrementing value of envelope
+        self.increment_delay = 1
         
-        self.log_multiplier = OLED_HEIGHT / log(OLED_HEIGHT)
-        
+        #Display refresh rate in ms
+        self.display_refresh_rate = 30
+        self.last_refreshed_display = self.display_refresh_rate
+
         self.envelope_display_bounds = [0, 0, int(OLED_WIDTH), int(OLED_HEIGHT / 2)]
         
-        self.sustain_mode = 0	#0 is attack release (no sustain), 1 is attack sustain release
-        self.looping_mode = 0
+        self.direction = 3
+        self.envelope_value = 0
         
-        self.envelope_out = cv1
-        self.envelope_inverted_out = cv2
-        self.din_copy_out = cv3
+        self.envelope_out = cv2
+        self.envelope_inverted_out = cv3
+        self.din_copy_out = cv1
 
         din.handler(self.receive_trigger_rise)
         din.handler_falling(self.receive_trigger_fall)
@@ -69,31 +74,33 @@ class EnvelopeGenerator(EuroPiScript):
         return log(max(number, 1))
 
     def update_envelope_value(self):
-        if self.direction == 1:																						#If envelope is rising
-            increment = self.difference(self.envelope_value, self.max_output_voltage) / self.increment_factor[0]	#Logarithmic increase
+        #Envelope rising
+        if self.direction == 1:
+            increment = self.difference(self.envelope_value, self.max_output_voltage) / self.increment_factor[0]
             self.envelope_value += increment
-            if self.difference(self.envelope_value, self.max_output_voltage) <= self.voltage_threshold:				#If the threshold is reached
+            if self.difference(self.envelope_value, self.max_output_voltage) <= self.voltage_threshold:
                 self.envelope_value = self.max_output_voltage
-                if self.sustain_mode == 1 and self.looping_mode == 0:												#If mode uses sustain and mode isn't set to looping
-                    self.direction = 3																				#Waiting (holding max voltage)
+                if self.sustain_mode == 1 and self.looping_mode == 0:
+                    self.direction = 3
                 else:
                     self.direction = 0
-                
             else:
-                sleep_ms(self.increment_delay)																		#Otherwise continute envelope rise
+                sleep_ms(self.increment_delay)
             
-        elif self.direction == 0:																					#If envelope is falling
-            increment = self.difference(0, self.envelope_value) / self.increment_factor[1]							#Logarithmic decrease
+        #Envelope falling
+        elif self.direction == 0:
+            increment = self.difference(0, self.envelope_value) / self.increment_factor[1]
             self.envelope_value -= increment
-            if self.difference(0, self.envelope_value) <= self.voltage_threshold:									#If the threshold is reached
+            if self.difference(0, self.envelope_value) <= self.voltage_threshold:
                 self.envelope_value = 0
                 if self.looping_mode == 0:
-                    self.direction = 3																				#Waiting (holding zero voltage)
+                    self.direction = 3
                 else:
                     self.direction = 1
             else:
-                sleep_ms(self.increment_delay)																		#Otherwise continute envelope rise
+                sleep_ms(self.increment_delay)
             
+        #Update CV output to envelope value
         self.update_output_voltage()
             
         
@@ -102,9 +109,14 @@ class EnvelopeGenerator(EuroPiScript):
         self.envelope_inverted_out.voltage(self.max_output_voltage - self.envelope_value)
         
     def update_display(self):
-        if ticks_ms() - self.last_refreshed_display >= 30:
+        if ticks_ms() - self.last_refreshed_display >= self.display_refresh_rate:
+            #Save state to file
+            self.save_state()
             
+            #Draw slope graph axis
             oled.hline(self.envelope_display_bounds[0], self.envelope_display_bounds[3], self.envelope_display_bounds[2], 1)
+            oled.vline(self.envelope_display_bounds[0], self.envelope_display_bounds[1], self.envelope_display_bounds[3], 1)
+            oled.vline((self.envelope_display_bounds[2] - 1), self.envelope_display_bounds[1], self.envelope_display_bounds[3], 1)
             
             try:
                 rise_width = (self.increment_factor[0] - 1) / ((self.increment_factor[0] - 1) + (self.increment_factor[1] - 1))
@@ -112,33 +124,32 @@ class EnvelopeGenerator(EuroPiScript):
                 fall_width = 1 - rise_width
                 fall_width_pixels = int(self.envelope_display_bounds[2] - rise_width_pixels)
                 
+                #Generate rise slope pixels
                 rise_pixels = []
                 for pixel in range(rise_width_pixels):
                     x = pixel / (rise_width_pixels + 1)
                     y = x**2
                     x_pixel = rise_width_pixels - int(x * rise_width_pixels)
                     y_pixel = int(y * (self.envelope_display_bounds[3] - self.envelope_display_bounds[1]))
-
                     rise_pixels.append((x_pixel, y_pixel))
                 rise_pixels.append((self.envelope_display_bounds[0], self.envelope_display_bounds[3]))
                     
+                #Generate fall slope pixels
                 fall_pixels = []
                 for pixel in range(fall_width_pixels):
                     x = pixel / (fall_width_pixels + 1)
                     y = x**2
                     x_pixel = (fall_width_pixels - int(x * fall_width_pixels)) + rise_width_pixels
                     y_pixel = self.envelope_display_bounds[3] - int(y * (self.envelope_display_bounds[3] - self.envelope_display_bounds[1]))
-
                     fall_pixels.append((x_pixel, y_pixel))
-                #fall_pixels.append((self.envelope_display_bounds[0], self.envelope_display_bounds[3]))
+                fall_pixels.append((rise_width_pixels, self.envelope_display_bounds[1]))
                     
+                #Draw rise and fall slopes
                 for array in [rise_pixels, fall_pixels]:
                     for index, pixel in enumerate(array[:-1]):
                         oled.line(array[index + 1][0], array[index + 1][1], pixel[0], pixel[1], 1)
                 
-                #oled.line(self.envelope_display_bounds[0], (self.envelope_display_bounds[3] - 1), rise_width_pixels, self.envelope_display_bounds[1], 1)
-                #oled.line((rise_width_pixels - 1), self.envelope_display_bounds[1], (self.envelope_display_bounds[2] - 1), (self.envelope_display_bounds[3] - 1), 1)
-                
+                #Draw current envelope position
                 current_envelope_position = 0
                 if self.direction == 1 or self.direction == 3:
                     current_envelope_position = int((self.envelope_value / self.max_output_voltage) * rise_width_pixels)
@@ -146,12 +157,14 @@ class EnvelopeGenerator(EuroPiScript):
                     current_envelope_position = self.envelope_display_bounds[2] - 1 - int((self.envelope_value / self.max_output_voltage) * (self.envelope_display_bounds[2] - rise_width_pixels))
                 oled.vline(current_envelope_position, self.envelope_display_bounds[1], (self.envelope_display_bounds[3] - 1), 1)
                 
-            except ZeroDivisionError:	#If envelope has zero rise and zero fall
+            #If envelope has zero rise and zero fall
+            except ZeroDivisionError:
                 oled.vline(self.envelope_display_bounds[0], self.envelope_display_bounds[1], self.envelope_display_bounds[3], 1)
                 oled.hline(self.envelope_display_bounds[0], self.envelope_display_bounds[1], self.envelope_display_bounds[2], 1)
                 oled.vline((self.envelope_display_bounds[2] - 1), self.envelope_display_bounds[1], self.envelope_display_bounds[3], 1)
             
-            if self.direction == 1:															#Display current envelope direction
+            #Display current envelope direction
+            if self.direction == 1:
                 direction_text = 'rise'
             elif self.direction == 0:
                 direction_text = 'fall'
@@ -161,13 +174,15 @@ class EnvelopeGenerator(EuroPiScript):
                 direction_text = 'off'
             oled.text(direction_text, 0, 20, 1)
             
-            if self.sustain_mode == 0:														#Display current envelope mode (AR or ASR)
+            #Display current envelope mode (AR or ASR)
+            if self.sustain_mode == 0:
                 sustain_mode_text = 'ar'
             else:
                 sustain_mode_text = 'asr'
             oled.text(sustain_mode_text, 42, 20, 1)
             
-            if self.looping_mode == 0:														#Display current envelope looping mode
+            #Display current envelope looping mode
+            if self.looping_mode == 0:
                 looping_mode_text = 'once'
             else:
                 looping_mode_text = 'loop'
@@ -184,8 +199,8 @@ class EnvelopeGenerator(EuroPiScript):
             return
 
         state = {
-            #"counter": self.counter,
-            #"enabled": self.enabled,
+            "sustain_mode": self.sustain_mode,
+            "looping_mode": self.looping_mode,
         }
         self.save_state_json(state)
 
@@ -195,7 +210,6 @@ class EnvelopeGenerator(EuroPiScript):
             self.update_display()
             self.update_increment_factor()
             self.update_envelope_value()
-            #sleep(1)
 
 if __name__ == "__main__":
     EnvelopeGenerator().main()
