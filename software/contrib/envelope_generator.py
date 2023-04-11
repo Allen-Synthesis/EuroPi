@@ -25,7 +25,7 @@ class EnvelopeGenerator(EuroPiScript):
         
         self.log_multiplier = OLED_HEIGHT / log(OLED_HEIGHT)
         
-        self.envelope_display_bounds = [0, 0, int(OLED_WIDTH / 1.7), int(OLED_HEIGHT / 2)]
+        self.envelope_display_bounds = [0, 0, int(OLED_WIDTH), int(OLED_HEIGHT / 2)]
         
         self.sustain_mode = 0	#0 is attack release (no sustain), 1 is attack sustain release
         self.looping_mode = 0
@@ -104,13 +104,13 @@ class EnvelopeGenerator(EuroPiScript):
     def update_display(self):
         if ticks_ms() - self.last_refreshed_display >= 30:
             
-            oled.rect(self.envelope_display_bounds[0], self.envelope_display_bounds[1], self.envelope_display_bounds[2], self.envelope_display_bounds[3], 1)
+            oled.hline(self.envelope_display_bounds[0], self.envelope_display_bounds[3], self.envelope_display_bounds[2], 1)
             
             try:
                 rise_width = (self.increment_factor[0] - 1) / ((self.increment_factor[0] - 1) + (self.increment_factor[1] - 1))
-                rise_width_pixels = int(rise_width * self.envelope_display_bounds[2]) - 1
+                rise_width_pixels = int(rise_width * self.envelope_display_bounds[2])
                 oled.line(self.envelope_display_bounds[0], (self.envelope_display_bounds[3] - 1), rise_width_pixels, self.envelope_display_bounds[1], 1)
-                oled.line(rise_width_pixels, self.envelope_display_bounds[1], (self.envelope_display_bounds[2] - 1), (self.envelope_display_bounds[3] - 1), 1)
+                oled.line((rise_width_pixels - 1), self.envelope_display_bounds[1], (self.envelope_display_bounds[2] - 1), (self.envelope_display_bounds[3] - 1), 1)
                 
                 current_envelope_position = 0
                 if self.direction == 1 or self.direction == 3:
@@ -138,13 +138,13 @@ class EnvelopeGenerator(EuroPiScript):
                 sustain_mode_text = 'ar'
             else:
                 sustain_mode_text = 'asr'
-            oled.text(sustain_mode_text, 80, -2, 1)
+            oled.text(sustain_mode_text, 42, 20, 1)
             
             if self.looping_mode == 0:
                 looping_mode_text = 'once'
             else:
                 looping_mode_text = 'loop'
-            oled.text(looping_mode_text, 80, 9, 1)
+            oled.text(looping_mode_text, 80, 20, 1)
             
             oled.show()
             oled.fill(0)
