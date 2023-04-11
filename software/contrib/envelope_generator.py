@@ -63,7 +63,7 @@ class EnvelopeGenerator(EuroPiScript):
         return abs(a - b)
     
     def update_increment_factor(self):
-        self.increment_factor = [(k1.range(self.max_increment_factor) + 1), (k2.range(self.max_increment_factor) + 1 + (ain.percent(128) * self.max_increment_factor))]
+        self.increment_factor = [(k1.range(self.max_increment_factor, 256) + 1), (k2.range(self.max_increment_factor, 256) + 1 + (ain.percent(256) * self.max_increment_factor))]
         
     def log(self, number):
         return log(max(number, 1))
@@ -109,8 +109,35 @@ class EnvelopeGenerator(EuroPiScript):
             try:
                 rise_width = (self.increment_factor[0] - 1) / ((self.increment_factor[0] - 1) + (self.increment_factor[1] - 1))
                 rise_width_pixels = int(rise_width * self.envelope_display_bounds[2])
-                oled.line(self.envelope_display_bounds[0], (self.envelope_display_bounds[3] - 1), rise_width_pixels, self.envelope_display_bounds[1], 1)
-                oled.line((rise_width_pixels - 1), self.envelope_display_bounds[1], (self.envelope_display_bounds[2] - 1), (self.envelope_display_bounds[3] - 1), 1)
+                fall_width = 1 - rise_width
+                fall_width_pixels = int(self.envelope_display_bounds[2] - rise_width_pixels)
+                
+                rise_pixels = []
+                for pixel in range(rise_width_pixels):
+                    x = pixel / (rise_width_pixels + 1)
+                    y = x**2
+                    x_pixel = rise_width_pixels - int(x * rise_width_pixels)
+                    y_pixel = int(y * (self.envelope_display_bounds[3] - self.envelope_display_bounds[1]))
+
+                    rise_pixels.append((x_pixel, y_pixel))
+                rise_pixels.append((self.envelope_display_bounds[0], self.envelope_display_bounds[3]))
+                    
+                fall_pixels = []
+                for pixel in range(fall_width_pixels):
+                    x = pixel / (fall_width_pixels + 1)
+                    y = x**2
+                    x_pixel = (fall_width_pixels - int(x * fall_width_pixels)) + rise_width_pixels
+                    y_pixel = self.envelope_display_bounds[3] - int(y * (self.envelope_display_bounds[3] - self.envelope_display_bounds[1]))
+
+                    fall_pixels.append((x_pixel, y_pixel))
+                #fall_pixels.append((self.envelope_display_bounds[0], self.envelope_display_bounds[3]))
+                    
+                for array in [rise_pixels, fall_pixels]:
+                    for index, pixel in enumerate(array[:-1]):
+                        oled.line(array[index + 1][0], array[index + 1][1], pixel[0], pixel[1], 1)
+                
+                #oled.line(self.envelope_display_bounds[0], (self.envelope_display_bounds[3] - 1), rise_width_pixels, self.envelope_display_bounds[1], 1)
+                #oled.line((rise_width_pixels - 1), self.envelope_display_bounds[1], (self.envelope_display_bounds[2] - 1), (self.envelope_display_bounds[3] - 1), 1)
                 
                 current_envelope_position = 0
                 if self.direction == 1 or self.direction == 3:
@@ -119,12 +146,12 @@ class EnvelopeGenerator(EuroPiScript):
                     current_envelope_position = self.envelope_display_bounds[2] - 1 - int((self.envelope_value / self.max_output_voltage) * (self.envelope_display_bounds[2] - rise_width_pixels))
                 oled.vline(current_envelope_position, self.envelope_display_bounds[1], (self.envelope_display_bounds[3] - 1), 1)
                 
-            except ZeroDivisionError:
+            except ZeroDivisionError:	#If envelope has zero rise and zero fall
                 oled.vline(self.envelope_display_bounds[0], self.envelope_display_bounds[1], self.envelope_display_bounds[3], 1)
                 oled.hline(self.envelope_display_bounds[0], self.envelope_display_bounds[1], self.envelope_display_bounds[2], 1)
-                oled.vline(self.envelope_display_bounds[2], self.envelope_display_bounds[1], self.envelope_display_bounds[3], 1)
+                oled.vline((self.envelope_display_bounds[2] - 1), self.envelope_display_bounds[1], self.envelope_display_bounds[3], 1)
             
-            if self.direction == 1:
+            if self.direction == 1:															#Display current envelope direction
                 direction_text = 'rise'
             elif self.direction == 0:
                 direction_text = 'fall'
@@ -134,13 +161,13 @@ class EnvelopeGenerator(EuroPiScript):
                 direction_text = 'off'
             oled.text(direction_text, 0, 20, 1)
             
-            if self.sustain_mode == 0:
+            if self.sustain_mode == 0:														#Display current envelope mode (AR or ASR)
                 sustain_mode_text = 'ar'
             else:
                 sustain_mode_text = 'asr'
             oled.text(sustain_mode_text, 42, 20, 1)
             
-            if self.looping_mode == 0:
+            if self.looping_mode == 0:														#Display current envelope looping mode
                 looping_mode_text = 'once'
             else:
                 looping_mode_text = 'loop'
