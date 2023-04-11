@@ -26,6 +26,9 @@ class EnvelopeGenerator(EuroPiScript):
         #Time in ms between incrementing value of envelope
         self.increment_delay = 1
         
+        #0 will start a new envelope at the current value, 1 will start it from zero
+        self.retrig_mode = 0
+        
         #Display refresh rate in ms
         self.display_refresh_rate = 30
         self.last_refreshed_display = self.display_refresh_rate
@@ -50,6 +53,8 @@ class EnvelopeGenerator(EuroPiScript):
         return "EnvelopeGen"
 
     def receive_trigger_rise(self):
+        if self.retrig_mode == 1:
+            self.envelope_value = 0
         self.direction = 1
     
     def receive_trigger_fall(self):
@@ -68,7 +73,8 @@ class EnvelopeGenerator(EuroPiScript):
         return abs(a - b)
     
     def update_increment_factor(self):
-        self.increment_factor = [(k1.range(self.max_increment_factor, 256) + 1), (k2.range(self.max_increment_factor, 256) + 1 + (ain.percent(256) * self.max_increment_factor))]
+        increment_factor_rising = k1.range(self.max_increment_factor, 512) / 2
+        self.increment_factor = [(increment_factor_rising + 1), (k2.range(self.max_increment_factor, 256) + 1 + (ain.percent(256) * self.max_increment_factor))]
         
     def log(self, number):
         return log(max(number, 1))
@@ -213,3 +219,4 @@ class EnvelopeGenerator(EuroPiScript):
 
 if __name__ == "__main__":
     EnvelopeGenerator().main()
+
