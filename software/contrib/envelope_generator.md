@@ -1,4 +1,4 @@
-# Diagnostic
+# Envelope Generator
 
 author: Rory Allen
 
