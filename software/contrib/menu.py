@@ -20,7 +20,7 @@ EUROPI_SCRIPTS = [
     "contrib.consequencer.Consequencer",
     "contrib.cvecorder.CVecorder",
     "contrib.diagnostic.Diagnostic",
-    "contrib.envelope_generator.EnvelopeGen"
+    "contrib.envelope_generator.EnvelopeGen",
     "contrib.euclid.EuclideanRhythms",
     "contrib.hamlet.Hamlet",
     "contrib.harmonic_lfos.HarmonicLFOs",
