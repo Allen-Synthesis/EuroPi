@@ -74,7 +74,7 @@ class EnvelopeGenerator(EuroPiScript):
             self.envelope_value += increment
             if self.difference(self.envelope_value, self.max_output_voltage) <= self.voltage_threshold:				#If the threshold is reached
                 self.envelope_value = self.max_output_voltage
-                if self.sustain_mode == 1:																			#If mode uses sustain
+                if self.sustain_mode == 1 and self.looping_mode == 0:												#If mode uses sustain and mode isn't set to looping
                     self.direction = 3																				#Waiting (holding max voltage)
                 else:
                     self.direction = 0
