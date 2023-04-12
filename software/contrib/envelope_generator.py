@@ -185,14 +185,14 @@ class EnvelopeGenerator(EuroPiScript):
                 sustain_mode_text = 'ar'
             else:
                 sustain_mode_text = 'asr'
-            oled.text(sustain_mode_text, 42, 20, 1)
+            oled.text(sustain_mode_text, 50 + (4 if sustain_mode_text == 'ar' else 0), 20, 1)
             
             #Display current envelope looping mode
             if self.looping_mode == 0:
                 looping_mode_text = 'once'
             else:
                 looping_mode_text = 'loop'
-            oled.text(looping_mode_text, 80, 20, 1)
+            oled.text(looping_mode_text, 94, 20, 1)
             
             oled.show()
             oled.fill(0)
