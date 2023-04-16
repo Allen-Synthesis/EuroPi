@@ -6350,6 +6350,31 @@
     )
   )
 
+  (symbol (lib_id "power:Earth") (at 115.57 198.12 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 1f220c7c-fa96-45bc-a92f-6b8a5c961317)
+    (property "Reference" "#PWR02" (at 115.57 204.47 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "Earth" (at 115.57 201.93 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "" (at 115.57 198.12 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 115.57 198.12 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid a1866961-1572-4784-b8fb-26e064b690de))
+    (instances
+      (project "europi"
+        (path "/a8447faf-e0a0-4c4a-ae53-4d4b28669151"
+          (reference "#PWR02") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "Connector_Generic:Conn_02x04_Counter_Clockwise") (at 455.295 248.285 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 25bbc599-b50e-4220-b9c5-5410441ef021)
@@ -7171,6 +7196,31 @@
       (project "europi"
         (path "/a8447faf-e0a0-4c4a-ae53-4d4b28669151"
           (reference "IC3") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:Earth") (at 115.57 171.45 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid e2517bf8-c4e9-4437-a91e-683034644820)
+    (property "Reference" "#PWR01" (at 115.57 177.8 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "Earth" (at 115.57 175.26 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "" (at 115.57 171.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 115.57 171.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 2e85f4ff-2c0c-4042-82a6-80b68fd7af37))
+    (instances
+      (project "europi"
+        (path "/a8447faf-e0a0-4c4a-ae53-4d4b28669151"
+          (reference "#PWR01") (unit 1)
         )
       )
     )
