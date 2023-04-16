@@ -6,7 +6,7 @@ import utime
 """
 Trigger to Gate
 author: Andy Bulka (tcab) (github.com/abulka)
-date: 2023-05-13
+date: 2023-05-16
 labels: trigger, gate, clock
 
 Generates a gate on cv1 in response to a trigger on din.
@@ -18,14 +18,13 @@ triggers.
 See documentation in trigger_to_gate.md for more details.
 """
 
-
 class Data:
     def __init__(self):
         # the default parameters controlled by the knobs
-        self.gate_length = 10 # generated pulse duration, will quickly get clobbered by k1 value 🗿
-        self.gate_delay = 0 # 🗿
-        self.clock_period = 1000 # ms, will quickly get clobbered by k2 value 🗿
-        self.clock_length = 10 # ms 🗿
+        self.gate_length = 10 # ms, generated pulse duration
+        self.gate_delay = 0 # ms, delay between din trigger and gate start
+        self.clock_period = 1000 # ms, time between generated clock pulses
+        self.clock_length = 10 # ms, length of generated clock pulse
 
         # states controlled by the buttons
         self.mode = 'gate' # default mode
@@ -59,6 +58,7 @@ class Data:
 
         # other
         self.after_off_settling_ms = 2 # time to wait after turning off gate or clock output, or it doesn't happen cleanly
+        self.updateSavedState = False
 
 
 class KnobWithHysteresis:
@@ -66,67 +66,45 @@ class KnobWithHysteresis:
     This is a class to cure the hysteresis problem with the rotary encoder.
     Documentation in tigger_to_gate.md
     """
-    DEBUG = False
-
-    def __init__(self, knob, tolerance=0, delay=1000) -> None:
+    def __init__(self, knob, tolerance=0, lock_delay=1000, name=None) -> None:
         self.knob = knob
         self.tolerance = tolerance
-        self.delay_before_lock = delay
-        self.value = 0  # cached value when locked
-        self.lock_time = utime.ticks_ms()
-        self.locked_debug = False # only print the locked message once when in debug mode
+        self.lock_delay = lock_delay
+        self.lock_time = utime.ticks_ms() # initially locked
+        self.name = name if name else "unnamed" # for debugging
+        self.value = None  # cached value when locked, when None the first reading is used even when locked
 
-    # Wraps Knob so need to expose all Knob methods
-    # and the methods of its superclass AnalogueReader.
-
-    def set_samples(self, *args):
-        return self.knob.set_samples(*args)
+    @property
+    def locked(self):
+        now = utime.ticks_ms()
+        time_left = utime.ticks_diff(self.lock_time, now) # lock_time - now
+        _time_expired = time_left <= 0
+        return _time_expired
     
-    def set_deadzone(self, *args):
-        return self.knob.set_deadzone(*args)
-
-    def range(self, *args):
-        new_value = self.knob.range(*args)
-        return self._update_value_if_allowed(new_value)
-    
-    def choice(self, *args):
-        new_value = self.knob.choice(*args)
-        return self._update_value_if_allowed(new_value)
-
-    def percent(self, *args):
-        new_value = self.knob.percent(*args)
-        return self._update_value_if_allowed(new_value)
-
-    def read_position(self, *args):
-        new_value = self.knob.read_position(*args)
-        return self._update_value_if_allowed(new_value)
-
     def _update_value_if_allowed(self, new_value):
-        if self._allow(self.value, new_value):
+        if self.value is None or self._allow(self.value, new_value):
             self.value = new_value
         return self.value
 
     def _allow(self, old_value, new_value):
         if self.tolerance == 0:
-            return True
-        now = utime.ticks_ms()
-        time_expired = utime.ticks_diff(now, self.lock_time) > self.delay_before_lock
-        if not time_expired:
-            if self.DEBUG: print(f"{new_value} ", end="")
+            return True  # backwards compatibility
+        if not self.locked:
             return True  # allow any value to get in
         
         # at this point the lock_time has expired
         big_enough_change = abs(old_value - new_value) >= self.tolerance
         if big_enough_change:
-            if self.DEBUG and self.locked_debug:
-                print(f"{old_value} to {new_value} (resetting lock window cos big enough change)")
-            self.lock_time = now + self.delay_before_lock
-            self.locked_debug = False
+            now = utime.ticks_ms()
+            self.lock_time = now + self.lock_delay
+            self.locked_msg_shown_debug = False
             return True
-        if self.DEBUG and time_expired and not self.locked_debug:
-            print(f"LOCKED at {old_value} ignoring {new_value} (expired)")
-            self.locked_debug = True
+
         return False
+
+    def choice(self, *args):
+        new_value = self.knob.choice(*args)
+        return self._update_value_if_allowed(new_value)
 
 
 class KnobWithPassThrough:
@@ -134,45 +112,52 @@ class KnobWithPassThrough:
     Disable changing value till knob is moved and "passes-through" the current cached value.
     Documentation in tigger_to_gate.md
     """
-    DEBUG = False
-
-    def __init__(self, knob, initial=50) -> None:
+    def __init__(self, knob, initial_value=50) -> None:
         self.knob = knob
-        self.cached_value = initial
-        self.enabled = True
-        self.enable_condition = '<'  # '<' or '>'
-        self.recalc_pending = True
+        self.value = initial_value # cached value when locked
+        self.locked = False # stay on value until the knob meets unlock condition
+        self.unlock_condition = 'any change'  # '<' or '>' or 'any change'
+        self.locked_on_knob_value = None # remember knob value we initially locked on when setting to 'any change'
+        self.recalc_pending = False # unlock_condition needs recalculating
 
-    def reactivate(self):
+    def mode_changed(self):
+        # call this when switching to a new mode that uses the same underlying knob
         self.recalc_pending = True
 
     def _recalc_pass_through_condition(self, current_knob_value):
-        self.enabled = False
-        self.enable_condition = '<' if current_knob_value > self.cached_value else '>'
+        self.locked = True
+        self.unlock_condition = '<' if current_knob_value > self.value else '>'
 
     def _has_passed_through(self, value):
-        if self.enable_condition == '<':
-            return value <= self.cached_value
-        elif self.enable_condition == '>':
-            return value >= self.cached_value
+        if self.unlock_condition == '<':
+            return value <= self.value
+        elif self.unlock_condition == '>':
+            return value >= self.value
+        elif self.unlock_condition == 'any change':
+            return value != self.locked_on_knob_value
     
     def _update_pass_through(self, new_value):
         if self.recalc_pending:
             self._recalc_pass_through_condition(new_value)
             self.recalc_pending = False
-        if not self.enabled and self._has_passed_through(new_value):
-            self.enabled = True
-            self.cached_value = new_value
-            if self.DEBUG: print(f"pass-through: {new_value}")
-        if self.enabled:
-            self.cached_value = new_value
-        return self.cached_value
+        if self.locked_on_knob_value is None:
+            self.locked_on_knob_value = new_value
+            self.locked = True
+            return self.value
+        if self.locked and self._has_passed_through(new_value):
+            self.locked = False
+
+        if self.locked:
+            # return the cached value
+            return self.value
+        else: 
+            # pass through underlying knob new value, update cache
+            self.value = new_value
+            return self.value
     
-    def choice(self, *args):
+    def choice(self, *args, **kwargs):
         new_value = self.knob.choice(*args)
         return self._update_pass_through(new_value)
-    
-    # TODO more methods to wrap
 
 
 class Scheduler:
@@ -180,34 +165,31 @@ class Scheduler:
     A simple scheduler for running tasks at a given time in the future.
     Documentation in tigger_to_gate.md
     """
-    DEBUG_COLLECT_STATS = True
 
     def __init__(self):
         self.enabled = True
         self.schedule = [] # list of tuples (time, callback, callback_func_name)
-        self.stats = self.create_stats(scheduler=self) if self.DEBUG_COLLECT_STATS else None
         
     def add_task(self, callback, ms:int=0):
         self.schedule.append((utime.ticks_add(utime.ticks_ms(), ms), callback, callback.__name__))
 
     def remove_task(self, callback, must_be_found=False):
+        to_remove = []
         found = False
-        for scheduled_time, callback, callback_func_name in self.schedule:
+        for scheduled_time, cb, callback_func_name in self.schedule:
             if callback_func_name == callback.__name__:
-                self.schedule.remove((scheduled_time, callback, callback_func_name))
+                to_remove.append((scheduled_time, cb, callback_func_name))
                 found = True
+        for item in to_remove:
+            self.schedule.remove(item)
         if not found and must_be_found:
             print(f"cannot remove task {callback} viz. {callback.__name__} from schedule", len(self.schedule), "tasks in schedule")
             self.print_schedule()
 
     def run_once(self):
-        if self.stats:
-            self.stats.record_run()
         now = utime.ticks_ms()
         for scheduled_time, callback, _ in self.schedule:
             if utime.ticks_diff(scheduled_time, now) <= 0:
-                if self.stats:
-                    self.stats.record_call(now, scheduled_time)
                 self.schedule.remove((scheduled_time, callback, _))
                 callback()
 
@@ -218,38 +200,6 @@ class Scheduler:
         print('  Schedule:')
         for scheduled_time, callback, callback_func_name in self.schedule:
             print(f"  {callback_func_name} {scheduled_time}")
-
-    # Record Scheduler Statistics (optional)
-
-    def create_stats(self, scheduler):
-        class Stats:
-            def __init__(self, scheduler):
-                self.scheduler = scheduler
-                self.schedule_loop_count = 0
-                self.schedule_call_count = 0
-                self.discrepancy_total = 0
-                self.discrepancy_n = 0
-                self.discrepancy_mean = 0
-
-            def record_run(self):
-                self.schedule_loop_count += 1
-
-            def record_call(self, now, scheduled_time):
-                self.schedule_call_count += 1
-                discrepancy = utime.ticks_diff(now, scheduled_time)
-                self.discrepancy_total += discrepancy
-                self.discrepancy_n += 1
-                self.discrepancy_mean = self.discrepancy_total / self.discrepancy_n
-
-            def report(self):
-                print(f"{self.schedule_call_count:,} calls / {self.schedule_loop_count:,} schedule loops ({self.discrepancy_mean}ms average scheduling discrepancy)")
-                print(f"{len(self.scheduler.schedule)} unrun tasks remaining.")
-
-        return Stats(scheduler)
-
-    def print_stats(self):
-        if self.stats:
-            self.stats.report()
 
 
 class Screen:
@@ -287,25 +237,47 @@ class Screen:
 class TriggerToGate(EuroPiScript):
     def __init__(self):
         super().__init__()
+        self.HYSTERESIS_KNOBS = True
+        self.PASS_THROUGH_KNOBS = True
         self.data = Data()
         _ = self.data
+        
+        state = self.load_state_json()
+        _.mode = state.get("mode", _.mode)
+        _.gate_length = state.get("gate_length", _.gate_length)
+        _.gate_delay = state.get("gate_delay", _.gate_delay)
+        _.clock_length = state.get("clock_length", _.clock_length)
+        _.clock_period = state.get("clock_period", _.clock_period)
+        _.gate_running = state.get("gate_running", _.gate_running)
+        _.clock_running = state.get("clock_running", _.clock_running)
 
         # Overclock the Pico for improved performance.
         machine.freq(250_000_000)
 
         # gate mode
-        self.k1_gate_length = KnobWithPassThrough(KnobWithHysteresis(k1, tolerance=2), initial=_.gate_length)
-        self.k2_gate_delay = KnobWithPassThrough(KnobWithHysteresis(k2, tolerance=2), initial=_.gate_delay)
+        self.k1_gate_length = k1
+        self.k2_gate_delay = k2
         # clock mode
-        self.k1_clock_length = KnobWithPassThrough(KnobWithHysteresis(k1, tolerance=2), initial=_.clock_length)
-        self.k2_clock_period = KnobWithPassThrough(KnobWithHysteresis(k2, tolerance=2), initial=_.clock_period)
+        self.k1_clock_length = k1
+        self.k2_clock_period = k2
+
+        if self.HYSTERESIS_KNOBS:
+            # Wrap knobs in KnobWithHysteresis to avoid jitter.
+            self.k1_gate_length = KnobWithHysteresis(k1, tolerance=2, name="k1_gate_length")
+            self.k2_gate_delay = KnobWithHysteresis(k2, tolerance=2, name="k2_gate_delay")
+            self.k1_clock_length = KnobWithHysteresis(k1, tolerance=2, name="k1_clock_length")
+            self.k2_clock_period = KnobWithHysteresis(k2, tolerance=2, name="k2_clock_period")
+
+        if self.PASS_THROUGH_KNOBS:
+            # Wrap knobs in KnobWithPassThrough to prevent values jumping when toggling modes.
+            self.k1_gate_length = KnobWithPassThrough(self.k1_gate_length, initial_value=_.gate_length)
+            self.k2_gate_delay = KnobWithPassThrough(self.k2_gate_delay, initial_value=_.gate_delay)
+            self.k1_clock_length = KnobWithPassThrough(self.k1_clock_length, initial_value=_.clock_length)
+            self.k2_clock_period = KnobWithPassThrough(self.k2_clock_period, initial_value=_.clock_period)
 
         self.scheduler = Scheduler()
         
-        self.screen = Screen(self.data) # safest
-        # self.screen = ScreenThreaded(self.data)
-        # self.screen = ScreenOneShotThreaded(self.data)
-        # self.screen = ScreenOneShotThreadedSmart(self.data)
+        self.screen = Screen(self.data)
 
         @din.handler
         def din_rising():
@@ -344,18 +316,24 @@ class TriggerToGate(EuroPiScript):
                     self.clock_on_task()
             _.updateUI = True
 
+            if _.updateUI:
+                _.updateSavedState = True
+
         @b2.handler_falling
         def button2_click():
             _ = self.data
             if _.mode == 'gate':
                 _.mode = 'clock'
-                self.k1_clock_length.reactivate()
-                self.k2_clock_period.reactivate()
+                if self.PASS_THROUGH_KNOBS:
+                    self.k1_clock_length.mode_changed()
+                    self.k2_clock_period.mode_changed()
             else:
                 _.mode = 'gate'
-                self.k1_gate_length.reactivate()
-                self.k2_gate_delay.reactivate()
+                if self.PASS_THROUGH_KNOBS:
+                    self.k1_gate_length.mode_changed()
+                    self.k2_gate_delay.mode_changed()
             _.updateUI = True
+            _.updateSavedState = True
 
     def gate_on_task(self):
         _ = self.data
@@ -407,6 +385,9 @@ class TriggerToGate(EuroPiScript):
                 _.clock_period = new_value
                 _.updateUI = True
             
+        if _.updateUI:
+            _.updateSavedState = True
+
         self.scheduler.add_task(self.read_knobs_task, _.knobs_read_interval_ms)
 
     def update_screen_task(self):
@@ -415,6 +396,13 @@ class TriggerToGate(EuroPiScript):
             self.screen.draw()
             _.updateUI = False
         self.scheduler.add_task(self.update_screen_task, _.screen_refresh_rate_ms)
+
+    def save_state_task(self):
+        _ = self.data
+        if _.updateSavedState:
+            _.updateSavedState = False
+            self.save_state()
+        self.scheduler.add_task(self.save_state_task, 5000)
 
     def stop(self):
         _ = self.data
@@ -425,10 +413,29 @@ class TriggerToGate(EuroPiScript):
         _.gate_running = False
         _.clock_running = False
 
+    def save_state(self):
+        """Save the current state variables as JSON."""
+        # Don't save if it has been less than 5 seconds since last save.
+        if self.last_saved() < 5000:
+            return
+        
+        _ = self.data
+        state = {
+            'mode': _.mode,
+            'gate_length': _.gate_length,
+            'gate_delay': _.gate_delay,
+            'clock_length': _.clock_length,
+            'clock_period': _.clock_period,
+            'gate_running': _.gate_running,
+            'clock_running': _.clock_running,
+        }
+        self.save_state_json(state)
+
     def main(self):
 
         self.scheduler.add_task(self.read_knobs_task)
         self.scheduler.add_task(self.update_screen_task)
+        self.scheduler.add_task(self.save_state_task)
 
         try:
             while self.scheduler.enabled:
@@ -438,9 +445,7 @@ class TriggerToGate(EuroPiScript):
             print("Interrupted")
             self.stop()
             print('Shutdown complete')
+            raise
             
-        self.scheduler.print_stats()
-
-
 if __name__ == "__main__":
     TriggerToGate().main()
