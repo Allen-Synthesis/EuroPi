@@ -40,9 +40,6 @@ class CVecorder(EuroPiScript):
         # Needed if using europi_script
         super().__init__()
 
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-
         # Micropython heap fragmentation notes:
         # - The pico has very limited memory and in some cases needs to be managed carefully
         # - In some cases you can get a MemoryError even if there is enough free memory, this is because micropython could not find enough contiguous memory because the heap has become fragmented
@@ -82,7 +79,6 @@ class CVecorder(EuroPiScript):
         #self.CvRecording = []  # CV recorder flags
 
         # Load CV Recordings from a previously stored state on disk or initialize if blank
-        self.showLoadingScreen()
         self.loadState()
 
         # Test routine, pick a random bank n times and save, then load the state
@@ -285,7 +281,7 @@ class CVecorder(EuroPiScript):
     def loadState(self):
 
         # For each bank, check if a state file exists, then load it
-        # If not, initialize the bank with zeros
+        # If not, initialize the bank with zeros then save it
 
         # Potential issue......
         # If for some reason the file open command fails, it will init each bank and wipe any previous recordings
@@ -306,7 +302,7 @@ class CVecorder(EuroPiScript):
             fileName = f"saved_state_{self.__class__.__qualname__}_{b}.txt"
 
             # Write the value to a the state file
-            maxRetries = 6
+            maxRetries = 2
             attempts = 0
             while attempts < maxRetries:
 
@@ -320,6 +316,7 @@ class CVecorder(EuroPiScript):
                         if self.initTest:
                             print(f"Loading previous state for bank: {str(b)}. Size: {len(jsonData)}")
 
+                        self.showLoadingScreen(str(b))
                         if self.debugLogging:
                             self.writeToDebugLog(f"[loadState] [{attempts}] Loading previous state for bank: {str(b)}. Size: {len(jsonData)}")
 
@@ -347,14 +344,17 @@ class CVecorder(EuroPiScript):
                         self.CVR[b].append([])
                         for n in range (0, self.stepLength):
                             self.CVR[b][i].append(0)
+                    # Save the state file for faster loading on next boot
+                    self.bankToSave = b
+                    self.saveState()
 
                 except Exception as e:
-                    self.errorString = 'r'
+                    self.errorString = 'x'
                     if self.debugLogging:
                         self.writeToDebugLog(f"[loadState] [{attempts}] Exception when attempting to open previous state file for bank {b}. {e}")
 
                 # Sleep and increment attempt counter
-                sleep_ms(500)
+                sleep_ms(50)
                 attempts += 1
 
     # Currently not used, but keeping in this script for future use
@@ -379,8 +379,9 @@ class CVecorder(EuroPiScript):
 
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
             if self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
-                self.step = 0
-                self.clockStep = 0
+                if self.CvRecording[self.ActiveCvr] != 'true':
+                    self.step = 0
+                    self.clockStep = 0
 
     def getCvBank(self):
         # Read CV Bank selection from knob 1
@@ -428,14 +429,14 @@ class CVecorder(EuroPiScript):
             except Exception as e:
                 print(f'[{attempts}] Error writing to debug log. {e}')
 
-    def showLoadingScreen(self):
+    def showLoadingScreen(self, bank):
         # push the bytearray of the Rpi logo into a 32 x 32 framebuffer, then show on the screen
         
         buffer = bytearray(b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00|?\x00\x01\x86@\x80\x01\x01\x80\x80\x01\x11\x88\x80\x01\x05\xa0\x80\x00\x83\xc1\x00\x00C\xe3\x00\x00~\xfc\x00\x00L'\x00\x00\x9c\x11\x00\x00\xbf\xfd\x00\x00\xe1\x87\x00\x01\xc1\x83\x80\x02A\x82@\x02A\x82@\x02\xc1\xc2@\x02\xf6>\xc0\x01\xfc=\x80\x01\x18\x18\x80\x01\x88\x10\x80\x00\x8c!\x00\x00\x87\xf1\x00\x00\x7f\xf6\x00\x008\x1c\x00\x00\x0c \x00\x00\x03\xc0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
         fb = framebuf.FrameBuffer(buffer, 32, 32, framebuf.MONO_HLSB)
         oled.fill(0)
-        #oled.blit(fb, 0,0)
-        oled.text('Loading...', 40, 12, 1)
+        oled.blit(fb, 0,0)
+        oled.text(f'Loading ({bank})...', 40, 12, 1)
         oled.show()
 
     def updateScreen(self):

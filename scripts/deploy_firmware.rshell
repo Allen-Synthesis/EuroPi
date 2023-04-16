@@ -1,4 +1,6 @@
 cp ./software/firmware/*.py /pyboard/lib
+mkdir /pyboard/lib/experimental
+cp ./software/firmware/experimental/*.py /pyboard/lib/experimental
 mkdir /pyboard/lib/contrib
 cp software/contrib/*.py /pyboard/lib/contrib
 repl ~ import machine ~ machine.soft_reset()~

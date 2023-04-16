@@ -1,4 +1,3 @@
-
 class SSD1306_I2C:
     def __init__(self, *args):
         pass
@@ -16,4 +15,13 @@ class SSD1306_I2C:
         pass
 
     def text(self, *args):
+        pass
+
+    def show(self, *args):
+        pass
+
+    def blit(self, *args):
+        pass
+
+    def hline(self, *args):
         pass

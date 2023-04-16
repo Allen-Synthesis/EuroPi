@@ -54,6 +54,7 @@ MENU_DURATION = 1200
 
 VOLT_PER_OCT = 1 / 12
 
+# fmt: off
 NOTES = [
     "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0",
     "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1",
@@ -61,6 +62,7 @@ NOTES = [
     "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
     "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
 ]
+# fmt: on
 
 
 class Sequence:
@@ -137,8 +139,6 @@ class PolyrhythmSeq(EuroPiScript):
 
     def __init__(self):
         super().__init__()
-        # Overclock the Pico for improved performance.
-        machine.freq(250000000)
 
         # Configure EuroPi options to improve performance.
         b2.debounce_delay = 200

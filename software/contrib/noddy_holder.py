@@ -46,9 +46,6 @@ VERSION="1.0"
 
 class NoddyHolder(EuroPiScript):
     def __init__(self):
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-
         self.gate = False
         # Keep track of values for display, S&H and T&H for each
         # channel

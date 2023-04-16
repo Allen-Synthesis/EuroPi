@@ -42,9 +42,6 @@ class Hamlet(EuroPiScript):
         self.gate_2 = cv4
         self.cv_2 = cv5
 
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-
         # Initialize sequencer pattern arrays   
         p = pattern()     
         self.BD=p.BD

@@ -20,11 +20,6 @@ class CoinToss(EuroPiScript):
         self._tempo = 0
         self._deadline = 0
 
-        # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
-        # machine.freq(125_000_000)  # Default clock speed.
-
-
         @b1.handler
         def toggle_clock():
             """Toggle between internal clock and external clock from digital in."""

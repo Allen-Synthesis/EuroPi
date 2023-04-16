@@ -7,7 +7,27 @@ from mock_hardware import MockHardware
 
 @pytest.fixture
 def analogueReader():
-    return AnalogueReader(pin=1)  #actual pin value doesn't matter
+    return AnalogueReader(pin=1)  # actual pin value doesn't matter
+
+
+@pytest.mark.parametrize(
+    "percent, expected",
+    [
+        (0, 0.0000),
+        (0.1, 0.1000),
+        (0.25, 0.2500),
+        (0.3333, 0.3333),
+        (0.5, 0.5000),
+        (0.90, 0.9000),
+        (0.99, 0.99000),
+        (1, 1.0000),
+    ],
+)
+def test_set_percent(mockHardware: MockHardware, analogueReader, percent, expected):
+    mockHardware.set_percent(analogueReader, percent)
+
+    assert round(analogueReader.percent(), 4) == expected
+
 
 @pytest.mark.parametrize(
     "value, expected",
@@ -49,7 +69,6 @@ def test_range(mockHardware: MockHardware, analogueReader, value, expected):
         ([i for i in range(10)], MAX_UINT16 / 3, 3),
         ([i for i in range(10)], MAX_UINT16 / 2, 5),
         ([i for i in range(10)], MAX_UINT16, 9),
-
         (["a", "b"], 0, "a"),
         (["a", "b"], MAX_UINT16, "b"),
     ],
@@ -58,5 +77,3 @@ def test_choice(mockHardware: MockHardware, analogueReader, values, value, expec
     mockHardware.set_ADC_u16_value(analogueReader, value)
 
     assert analogueReader.choice(values) == expected
-
-

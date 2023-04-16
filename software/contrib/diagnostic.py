@@ -1,8 +1,25 @@
 from machine import ADC
 from time import sleep
 
-from europi import OLED_HEIGHT, OLED_WIDTH, ain, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, din, k1, k2, oled
+from europi import (
+    OLED_HEIGHT,
+    OLED_WIDTH,
+    ain,
+    b1,
+    b2,
+    cv1,
+    cv2,
+    cv3,
+    cv4,
+    cv5,
+    cv6,
+    din,
+    k1,
+    k2,
+    oled,
+)
 from europi_script import EuroPiScript
+import configuration
 
 """
 A diagnostic utility intended to help prove out a new EuroPi build and calibration. Each aspect of the EuroPi's hardware
@@ -19,8 +36,8 @@ is exercised.
 
 TEMP_CONV_FACTOR = 3.3 / 65535
 
-class Diagnostic(EuroPiScript):
 
+class Diagnostic(EuroPiScript):
     def __init__(self):
         super().__init__()
         self.temp_sensor = ADC(4)
@@ -32,32 +49,31 @@ class Diagnostic(EuroPiScript):
             5,
             10,  # max
         ]
+        self.temp_units = self.config["temp_units"]
+        self.use_fahrenheit = self.temp_units == "F"
 
+    @classmethod
+    def config_points(cls):
+        return [configuration.choice(name="temp_units", choices=["C", "F"], default="C")]
 
     def calc_temp(self):
         # see the pico's datasheet for the details of this calculation
-        return 27 - ((self.temp_sensor.read_u16() * TEMP_CONV_FACTOR) - 0.706) / 0.001721
-
-    @staticmethod
-    def convert_fahrenheit(temp_c):
-        return (temp_c * 1.8) + 32
-
+        t = 27 - ((self.temp_sensor.read_u16() * TEMP_CONV_FACTOR) - 0.706) / 0.001721
+        if self.use_fahrenheit:
+            t = (t * 1.8) + 32
+        return t
 
     def rotate_r(self):
         self.voltages = self.voltages[-1:] + self.voltages[:-1]
 
-
     def rotate_l(self):
         self.voltages = self.voltages[1:] + self.voltages[:1]
 
-
     def main(self):
-
         b1.handler(self.rotate_l)
         b2.handler(self.rotate_r)
 
         while True:
-
             # Set the outputs to useful values
             cv1.voltage(self.voltages[0])
             cv2.voltage(self.voltages[1])
@@ -69,9 +85,8 @@ class Diagnostic(EuroPiScript):
             oled.fill(0)
 
             # calc and format temp
-            use_fahrenheit = b1.value() or b2.value()
             t = self.calc_temp()
-            formatted_temp = f"{int(self.convert_fahrenheit(t) if use_fahrenheit else t)}{'F' if use_fahrenheit else 'C'}"
+            formatted_temp = f"{int(t)}{self.temp_units}"
 
             # display the input values
             oled.text(f"ain: {ain.read_voltage():5.2f}v {formatted_temp}", 2, 3, 1)
