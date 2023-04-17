@@ -1,4 +1,4 @@
-21522567386794331
+21525994065602082
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -53305,6 +53305,13 @@ Adafruit 1.14in 240x135 Color TFT Display ST7789
 11
 11
 Eurorack
+CN22155 USB 2.0 Female Connector
+
+
+0
+6
+5
+Eurorack
 Capacitor Small Non-Polarised
 
 
@@ -53467,6 +53474,13 @@ Potentiometer 9mm Vertical Linear
 3
 Eurorack
 Potentiometer 9mm Vertical Linear Centred
+
+
+0
+3
+3
+Eurorack
+Potentiometer 20mm Slide Linear
 
 
 0
