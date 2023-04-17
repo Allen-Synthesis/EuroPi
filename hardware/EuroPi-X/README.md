@@ -11,7 +11,7 @@ Suggested features:
   - [MCP4728](https://shop.pimoroni.com/products/adafruit-mcp4728-quad-dac-with-eeprom-stemma-qt-qwiic?variant=31458498412627&currency=GBP&utm_source=google&utm_medium=cpc&utm_campaign=google+shopping?utm_source=google&utm_medium=surfaces&utm_campaign=shopping&gclid=Cj0KCQjwtsCgBhDEARIsAE7RYh3qANxNiQCtKDUFhGal1OTP4WOT_NSxUyUTKL1Pj_3x2VDyPnRayScaAk5DEALw_wcB)? 12 bit, 4 channel
   - Bipolar https://tinyurl.com/2abku7y3, jumper on the back of the module to set the mode, GPIO detects mode to allow code adjustments:
 
-![image](https://user-images.githubusercontent.com/79809962/232497358-dbc04fcc-c759-4a21-bfea-5f111bde9371.png)
+    ![image](https://user-images.githubusercontent.com/79809962/232499051-03726a7a-2504-42e1-a2b6-9dd00e95a89b.png)
 
 - More inputs
   - 4 inputs can fit in 8HP
