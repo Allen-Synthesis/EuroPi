@@ -8,7 +8,8 @@ Suggested features:
   - Colour matches output type e.g. red for gate, blue for CV, green for 1v/oct
   - Colour determined automatically in code when a method is used, e.g. cv1.on() would automatically set it to red as a gate type
 - DAC outputs (>=12 bit)
-  - [MCP4728](https://shop.pimoroni.com/products/adafruit-mcp4728-quad-dac-with-eeprom-stemma-qt-qwiic?variant=31458498412627&currency=GBP&utm_source=google&utm_medium=cpc&utm_campaign=google+shopping?utm_source=google&utm_medium=surfaces&utm_campaign=shopping&gclid=Cj0KCQjwtsCgBhDEARIsAE7RYh3qANxNiQCtKDUFhGal1OTP4WOT_NSxUyUTKL1Pj_3x2VDyPnRayScaAk5DEALw_wcB)? 12 bit, 8 channel
+  - [MCP4728](https://shop.pimoroni.com/products/adafruit-mcp4728-quad-dac-with-eeprom-stemma-qt-qwiic?variant=31458498412627&currency=GBP&utm_source=google&utm_medium=cpc&utm_campaign=google+shopping?utm_source=google&utm_medium=surfaces&utm_campaign=shopping&gclid=Cj0KCQjwtsCgBhDEARIsAE7RYh3qANxNiQCtKDUFhGal1OTP4WOT_NSxUyUTKL1Pj_3x2VDyPnRayScaAk5DEALw_wcB)? 12 bit, 4 channel
+  - Bipolar https://tinyurl.com/24qnklf5
 - More inputs
   - 4 inputs can fit in 8HP
 - Higher performance CV inputs
