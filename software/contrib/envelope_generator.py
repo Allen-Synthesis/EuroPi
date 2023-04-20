@@ -115,7 +115,7 @@ class EnvelopeGenerator(EuroPiScript):
         self.envelope_inverted_out.voltage(self.max_output_voltage - self.envelope_value)
         
     def update_display(self):
-        if ticks_ms() - self.last_refreshed_display >= self.display_refresh_rate:
+        if ticks_diff(ticks_ms(), self.last_refreshed_display) >= self.display_refresh_rate:
             #Save state to file
             self.save_state()
             
