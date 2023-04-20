@@ -35,7 +35,7 @@ class EnvelopeGenerator(EuroPiScript):
 
         self.envelope_display_bounds = [0, 0, int(OLED_WIDTH), int(OLED_HEIGHT / 2)]
         
-        self.direction = 3
+        self.direction = 3  # Rising = 1, Falling = 0, Sustain = 3
         self.envelope_value = 0
         
         self.envelope_out = cv2
