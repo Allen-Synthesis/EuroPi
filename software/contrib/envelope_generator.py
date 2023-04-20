@@ -2,7 +2,7 @@ from time import sleep
 from europi import oled, din, cv1, cv2, cv3, k1, k2, b1, b2, ain, OLED_WIDTH, OLED_HEIGHT
 from europi_script import EuroPiScript
 
-from time import sleep_ms, ticks_ms
+from time import sleep_ms, ticks_ms, ticks_diff
 from math import log
 
 
