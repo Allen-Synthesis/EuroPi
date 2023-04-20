@@ -510,130 +510,6 @@
         )
       )
     )
-    (symbol "Connector:Conn_01x06_Pin" (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
-      (property "Reference" "J" (at 0 7.62 0)
-        (effects (font (size 1.27 1.27)))
-      )
-      (property "Value" "Conn_01x06_Pin" (at 0 -10.16 0)
-        (effects (font (size 1.27 1.27)))
-      )
-      (property "Footprint" "" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "Datasheet" "~" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "ki_locked" "" (at 0 0 0)
-        (effects (font (size 1.27 1.27)))
-      )
-      (property "ki_keywords" "connector" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "ki_description" "Generic connector, single row, 01x06, script generated" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "ki_fp_filters" "Connector*:*_1x??_*" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (symbol "Conn_01x06_Pin_1_1"
-        (polyline
-          (pts
-            (xy 1.27 -7.62)
-            (xy 0.8636 -7.62)
-          )
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts
-            (xy 1.27 -5.08)
-            (xy 0.8636 -5.08)
-          )
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts
-            (xy 1.27 -2.54)
-            (xy 0.8636 -2.54)
-          )
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts
-            (xy 1.27 0)
-            (xy 0.8636 0)
-          )
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts
-            (xy 1.27 2.54)
-            (xy 0.8636 2.54)
-          )
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (polyline
-          (pts
-            (xy 1.27 5.08)
-            (xy 0.8636 5.08)
-          )
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (rectangle (start 0.8636 -7.493) (end 0 -7.747)
-          (stroke (width 0.1524) (type default))
-          (fill (type outline))
-        )
-        (rectangle (start 0.8636 -4.953) (end 0 -5.207)
-          (stroke (width 0.1524) (type default))
-          (fill (type outline))
-        )
-        (rectangle (start 0.8636 -2.413) (end 0 -2.667)
-          (stroke (width 0.1524) (type default))
-          (fill (type outline))
-        )
-        (rectangle (start 0.8636 0.127) (end 0 -0.127)
-          (stroke (width 0.1524) (type default))
-          (fill (type outline))
-        )
-        (rectangle (start 0.8636 2.667) (end 0 2.413)
-          (stroke (width 0.1524) (type default))
-          (fill (type outline))
-        )
-        (rectangle (start 0.8636 5.207) (end 0 4.953)
-          (stroke (width 0.1524) (type default))
-          (fill (type outline))
-        )
-        (pin passive line (at 5.08 5.08 180) (length 3.81)
-          (name "Pin_1" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line (at 5.08 2.54 180) (length 3.81)
-          (name "Pin_2" (effects (font (size 1.27 1.27))))
-          (number "2" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line (at 5.08 0 180) (length 3.81)
-          (name "Pin_3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line (at 5.08 -2.54 180) (length 3.81)
-          (name "Pin_4" (effects (font (size 1.27 1.27))))
-          (number "4" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line (at 5.08 -5.08 180) (length 3.81)
-          (name "Pin_5" (effects (font (size 1.27 1.27))))
-          (number "5" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line (at 5.08 -7.62 180) (length 3.81)
-          (name "Pin_6" (effects (font (size 1.27 1.27))))
-          (number "6" (effects (font (size 1.27 1.27))))
-        )
-      )
-    )
     (symbol "Connector:Conn_01x16_Pin" (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
       (property "Reference" "J" (at 0 20.32 0)
         (effects (font (size 1.27 1.27)))
@@ -1458,6 +1334,207 @@
         (pin passive line (at 0 0 90) (length 2.54)
           (name "1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
+    (symbol "Connector:USB_C_Plug_USB2.0" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
+      (property "Reference" "P" (at -10.16 19.05 0)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Value" "USB_C_Plug_USB2.0" (at 12.7 19.05 0)
+        (effects (font (size 1.27 1.27)) (justify right))
+      )
+      (property "Footprint" "" (at 3.81 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "https://www.usb.org/sites/default/files/documents/usb_type-c.zip" (at 3.81 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "usb universal serial bus type-C USB2.0" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "USB 2.0-only Type-C Plug connector" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_fp_filters" "USB*C*Plug*" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "USB_C_Plug_USB2.0_0_0"
+        (rectangle (start -0.254 -17.78) (end 0.254 -16.764)
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (rectangle (start 10.16 -2.286) (end 9.144 -2.794)
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (rectangle (start 10.16 2.794) (end 9.144 2.286)
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (rectangle (start 10.16 7.874) (end 9.144 7.366)
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (rectangle (start 10.16 10.414) (end 9.144 9.906)
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (rectangle (start 10.16 15.494) (end 9.144 14.986)
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+      )
+      (symbol "USB_C_Plug_USB2.0_0_1"
+        (rectangle (start -10.16 17.78) (end 10.16 -17.78)
+          (stroke (width 0.254) (type default))
+          (fill (type background))
+        )
+        (arc (start -8.89 -3.81) (mid -6.985 -5.7067) (end -5.08 -3.81)
+          (stroke (width 0.508) (type default))
+          (fill (type none))
+        )
+        (arc (start -7.62 -3.81) (mid -6.985 -4.4423) (end -6.35 -3.81)
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+        (arc (start -7.62 -3.81) (mid -6.985 -4.4423) (end -6.35 -3.81)
+          (stroke (width 0.254) (type default))
+          (fill (type outline))
+        )
+        (rectangle (start -7.62 -3.81) (end -6.35 3.81)
+          (stroke (width 0.254) (type default))
+          (fill (type outline))
+        )
+        (arc (start -6.35 3.81) (mid -6.985 4.4423) (end -7.62 3.81)
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+        (arc (start -6.35 3.81) (mid -6.985 4.4423) (end -7.62 3.81)
+          (stroke (width 0.254) (type default))
+          (fill (type outline))
+        )
+        (arc (start -5.08 3.81) (mid -6.985 5.7067) (end -8.89 3.81)
+          (stroke (width 0.508) (type default))
+          (fill (type none))
+        )
+        (circle (center -2.54 1.143) (radius 0.635)
+          (stroke (width 0.254) (type default))
+          (fill (type outline))
+        )
+        (circle (center 0 -5.842) (radius 1.27)
+          (stroke (width 0) (type default))
+          (fill (type outline))
+        )
+        (polyline
+          (pts
+            (xy -8.89 -3.81)
+            (xy -8.89 3.81)
+          )
+          (stroke (width 0.508) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy -5.08 3.81)
+            (xy -5.08 -3.81)
+          )
+          (stroke (width 0.508) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0 -5.842)
+            (xy 0 4.318)
+          )
+          (stroke (width 0.508) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0 -3.302)
+            (xy -2.54 -0.762)
+            (xy -2.54 0.508)
+          )
+          (stroke (width 0.508) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0 -2.032)
+            (xy 2.54 0.508)
+            (xy 2.54 1.778)
+          )
+          (stroke (width 0.508) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy -1.27 4.318)
+            (xy 0 6.858)
+            (xy 1.27 4.318)
+            (xy -1.27 4.318)
+          )
+          (stroke (width 0.254) (type default))
+          (fill (type outline))
+        )
+        (rectangle (start 1.905 1.778) (end 3.175 3.048)
+          (stroke (width 0.254) (type default))
+          (fill (type outline))
+        )
+      )
+      (symbol "USB_C_Plug_USB2.0_1_1"
+        (pin passive line (at 0 -22.86 90) (length 5.08)
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "A1" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 0 -22.86 90) (length 5.08) hide
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "A12" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 15.24 15.24 180) (length 5.08)
+          (name "VBUS" (effects (font (size 1.27 1.27))))
+          (number "A4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at 15.24 10.16 180) (length 5.08)
+          (name "CC" (effects (font (size 1.27 1.27))))
+          (number "A5" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at 15.24 -2.54 180) (length 5.08)
+          (name "D+" (effects (font (size 1.27 1.27))))
+          (number "A6" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at 15.24 2.54 180) (length 5.08)
+          (name "D-" (effects (font (size 1.27 1.27))))
+          (number "A7" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 15.24 15.24 180) (length 5.08) hide
+          (name "VBUS" (effects (font (size 1.27 1.27))))
+          (number "A9" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 0 -22.86 90) (length 5.08) hide
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "B1" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 0 -22.86 90) (length 5.08) hide
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "B12" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 15.24 15.24 180) (length 5.08) hide
+          (name "VBUS" (effects (font (size 1.27 1.27))))
+          (number "B4" (effects (font (size 1.27 1.27))))
+        )
+        (pin bidirectional line (at 15.24 7.62 180) (length 5.08)
+          (name "VCONN" (effects (font (size 1.27 1.27))))
+          (number "B5" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 15.24 15.24 180) (length 5.08) hide
+          (name "VBUS" (effects (font (size 1.27 1.27))))
+          (number "B9" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at -7.62 -22.86 90) (length 5.08)
+          (name "SHIELD" (effects (font (size 1.27 1.27))))
+          (number "S1" (effects (font (size 1.27 1.27))))
         )
       )
     )
@@ -2732,6 +2809,49 @@
         )
       )
     )
+    (symbol "Regulator_Linear:L7805" (pin_names (offset 0.254)) (in_bom yes) (on_board yes)
+      (property "Reference" "U" (at -3.81 3.175 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Value" "L7805" (at 0 3.175 0)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Footprint" "" (at 0.635 -3.81 0)
+        (effects (font (size 1.27 1.27) italic) (justify left) hide)
+      )
+      (property "Datasheet" "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf" (at 0 -1.27 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "Voltage Regulator 1.5A Positive" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "Positive 1.5A 35V Linear Regulator, Fixed Output 5V, TO-220/TO-263/TO-252" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_fp_filters" "TO?252* TO?263* TO?220*" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "L7805_0_1"
+        (rectangle (start -5.08 1.905) (end 5.08 -5.08)
+          (stroke (width 0.254) (type default))
+          (fill (type background))
+        )
+      )
+      (symbol "L7805_1_1"
+        (pin power_in line (at -7.62 0 0) (length 2.54)
+          (name "IN" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+        (pin power_in line (at 0 -7.62 90) (length 2.54)
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin power_out line (at 7.62 0 180) (length 2.54)
+          (name "OUT" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
     (symbol "Simulation_SPICE:DIODE" (pin_numbers hide) (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
       (property "Reference" "D" (at 0 2.54 0)
         (effects (font (size 1.27 1.27)))
@@ -3177,6 +3297,9 @@
   (junction (at 265.43 191.77) (diameter 0) (color 0 0 0 0)
     (uuid 31186c44-af20-4f73-8b16-0a504dc9a1c5)
   )
+  (junction (at 453.39 402.59) (diameter 0) (color 0 0 0 0)
+    (uuid 313c911f-1eaa-44ec-8f97-3b8cafa6f60a)
+  )
   (junction (at 154.94 43.18) (diameter 0) (color 0 0 0 0)
     (uuid 32af1fd5-f677-4ef4-92f6-fa6eeeca3b30)
   )
@@ -3363,6 +3486,9 @@
   (junction (at 45.72 335.28) (diameter 0) (color 0 0 0 0)
     (uuid aed48b64-486c-416c-ac33-659c464257fa)
   )
+  (junction (at 464.82 394.97) (diameter 0) (color 0 0 0 0)
+    (uuid b355be13-e33d-4e1a-a3af-4f6bc10b72ce)
+  )
   (junction (at 312.42 377.19) (diameter 0) (color 0 0 0 0)
     (uuid b494cc2b-5b96-4ff6-bc16-5f45575ad168)
   )
@@ -3389,6 +3515,9 @@
   )
   (junction (at 45.72 363.22) (diameter 0) (color 0 0 0 0)
     (uuid c7ba7902-05a0-4809-9ba7-51803df33099)
+  )
+  (junction (at 441.96 394.97) (diameter 0) (color 0 0 0 0)
+    (uuid c8c516e4-0760-4292-84bf-2ffa5e2fb270)
   )
   (junction (at 127 36.83) (diameter 0) (color 0 0 0 0)
     (uuid cbc6fd16-ddb0-49e2-b545-7493ccc69708)
@@ -3485,8 +3614,10 @@
   (no_connect (at 425.45 273.05) (uuid 2428136e-703b-4275-b5b8-d03544273d55))
   (no_connect (at 541.02 224.79) (uuid 3f341c19-77f2-4a12-ac21-28c09d949148))
   (no_connect (at 541.02 166.37) (uuid 52a2bfe8-25bd-4e83-92fb-d04c391b1084))
+  (no_connect (at 29.21 69.85) (uuid 534344dd-498f-4d1a-a8b8-3a6fd75837f6))
   (no_connect (at 516.89 322.58) (uuid 5b53103d-5a62-46bf-8b75-a401e1631c5d))
   (no_connect (at 541.02 158.75) (uuid 7d98471c-b37c-4ba2-a58f-2171c424bbd1))
+  (no_connect (at 410.21 393.7) (uuid 7e376bf2-15f9-44b4-8301-ff9d9722b720))
   (no_connect (at 334.01 322.58) (uuid 7fbddaa8-ffa4-4cdf-8356-59d3574beba9))
   (no_connect (at 541.02 156.21) (uuid 8a0b616d-9e36-45ba-845c-d596e042e01f))
   (no_connect (at 242.57 273.05) (uuid 8a86c91c-70e0-49ce-9cb5-a1a4efca3b75))
@@ -3635,10 +3766,6 @@
     (stroke (width 0) (type default))
     (uuid 0d42ff01-951f-4a47-8bca-5b9464ab1163)
   )
-  (wire (pts (xy 43.18 69.85) (xy 46.99 69.85))
-    (stroke (width 0) (type default))
-    (uuid 0d5f320f-ace5-4c5e-b351-f5d4e412c223)
-  )
   (wire (pts (xy 533.4 196.85) (xy 541.02 196.85))
     (stroke (width 0) (type default))
     (uuid 0d6de998-c3d9-4405-9a9f-fbf33123e509)
@@ -3654,6 +3781,10 @@
   (wire (pts (xy 265.43 176.53) (xy 265.43 191.77))
     (stroke (width 0) (type default))
     (uuid 0e1dd985-3957-4781-a240-57c6577f8036)
+  )
+  (wire (pts (xy 445.77 394.97) (xy 441.96 394.97))
+    (stroke (width 0) (type default))
+    (uuid 0efbd313-b2c8-4f1c-ae66-164d902d5184)
   )
   (wire (pts (xy 299.72 379.73) (xy 312.42 379.73))
     (stroke (width 0) (type default))
@@ -3767,6 +3898,10 @@
     (stroke (width 0) (type default))
     (uuid 177494b6-dc4f-4515-a510-2a1aed82d5e7)
   )
+  (wire (pts (xy 38.1 81.28) (xy 38.1 85.09))
+    (stroke (width 0) (type default))
+    (uuid 1840b333-6dab-47af-8966-d75e9f7eae2a)
+  )
   (wire (pts (xy 195.58 273.05) (xy 199.39 273.05))
     (stroke (width 0) (type default))
     (uuid 187f0afd-d8ec-4de5-87bc-84f414d3d9e1)
@@ -3799,9 +3934,9 @@
     (stroke (width 0) (type default))
     (uuid 19c49b6b-a1db-4384-81af-b7204df63a19)
   )
-  (wire (pts (xy 43.18 58.42) (xy 43.18 59.69))
+  (wire (pts (xy 420.37 384.81) (xy 412.75 384.81))
     (stroke (width 0) (type default))
-    (uuid 1abbac8f-62f6-44bb-9104-6ca08d652577)
+    (uuid 1a72b9ca-2b6d-4f03-8bcf-0ae921329806)
   )
   (wire (pts (xy 306.07 299.72) (xy 313.69 299.72))
     (stroke (width 0) (type default))
@@ -3981,6 +4116,10 @@
     (stroke (width 0) (type default))
     (uuid 286bd263-f07b-4908-84f8-9b8a37ddec07)
   )
+  (wire (pts (xy 40.64 85.09) (xy 40.64 81.28))
+    (stroke (width 0) (type default))
+    (uuid 287d8dfa-7c9f-46ea-b78d-2f551e146a4a)
+  )
   (wire (pts (xy 66.04 156.21) (xy 72.39 156.21))
     (stroke (width 0) (type default))
     (uuid 287ff887-ab49-4d11-a982-e10d813d4bf5)
@@ -3996,6 +4135,10 @@
   (wire (pts (xy 312.42 69.85) (xy 314.96 69.85))
     (stroke (width 0) (type default))
     (uuid 2b43984c-7fe1-46f5-aca3-b7c1309af16e)
+  )
+  (wire (pts (xy 415.29 392.43) (xy 415.29 393.7))
+    (stroke (width 0) (type default))
+    (uuid 2bb86e4d-6a75-44e0-84ca-9a6fb20c8168)
   )
   (wire (pts (xy 335.28 386.08) (xy 335.28 382.27))
     (stroke (width 0) (type default))
@@ -4120,6 +4263,10 @@
   (wire (pts (xy 306.07 261.62) (xy 313.69 261.62))
     (stroke (width 0) (type default))
     (uuid 3751a850-8039-4f40-a6de-9c0ffffe00c8)
+  )
+  (wire (pts (xy 68.58 49.53) (xy 64.77 49.53))
+    (stroke (width 0) (type default))
+    (uuid 37699c78-b776-43d5-90ba-bf22fcef4d2d)
   )
   (wire (pts (xy 232.41 80.01) (xy 232.41 81.28))
     (stroke (width 0) (type default))
@@ -4301,10 +4448,6 @@
     (stroke (width 0) (type default))
     (uuid 473950ec-b7b7-4578-a08c-b90ad5d9317f)
   )
-  (wire (pts (xy 43.18 59.69) (xy 46.99 59.69))
-    (stroke (width 0) (type default))
-    (uuid 478e688a-3b26-4e9f-a632-aab42f45bd44)
-  )
   (polyline (pts (xy 293.37 405.13) (xy 398.78 405.13))
     (stroke (width 0) (type default))
     (uuid 478fd3e5-c899-4ab5-93f2-96933c1a872c)
@@ -4413,6 +4556,10 @@
   (wire (pts (xy 96.52 41.91) (xy 96.52 36.83))
     (stroke (width 0) (type default))
     (uuid 52bfc17b-5366-4cfb-b9a9-f18770e021cf)
+  )
+  (wire (pts (xy 415.29 392.43) (xy 420.37 392.43))
+    (stroke (width 0) (type default))
+    (uuid 52e8d62f-306f-4139-b65d-eaf82eca317c)
   )
   (wire (pts (xy 67.31 321.31) (xy 72.39 321.31))
     (stroke (width 0) (type default))
@@ -4574,6 +4721,10 @@
     (stroke (width 0) (type default))
     (uuid 5d81e87c-543c-4bd1-af35-6b8212648e0f)
   )
+  (wire (pts (xy 412.75 384.81) (xy 412.75 393.7))
+    (stroke (width 0) (type default))
+    (uuid 5d9227d6-df81-423d-8081-fcec3163bcf7)
+  )
   (wire (pts (xy 455.93 59.69) (xy 463.55 59.69))
     (stroke (width 0) (type default))
     (uuid 5e1526d8-bc38-4923-9d50-c989446e7885)
@@ -4581,6 +4732,10 @@
   (wire (pts (xy 240.03 133.35) (xy 243.84 133.35))
     (stroke (width 0) (type default))
     (uuid 5e3f257c-04a9-46bd-917c-a342da6aa2a2)
+  )
+  (wire (pts (xy 55.88 31.75) (xy 52.07 31.75))
+    (stroke (width 0) (type default))
+    (uuid 5e9e96c0-fc67-4a17-96dd-920db01779d8)
   )
   (wire (pts (xy 243.84 50.8) (xy 264.16 50.8))
     (stroke (width 0) (type default))
@@ -4657,6 +4812,10 @@
   (wire (pts (xy 346.71 151.13) (xy 350.52 151.13))
     (stroke (width 0) (type default))
     (uuid 663ad4f4-896e-4189-94da-e59b9f2fcc16)
+  )
+  (wire (pts (xy 441.96 402.59) (xy 453.39 402.59))
+    (stroke (width 0) (type default))
+    (uuid 66650b5f-9017-446a-8921-f715f625381e)
   )
   (wire (pts (xy 316.23 374.65) (xy 316.23 372.11))
     (stroke (width 0) (type default))
@@ -4769,10 +4928,6 @@
   (wire (pts (xy 473.71 327.66) (xy 477.52 327.66))
     (stroke (width 0) (type default))
     (uuid 6f5f3257-122a-4292-8014-b243a24f6d16)
-  )
-  (wire (pts (xy 43.18 64.77) (xy 46.99 64.77))
-    (stroke (width 0) (type default))
-    (uuid 6f8dc1d4-8fc5-46e5-b39c-2b7362050edf)
   )
   (wire (pts (xy 541.02 204.47) (xy 541.02 207.01))
     (stroke (width 0) (type default))
@@ -4982,10 +5137,6 @@
     (stroke (width 0) (type default))
     (uuid 84106208-3a76-4f39-ab58-d6ed52d090b1)
   )
-  (wire (pts (xy 25.4 68.58) (xy 25.4 67.31))
-    (stroke (width 0) (type default))
-    (uuid 8431c61c-d3c1-481b-8cb1-10d020cb1e19)
-  )
   (wire (pts (xy 312.42 382.27) (xy 312.42 384.81))
     (stroke (width 0) (type default))
     (uuid 854c2bff-d1c4-4866-8b66-19e3d8ef2c58)
@@ -5002,6 +5153,10 @@
     (stroke (width 0) (type default))
     (uuid 85c702a9-5dbf-4c6b-8ab2-669ffaa664e5)
   )
+  (wire (pts (xy 464.82 388.62) (xy 464.82 394.97))
+    (stroke (width 0) (type default))
+    (uuid 85d0e832-6481-4a70-9f3b-325298aa7b84)
+  )
   (wire (pts (xy 513.08 331.47) (xy 513.08 327.66))
     (stroke (width 0) (type default))
     (uuid 85da3bd1-5fef-4032-af65-b9adb31914ed)
@@ -5009,6 +5164,10 @@
   (wire (pts (xy 345.44 389.89) (xy 345.44 391.16))
     (stroke (width 0) (type default))
     (uuid 869795f0-86b6-4c55-94aa-7b6fe51d7b98)
+  )
+  (wire (pts (xy 68.58 44.45) (xy 64.77 44.45))
+    (stroke (width 0) (type default))
+    (uuid 86e0cea9-a803-40df-a127-a4904a161a70)
   )
   (wire (pts (xy 447.04 181.61) (xy 447.04 184.15))
     (stroke (width 0) (type default))
@@ -5085,10 +5244,6 @@
   (wire (pts (xy 201.93 191.77) (xy 198.12 191.77))
     (stroke (width 0) (type default))
     (uuid 8b32bf99-b3d2-43d7-86dd-466d3e170fde)
-  )
-  (wire (pts (xy 43.18 62.23) (xy 46.99 62.23))
-    (stroke (width 0) (type default))
-    (uuid 8b4e4df9-5564-4685-9eae-dbffc95cc197)
   )
   (wire (pts (xy 367.03 191.77) (xy 372.11 191.77))
     (stroke (width 0) (type default))
@@ -5354,6 +5509,10 @@
     (stroke (width 0) (type default))
     (uuid a39d2b7b-1dcd-495f-b3c0-61ea3b7f8542)
   )
+  (wire (pts (xy 52.07 44.45) (xy 57.15 44.45))
+    (stroke (width 0) (type default))
+    (uuid a490070d-21ab-428d-8424-3a099117a772)
+  )
   (wire (pts (xy 438.15 127) (xy 443.23 127))
     (stroke (width 0) (type default))
     (uuid a4be9e90-2667-4f9e-af31-35919c262343)
@@ -5478,6 +5637,10 @@
     (stroke (width 0) (type default))
     (uuid b39c16e1-b940-4d01-bc94-28dac8b6c242)
   )
+  (wire (pts (xy 55.88 29.21) (xy 55.88 31.75))
+    (stroke (width 0) (type default))
+    (uuid b450b0fc-39db-4a99-8710-78a0186183aa)
+  )
   (wire (pts (xy 290.83 261.62) (xy 298.45 261.62))
     (stroke (width 0) (type default))
     (uuid b50cb4bc-7603-44e7-839f-b24f29e518a3)
@@ -5533,10 +5696,6 @@
   (wire (pts (xy 45.72 298.45) (xy 45.72 299.72))
     (stroke (width 0) (type default))
     (uuid bc65563e-4ccc-4a95-adfb-31512b076e63)
-  )
-  (wire (pts (xy 25.4 67.31) (xy 46.99 67.31))
-    (stroke (width 0) (type default))
-    (uuid bc73b047-0d0b-423b-b10c-85585ca6ce3f)
   )
   (wire (pts (xy 119.38 344.17) (xy 119.38 341.63))
     (stroke (width 0) (type default))
@@ -5658,10 +5817,6 @@
     (stroke (width 0) (type default))
     (uuid c42a50d7-43cf-4157-99a2-3eaf8e04fac3)
   )
-  (wire (pts (xy 43.18 72.39) (xy 46.99 72.39))
-    (stroke (width 0) (type default))
-    (uuid c4808863-c228-46a7-81b4-1996a2c1081b)
-  )
   (wire (pts (xy 473.71 278.13) (xy 477.52 278.13))
     (stroke (width 0) (type default))
     (uuid c57efad0-7983-42ec-b02e-4387e1c5d284)
@@ -5761,6 +5916,10 @@
   (wire (pts (xy 128.27 153.67) (xy 123.19 153.67))
     (stroke (width 0) (type default))
     (uuid ccf4e588-5218-43ca-9102-b9dbd296cbc7)
+  )
+  (wire (pts (xy 453.39 402.59) (xy 464.82 402.59))
+    (stroke (width 0) (type default))
+    (uuid cd5d3f5b-e8b8-483e-baac-d2499e1fc0bf)
   )
   (wire (pts (xy 415.29 129.54) (xy 415.29 134.62))
     (stroke (width 0) (type default))
@@ -5907,6 +6066,10 @@
     (stroke (width 0) (type default))
     (uuid dbd56fd6-c895-4a34-bc29-1b75a41ee486)
   )
+  (wire (pts (xy 36.83 69.85) (xy 44.45 69.85))
+    (stroke (width 0) (type default))
+    (uuid dc46469d-d16a-456b-a4b2-1f568685fee0)
+  )
   (wire (pts (xy 66.04 207.01) (xy 72.39 207.01))
     (stroke (width 0) (type default))
     (uuid dc7a82cc-c053-4675-99d7-b5bd95d4499b)
@@ -5978,6 +6141,10 @@
   (wire (pts (xy 86.36 111.76) (xy 92.71 111.76))
     (stroke (width 0) (type default))
     (uuid e29aba4d-e620-4585-a6c7-e78c8bcc0653)
+  )
+  (wire (pts (xy 441.96 386.08) (xy 441.96 394.97))
+    (stroke (width 0) (type default))
+    (uuid e2a61a24-0a05-4609-9f8a-08652ae3b69f)
   )
   (wire (pts (xy 482.6 72.39) (xy 482.6 59.69))
     (stroke (width 0) (type default))
@@ -6071,6 +6238,10 @@
     (stroke (width 0) (type default))
     (uuid ea621f43-6450-49c6-aac9-dc4df9a7e113)
   )
+  (wire (pts (xy 52.07 49.53) (xy 57.15 49.53))
+    (stroke (width 0) (type default))
+    (uuid eba44f2e-c6e0-48ab-826e-1397b1104394)
+  )
   (wire (pts (xy 168.91 367.03) (xy 176.53 367.03))
     (stroke (width 0) (type default))
     (uuid ec45edd2-d0df-4f01-81e3-7295c7ce791a)
@@ -6163,6 +6334,10 @@
     (stroke (width 0) (type default))
     (uuid f3ed260d-c946-47c9-8d6c-32a1fe26b815)
   )
+  (wire (pts (xy 461.01 394.97) (xy 464.82 394.97))
+    (stroke (width 0) (type default))
+    (uuid f4001b91-7e21-4c2d-8d6e-a8e1c60fc1d4)
+  )
   (wire (pts (xy 123.19 209.55) (xy 128.27 209.55))
     (stroke (width 0) (type default))
     (uuid f63266a7-1451-41d8-ab81-0df6d98bc969)
@@ -6251,6 +6426,10 @@
     (stroke (width 0) (type default))
     (uuid fc439fd7-115b-4049-b701-cdb8cad47fab)
   )
+  (wire (pts (xy 35.56 85.09) (xy 35.56 81.28))
+    (stroke (width 0) (type default))
+    (uuid fc47bf16-fa43-404d-b4cc-a840452e4167)
+  )
   (wire (pts (xy 350.52 30.48) (xy 336.55 30.48))
     (stroke (width 0) (type default))
     (uuid fc86e71b-df83-45f0-be7a-ee6f888a7035)
@@ -6309,6 +6488,11 @@
     (fill (type none))
     (uuid 4e82642f-fab0-43c5-9d7c-d6531f8728df)
   )
+  (rectangle (start 402.59 375.92) (end 473.71 405.13)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (uuid 54aae110-eba2-49b2-9862-3273c05fb963)
+  )
   (rectangle (start 21.59 353.06) (end 88.9 405.13)
     (stroke (width 0) (type default))
     (fill (type none))
@@ -6328,6 +6512,11 @@
     (stroke (width 0) (type default))
     (fill (type none))
     (uuid 7cc63063-5cb1-40ab-ac18-486de371ba7c)
+  )
+  (rectangle (start 402.59 353.06) (end 534.67 374.65)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (uuid 7fa71910-129f-4306-baef-ead8423b6a16)
   )
   (rectangle (start 87.63 62.23) (end 135.89 102.87)
     (stroke (width 0) (type default))
@@ -6353,11 +6542,6 @@
     (stroke (width 0) (type default))
     (fill (type none))
     (uuid bcd1c5e5-aaaa-4ff0-a9cd-ee77a7206c74)
-  )
-  (rectangle (start 402.59 353.06) (end 474.98 405.13)
-    (stroke (width 0) (type default))
-    (fill (type none))
-    (uuid ce38b7d6-f732-48c4-a644-d268a83b495a)
   )
   (rectangle (start 468.63 106.68) (end 568.96 231.14)
     (stroke (width 0) (type default))
@@ -6446,6 +6630,10 @@
   (text "OUTPUT_MODE is high when mode is unipolar\n" (at 99.06 314.96 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 76cd5086-938e-443e-a7b7-2af932b5ae38)
+  )
+  (text "Jumper sets internal 5V regulator" (at 403.86 378.46 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 79b1c60a-5f1f-4403-b6c9-53726b6a5a31)
   )
   (text "DECOUPLING" (at 220.98 24.13 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -6572,6 +6760,10 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 0fbb6f26-91f8-4b43-b228-0ce1bdf4d050)
   )
+  (label "RUN" (at 35.56 81.28 180) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 10839e0c-a669-41c8-9b60-e83a6bf20814)
+  )
   (label "RUN" (at 66.04 138.43 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 11d1eb7f-ac00-4f1a-b610-e6c9ee22653d)
@@ -6628,6 +6820,10 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 1d374565-36f6-48ca-a0c6-6501d618d0c8)
   )
+  (label "5VREG_INPUT" (at 441.96 386.08 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 1e29da8a-57c5-401f-a8b0-2a9953805426)
+  )
   (label "GND_FRONT" (at 542.29 69.85 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 2191f6bf-6974-4a95-9193-27ae88129013)
@@ -6655,10 +6851,6 @@
   (label "NEOPIXEL_DATA" (at 128.27 158.75 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 27669b63-5c4e-48c6-84db-06146fbfe527)
-  )
-  (label "-4.096VREF" (at 497.84 363.22 90) (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 29a20928-e5df-4aad-a0d3-11d477b191b7)
   )
   (label "GND_FRONT" (at 314.96 71.12 270) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
@@ -6740,6 +6932,10 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 485f101b-5b09-45ec-9715-0c75a3c2705e)
   )
+  (label "BOOTSEL" (at 40.64 81.28 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 4901a3d5-6bd0-44a7-b7dd-99d3987431ce)
+  )
   (label "CV_OUTPUT_4_FRONT" (at 515.62 265.43 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 4917af94-827c-422b-b451-30890ff7fe41)
@@ -6775,10 +6971,6 @@
   (label "CV_INPUT_2_FRONT" (at 127 374.65 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 504d4160-d6a3-4fbc-8760-9397547efcd7)
-  )
-  (label "-10VREF" (at 508 363.22 90) (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 5054f8f5-efde-4847-880c-2360cd9563e4)
   )
   (label "CV_INPUT_3" (at 204.47 176.53 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -6919,6 +7111,10 @@
   (label "+5V_FRONT" (at 539.75 78.74 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 7db1af92-a37d-43da-8802-c2aed449f089)
+  )
+  (label "5VREG_INPUT" (at 420.37 384.81 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 7e6890ec-f75a-4f25-9951-e46f0abe3b69)
   )
   (label "OLED_DIN_FRONT" (at 168.91 394.97 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
@@ -7088,10 +7284,6 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid b1fcd575-7509-4fa1-a49e-346a7d5f9ab3)
   )
-  (label "-2.048VREF" (at 487.68 363.22 90) (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid b269d00a-1a04-4350-b5c2-60590b6f9f80)
-  )
   (label "CV_INPUT_2" (at 307.34 133.35 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid b4dd7a1b-b753-4e12-925b-692eab7eb205)
@@ -7139,10 +7331,6 @@
   (label "OLED_DIN_FRONT" (at 533.4 196.85 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid be31ac64-acea-42f9-bb6c-7d9208922375)
-  )
-  (label "BOOTSEL" (at 43.18 69.85 180) (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid be498db8-cf24-4637-b70b-8179a06368aa)
   )
   (label "BUTTON_1" (at 128.27 163.83 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -7303,10 +7491,6 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid f4475dfe-3bbd-48a3-9525-828baea1a9f2)
   )
-  (label "RUN" (at 43.18 72.39 180) (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid f6c83ded-1e77-49df-b6ca-35c8ec729574)
-  )
   (label "ADC_INPUT_4" (at 372.11 191.77 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid f9ce9d49-f7fb-4614-a363-1167c3a55a1a)
@@ -7390,6 +7574,13 @@
       (effects (font (size 1.27 1.27)) (justify right) hide)
     )
   )
+  (global_label "USB_DN" (shape input) (at 68.58 44.45 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid 28c8675a-0f3c-4e7f-b15c-fe04a4796561)
+    (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 78.8639 44.45 0)
+      (effects (font (size 1.27 1.27)) (justify left) hide)
+    )
+  )
   (global_label "QSPI_SD1" (shape input) (at 66.04 163.83 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid 37d13cec-5531-4015-af84-2504feb06bf8)
@@ -7453,13 +7644,6 @@
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
   )
-  (global_label "USB_DN" (shape input) (at 43.18 62.23 180) (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify right))
-    (uuid 7b23cef2-077c-493f-8623-0c8cfa3f6178)
-    (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 32.8961 62.23 0)
-      (effects (font (size 1.27 1.27)) (justify right) hide)
-    )
-  )
   (global_label "QSPI_SD2" (shape input) (at 171.45 69.85 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 7b3ec70f-bcd8-4e88-867d-d1646cd27b83)
@@ -7502,17 +7686,17 @@
       (effects (font (size 1.27 1.27)) (justify right) hide)
     )
   )
-  (global_label "USB_DP" (shape input) (at 43.18 64.77 180) (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify right))
-    (uuid d36e6cf0-7031-4f39-a600-9fdf8dfc98a4)
-    (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 32.9566 64.77 0)
-      (effects (font (size 1.27 1.27)) (justify right) hide)
-    )
-  )
   (global_label "USB_VDD" (shape input) (at 102.87 121.92 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid d9959f92-3cde-4730-9be4-56495e4ed1b7)
     (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 102.87 110.608 90)
+      (effects (font (size 1.27 1.27)) (justify left) hide)
+    )
+  )
+  (global_label "USB_DP" (shape input) (at 68.58 49.53 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid e210385b-13f9-4d26-b114-e39f31e9afe0)
+    (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 78.8034 49.53 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
   )
@@ -7555,7 +7739,7 @@
   (symbol (lib_id "Device:R") (at 236.22 189.23 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 005186bc-4163-431b-a243-e2f3cad8eb2c)
-    (property "Reference" "R25" (at 236.22 184.15 90)
+    (property "Reference" "R23" (at 236.22 184.15 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 236.22 186.69 90)
@@ -7572,32 +7756,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R25") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "power:+3.3V") (at 422.91 377.19 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 0248c758-563b-41af-850f-d9a4ba81dec3)
-    (property "Reference" "#PWR070" (at 422.91 381 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+3.3V" (at 422.91 373.38 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 422.91 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 422.91 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid dc42fc5d-6e88-413d-bbb7-d12259ecdd2e))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR070") (unit 1)
+          (reference "R23") (unit 1)
         )
       )
     )
@@ -7606,7 +7765,7 @@
   (symbol (lib_id "Connector:Conn_01x16_Pin") (at 271.78 377.19 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 02db49ce-251c-48c6-97e9-31f25ea7d633)
-    (property "Reference" "J19" (at 271.145 355.6 0)
+    (property "Reference" "J8" (at 271.145 355.6 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Conn_01x16_Pin" (at 271.145 358.14 0)
@@ -7637,7 +7796,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J19") (unit 1)
+          (reference "J8") (unit 1)
         )
       )
     )
@@ -7646,7 +7805,7 @@
   (symbol (lib_id "power:Earth") (at 336.55 45.72 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0356b9d7-e937-4c43-8662-37b561da67a0)
-    (property "Reference" "#PWR051" (at 336.55 52.07 0)
+    (property "Reference" "#PWR053" (at 336.55 52.07 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 336.55 49.53 0)
@@ -7662,32 +7821,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR051") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Connector:TestPoint") (at 433.07 377.19 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid 04274287-9d24-4522-a20c-165a83e33305)
-    (property "Reference" "TP1" (at 429.26 383.54 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "TestPoint" (at 429.26 386.08 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 427.99 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 427.99 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid e79ebecf-808a-4516-ab9d-5b682689636e))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "TP1") (unit 1)
+          (reference "#PWR053") (unit 1)
         )
       )
     )
@@ -7750,7 +7884,7 @@
   (symbol (lib_id "power:Earth") (at 57.15 265.43 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0c1867b9-aa30-4f9a-b784-4384542e1cfb)
-    (property "Reference" "#PWR010" (at 57.15 271.78 0)
+    (property "Reference" "#PWR011" (at 57.15 271.78 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 57.15 269.24 0)
@@ -7766,7 +7900,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR010") (unit 1)
+          (reference "#PWR011") (unit 1)
         )
       )
     )
@@ -7775,7 +7909,7 @@
   (symbol (lib_id "Device:R") (at 236.22 133.35 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0d4ff3af-3de5-487b-bc87-cf63f8a4ba26)
-    (property "Reference" "R22" (at 236.22 128.27 90)
+    (property "Reference" "R20" (at 236.22 128.27 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 236.22 130.81 90)
@@ -7792,7 +7926,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R22") (unit 1)
+          (reference "R20") (unit 1)
         )
       )
     )
@@ -7850,10 +7984,44 @@
     )
   )
 
+  (symbol (lib_id "Device:R") (at 60.96 49.53 90) (mirror x) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 0effd851-f99f-467c-a38b-8a6201d46d25)
+    (property "Reference" "R7" (at 60.96 54.61 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "22" (at 60.96 52.07 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 60.96 47.752 90)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 60.96 49.53 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "JLCPCB PART#" "C25092" (at 60.96 49.53 90)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 4ecc2065-1015-4d21-872f-667eb7ed274b))
+    (pin "2" (uuid 5e5e4f68-27af-4300-b486-62aa86bd312a))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "R7") (unit 1)
+        )
+      )
+      (project "usb-hub"
+        (path "/fd314b15-8a64-4cdc-b5d9-7360b63466b4"
+          (reference "R4") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "Device:R") (at 283.21 322.58 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 0fba8d1d-bc40-49a1-82e5-67b7e8d63bba)
-    (property "Reference" "R32" (at 283.21 317.5 90)
+    (property "Reference" "R30" (at 283.21 317.5 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 283.21 320.04 90)
@@ -7870,7 +8038,37 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R32") (unit 1)
+          (reference "R30") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:Earth") (at 44.45 69.85 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 1081e415-f828-4ff5-be8b-19047a12a307)
+    (property "Reference" "#PWR05" (at 44.45 76.2 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "Earth" (at 44.45 73.66 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "" (at 44.45 69.85 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 44.45 69.85 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 89f10c5f-3ca1-46c1-8f2c-0c805247a508))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR05") (unit 1)
+        )
+      )
+      (project "usb-hub"
+        (path "/fd314b15-8a64-4cdc-b5d9-7360b63466b4"
+          (reference "#PWR015") (unit 1)
         )
       )
     )
@@ -7879,7 +8077,7 @@
   (symbol (lib_id "power:+3.3V") (at 57.15 242.57 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 11263ec7-bcfb-40ee-96b4-0f610f44eb79)
-    (property "Reference" "#PWR09" (at 57.15 246.38 0)
+    (property "Reference" "#PWR010" (at 57.15 246.38 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 57.15 238.76 0)
@@ -7895,7 +8093,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR09") (unit 1)
+          (reference "#PWR010") (unit 1)
         )
       )
     )
@@ -7904,7 +8102,7 @@
   (symbol (lib_id "power:Earth") (at 326.39 38.1 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 11e98fe3-fb39-4e3d-a2fe-eab150d733c6)
-    (property "Reference" "#PWR047" (at 332.74 38.1 0)
+    (property "Reference" "#PWR048" (at 332.74 38.1 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 330.2 38.1 0)
@@ -7920,7 +8118,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR047") (unit 1)
+          (reference "#PWR048") (unit 1)
         )
       )
     )
@@ -7929,7 +8127,7 @@
   (symbol (lib_id "power:Earth") (at 346.71 154.94 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 120155b7-e966-40e5-8d68-36ab715488bf)
-    (property "Reference" "#PWR054" (at 346.71 161.29 0)
+    (property "Reference" "#PWR055" (at 346.71 161.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 346.71 158.75 0)
@@ -7945,7 +8143,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR054") (unit 1)
+          (reference "#PWR055") (unit 1)
         )
       )
     )
@@ -7954,7 +8152,7 @@
   (symbol (lib_id "power:Earth") (at 386.08 394.97 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 172d4266-1299-4d28-b1d9-6ef10fc2e65d)
-    (property "Reference" "#PWR071" (at 386.08 401.32 0)
+    (property "Reference" "#PWR061" (at 386.08 401.32 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 386.08 398.78 0)
@@ -7970,12 +8168,39 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR071") (unit 1)
+          (reference "#PWR061") (unit 1)
         )
       )
       (project "kompari"
         (path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
           (reference "#PWR0105") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Connector:Conn_01x03_Pin") (at 38.1 90.17 90) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 1bd5824b-c569-4522-82f0-826c549ea369)
+    (property "Reference" "JUMPER1" (at 38.1 92.71 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "UNI/BIPOLAR" (at 38.1 95.25 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" (at 38.1 90.17 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 38.1 90.17 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 6a0d3005-6988-4c28-b2ed-5ad965b3778a))
+    (pin "2" (uuid 949fab99-88f5-4191-9c13-50bbf85d0ad8))
+    (pin "3" (uuid 7a369065-6106-4c1e-bdef-88087bc9552e))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "JUMPER1") (unit 1)
         )
       )
     )
@@ -8010,7 +8235,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 289.56 184.15 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 1c668239-439f-4a86-8b56-fce4e819ee20)
-    (property "Reference" "J7" (at 293.3065 180.34 0)
+    (property "Reference" "J9" (at 293.3065 180.34 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 293.3065 182.88 0)
@@ -8028,7 +8253,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J7") (unit 1)
+          (reference "J9") (unit 1)
         )
       )
     )
@@ -8167,35 +8392,10 @@
     )
   )
 
-  (symbol (lib_id "Connector:TestPoint") (at 443.23 377.19 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid 1f263e06-9849-4949-b29a-02652bc79b0f)
-    (property "Reference" "TP2" (at 439.42 383.54 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "TestPoint" (at 439.42 386.08 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 438.15 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 438.15 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid bb1fafc8-8555-4835-ab32-a7c3afc041e3))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "TP2") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "power:Earth") (at 45.72 378.46 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 21327a0c-4457-49fc-a77d-873d6fab3e26)
-    (property "Reference" "#PWR07" (at 45.72 384.81 0)
+    (property "Reference" "#PWR08" (at 45.72 384.81 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 45.72 382.27 0)
@@ -8211,7 +8411,33 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR07") (unit 1)
+          (reference "#PWR08") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Device:C") (at 464.82 398.78 0) (mirror y) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 2245d21d-8b0c-41f1-a35e-a7682b53970d)
+    (property "Reference" "C36" (at 468.63 398.145 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Value" "100n" (at 468.63 400.685 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 463.8548 402.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 464.82 398.78 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 91827633-059e-4055-b015-492da9c3eccc))
+    (pin "2" (uuid 21b1c271-2830-4c8d-a236-c8963f6dabe1))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "C36") (unit 1)
         )
       )
     )
@@ -8258,7 +8484,7 @@
   (symbol (lib_id "Switch:SW_Push") (at 307.34 69.85 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2280ef1b-8a9d-4828-8445-7b022b2ca950)
-    (property "Reference" "SW2" (at 307.34 63.5 0)
+    (property "Reference" "SW1" (at 307.34 63.5 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "BOOT" (at 307.34 66.04 0)
@@ -8275,32 +8501,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "SW2") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "power:Earth") (at 25.4 68.58 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 22db510c-7ea5-4548-85bf-d9294c9db921)
-    (property "Reference" "#PWR072" (at 25.4 74.93 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "Earth" (at 25.4 72.39 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Footprint" "" (at 25.4 68.58 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 25.4 68.58 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 2da2ec54-1dd2-4d26-bd4c-7d9785181f5e))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR072") (unit 1)
+          (reference "SW1") (unit 1)
         )
       )
     )
@@ -8309,7 +8510,7 @@
   (symbol (lib_id "Device:R") (at 337.82 189.23 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 230af7f4-9c2c-4edd-ba3b-7741c51f80a0)
-    (property "Reference" "R40" (at 337.82 184.15 90)
+    (property "Reference" "R36" (at 337.82 184.15 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 337.82 186.69 90)
@@ -8326,7 +8527,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R40") (unit 1)
+          (reference "R36") (unit 1)
         )
       )
     )
@@ -8355,6 +8556,31 @@
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
           (reference "LED1") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:+5V") (at 464.82 388.62 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 265ff79b-2be5-4279-9a8a-3e828ff35501)
+    (property "Reference" "#PWR076" (at 464.82 392.43 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+5V" (at 464.82 384.81 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 464.82 388.62 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 464.82 388.62 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 5ca64ae3-f6c6-47a2-a908-7602cb832646))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR076") (unit 1)
         )
       )
     )
@@ -8389,7 +8615,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 435.61 320.04 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 27901327-6c35-4ccf-82cf-3bf9bc46568d)
-    (property "Reference" "J13" (at 431.8635 316.23 0)
+    (property "Reference" "J15" (at 431.8635 316.23 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 431.8635 318.77 0)
@@ -8407,7 +8633,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J13") (unit 1)
+          (reference "J15") (unit 1)
         )
       )
     )
@@ -8416,7 +8642,7 @@
   (symbol (lib_id "power:Earth") (at 119.38 344.17 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2bb2c6bc-cfe3-400a-98d9-930534cc618a)
-    (property "Reference" "#PWR020" (at 119.38 350.52 0)
+    (property "Reference" "#PWR018" (at 119.38 350.52 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 119.38 347.98 0)
@@ -8432,7 +8658,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR020") (unit 1)
+          (reference "#PWR018") (unit 1)
         )
       )
     )
@@ -8441,7 +8667,7 @@
   (symbol (lib_id "Device:R") (at 254 176.53 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2c1f8b24-926f-411d-81d7-f567c049f1f0)
-    (property "Reference" "R28" (at 254 171.45 90)
+    (property "Reference" "R26" (at 254 171.45 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "15K" (at 254 173.99 90)
@@ -8458,7 +8684,32 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R28") (unit 1)
+          (reference "R26") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:+12V") (at 435.61 360.68 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 2c5e160f-f84e-4b12-b301-b08a397a97ae)
+    (property "Reference" "#PWR073" (at 435.61 364.49 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+12V" (at 435.61 356.87 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 435.61 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 435.61 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 2a1c2551-58c9-42f7-83ff-95039d5bd5d7))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR073") (unit 1)
         )
       )
     )
@@ -8531,7 +8782,7 @@
   (symbol (lib_id "Device:R") (at 485.14 311.15 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 2e78ff77-5b5d-4d59-a1cc-377b5d05b3af)
-    (property "Reference" "R58" (at 485.14 306.07 90)
+    (property "Reference" "R54" (at 485.14 306.07 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "270K" (at 485.14 308.61 90)
@@ -8548,7 +8799,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R58") (unit 1)
+          (reference "R54") (unit 1)
         )
       )
     )
@@ -8661,7 +8912,7 @@
   (symbol (lib_id "Device:C_Polarized") (at 386.08 388.62 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 31e2e099-b01f-4b6e-aade-eaf0f2ae2403)
-    (property "Reference" "C34" (at 389.89 386.4609 0)
+    (property "Reference" "C28" (at 389.89 386.4609 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "10u" (at 389.89 388.62 0)
@@ -8678,12 +8929,62 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "C34") (unit 1)
+          (reference "C28") (unit 1)
         )
       )
       (project "kompari"
         (path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
           (reference "C2") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Connector:TestPoint") (at 435.61 360.68 180) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 355fd622-e437-4747-9766-cc911425a766)
+    (property "Reference" "TP7" (at 431.8 367.03 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Value" "TestPoint" (at 431.8 369.57 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 430.53 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 430.53 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid f921b6ce-7fb5-4581-9ed6-b15f78a849a5))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "TP7") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:-12V") (at 447.04 360.68 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 35e89978-5f44-49e2-acda-bcce41bd91bd)
+    (property "Reference" "#PWR074" (at 447.04 358.14 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "-12V" (at 447.04 356.87 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 447.04 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 447.04 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 00b7e78a-9ce9-4032-a75d-ced1b719d767))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR074") (unit 1)
         )
       )
     )
@@ -8756,7 +9057,7 @@
   (symbol (lib_id "power:Earth") (at 492.76 201.93 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 38734a02-b156-49f8-b138-8455a702d2fb)
-    (property "Reference" "#PWR076" (at 492.76 208.28 0)
+    (property "Reference" "#PWR072" (at 492.76 208.28 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 492.76 205.74 0)
@@ -8772,7 +9073,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR076") (unit 1)
+          (reference "#PWR072") (unit 1)
         )
       )
     )
@@ -8781,7 +9082,7 @@
   (symbol (lib_id "power:Earth") (at 382.27 281.94 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 38887a14-e0a1-498f-932c-c187bc44cb72)
-    (property "Reference" "#PWR057" (at 382.27 288.29 0)
+    (property "Reference" "#PWR058" (at 382.27 288.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 382.27 285.75 0)
@@ -8797,7 +9098,37 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR057") (unit 1)
+          (reference "#PWR058") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:Earth") (at 410.21 360.68 180) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 39ec1f22-9551-41f1-b853-9ebf6de7da23)
+    (property "Reference" "#PWR066" (at 410.21 354.33 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "Earth" (at 410.21 356.87 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "" (at 410.21 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 410.21 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid ee5db283-b0c2-4247-ae61-c115f113d528))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR066") (unit 1)
+        )
+      )
+      (project "kompari"
+        (path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
+          (reference "#PWR0105") (unit 1)
         )
       )
     )
@@ -8806,7 +9137,7 @@
   (symbol (lib_id "power:-12V") (at 328.93 393.7 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 3aa715ca-5031-4302-b5e4-3ee0afd80719)
-    (property "Reference" "#PWR049" (at 328.93 396.24 0)
+    (property "Reference" "#PWR050" (at 328.93 396.24 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "-12V" (at 328.93 398.78 0)
@@ -8822,7 +9153,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR049") (unit 1)
+          (reference "#PWR050") (unit 1)
         )
       )
       (project "kompari"
@@ -8836,7 +9167,7 @@
   (symbol (lib_id "power:+3.3V") (at 154.94 41.91 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 3b64b250-82be-462f-a366-9a4418a0a46b)
-    (property "Reference" "#PWR027" (at 154.94 45.72 0)
+    (property "Reference" "#PWR024" (at 154.94 45.72 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 154.94 38.1 0)
@@ -8852,7 +9183,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR027") (unit 1)
+          (reference "#PWR024") (unit 1)
         )
       )
     )
@@ -8861,7 +9192,7 @@
   (symbol (lib_id "Device:C") (at 492.76 168.91 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 3b93a705-c0bd-4b42-94ec-83e2bb21c7c6)
-    (property "Reference" "C33" (at 496.57 168.275 0)
+    (property "Reference" "C34" (at 496.57 168.275 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100n" (at 496.57 170.815 0)
@@ -8878,7 +9209,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "C33") (unit 1)
+          (reference "C34") (unit 1)
         )
       )
     )
@@ -8913,7 +9244,7 @@
   (symbol (lib_id "Switch:SW_Push") (at 307.34 83.82 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 3f5b6faf-4ece-4917-842e-f7243ecff45e)
-    (property "Reference" "SW3" (at 307.34 77.47 0)
+    (property "Reference" "SW2" (at 307.34 77.47 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "BOOT" (at 307.34 80.01 0)
@@ -8930,7 +9261,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "SW3") (unit 1)
+          (reference "SW2") (unit 1)
         )
       )
     )
@@ -8939,7 +9270,7 @@
   (symbol (lib_id "Device:R") (at 302.26 311.15 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 3f775866-864f-4822-b741-f646aca7476b)
-    (property "Reference" "R34" (at 302.26 306.07 90)
+    (property "Reference" "R32" (at 302.26 306.07 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "270K" (at 302.26 308.61 90)
@@ -8956,7 +9287,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R34") (unit 1)
+          (reference "R32") (unit 1)
         )
       )
     )
@@ -8965,7 +9296,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 527.05 320.04 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 3ffffdff-659f-4a18-b05e-a8b6e4b81abb)
-    (property "Reference" "J15" (at 523.3035 316.23 0)
+    (property "Reference" "J17" (at 523.3035 316.23 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 523.3035 318.77 0)
@@ -8983,7 +9314,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J15") (unit 1)
+          (reference "J17") (unit 1)
         )
       )
     )
@@ -9018,7 +9349,7 @@
   (symbol (lib_id "Device:R") (at 356.87 133.35 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 433fa7c3-21a0-4e08-b90e-2a7af916412f)
-    (property "Reference" "R44" (at 356.87 128.27 90)
+    (property "Reference" "R40" (at 356.87 128.27 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "15K" (at 356.87 130.81 90)
@@ -9035,7 +9366,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R44") (unit 1)
+          (reference "R40") (unit 1)
         )
       )
     )
@@ -9044,7 +9375,7 @@
   (symbol (lib_id "Device:R") (at 210.82 261.62 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 43514b12-3e25-4bf0-8ff5-4294ec8ecd10)
-    (property "Reference" "R18" (at 210.82 256.54 90)
+    (property "Reference" "R16" (at 210.82 256.54 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "270K" (at 210.82 259.08 90)
@@ -9061,7 +9392,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R18") (unit 1)
+          (reference "R16") (unit 1)
         )
       )
     )
@@ -9070,7 +9401,7 @@
   (symbol (lib_id "power:Earth") (at 199.39 281.94 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 43fa406f-ddf1-456c-a31b-7a8ed05402da)
-    (property "Reference" "#PWR029" (at 199.39 288.29 0)
+    (property "Reference" "#PWR026" (at 199.39 288.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 199.39 285.75 0)
@@ -9086,7 +9417,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR029") (unit 1)
+          (reference "#PWR026") (unit 1)
         )
       )
     )
@@ -9123,6 +9454,40 @@
     )
   )
 
+  (symbol (lib_id "Device:R") (at 60.96 44.45 90) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 4c10aed0-33c2-40ce-b30a-27ecd2eb68f2)
+    (property "Reference" "R6" (at 60.96 39.37 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "22" (at 60.96 41.91 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 60.96 46.228 90)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 60.96 44.45 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "JLCPCB PART#" "C25092" (at 60.96 44.45 90)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid b80a580d-c4af-4d57-9721-7645ca526fa0))
+    (pin "2" (uuid c0702157-c463-4db3-85d9-9fe02954b4d6))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "R6") (unit 1)
+        )
+      )
+      (project "usb-hub"
+        (path "/fd314b15-8a64-4cdc-b5d9-7360b63466b4"
+          (reference "R3") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "LED:SK6805") (at 448.31 59.69 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4dbdd6d8-e412-4b82-bafa-55960aeb680c)
@@ -9154,7 +9519,7 @@
   (symbol (lib_id "power:+3.3V") (at 264.16 39.37 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4dc70295-d69b-455b-93ed-a71d1423ef2d)
-    (property "Reference" "#PWR037" (at 264.16 43.18 0)
+    (property "Reference" "#PWR038" (at 264.16 43.18 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 264.16 35.56 0)
@@ -9170,7 +9535,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR037") (unit 1)
+          (reference "#PWR038") (unit 1)
         )
       )
     )
@@ -9204,7 +9569,7 @@
   (symbol (lib_id "Device:R") (at 302.26 261.62 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 4eda038f-61be-4115-801a-f1ef17499be4)
-    (property "Reference" "R33" (at 302.26 256.54 90)
+    (property "Reference" "R31" (at 302.26 256.54 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "270K" (at 302.26 259.08 90)
@@ -9221,7 +9586,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R33") (unit 1)
+          (reference "R31") (unit 1)
         )
       )
     )
@@ -9230,7 +9595,7 @@
   (symbol (lib_id "Device:R") (at 374.65 261.62 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 4efaa5bc-edc8-4b93-9bdf-3854498e11f4)
-    (property "Reference" "R45" (at 374.65 256.54 90)
+    (property "Reference" "R41" (at 374.65 256.54 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 374.65 259.08 90)
@@ -9247,7 +9612,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R45") (unit 1)
+          (reference "R41") (unit 1)
         )
       )
     )
@@ -9256,7 +9621,7 @@
   (symbol (lib_id "power:Earth") (at 473.71 281.94 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5114adb9-8d37-4378-b9c3-c589758824a4)
-    (property "Reference" "#PWR063" (at 473.71 288.29 0)
+    (property "Reference" "#PWR068" (at 473.71 288.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 473.71 285.75 0)
@@ -9272,7 +9637,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR063") (unit 1)
+          (reference "#PWR068") (unit 1)
         )
       )
     )
@@ -9306,7 +9671,7 @@
   (symbol (lib_id "power:Earth") (at 63.5 123.19 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 53377099-9df8-46f1-9a73-91ec4c5ebc7a)
-    (property "Reference" "#PWR011" (at 63.5 129.54 0)
+    (property "Reference" "#PWR012" (at 63.5 129.54 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 63.5 127 0)
@@ -9322,7 +9687,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR011") (unit 1)
+          (reference "#PWR012") (unit 1)
         )
       )
     )
@@ -9331,7 +9696,7 @@
   (symbol (lib_id "power:Earth") (at 304.8 38.1 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5351ab7b-2a93-439e-9431-f912027527c9)
-    (property "Reference" "#PWR044" (at 311.15 38.1 0)
+    (property "Reference" "#PWR045" (at 311.15 38.1 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 308.61 38.1 0)
@@ -9347,7 +9712,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR044") (unit 1)
+          (reference "#PWR045") (unit 1)
         )
       )
     )
@@ -9373,6 +9738,51 @@
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
           (reference "#PWR014") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Connector:USB_C_Plug_USB2.0") (at 36.83 46.99 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 53c25c23-635a-44a2-99b9-3f63500cda29)
+    (property "Reference" "P1" (at 36.83 25.4 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "USB_C_Plug_USB2.0" (at 36.83 27.94 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Connector_USB:USB_C_Receptacle_G-Switch_GT-USB-7010ASV" (at 40.64 46.99 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.usb.org/sites/default/files/documents/usb_type-c.zip" (at 40.64 46.99 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "JLCPCB PART#" "C309361" (at 36.83 46.99 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "A1" (uuid 241def09-caa3-42e4-a391-70878f7a4ede))
+    (pin "A12" (uuid d69e8a2e-588c-4900-ae52-1dbce27750b6))
+    (pin "A4" (uuid 629279cd-9e48-447a-b5f4-342f07cf0d04))
+    (pin "A5" (uuid f803400b-bf27-4d8d-93ee-527449382ca5))
+    (pin "A6" (uuid b12fe824-c109-435b-883d-012aeb094068))
+    (pin "A7" (uuid a439e68c-41b4-4c48-b781-6b917a668a50))
+    (pin "A9" (uuid 42bc544c-2cba-4d39-ae03-1ca67805e578))
+    (pin "B1" (uuid 17a213b6-f4bc-429b-8828-45ad5d55da24))
+    (pin "B12" (uuid a187e8c3-bf5d-4b8b-afc3-794562792f8a))
+    (pin "B4" (uuid f2861430-1675-44d8-819e-17ea8b503554))
+    (pin "B5" (uuid e1e05b7c-1545-4908-b594-eae76e36bd81))
+    (pin "B9" (uuid ff8a2471-3cdf-4174-a66d-5b8b8cf2f673))
+    (pin "S1" (uuid a54663e5-68a3-4c9a-8d2e-94e8ce4a984f))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "P1") (unit 1)
+        )
+      )
+      (project "usb-hub"
+        (path "/fd314b15-8a64-4cdc-b5d9-7360b63466b4"
+          (reference "P1") (unit 1)
         )
       )
     )
@@ -9404,35 +9814,10 @@
     )
   )
 
-  (symbol (lib_id "power:+5V") (at 433.07 377.19 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 55ce3e27-1cb0-4c05-8205-7783d686d734)
-    (property "Reference" "#PWR066" (at 433.07 381 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+5V" (at 433.07 373.38 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 433.07 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 433.07 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid baf958f1-24db-4a1f-b5a8-e2f9a114af94))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR066") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "power:Earth") (at 265.43 81.28 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 572ac422-5184-4b49-ab2a-426d19a0bfe1)
-    (property "Reference" "#PWR038" (at 265.43 87.63 0)
+    (property "Reference" "#PWR039" (at 265.43 87.63 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 265.43 85.09 0)
@@ -9448,7 +9833,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR038") (unit 1)
+          (reference "#PWR039") (unit 1)
         )
       )
     )
@@ -9540,6 +9925,33 @@
     )
   )
 
+  (symbol (lib_id "Regulator_Linear:L7805") (at 453.39 394.97 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 5d8c8170-3ba8-42d0-9987-6ba6d06638ad)
+    (property "Reference" "U11" (at 453.39 388.62 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "L7805" (at 453.39 391.16 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Package_TO_SOT_SMD:TO-252-2" (at 454.025 398.78 0)
+      (effects (font (size 1.27 1.27) italic) (justify left) hide)
+    )
+    (property "Datasheet" "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf" (at 453.39 396.24 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 0d7e7f33-d263-4ffc-9bfa-299de2b83af7))
+    (pin "2" (uuid 5cbae6f8-3d78-45ac-93ba-c1c84c34415f))
+    (pin "3" (uuid 4e546936-b626-4111-a253-0412c24024b0))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "U11") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "Amplifier_Operational:MCP6004") (at 358.14 148.59 0) (unit 2)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5e267c72-1a9b-4146-bc39-1a858f4beaf5)
@@ -9581,7 +9993,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 435.61 270.51 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 5e40174e-bc1f-46b1-bead-b59452db9303)
-    (property "Reference" "J12" (at 431.8635 266.7 0)
+    (property "Reference" "J14" (at 431.8635 266.7 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 431.8635 269.24 0)
@@ -9599,7 +10011,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J12") (unit 1)
+          (reference "J14") (unit 1)
         )
       )
     )
@@ -9608,7 +10020,7 @@
   (symbol (lib_id "Device:R") (at 492.76 194.31 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5eca19b4-1586-4185-ba7b-52f768f5fc39)
-    (property "Reference" "R59" (at 495.3 194.945 0)
+    (property "Reference" "R55" (at 495.3 194.945 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "~" (at 495.3 192.405 0)
@@ -9625,7 +10037,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R59") (unit 1)
+          (reference "R55") (unit 1)
         )
       )
     )
@@ -9698,7 +10110,7 @@
   (symbol (lib_id "Device:R") (at 393.7 311.15 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 61bcb0f0-b224-4792-9feb-0b836993981e)
-    (property "Reference" "R50" (at 393.7 306.07 90)
+    (property "Reference" "R46" (at 393.7 306.07 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "270K" (at 393.7 308.61 90)
@@ -9715,7 +10127,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R50") (unit 1)
+          (reference "R46") (unit 1)
         )
       )
     )
@@ -9724,7 +10136,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 527.05 270.51 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 632d6f62-ffeb-4e26-b81d-37413639d883)
-    (property "Reference" "J14" (at 523.3035 266.7 0)
+    (property "Reference" "J16" (at 523.3035 266.7 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 523.3035 269.24 0)
@@ -9742,7 +10154,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J14") (unit 1)
+          (reference "J16") (unit 1)
         )
       )
     )
@@ -9751,13 +10163,13 @@
   (symbol (lib_id "Connector_Generic:Conn_02x08_Odd_Even") (at 307.34 379.73 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 65282ea2-f9a4-4126-9591-ae5237cd72fa)
-    (property "Reference" "J17" (at 306.07 367.03 0)
+    (property "Reference" "J11" (at 306.07 367.03 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Conn_02x08_Odd_Even" (at 306.07 367.03 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Footprint" "Eurorack:Eurorack Power Header 16 Pin" (at 307.34 379.73 0)
+    (property "Footprint" "Eurorack:Eurorack Power Header 16 Pin Unlabeled" (at 307.34 379.73 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 307.34 379.73 0)
@@ -9782,7 +10194,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J17") (unit 1)
+          (reference "J11") (unit 1)
         )
       )
     )
@@ -9791,7 +10203,7 @@
   (symbol (lib_id "power:Earth") (at 243.84 154.94 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 6685fc9e-7e21-45c2-af0e-643b93ebe4bd)
-    (property "Reference" "#PWR034" (at 243.84 161.29 0)
+    (property "Reference" "#PWR035" (at 243.84 161.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 243.84 158.75 0)
@@ -9807,7 +10219,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR034") (unit 1)
+          (reference "#PWR035") (unit 1)
         )
       )
     )
@@ -9816,7 +10228,7 @@
   (symbol (lib_id "Device:R") (at 466.09 322.58 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6905224c-da23-455b-aac9-a1822cfde238)
-    (property "Reference" "R56" (at 466.09 317.5 90)
+    (property "Reference" "R52" (at 466.09 317.5 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 466.09 320.04 90)
@@ -9833,7 +10245,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R56") (unit 1)
+          (reference "R52") (unit 1)
         )
       )
     )
@@ -9842,7 +10254,7 @@
   (symbol (lib_id "power:Earth") (at 290.83 331.47 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 696abc2e-cb29-4008-9060-1df49b57ff57)
-    (property "Reference" "#PWR041" (at 290.83 337.82 0)
+    (property "Reference" "#PWR042" (at 290.83 337.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 290.83 335.28 0)
@@ -9858,7 +10270,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR041") (unit 1)
+          (reference "#PWR042") (unit 1)
         )
       )
     )
@@ -9867,7 +10279,7 @@
   (symbol (lib_id "power:Earth") (at 243.84 198.12 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 6a16aad6-f82b-4f37-b2fb-56b43ae16390)
-    (property "Reference" "#PWR035" (at 243.84 204.47 0)
+    (property "Reference" "#PWR036" (at 243.84 204.47 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 243.84 201.93 0)
@@ -9883,7 +10295,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR035") (unit 1)
+          (reference "#PWR036") (unit 1)
         )
       )
     )
@@ -9892,7 +10304,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 252.73 270.51 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6b9de6d0-934a-44c3-b819-80c5f18899dc)
-    (property "Reference" "J5" (at 248.9835 266.7 0)
+    (property "Reference" "J6" (at 248.9835 266.7 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 248.9835 269.24 0)
@@ -9910,7 +10322,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J5") (unit 1)
+          (reference "J6") (unit 1)
         )
       )
     )
@@ -9945,7 +10357,7 @@
   (symbol (lib_id "Device:R") (at 374.65 273.05 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6e77418e-cc6f-4bc4-909a-7231af532829)
-    (property "Reference" "R46" (at 374.65 267.97 90)
+    (property "Reference" "R42" (at 374.65 267.97 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 374.65 270.51 90)
@@ -9962,7 +10374,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R46") (unit 1)
+          (reference "R42") (unit 1)
         )
       )
     )
@@ -9971,7 +10383,7 @@
   (symbol (lib_id "Device:R") (at 254 40.64 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 6f61a867-4530-430e-9de2-bde29c5b8a40)
-    (property "Reference" "R26" (at 254 35.56 90)
+    (property "Reference" "R24" (at 254 35.56 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "27R4" (at 254 38.1 90)
@@ -9988,7 +10400,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R26") (unit 1)
+          (reference "R24") (unit 1)
         )
       )
     )
@@ -9997,7 +10409,7 @@
   (symbol (lib_id "Device:R") (at 374.65 322.58 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6f8fa93b-fc47-43c3-af32-c39e66b3dea3)
-    (property "Reference" "R48" (at 374.65 317.5 90)
+    (property "Reference" "R44" (at 374.65 317.5 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 374.65 320.04 90)
@@ -10014,7 +10426,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R48") (unit 1)
+          (reference "R44") (unit 1)
         )
       )
     )
@@ -10077,7 +10489,7 @@
   (symbol (lib_id "Device:R") (at 283.21 311.15 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 72c123d4-d5a1-4dcd-b937-d90a1860e4d2)
-    (property "Reference" "R31" (at 283.21 306.07 90)
+    (property "Reference" "R29" (at 283.21 306.07 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 283.21 308.61 90)
@@ -10094,37 +10506,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R31") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "power:+12V") (at 443.23 377.19 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 74a9bb45-fb2a-4dbc-ac82-5131c73f5896)
-    (property "Reference" "#PWR067" (at 443.23 381 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+12V" (at 443.23 372.11 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 443.23 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 443.23 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 0b2f5a51-20d4-4f2b-8163-10bbbd37a68e))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR067") (unit 1)
-        )
-      )
-      (project "kompari"
-        (path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-          (reference "#PWR0106") (unit 1)
+          (reference "R29") (unit 1)
         )
       )
     )
@@ -10133,7 +10515,7 @@
   (symbol (lib_id "Device:C") (at 454.66 142.24 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 75c89c29-857d-4b73-88ef-4d32885ddc95)
-    (property "Reference" "C30" (at 450.85 141.605 0)
+    (property "Reference" "C31" (at 450.85 141.605 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "100n" (at 450.85 144.145 0)
@@ -10150,7 +10532,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "C30") (unit 1)
+          (reference "C31") (unit 1)
         )
       )
     )
@@ -10257,7 +10639,7 @@
   (symbol (lib_id "Connector:Conn_01x16_Pin") (at 204.47 377.19 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 7a13caff-75ba-473e-9698-416e662ed432)
-    (property "Reference" "J4" (at 205.105 355.6 0)
+    (property "Reference" "J5" (at 205.105 355.6 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Conn_01x16_Pin" (at 205.105 358.14 0)
@@ -10288,7 +10670,37 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J4") (unit 1)
+          (reference "J5") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:Earth") (at 38.1 81.28 180) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 7a6f572b-5ed3-42a4-a389-8a525a4a2de3)
+    (property "Reference" "#PWR04" (at 38.1 74.93 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "Earth" (at 38.1 77.47 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "" (at 38.1 81.28 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 38.1 81.28 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid abec87a3-906f-4a70-94a8-2f1e36e8652e))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR04") (unit 1)
+        )
+      )
+      (project "usb-hub"
+        (path "/fd314b15-8a64-4cdc-b5d9-7360b63466b4"
+          (reference "#PWR015") (unit 1)
         )
       )
     )
@@ -10297,7 +10709,7 @@
   (symbol (lib_id "power:+3.3V") (at 427.99 116.84 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 7a8d4f00-29d1-4c3c-a321-aeda42476786)
-    (property "Reference" "#PWR059" (at 427.99 120.65 0)
+    (property "Reference" "#PWR062" (at 427.99 120.65 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 427.99 113.03 0)
@@ -10313,7 +10725,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR059") (unit 1)
+          (reference "#PWR062") (unit 1)
         )
       )
     )
@@ -10322,7 +10734,7 @@
   (symbol (lib_id "power:Earth") (at 229.87 398.78 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 7ab98fe1-8d77-412f-bf52-9fab0452fab4)
-    (property "Reference" "#PWR079" (at 229.87 405.13 0)
+    (property "Reference" "#PWR031" (at 229.87 405.13 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 229.87 402.59 0)
@@ -10338,7 +10750,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR079") (unit 1)
+          (reference "#PWR031") (unit 1)
         )
       )
     )
@@ -10398,10 +10810,35 @@
     )
   )
 
+  (symbol (lib_id "Connector:TestPoint") (at 410.21 360.68 180) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 7dc27a7e-a1f9-42e0-b24a-85b0af4dabde)
+    (property "Reference" "TP4" (at 406.4 367.03 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Value" "TestPoint" (at 406.4 369.57 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 405.13 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 405.13 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid d9361d52-ae5b-4898-bc7d-5be5b9bcb302))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "TP4") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "power:Earth") (at 152.4 143.51 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 7fbe04f4-9cbc-4e49-b0e2-4a49c4239a24)
-    (property "Reference" "#PWR026" (at 152.4 149.86 0)
+    (property "Reference" "#PWR023" (at 152.4 149.86 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 152.4 147.32 0)
@@ -10417,7 +10854,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR026") (unit 1)
+          (reference "#PWR023") (unit 1)
         )
       )
     )
@@ -10454,7 +10891,7 @@
   (symbol (lib_id "power:+5V") (at 386.08 378.46 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 83f10d71-cd00-476a-a96e-859e56c93a87)
-    (property "Reference" "#PWR065" (at 386.08 382.27 0)
+    (property "Reference" "#PWR060" (at 386.08 382.27 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (at 386.08 374.65 0)
@@ -10470,7 +10907,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR065") (unit 1)
+          (reference "#PWR060") (unit 1)
         )
       )
     )
@@ -10505,7 +10942,7 @@
   (symbol (lib_id "power:-12V") (at 294.64 45.72 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 846f2872-735c-4f68-9604-b42a8050b285)
-    (property "Reference" "#PWR043" (at 294.64 48.26 0)
+    (property "Reference" "#PWR044" (at 294.64 48.26 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "-12V" (at 294.64 50.8 0)
@@ -10521,7 +10958,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR043") (unit 1)
+          (reference "#PWR044") (unit 1)
         )
       )
     )
@@ -10530,7 +10967,7 @@
   (symbol (lib_id "power:+3.3V") (at 336.55 30.48 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8588ae9b-fc75-43ea-a4dc-768eb510fde2)
-    (property "Reference" "#PWR050" (at 336.55 34.29 0)
+    (property "Reference" "#PWR052" (at 336.55 34.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 336.55 26.67 0)
@@ -10546,7 +10983,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR050") (unit 1)
+          (reference "#PWR052") (unit 1)
         )
       )
     )
@@ -10555,7 +10992,7 @@
   (symbol (lib_id "Device:R") (at 210.82 311.15 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 85daecbf-5f3c-4e2a-a67b-25bf5547098f)
-    (property "Reference" "R19" (at 210.82 306.07 90)
+    (property "Reference" "R17" (at 210.82 306.07 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "270K" (at 210.82 308.61 90)
@@ -10572,7 +11009,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R19") (unit 1)
+          (reference "R17") (unit 1)
         )
       )
     )
@@ -10607,7 +11044,7 @@
   (symbol (lib_id "power:Earth") (at 214.63 367.03 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 88aaadba-6788-48ac-9d9b-20ffb9dd5071)
-    (property "Reference" "#PWR017" (at 214.63 373.38 0)
+    (property "Reference" "#PWR028" (at 214.63 373.38 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 214.63 370.84 0)
@@ -10623,7 +11060,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR017") (unit 1)
+          (reference "#PWR028") (unit 1)
         )
       )
     )
@@ -10632,7 +11069,7 @@
   (symbol (lib_id "Device:R") (at 283.21 261.62 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 88fbfb3e-40fd-4c42-913d-a9930b610b35)
-    (property "Reference" "R29" (at 283.21 256.54 90)
+    (property "Reference" "R27" (at 283.21 256.54 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 283.21 259.08 90)
@@ -10649,7 +11086,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R29") (unit 1)
+          (reference "R27") (unit 1)
         )
       )
     )
@@ -10658,7 +11095,7 @@
   (symbol (lib_id "Device:R") (at 393.7 261.62 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 89d678d1-ef59-438e-9c2f-88a70f3d00c9)
-    (property "Reference" "R49" (at 393.7 256.54 90)
+    (property "Reference" "R45" (at 393.7 256.54 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "270K" (at 393.7 259.08 90)
@@ -10675,7 +11112,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R49") (unit 1)
+          (reference "R45") (unit 1)
         )
       )
     )
@@ -10724,7 +11161,7 @@
   (symbol (lib_id "Device:R") (at 232.41 325.12 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 8a478267-429a-408d-a42f-91810ae042c1)
-    (property "Reference" "R21" (at 232.41 320.04 90)
+    (property "Reference" "R19" (at 232.41 320.04 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 232.41 322.58 90)
@@ -10741,7 +11178,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R21") (unit 1)
+          (reference "R19") (unit 1)
         )
       )
     )
@@ -10750,7 +11187,7 @@
   (symbol (lib_id "power:Earth") (at 473.71 331.47 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8a5c24b1-41d0-4681-a6b0-8f6ccb952ae8)
-    (property "Reference" "#PWR064" (at 473.71 337.82 0)
+    (property "Reference" "#PWR069" (at 473.71 337.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 473.71 335.28 0)
@@ -10766,7 +11203,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR064") (unit 1)
+          (reference "#PWR069") (unit 1)
         )
       )
     )
@@ -10775,7 +11212,7 @@
   (symbol (lib_id "power:-12V") (at 316.23 45.72 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8ae6672e-b1a0-4740-9e00-23096e31368d)
-    (property "Reference" "#PWR046" (at 316.23 48.26 0)
+    (property "Reference" "#PWR047" (at 316.23 48.26 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "-12V" (at 316.23 50.8 0)
@@ -10791,7 +11228,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR046") (unit 1)
+          (reference "#PWR047") (unit 1)
         )
       )
     )
@@ -10800,7 +11237,7 @@
   (symbol (lib_id "power:Earth") (at 199.39 331.47 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8b0cc112-f6d9-4095-98d8-1bb6b8d0efe8)
-    (property "Reference" "#PWR030" (at 199.39 337.82 0)
+    (property "Reference" "#PWR027" (at 199.39 337.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 199.39 335.28 0)
@@ -10816,7 +11253,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR030") (unit 1)
+          (reference "#PWR027") (unit 1)
         )
       )
     )
@@ -10825,7 +11262,7 @@
   (symbol (lib_id "power:Earth") (at 492.76 176.53 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8b4ec1e1-59bd-4da6-9f35-55ea79891156)
-    (property "Reference" "#PWR075" (at 492.76 182.88 0)
+    (property "Reference" "#PWR071" (at 492.76 182.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 492.76 180.34 0)
@@ -10841,7 +11278,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR075") (unit 1)
+          (reference "#PWR071") (unit 1)
         )
       )
     )
@@ -10850,7 +11287,7 @@
   (symbol (lib_id "power:+3.3V") (at 350.52 74.93 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8e0015c9-0118-4f88-aaf6-091e8c74c171)
-    (property "Reference" "#PWR055" (at 350.52 78.74 0)
+    (property "Reference" "#PWR056" (at 350.52 78.74 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 350.52 71.12 0)
@@ -10866,7 +11303,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR055") (unit 1)
+          (reference "#PWR056") (unit 1)
         )
       )
     )
@@ -10901,7 +11338,7 @@
   (symbol (lib_id "Eurorack:Potentiometer_9mm_Vertical_Linear") (at 439.42 208.28 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 90a51589-4b95-4d25-a958-0d6f8dcf5d8e)
-    (property "Reference" "P2" (at 436.88 208.915 0)
+    (property "Reference" "P3" (at 436.88 208.915 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "Potentiometer_9mm_Vertical_Linear" (at 436.88 206.375 0)
@@ -10919,37 +11356,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "P2") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Connector:Conn_01x06_Pin") (at 52.07 64.77 0) (mirror y) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid 911716a6-a489-49d4-b621-4f20f7cef535)
-    (property "Reference" "J20" (at 53.34 66.675 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "Conn_01x06_Pin" (at 53.34 64.135 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Horizontal" (at 52.07 64.77 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 52.07 64.77 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 2068e9df-8f88-4d93-9953-8d83cc41336d))
-    (pin "2" (uuid bbc631d4-8c41-4b76-80cc-dab734cf3f5c))
-    (pin "3" (uuid a48ca124-fed4-4698-8d4f-00995efea466))
-    (pin "4" (uuid adfecb10-4709-4647-9716-d71b66e535c3))
-    (pin "5" (uuid 663a5a5b-89bd-4c4f-bf34-5d79954b8f6f))
-    (pin "6" (uuid 532a9740-1023-4398-95ab-97eddad53638))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J20") (unit 1)
+          (reference "P3") (unit 1)
         )
       )
     )
@@ -10981,10 +11388,63 @@
     )
   )
 
+  (symbol (lib_id "Device:C") (at 441.96 398.78 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 93459e77-c613-45a0-8b1f-6350dd959a4c)
+    (property "Reference" "C35" (at 438.15 398.145 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Value" "100n" (at 438.15 400.685 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 442.9252 402.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 441.96 398.78 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 0f3843ec-5d2a-4f22-8215-c1c06cf8b863))
+    (pin "2" (uuid 8186a5bb-1a97-464e-b02d-66da067aeef6))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "C35") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Connector:Conn_01x03_Pin") (at 412.75 398.78 90) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 950fb1d4-3513-4700-87aa-73c4f1338733)
+    (property "Reference" "JUMPER3" (at 412.75 401.32 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "UNI/BIPOLAR" (at 412.75 403.86 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" (at 412.75 398.78 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 412.75 398.78 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 61da9f3d-86a2-4256-83f3-7b0edae6137d))
+    (pin "2" (uuid 5d3bc1a1-4ddb-4157-9fb4-711e7fb55982))
+    (pin "3" (uuid a7cd7a51-5686-4737-820f-d1286878b44a))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "JUMPER3") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "power:Earth") (at 345.44 198.12 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 97a2682c-aff6-4b9b-a5f1-ad165bdc342a)
-    (property "Reference" "#PWR053" (at 345.44 204.47 0)
+    (property "Reference" "#PWR054" (at 345.44 204.47 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 345.44 201.93 0)
@@ -11000,7 +11460,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR053") (unit 1)
+          (reference "#PWR054") (unit 1)
         )
       )
     )
@@ -11047,7 +11507,7 @@
   (symbol (lib_id "Connector:Conn_01x16_Pin") (at 114.3 377.19 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9c16da11-68c2-41e0-96b5-51c11e15228e)
-    (property "Reference" "J9" (at 114.935 355.6 0)
+    (property "Reference" "J1" (at 114.935 355.6 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Conn_01x16_Pin" (at 114.935 358.14 0)
@@ -11078,7 +11538,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J9") (unit 1)
+          (reference "J1") (unit 1)
         )
       )
     )
@@ -11087,7 +11547,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 344.17 270.51 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 9d0fb534-3cd4-4abf-87b7-49a84174acf3)
-    (property "Reference" "J10" (at 340.4235 266.7 0)
+    (property "Reference" "J12" (at 340.4235 266.7 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 340.4235 269.24 0)
@@ -11105,7 +11565,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J10") (unit 1)
+          (reference "J12") (unit 1)
         )
       )
     )
@@ -11114,7 +11574,7 @@
   (symbol (lib_id "power:+12V") (at 328.93 370.84 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9d83394b-9348-4f46-b13c-cd0bd0e0afae)
-    (property "Reference" "#PWR048" (at 328.93 374.65 0)
+    (property "Reference" "#PWR049" (at 328.93 374.65 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+12V" (at 328.93 365.76 0)
@@ -11130,7 +11590,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR048") (unit 1)
+          (reference "#PWR049") (unit 1)
         )
       )
       (project "kompari"
@@ -11144,7 +11604,7 @@
   (symbol (lib_id "power:+3.3V") (at 152.4 135.89 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9da092c5-80e8-4b76-8658-64b6df73b1a1)
-    (property "Reference" "#PWR025" (at 152.4 139.7 0)
+    (property "Reference" "#PWR022" (at 152.4 139.7 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 152.4 132.08 0)
@@ -11160,7 +11620,37 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR025") (unit 1)
+          (reference "#PWR022") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:Earth") (at 453.39 402.59 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 9eba25c7-6fa9-41d6-bf50-05e2270840cc)
+    (property "Reference" "#PWR077" (at 453.39 408.94 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "Earth" (at 453.39 406.4 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "" (at 453.39 402.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 453.39 402.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 3622ed49-0413-421a-b822-b4fa59903c23))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR077") (unit 1)
+        )
+      )
+      (project "kompari"
+        (path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
+          (reference "#PWR0105") (unit 1)
         )
       )
     )
@@ -11169,7 +11659,7 @@
   (symbol (lib_id "power:+3.3V") (at 454.66 138.43 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9ef2fb9c-4ec4-4902-a932-097f3d647a39)
-    (property "Reference" "#PWR061" (at 454.66 142.24 0)
+    (property "Reference" "#PWR064" (at 454.66 142.24 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 454.66 134.62 0)
@@ -11185,7 +11675,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR061") (unit 1)
+          (reference "#PWR064") (unit 1)
         )
       )
     )
@@ -11249,7 +11739,7 @@
   (symbol (lib_id "power:+3.3V") (at 125.73 242.57 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a3d6bfe9-aea6-415d-a9cc-4024e0fd5456)
-    (property "Reference" "#PWR021" (at 125.73 246.38 0)
+    (property "Reference" "#PWR019" (at 125.73 246.38 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 125.73 238.76 0)
@@ -11265,7 +11755,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR021") (unit 1)
+          (reference "#PWR019") (unit 1)
         )
       )
     )
@@ -11274,7 +11764,7 @@
   (symbol (lib_id "power:Earth") (at 125.73 265.43 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a3de88a0-fdc6-41cc-88d2-df7605b6940f)
-    (property "Reference" "#PWR022" (at 125.73 271.78 0)
+    (property "Reference" "#PWR020" (at 125.73 271.78 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 125.73 269.24 0)
@@ -11290,7 +11780,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR022") (unit 1)
+          (reference "#PWR020") (unit 1)
         )
       )
     )
@@ -11299,7 +11789,7 @@
   (symbol (lib_id "power:Earth") (at 427.99 147.32 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a3fab9ec-af48-4644-9af9-91a29c44acb5)
-    (property "Reference" "#PWR060" (at 427.99 153.67 0)
+    (property "Reference" "#PWR063" (at 427.99 153.67 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 427.99 151.13 0)
@@ -11315,7 +11805,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR060") (unit 1)
+          (reference "#PWR063") (unit 1)
         )
       )
     )
@@ -11355,7 +11845,7 @@
   (symbol (lib_id "Device:R") (at 415.29 275.59 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a590276a-58bd-434f-a8b2-d4ba3740e4ed)
-    (property "Reference" "R51" (at 415.29 270.51 90)
+    (property "Reference" "R47" (at 415.29 270.51 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 415.29 273.05 90)
@@ -11372,7 +11862,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R51") (unit 1)
+          (reference "R47") (unit 1)
         )
       )
     )
@@ -11381,7 +11871,7 @@
   (symbol (lib_id "power:Earth") (at 350.52 90.17 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a5e215a7-6494-47a9-b0b2-6d238558c3c7)
-    (property "Reference" "#PWR056" (at 350.52 96.52 0)
+    (property "Reference" "#PWR057" (at 350.52 96.52 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 350.52 93.98 0)
@@ -11397,7 +11887,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR056") (unit 1)
+          (reference "#PWR057") (unit 1)
         )
       )
     )
@@ -11444,7 +11934,7 @@
   (symbol (lib_id "Device:C") (at 393.7 250.19 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a6e9937e-5afe-4ef0-a7d3-ca9d2d54f171)
-    (property "Reference" "C28" (at 393.7 243.84 90)
+    (property "Reference" "C29" (at 393.7 243.84 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100p" (at 393.7 246.38 90)
@@ -11461,32 +11951,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "C28") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "power:+5V") (at 43.18 58.42 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid a745a929-c842-4757-88b6-eeac5f55ed01)
-    (property "Reference" "#PWR024" (at 43.18 62.23 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+5V" (at 43.18 54.61 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 43.18 58.42 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 43.18 58.42 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 7cc74342-89c7-4eec-9e51-9dc2bc651dac))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR024") (unit 1)
+          (reference "C29") (unit 1)
         )
       )
     )
@@ -11495,7 +11960,7 @@
   (symbol (lib_id "Device:R") (at 323.85 325.12 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a76956f4-dd7c-472e-b5cd-d6c07e0d98ce)
-    (property "Reference" "R38" (at 323.85 320.04 90)
+    (property "Reference" "R34" (at 323.85 320.04 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 323.85 322.58 90)
@@ -11512,7 +11977,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R38") (unit 1)
+          (reference "R34") (unit 1)
         )
       )
     )
@@ -11521,7 +11986,7 @@
   (symbol (lib_id "power:+12V") (at 294.64 30.48 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a76d2c34-bace-4665-a930-9362ffecb382)
-    (property "Reference" "#PWR042" (at 294.64 34.29 0)
+    (property "Reference" "#PWR043" (at 294.64 34.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+12V" (at 294.64 26.67 0)
@@ -11537,7 +12002,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR042") (unit 1)
+          (reference "#PWR043") (unit 1)
         )
       )
     )
@@ -11546,7 +12011,7 @@
   (symbol (lib_id "power:+12V") (at 316.23 30.48 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a819a980-5d16-4522-88cd-f3eac2b47d6c)
-    (property "Reference" "#PWR045" (at 316.23 34.29 0)
+    (property "Reference" "#PWR046" (at 316.23 34.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+12V" (at 316.23 26.67 0)
@@ -11562,7 +12027,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR045") (unit 1)
+          (reference "#PWR046") (unit 1)
         )
       )
     )
@@ -11571,7 +12036,7 @@
   (symbol (lib_id "Device:R") (at 374.65 311.15 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a91a2106-abf6-4fcb-9024-80d1ca639031)
-    (property "Reference" "R47" (at 374.65 306.07 90)
+    (property "Reference" "R43" (at 374.65 306.07 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 374.65 308.61 90)
@@ -11588,7 +12053,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R47") (unit 1)
+          (reference "R43") (unit 1)
         )
       )
     )
@@ -11695,7 +12160,7 @@
   (symbol (lib_id "Eurorack:Potentiometer_9mm_Vertical_Linear") (at 439.42 184.15 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid aba1992c-551a-4e68-9cef-7fcd648a1446)
-    (property "Reference" "P1" (at 436.88 184.785 0)
+    (property "Reference" "P2" (at 436.88 184.785 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "Potentiometer_9mm_Vertical_Linear" (at 436.88 182.245 0)
@@ -11713,7 +12178,32 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "P1") (unit 1)
+          (reference "P2") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Connector:TestPoint") (at 422.91 360.68 180) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid abfd6ea3-068f-4a98-8788-2818f3017c13)
+    (property "Reference" "TP6" (at 419.1 367.03 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Value" "TestPoint" (at 419.1 369.57 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 417.83 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 417.83 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 6c722c11-7f94-458c-b18a-6e2bf5e6a6dd))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "TP6") (unit 1)
         )
       )
     )
@@ -11722,7 +12212,7 @@
   (symbol (lib_id "power:Earth") (at 111.76 52.07 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid ac24d8b0-c2a2-4014-9cdb-058dd4fcbfcb)
-    (property "Reference" "#PWR018" (at 111.76 58.42 0)
+    (property "Reference" "#PWR017" (at 111.76 58.42 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 111.76 55.88 0)
@@ -11738,32 +12228,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR018") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Connector:TestPoint") (at 508 363.22 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid b0c2a0fc-8ebb-41bb-8700-dfe822f23387)
-    (property "Reference" "TP8" (at 504.19 369.57 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "TestPoint" (at 504.19 372.11 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 502.92 363.22 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 502.92 363.22 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 34643c2b-d59d-4be2-8cbf-53ccf76d5160))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "TP8") (unit 1)
+          (reference "#PWR017") (unit 1)
         )
       )
     )
@@ -11772,7 +12237,7 @@
   (symbol (lib_id "power:+3.3V") (at 274.32 69.85 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b184c5b5-4a86-4310-b0ac-6ea32188e002)
-    (property "Reference" "#PWR039" (at 274.32 73.66 0)
+    (property "Reference" "#PWR040" (at 274.32 73.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 274.32 66.04 0)
@@ -11788,7 +12253,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR039") (unit 1)
+          (reference "#PWR040") (unit 1)
         )
       )
     )
@@ -11832,10 +12297,40 @@
     )
   )
 
+  (symbol (lib_id "power:+5V") (at 55.88 29.21 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid b20ecb70-0bd7-46bf-a47e-b8840bac36e1)
+    (property "Reference" "#PWR09" (at 55.88 33.02 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+5V" (at 55.88 25.4 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 55.88 29.21 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 55.88 29.21 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 84aed3d7-7338-475b-b033-1e3ecb9186d3))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR09") (unit 1)
+        )
+      )
+      (project "usb-hub"
+        (path "/fd314b15-8a64-4cdc-b5d9-7360b63466b4"
+          (reference "#PWR022") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "power:Earth") (at 45.72 336.55 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b3617d0a-4ab2-4309-b94e-91653238ec4e)
-    (property "Reference" "#PWR06" (at 45.72 342.9 0)
+    (property "Reference" "#PWR07" (at 45.72 342.9 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 45.72 340.36 0)
@@ -11851,7 +12346,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR06") (unit 1)
+          (reference "#PWR07") (unit 1)
         )
       )
     )
@@ -11885,7 +12380,7 @@
   (symbol (lib_id "Device:R") (at 466.09 311.15 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b43c61dd-eac5-45f7-87a5-e0da0e95fcfb)
-    (property "Reference" "R55" (at 466.09 306.07 90)
+    (property "Reference" "R51" (at 466.09 306.07 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 466.09 308.61 90)
@@ -11902,7 +12397,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R55") (unit 1)
+          (reference "R51") (unit 1)
         )
       )
     )
@@ -11911,7 +12406,7 @@
   (symbol (lib_id "Device:R") (at 506.73 275.59 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b7455646-4da9-4f4b-9f00-6eaf1f3ca35f)
-    (property "Reference" "R60" (at 506.73 270.51 90)
+    (property "Reference" "R56" (at 506.73 270.51 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 506.73 273.05 90)
@@ -11928,7 +12423,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R60") (unit 1)
+          (reference "R56") (unit 1)
         )
       )
     )
@@ -11937,7 +12432,7 @@
   (symbol (lib_id "power:Earth") (at 454.66 146.05 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b8038674-7d5d-441b-8030-547c79cda0dd)
-    (property "Reference" "#PWR062" (at 454.66 152.4 0)
+    (property "Reference" "#PWR065" (at 454.66 152.4 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 454.66 149.86 0)
@@ -11953,7 +12448,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR062") (unit 1)
+          (reference "#PWR065") (unit 1)
         )
       )
     )
@@ -11962,7 +12457,7 @@
   (symbol (lib_id "Connector:Conn_01x30_Pin") (at 546.1 186.69 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b993decb-4858-464e-89c8-01240d572476)
-    (property "Reference" "J16" (at 549.91 161.29 0)
+    (property "Reference" "J18" (at 549.91 161.29 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "Conn_01x30_Pin" (at 549.91 163.83 0)
@@ -12007,7 +12502,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J16") (unit 1)
+          (reference "J18") (unit 1)
         )
       )
     )
@@ -12042,7 +12537,7 @@
   (symbol (lib_id "Device:R") (at 283.21 273.05 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid bc6bc68f-8e05-48a1-80ca-62116b474c76)
-    (property "Reference" "R30" (at 283.21 267.97 90)
+    (property "Reference" "R28" (at 283.21 267.97 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 283.21 270.51 90)
@@ -12059,7 +12554,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R30") (unit 1)
+          (reference "R28") (unit 1)
         )
       )
     )
@@ -12068,7 +12563,7 @@
   (symbol (lib_id "power:Earth") (at 68.58 217.17 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bc80ef49-0203-43b3-be21-21352205cd10)
-    (property "Reference" "#PWR012" (at 68.58 223.52 0)
+    (property "Reference" "#PWR013" (at 68.58 223.52 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 68.58 220.98 0)
@@ -12084,7 +12579,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR012") (unit 1)
+          (reference "#PWR013") (unit 1)
         )
       )
     )
@@ -12128,40 +12623,10 @@
     )
   )
 
-  (symbol (lib_id "power:-12V") (at 453.39 377.19 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid bef37410-ac25-4ab1-9244-25f8cb029c7b)
-    (property "Reference" "#PWR068" (at 453.39 374.65 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "-12V" (at 453.39 373.38 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 453.39 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 453.39 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid a152f22d-6d14-4a43-b186-5fc1f81996c3))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR068") (unit 1)
-        )
-      )
-      (project "kompari"
-        (path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-          (reference "#PWR0104") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "power:+5V") (at 217.17 398.78 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bf692258-178e-414a-9339-61ed699ac68e)
-    (property "Reference" "#PWR077" (at 217.17 394.97 0)
+    (property "Reference" "#PWR029" (at 217.17 394.97 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (at 217.17 402.59 0)
@@ -12177,7 +12642,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR077") (unit 1)
+          (reference "#PWR029") (unit 1)
         )
       )
     )
@@ -12186,7 +12651,7 @@
   (symbol (lib_id "power:Earth") (at 241.3 361.95 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid c06221ac-c6ea-4e09-bddb-3ba24511c54e)
-    (property "Reference" "#PWR019" (at 241.3 368.3 0)
+    (property "Reference" "#PWR034" (at 241.3 368.3 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 241.3 365.76 0)
@@ -12202,7 +12667,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR019") (unit 1)
+          (reference "#PWR034") (unit 1)
         )
       )
     )
@@ -12211,7 +12676,7 @@
   (symbol (lib_id "Device:R") (at 323.85 275.59 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid c131864c-5660-4728-baaf-1dcecbc45d6b)
-    (property "Reference" "R37" (at 323.85 270.51 90)
+    (property "Reference" "R33" (at 323.85 270.51 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 323.85 273.05 90)
@@ -12228,7 +12693,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R37") (unit 1)
+          (reference "R33") (unit 1)
         )
       )
     )
@@ -12254,6 +12719,31 @@
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
           (reference "#PWR015") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:+5V") (at 422.91 360.68 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid c2202f05-9f9c-4a0f-ba4b-0835c32b6562)
+    (property "Reference" "#PWR070" (at 422.91 364.49 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+5V" (at 422.91 356.87 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 422.91 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 422.91 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid ffa14c23-a0c7-4653-a917-7668d4026c13))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR070") (unit 1)
         )
       )
     )
@@ -12326,7 +12816,7 @@
   (symbol (lib_id "Device:R") (at 339.09 133.35 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid c3fe5b15-ff50-4c1f-ac8d-df4c06dc7e3a)
-    (property "Reference" "R41" (at 339.09 128.27 90)
+    (property "Reference" "R37" (at 339.09 128.27 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 339.09 130.81 90)
@@ -12343,32 +12833,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R41") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Connector:TestPoint") (at 497.84 363.22 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid c59c5811-7548-403d-a901-ff811709d0d9)
-    (property "Reference" "TP7" (at 496.57 370.84 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "TestPoint" (at 496.57 373.38 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 492.76 363.22 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 492.76 363.22 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 92ed238c-7619-4b7b-9eb1-d51269191ead))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "TP7") (unit 1)
+          (reference "R37") (unit 1)
         )
       )
     )
@@ -12377,7 +12842,7 @@
   (symbol (lib_id "Device:R") (at 236.22 176.53 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid c5dfcbd7-3e63-41b6-8c5e-c953a5eaec69)
-    (property "Reference" "R24" (at 236.22 171.45 90)
+    (property "Reference" "R22" (at 236.22 171.45 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 236.22 173.99 90)
@@ -12394,7 +12859,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R24") (unit 1)
+          (reference "R22") (unit 1)
         )
       )
     )
@@ -12454,7 +12919,7 @@
   (symbol (lib_id "Device:R") (at 415.29 325.12 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid c99d9387-0702-4166-91db-582b049a7149)
-    (property "Reference" "R52" (at 415.29 320.04 90)
+    (property "Reference" "R48" (at 415.29 320.04 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 415.29 322.58 90)
@@ -12471,7 +12936,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R52") (unit 1)
+          (reference "R48") (unit 1)
         )
       )
     )
@@ -12480,7 +12945,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 187.96 140.97 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid ca5d2500-1adb-4dbe-aa1c-19078f700d55)
-    (property "Reference" "J2" (at 191.7065 137.16 0)
+    (property "Reference" "J3" (at 191.7065 137.16 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 191.7065 139.7 0)
@@ -12498,7 +12963,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J2") (unit 1)
+          (reference "J3") (unit 1)
         )
       )
     )
@@ -12535,7 +13000,7 @@
   (symbol (lib_id "power:+3.3V") (at 127 33.02 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid ca7f1d5f-210b-4c5f-b23b-c9acc159f1bd)
-    (property "Reference" "#PWR023" (at 127 36.83 0)
+    (property "Reference" "#PWR021" (at 127 36.83 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 127 29.21 0)
@@ -12551,7 +13016,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR023") (unit 1)
+          (reference "#PWR021") (unit 1)
         )
       )
     )
@@ -12586,7 +13051,7 @@
   (symbol (lib_id "power:Earth") (at 335.28 386.08 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid cafabb32-194a-4d4f-91b0-60bad4de3d0a)
-    (property "Reference" "#PWR052" (at 335.28 392.43 0)
+    (property "Reference" "#PWR051" (at 335.28 392.43 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 335.28 389.89 0)
@@ -12602,7 +13067,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR052") (unit 1)
+          (reference "#PWR051") (unit 1)
         )
       )
       (project "kompari"
@@ -12654,7 +13119,7 @@
   (symbol (lib_id "Device:R") (at 506.73 325.12 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid cb90bc04-59fe-43a3-b516-404e540f9eb5)
-    (property "Reference" "R61" (at 506.73 320.04 90)
+    (property "Reference" "R57" (at 506.73 320.04 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 506.73 322.58 90)
@@ -12671,7 +13136,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R61") (unit 1)
+          (reference "R57") (unit 1)
         )
       )
     )
@@ -12680,7 +13145,7 @@
   (symbol (lib_id "Device:R") (at 236.22 146.05 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid ce33905f-dd65-4fa2-b460-44ba92cbd11d)
-    (property "Reference" "R23" (at 236.22 140.97 90)
+    (property "Reference" "R21" (at 236.22 140.97 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 236.22 143.51 90)
@@ -12697,37 +13162,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R23") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "power:Earth") (at 412.75 377.19 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid ceb331e6-f423-40a3-b949-00d77f453f8b)
-    (property "Reference" "#PWR069" (at 412.75 370.84 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "Earth" (at 412.75 373.38 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Footprint" "" (at 412.75 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 412.75 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid a7c01148-04ee-4b0b-b773-756666835524))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR069") (unit 1)
-        )
-      )
-      (project "kompari"
-        (path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-          (reference "#PWR0105") (unit 1)
+          (reference "R21") (unit 1)
         )
       )
     )
@@ -12799,35 +13234,10 @@
     )
   )
 
-  (symbol (lib_id "Connector:TestPoint") (at 422.91 377.19 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid d2280588-fbe6-445a-ab23-55dfdb2e6600)
-    (property "Reference" "TP5" (at 419.1 383.54 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "TestPoint" (at 419.1 386.08 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 417.83 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 417.83 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 7943f1d6-2969-4b64-a9f0-0ffd4b427254))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "TP5") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 290.83 140.97 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d2d3e453-6c3e-44b7-931d-d7661fb250aa)
-    (property "Reference" "J8" (at 294.5765 137.16 0)
+    (property "Reference" "J10" (at 294.5765 137.16 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 294.5765 139.7 0)
@@ -12845,7 +13255,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J8") (unit 1)
+          (reference "J10") (unit 1)
         )
       )
     )
@@ -12957,7 +13367,7 @@
   (symbol (lib_id "Device:R") (at 485.14 261.62 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d93119e1-8f47-498b-aaf1-1a25bfaee5f5)
-    (property "Reference" "R57" (at 485.14 256.54 90)
+    (property "Reference" "R53" (at 485.14 256.54 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "270K" (at 485.14 259.08 90)
@@ -12974,7 +13384,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R57") (unit 1)
+          (reference "R53") (unit 1)
         )
       )
     )
@@ -12983,7 +13393,7 @@
   (symbol (lib_id "Device:R") (at 254 133.35 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d9f8ae28-6c4a-4872-8d98-e422244d652a)
-    (property "Reference" "R27" (at 254 128.27 90)
+    (property "Reference" "R25" (at 254 128.27 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "15K" (at 254 130.81 90)
@@ -13000,7 +13410,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R27") (unit 1)
+          (reference "R25") (unit 1)
         )
       )
     )
@@ -13009,7 +13419,7 @@
   (symbol (lib_id "power:Earth") (at 290.83 281.94 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid dbea7653-8a14-43f1-93aa-b1659b9783d6)
-    (property "Reference" "#PWR040" (at 290.83 288.29 0)
+    (property "Reference" "#PWR041" (at 290.83 288.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 290.83 285.75 0)
@@ -13025,57 +13435,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR040") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Connector:TestPoint") (at 412.75 377.19 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid debd89bc-1fbb-446f-937a-cafe0208381d)
-    (property "Reference" "TP4" (at 408.94 383.54 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "TestPoint" (at 408.94 386.08 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 407.67 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 407.67 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 0e2522d1-a9a8-467b-90fd-329d6925798b))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "TP4") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Connector:TestPoint") (at 487.68 363.22 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid e09355ab-08fd-46ce-84dd-1a416317b13f)
-    (property "Reference" "TP6" (at 483.87 369.57 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "TestPoint" (at 483.87 372.11 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 482.6 363.22 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 482.6 363.22 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid c82940c8-f37e-481d-9663-7863facebdaf))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "TP6") (unit 1)
+          (reference "#PWR041") (unit 1)
         )
       )
     )
@@ -13116,7 +13476,7 @@
   (symbol (lib_id "Device:R") (at 466.09 273.05 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e1679610-888c-49d9-95cb-225bf6237f93)
-    (property "Reference" "R54" (at 466.09 267.97 90)
+    (property "Reference" "R50" (at 466.09 267.97 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 466.09 270.51 90)
@@ -13133,7 +13493,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R54") (unit 1)
+          (reference "R50") (unit 1)
         )
       )
     )
@@ -13142,7 +13502,7 @@
   (symbol (lib_id "power:Earth") (at 154.94 82.55 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e1990d7f-77c6-4411-bd2a-3a362d4e5773)
-    (property "Reference" "#PWR028" (at 154.94 88.9 0)
+    (property "Reference" "#PWR025" (at 154.94 88.9 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 154.94 86.36 0)
@@ -13158,7 +13518,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR028") (unit 1)
+          (reference "#PWR025") (unit 1)
         )
       )
     )
@@ -13167,7 +13527,7 @@
   (symbol (lib_id "power:+3.3V") (at 223.52 398.78 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e34fd889-e9fd-4e68-9717-9579c9158023)
-    (property "Reference" "#PWR078" (at 223.52 394.97 0)
+    (property "Reference" "#PWR030" (at 223.52 394.97 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 223.52 402.59 0)
@@ -13183,7 +13543,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR078") (unit 1)
+          (reference "#PWR030") (unit 1)
         )
       )
     )
@@ -13192,7 +13552,7 @@
   (symbol (lib_id "Device:R") (at 355.6 176.53 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e358742f-135b-486a-9890-5ca97dd2280a)
-    (property "Reference" "R43" (at 355.6 171.45 90)
+    (property "Reference" "R39" (at 355.6 171.45 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "15K" (at 355.6 173.99 90)
@@ -13209,7 +13569,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R43") (unit 1)
+          (reference "R39") (unit 1)
         )
       )
     )
@@ -13240,10 +13600,40 @@
     )
   )
 
+  (symbol (lib_id "power:+12V") (at 420.37 392.43 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid e3a1e0dd-da3b-4315-89cd-65c6e650b3e7)
+    (property "Reference" "#PWR075" (at 420.37 396.24 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+12V" (at 420.37 387.35 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 420.37 392.43 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 420.37 392.43 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 17c9295b-fe79-4ad9-b886-3907dc662567))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "#PWR075") (unit 1)
+        )
+      )
+      (project "kompari"
+        (path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
+          (reference "#PWR0106") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 252.73 320.04 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e40e34bd-fa3a-4732-8a6d-ecec79c10fdf)
-    (property "Reference" "J6" (at 248.9835 316.23 0)
+    (property "Reference" "J7" (at 248.9835 316.23 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 248.9835 318.77 0)
@@ -13261,7 +13651,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J6") (unit 1)
+          (reference "J7") (unit 1)
         )
       )
     )
@@ -13324,7 +13714,7 @@
   (symbol (lib_id "Connector:Conn_01x03_Pin") (at 123.19 303.53 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e871542d-b1df-4f4f-838f-54c7e112736c)
-    (property "Reference" "JUMPER1" (at 123.19 306.07 90)
+    (property "Reference" "JUMPER2" (at 123.19 306.07 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "UNI/BIPOLAR" (at 123.19 308.61 90)
@@ -13342,7 +13732,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "JUMPER1") (unit 1)
+          (reference "JUMPER2") (unit 1)
         )
       )
     )
@@ -13379,7 +13769,7 @@
   (symbol (lib_id "power:Earth") (at 45.72 299.72 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e8e9bb4c-55e1-48c1-a88a-cd1890e6a498)
-    (property "Reference" "#PWR05" (at 45.72 306.07 0)
+    (property "Reference" "#PWR06" (at 45.72 306.07 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 45.72 303.53 0)
@@ -13395,7 +13785,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR05") (unit 1)
+          (reference "#PWR06") (unit 1)
         )
       )
     )
@@ -13404,7 +13794,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 344.17 320.04 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e8ef5de1-02c7-48ba-acc6-c537f6df0c25)
-    (property "Reference" "J11" (at 340.4235 316.23 0)
+    (property "Reference" "J13" (at 340.4235 316.23 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 340.4235 318.77 0)
@@ -13422,7 +13812,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J11") (unit 1)
+          (reference "J13") (unit 1)
         )
       )
     )
@@ -13457,7 +13847,7 @@
   (symbol (lib_id "Device:C") (at 485.14 299.72 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid eabae82e-6a73-4627-94f4-87bf7275d1bf)
-    (property "Reference" "C32" (at 485.14 293.37 90)
+    (property "Reference" "C33" (at 485.14 293.37 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100p" (at 485.14 295.91 90)
@@ -13474,7 +13864,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "C32") (unit 1)
+          (reference "C33") (unit 1)
         )
       )
     )
@@ -13521,7 +13911,7 @@
   (symbol (lib_id "Device:C") (at 485.14 250.19 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid eb7d40b6-c06e-43a9-ad86-c9422afd0c36)
-    (property "Reference" "C31" (at 485.14 243.84 90)
+    (property "Reference" "C32" (at 485.14 243.84 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100p" (at 485.14 246.38 90)
@@ -13538,7 +13928,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "C31") (unit 1)
+          (reference "C32") (unit 1)
         )
       )
     )
@@ -13581,7 +13971,7 @@
   (symbol (lib_id "Device:R") (at 339.09 146.05 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid ee451e91-b1d8-4af4-8653-6b45601e86bf)
-    (property "Reference" "R42" (at 339.09 140.97 90)
+    (property "Reference" "R38" (at 339.09 140.97 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 339.09 143.51 90)
@@ -13598,7 +13988,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R42") (unit 1)
+          (reference "R38") (unit 1)
         )
       )
     )
@@ -13633,7 +14023,7 @@
   (symbol (lib_id "Connector:Conn_01x16_Pin") (at 181.61 377.19 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid f0179209-d345-4f7d-902e-7651da1442c4)
-    (property "Reference" "J18" (at 180.975 355.6 0)
+    (property "Reference" "J2" (at 180.975 355.6 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Conn_01x16_Pin" (at 180.975 358.14 0)
@@ -13664,7 +14054,32 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J18") (unit 1)
+          (reference "J2") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Connector:TestPoint") (at 447.04 360.68 180) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid f13363d3-a1b3-4592-83de-f8a54f746813)
+    (property "Reference" "TP8" (at 443.23 367.03 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Value" "TestPoint" (at 443.23 369.57 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+    )
+    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 441.96 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 441.96 360.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 3934239d-4532-4a7c-9ba4-45f94628d325))
+    (instances
+      (project "EuroPi-X"
+        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
+          (reference "TP8") (unit 1)
         )
       )
     )
@@ -13699,7 +14114,7 @@
   (symbol (lib_id "Eurorack:Thonkiconn_Mono_Jack") (at 187.96 184.15 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid f3ac4c6b-c612-4d84-8d15-08bf5b6ca1a8)
-    (property "Reference" "J3" (at 191.7065 180.34 0)
+    (property "Reference" "J4" (at 191.7065 180.34 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Thonkiconn_Mono_Jack" (at 191.7065 182.88 0)
@@ -13717,7 +14132,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "J3") (unit 1)
+          (reference "J4") (unit 1)
         )
       )
     )
@@ -13755,7 +14170,7 @@
   (symbol (lib_id "Device:R") (at 466.09 261.62 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid f7f60a8d-8197-4527-8f79-dff379c55a01)
-    (property "Reference" "R53" (at 466.09 256.54 90)
+    (property "Reference" "R49" (at 466.09 256.54 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 466.09 259.08 90)
@@ -13772,7 +14187,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R53") (unit 1)
+          (reference "R49") (unit 1)
         )
       )
     )
@@ -13781,7 +14196,7 @@
   (symbol (lib_id "Device:C") (at 393.7 299.72 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid f86da2dc-0e56-4307-9e44-8aa50b1ee135)
-    (property "Reference" "C29" (at 393.7 293.37 90)
+    (property "Reference" "C30" (at 393.7 293.37 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100p" (at 393.7 295.91 90)
@@ -13798,7 +14213,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "C29") (unit 1)
+          (reference "C30") (unit 1)
         )
       )
     )
@@ -13830,35 +14245,10 @@
     )
   )
 
-  (symbol (lib_id "Connector:TestPoint") (at 453.39 377.19 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid f94930f9-674e-4357-bad1-b1799178f51d)
-    (property "Reference" "TP3" (at 449.58 383.54 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "TestPoint" (at 449.58 386.08 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "TestPoint:TestPoint_Pad_1.0x1.0mm" (at 448.31 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 448.31 377.19 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 2464b684-0a12-400d-85aa-fd2f2915c87b))
-    (instances
-      (project "EuroPi-X"
-        (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "TP3") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "Device:R") (at 337.82 176.53 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid f9d4305c-0534-4deb-8b89-ecec0d6cbeb7)
-    (property "Reference" "R39" (at 337.82 171.45 90)
+    (property "Reference" "R35" (at 337.82 171.45 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "100K" (at 337.82 173.99 90)
@@ -13875,7 +14265,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R39") (unit 1)
+          (reference "R35") (unit 1)
         )
       )
     )
@@ -13884,7 +14274,7 @@
   (symbol (lib_id "power:+3.3V") (at 247.65 69.85 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid fa1b845b-caa2-4359-ad78-877f62aa5f56)
-    (property "Reference" "#PWR036" (at 247.65 73.66 0)
+    (property "Reference" "#PWR037" (at 247.65 73.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3.3V" (at 247.65 66.04 0)
@@ -13900,7 +14290,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR036") (unit 1)
+          (reference "#PWR037") (unit 1)
         )
       )
     )
@@ -13935,7 +14325,7 @@
   (symbol (lib_id "power:Earth") (at 382.27 331.47 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid fc5286b4-78bb-447c-b527-19b63379bfa9)
-    (property "Reference" "#PWR058" (at 382.27 337.82 0)
+    (property "Reference" "#PWR059" (at 382.27 337.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "Earth" (at 382.27 335.28 0)
@@ -13951,7 +14341,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "#PWR058") (unit 1)
+          (reference "#PWR059") (unit 1)
         )
       )
     )
@@ -14076,7 +14466,7 @@
   (symbol (lib_id "Device:R") (at 232.41 275.59 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid ffcb507c-1c54-4c27-bff0-b0d9536561c2)
-    (property "Reference" "R20" (at 232.41 270.51 90)
+    (property "Reference" "R18" (at 232.41 270.51 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 232.41 273.05 90)
@@ -14093,7 +14483,7 @@
     (instances
       (project "EuroPi-X"
         (path "/a1be51f2-61d0-4240-8665-f31cc7b044f7"
-          (reference "R20") (unit 1)
+          (reference "R18") (unit 1)
         )
       )
     )
