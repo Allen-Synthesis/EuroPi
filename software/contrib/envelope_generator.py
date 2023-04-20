@@ -62,9 +62,13 @@ class EnvelopeGenerator(EuroPiScript):
         
     def change_sustain_mode(self):
         self.sustain_mode = 1 - self.sustain_mode
+        #Save state to file
+        self.save_state()
         
     def change_looping_mode(self):
         self.looping_mode = 1 - self.looping_mode
+        #Save state to file
+        self.save_state()
         
     def copy_digital_input(self):
         self.din_copy_out.value(din.value())
@@ -116,8 +120,6 @@ class EnvelopeGenerator(EuroPiScript):
         
     def update_display(self):
         if ticks_diff(ticks_ms(), self.last_refreshed_display) >= self.display_refresh_rate:
-            #Save state to file
-            self.save_state()
             
             #Draw slope graph axis
             oled.hline(self.envelope_display_bounds[0], self.envelope_display_bounds[3], self.envelope_display_bounds[2], 1)
