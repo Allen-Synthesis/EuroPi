@@ -30,6 +30,13 @@ Recording of CV can be primed so that you can record a movement without missing 
 <i>Author: [anselln](https://github.com/anselln)</i>
 <br><i>Labels: sequencer, CV, performance</i>
 
+### Envelope Generator \[ [documentation](/software/contrib/envelope_generator.md) | [script](/software/contrib/envelope_generator.py) \]
+An attack release envelope with optional sustain and looping functionality.
+Envelopes are triggered or gated by the digital input, and the envelope is output, along with a copy of the digital input and an inverted copy of the envelope.
+
+<i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
+<br><i>Labels: Envelope Generator</i>
+
 ### Euclid \[ [documentation](/software/contrib/euclid.md) | [script](/software/contrib/euclid.py) \]
 Euclidean rhythm generator. Each channel can generate an independent euclidean rhythm.
 
