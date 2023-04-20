@@ -301,18 +301,17 @@ class Consequencer(EuroPiScript):
         lpos_offset = current_pattern_length * CHAR_WIDTH
         
         # Calculate the x position of the first pattern to be drawn
-        normal_lpos = lpos = 8-(self.step*8)
+        normal_lpos = lpos = 8 - (self.step * 8)
         
         # Calculate the number of patterns required to fill the OLED width
-        number_of_offset_patterns = max(int(OLED_WIDTH / lpos_offset), 1)
+        number_of_offset_patterns = 2 * max(int(OLED_WIDTH / lpos_offset), 1)
         
         # Draw as many offset patterns as required to fill the OLED
-        for offset_pattern in range(number_of_offset_patterns):
-            # Draw the current pattern, as well as a copy that is offset by one full pattern's width
-            for lpos in [normal_lpos, (normal_lpos + lpos_offset)]:
-                oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), lpos, 0, 1)
-                oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), lpos, 10, 1)
-                oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), lpos, 20, 1)
+        for pattern_offset in range(number_of_offset_patterns):
+            # Draw the current pattern
+            oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), normal_lpos, 0, 1)
+            oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), normal_lpos, 10, 1)
+            oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), normal_lpos, 20, 1)
             normal_lpos += lpos_offset
 
         # If the random toggle is on, show a rectangle
