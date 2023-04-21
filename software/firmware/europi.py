@@ -193,6 +193,10 @@ class AnalogueInput(AnalogueReader):
     want to process at the maximum speed you can use as little as 1, and the
     processor won't bog down until you get way up into the thousands if you
     wan't incredibly accurate (but quite slow) readings.
+
+    The percent function takes an optional parameter ``deadzone``. However this
+    parameter is ignored and just present to be compatible with the percent
+    function of the AnalogueReader and Knob classes
     """
 
     def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
@@ -209,7 +213,7 @@ class AnalogueInput(AnalogueReader):
                 )
         self._gradients.append(self._gradients[-1])
 
-    def percent(self, samples=None):
+    def percent(self, samples=None, deadzone=None):
         """Current voltage as a relative percentage of the component's range."""
         # Determine the percent value from the max calibration value.
         reading = self._sample_adc(samples) - INPUT_CALIBRATION_VALUES[0]
