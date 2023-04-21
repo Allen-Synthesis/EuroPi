@@ -105,6 +105,9 @@ default is 32, provides a balance of performance vs accuracy, but if you
 want to process at the maximum speed you can use as little as 1, and the
 processor won’t bog down until you get way up into the thousands if you
 wan’t incredibly accurate (but quite slow) readings.</p>
+<p>The percent function takes an optional parameter <code class="docutils literal notranslate"><span class="pre">deadzone</span></code>. However this
+parameter is ignored and just present to be compatible with the percent
+function of the AnalogueReader and Knob classes</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.AnalogueInput.choice">
 <span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.choice" title="Permalink to this definition"></a></dt>
@@ -113,7 +116,7 @@ wan’t incredibly accurate (but quite slow) readings.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.AnalogueInput.percent">
-<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.percent" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.percent" title="Permalink to this definition"></a></dt>
 <dd><p>Current voltage as a relative percentage of the component’s range.</p>
 </dd></dl>
 
