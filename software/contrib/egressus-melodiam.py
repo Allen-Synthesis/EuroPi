@@ -16,13 +16,13 @@ A CV sequencer based on outputs 4,5&6 from the Consequencer.
 Demo video: TBC
 
 digital_in: clock in
-analog_in: Mode 1: Adjusts randomness, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
+analog_in: Adjusts pattern length
 
 knob_1: TBC
-knob_2: TBC Attenuate CV - maybe
+knob_2: Set Pattern Length
 
-button_1: Short Press: TBC. Long Press: TBC
-button_2: Short Press: TBC. Long Press: TBC
+button_1: Short Press: Select CV Pattern (-). Long Press: TBC
+button_2: Short Press: Select CV Pattern (+). Long Press: TBC
 
 output_1: randomly generated CV
 output_2: randomly generated CV
@@ -46,6 +46,7 @@ class EgressusMelodium(EuroPiScript):
         self.reset_timeout = 1000
         self.maxRandomPatterns = 32  # This prevents a memory allocation error
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
+        self.patternLength = 16
         self.maxStepLength = 32
         self.screenRefreshNeeded = True
 
@@ -70,7 +71,8 @@ class EgressusMelodium(EuroPiScript):
 
             # Incremenent the clock step
             self.clock_step +=1
-            if self.step < self.maxStepLength -1:
+            # increment / reset step
+            if self.step < self.maxStepLength -1 and self.step < self.patternLength -1:
                 self.step += 1
             else:
                 self.step = 0
@@ -117,17 +119,29 @@ class EgressusMelodium(EuroPiScript):
     def generateRandomPattern(self, length, min, max):
         self.t=[]
         for i in range(0, length):
-            self.t.append(uniform(0,9))
+            self.t.append(uniform(min,max))
         return self.t
 
 
     def main(self):
         while True:
             self.updateScreen()
+            self.getPatternLength()
             # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
                 self.clock_step = 0
+
+    def getPatternLength(self):
+        previousPatternLength = self.patternLength
+        val = 100 * ain.percent()
+        if val > self.minAnalogInputVoltage:
+            self.patternLength = min(int((len(self.BD) / 100) * val) + k2.read_position(self.maxStepLength), self.maxStepLength-1) + 1
+        else:
+            self.patternLength = k2.read_position(self.maxStepLength) + 1
+        
+        if previousPatternLength != self.patternLength:
+            self.screenRefreshNeeded = True
 
     def updateScreen(self):
         if not self.screenRefreshNeeded:
@@ -160,6 +174,7 @@ class EgressusMelodium(EuroPiScript):
 
         # Show the pattern number
         oled.text(str(self.CvPattern),10 , 16, 1)
+        oled.text(str(self.patternLength),50 , 16, 1)
 
         oled.show()
         self.screenRefreshNeeded = False
