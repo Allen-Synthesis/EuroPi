@@ -11,7 +11,7 @@ author: Nik Ansell (github.com/gamecat69)
 date: 22-Apr-23
 labels: sequencer, CV, randomness
 
-A CV sequencer based on outputs 4,5&6 from the Consequencer.
+A stepped CV sequencer based on outputs 4,5&6 from the Consequencer.
 
 Demo video: TBC
 
@@ -39,31 +39,23 @@ class EgressusMelodium(EuroPiScript):
         # Initialize variables
         self.step = 0
         self.clock_step = 0
-        self.pattern = 0
+        #self.pattern = 0
         self.minAnalogInputVoltage = 0.5
         self.randomness = 0
         self.CvPattern = 0
-        self.numCvPatterns = 0
+        self.numCvPatterns = 4  # Initial number, this can be increased
         self.reset_timeout = 1000
         self.maxRandomPatterns = 32  # This prevents a memory allocation error
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
         self.patternLength = 16
         self.maxStepLength = 32
         self.screenRefreshNeeded = True
-        self.cycleModes = ['01', '0001', '0011', '12', '1112', '1122']
+        self.cycleModes = ['01', '0001', '0011', '12', '1112', '1122', '0012', '23', '2223', '2233', '0123']
         self.cycleMode = False
         self.cycleStep = 0
         self.selectedCycleMode = 0
-
-        # Init and Generate random CV patterns
-        self.random1 = []
-        self.random2 = []
-        self.random3 = []
-        self.random4 = []
-        self.random5 = []
-        self.random6 = []
-        self.cvPatternBanks = [self.random1, self.random2, self.random3, self.random4, self.random5, self.random6]
-        self.generateNewRandomCVPattern()
+        
+        self.loadState()
 
         # Triggered on each clock into digital input. Output stepped CV.
         @din.handler
@@ -106,6 +98,7 @@ class EgressusMelodium(EuroPiScript):
                 if self.CvPattern != 0:
                     self.CvPattern -= 1
                     self.screenRefreshNeeded = True
+            self.saveState()
 
         @b2.handler_falling
         def b2Pressed():
@@ -114,15 +107,29 @@ class EgressusMelodium(EuroPiScript):
                 self.cycleMode = not self.cycleMode
                 self.screenRefreshNeeded = True
             else:
-                if self.CvPattern < len(self.random4)-1: # change to next CV pattern
+                if self.CvPattern < self.numCvPatterns: # change to next CV pattern
                     self.CvPattern += 1
                     self.screenRefreshNeeded = True
                 else:
-                    if len(self.random4) < self.maxRandomPatterns: # We need to try and generate a new CV value
+                    if self.numCvPatterns < self.maxRandomPatterns: # We need to try and generate a new CV value
                         if self.generateNewRandomCVPattern():
                             self.CvPattern += 1
                             self.numCvPatterns += 1
                             self.screenRefreshNeeded = True
+            self.saveState()
+
+    def initCvPatternBanks(self):
+        # Init CV pattern banks
+        self.random1 = []
+        self.random2 = []
+        self.random3 = []
+        self.random4 = []
+        self.random5 = []
+        self.random6 = []
+        self.cvPatternBanks = [self.random1, self.random2, self.random3, self.random4, self.random5, self.random6]
+        for n in range(self.numCvPatterns):
+            self.generateNewRandomCVPattern(self)
+        return self.cvPatternBanks 
 
     '''Generate new CV pattern for existing bank or create a new bank'''
     def generateNewRandomCVPattern(self, new=True):
@@ -181,6 +188,25 @@ class EgressusMelodium(EuroPiScript):
         if previousCycleMode != self.selectedCycleMode:
             self.screenRefreshNeeded = True
             #print(self.selectedCycleMode)
+
+    ''' Save working vars to a save state file'''
+    def saveState(self):
+        self.state = {
+            "cvPatternBanks": self.cvPatternBanks,
+            "cycleMode": self.cycleMode,
+            "CvPattern": self.CvPattern
+        }
+        self.save_state_json(self.state)
+
+    ''' Load a previously saved state, or initialize working vars, then save'''
+    def loadState(self):
+        self.state = self.load_state_json()
+        self.cvPatternBanks = self.state.get("cvPatternBanks", [])
+        self.cycleMode = self.state.get("cycleMode", False)
+        self.CvPattern = self.state.get("CvPattern", 0)
+        if len(self.cvPatternBanks) == 0:
+            self.initCvPatternBanks()
+        self.saveState()
 
     '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
     def updateScreen(self):
