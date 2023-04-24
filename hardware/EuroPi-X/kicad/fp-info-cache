@@ -1,4 +1,4 @@
-21529358030377015
+21532725980734164
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -53295,8 +53295,8 @@ Eurorack
 
 
 0
-0
-0
+32
+31
 Eurorack
 Adafruit 1.14in 240x135 Color TFT Display ST7789
 
@@ -53346,6 +53346,13 @@ Daisy Patch Submodule
 0
 40
 40
+Eurorack
+Enoki OLED SSD1306 128x64
+
+
+0
+12
+9
 Eurorack
 Eurorack Power Header
 
@@ -53565,6 +53572,13 @@ Sub-Miniature Toggle Switch SPDT
 3
 Eurorack
 Switch Tactile Momentary C&K
+
+
+0
+4
+4
+Eurorack
+TS-1187A-B-A-B
 
 
 0
