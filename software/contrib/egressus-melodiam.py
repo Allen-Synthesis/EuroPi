@@ -213,7 +213,7 @@ class EgressusMelodium(EuroPiScript):
         oled.text(str(self.patternLength),50 , 16, 1)
         if self.cycleMode:
             oled.text('Cycle',80, 0, 1)
-        oled.text(str(self.cycleModes[self.selectedCycleMode]),80 , 16, 1)
+            oled.text(str(self.cycleModes[self.selectedCycleMode]),80 , 16, 1)
 
         oled.show()
         self.screenRefreshNeeded = False
