@@ -173,7 +173,7 @@ class EgressusMelodium(EuroPiScript):
         previousPatternLength = self.patternLength
         val = 100 * ain.percent()
         if val > self.minAnalogInputVoltage:
-            self.patternLength = min(int((len(self.BD) / 100) * val) + k2.read_position(self.maxStepLength), self.maxStepLength-1) + 1
+            self.patternLength = min(int((self.maxStepLength / 100) * val) + k2.read_position(self.maxStepLength), self.maxStepLength-1) + 1
         else:
             self.patternLength = k2.read_position(self.maxStepLength) + 1
         
