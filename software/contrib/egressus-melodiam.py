@@ -16,13 +16,13 @@ A CV sequencer based on outputs 4,5&6 from the Consequencer.
 Demo video: TBC
 
 digital_in: clock in
-analog_in: Adjusts pattern length
+analog_in: Adjusts pattern length - summed with k2
 
-knob_1: TBC
-knob_2: Set Pattern Length
+knob_1: Set cycle mode pattern
+knob_2: Set Pattern Length - summed with ain
 
-button_1: Short Press: Select CV Pattern (-). Long Press: TBC
-button_2: Short Press: Select CV Pattern (+). Long Press: TBC
+button_1: Short Press: Select CV Pattern (-). Long Press: Generates new CV pattern in existing bank
+button_2: Short Press: Select CV Pattern (+). Long Press: Enables / Disables cycle mode
 
 output_1: randomly generated CV
 output_2: randomly generated CV
@@ -124,6 +124,7 @@ class EgressusMelodium(EuroPiScript):
                             self.numCvPatterns += 1
                             self.screenRefreshNeeded = True
 
+    '''Generate new CV pattern for existing bank or create a new bank'''
     def generateNewRandomCVPattern(self, new=True):
         try:
             gc.collect()
@@ -137,6 +138,7 @@ class EgressusMelodium(EuroPiScript):
         except Exception:
             return False
 
+    '''Generate a random pattern between min and max of the desired length'''
     def generateRandomPattern(self, length, min, max):
         self.t=[]
         for i in range(0, length):
@@ -144,6 +146,7 @@ class EgressusMelodium(EuroPiScript):
         return self.t
 
 
+    '''Entry point - main loop'''
     def main(self):
         while True:
             self.updateScreen()
@@ -158,6 +161,7 @@ class EgressusMelodium(EuroPiScript):
                     self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
                 self.screenRefreshNeeded = True
 
+    '''Get the CV pattern length from k2 / ain'''
     def getPatternLength(self):
         previousPatternLength = self.patternLength
         val = 100 * ain.percent()
@@ -169,6 +173,7 @@ class EgressusMelodium(EuroPiScript):
         if previousPatternLength != self.patternLength:
             self.screenRefreshNeeded = True
 
+    '''Get the cycle mode from k1'''
     def getCycleMode(self):
         previousCycleMode = self.selectedCycleMode
         self.selectedCycleMode = k1.read_position(len(self.cycleModes))
@@ -177,6 +182,7 @@ class EgressusMelodium(EuroPiScript):
             self.screenRefreshNeeded = True
             #print(self.selectedCycleMode)
 
+    '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
     def updateScreen(self):
         if not self.screenRefreshNeeded:
             return
