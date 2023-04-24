@@ -43,31 +43,33 @@ class EgressusMelodium(EuroPiScript):
         self.minAnalogInputVoltage = 0.5
         self.randomness = 0
         self.CvPattern = 0
+        self.numCvPatterns = 0
         self.reset_timeout = 1000
         self.maxRandomPatterns = 32  # This prevents a memory allocation error
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
         self.patternLength = 16
         self.maxStepLength = 32
         self.screenRefreshNeeded = True
+        self.cycleModes = ['01', '0001', '0011', '12', '1112', '1122']
+        self.cycleMode = False
+        self.cycleStep = 0
+        self.selectedCycleMode = 0
 
-        # Generate random CV patterns
+        # Init and Generate random CV patterns
         self.random1 = []
         self.random2 = []
         self.random3 = []
         self.random4 = []
         self.random5 = []
         self.random6 = []
+        self.cvPatternBanks = [self.random1, self.random2, self.random3, self.random4, self.random5, self.random6]
         self.generateNewRandomCVPattern()
 
-        # Triggered on each clock into digital input. Output triggers.
+        # Triggered on each clock into digital input. Output stepped CV.
         @din.handler
         def clockTrigger():
-            cv1.voltage(self.random1[self.CvPattern][self.step])
-            cv2.voltage(self.random2[self.CvPattern][self.step])
-            cv3.voltage(self.random3[self.CvPattern][self.step])
-            cv4.voltage(self.random4[self.CvPattern][self.step])
-            cv5.voltage(self.random5[self.CvPattern][self.step])
-            cv6.voltage(self.random6[self.CvPattern][self.step])
+            for idx, pattern in enumerate(self.cvPatternBanks):
+                cvs[idx].voltage(pattern[self.CvPattern][self.step])
 
             # Incremenent the clock step
             self.clock_step +=1
@@ -76,11 +78,27 @@ class EgressusMelodium(EuroPiScript):
                 self.step += 1
             else:
                 self.step = 0
+                if self.cycleMode:
+            
+                    # A cycleMode was selected which is shorter than the current cycleStep. Set to zero to avoid an error
+                    if self.cycleStep >= len(self.cycleModes[self.selectedCycleMode]):
+                        self.cycleStep = 0
+
+                    if self.numCvPatterns >= int(self.cycleModes[self.selectedCycleMode][self.cycleStep]):
+                        #print(str(self.cycleStep),':', str(int(self.cycleModes[self.selectedCycleMode][self.cycleStep])))
+                        self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
+                        self.screenRefreshNeeded = True
+                    if self.cycleStep <= int(len(self.cycleModes[self.selectedCycleMode])-2):
+                        self.cycleStep += 1
+                    else:
+                        self.cycleStep = 0
+
 
         @b1.handler_falling
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000:
-                pass
+                # Generate new pattern for existing pattern
+                self.generateNewRandomCVPattern(new=False)
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 pass
             else:
@@ -92,7 +110,9 @@ class EgressusMelodium(EuroPiScript):
         @b2.handler_falling
         def b2Pressed():
             if ticks_diff(ticks_ms(), b2.last_pressed()) > 300 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
-                pass
+                # Toggle cycle mode
+                self.cycleMode = not self.cycleMode
+                self.screenRefreshNeeded = True
             else:
                 if self.CvPattern < len(self.random4)-1: # change to next CV pattern
                     self.CvPattern += 1
@@ -101,17 +121,18 @@ class EgressusMelodium(EuroPiScript):
                     if len(self.random4) < self.maxRandomPatterns: # We need to try and generate a new CV value
                         if self.generateNewRandomCVPattern():
                             self.CvPattern += 1
+                            self.numCvPatterns += 1
                             self.screenRefreshNeeded = True
 
-    def generateNewRandomCVPattern(self):
+    def generateNewRandomCVPattern(self, new=True):
         try:
             gc.collect()
-            self.random1.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
-            self.random2.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
-            self.random3.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
-            self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
-            self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
-            self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            if new:
+                for pattern in self.cvPatternBanks:
+                    pattern.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            else:
+                for pattern in self.cvPatternBanks:
+                    pattern[self.CvPattern] = self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage)
             return True
         except Exception:
             return False
@@ -127,10 +148,15 @@ class EgressusMelodium(EuroPiScript):
         while True:
             self.updateScreen()
             self.getPatternLength()
-            # If I have been running, then stopped for longer than reset_timeout, reset the steps and clock_step to 0
+            self.getCycleMode()
+            # If I have been running, then stopped for longer than reset_timeout, reset all steps to 0
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
                 self.clock_step = 0
+                self.cycleStep = 0
+                if self.numCvPatterns >= int(self.cycleModes[self.selectedCycleMode][self.cycleStep]):
+                    self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
+                self.screenRefreshNeeded = True
 
     def getPatternLength(self):
         previousPatternLength = self.patternLength
@@ -142,6 +168,14 @@ class EgressusMelodium(EuroPiScript):
         
         if previousPatternLength != self.patternLength:
             self.screenRefreshNeeded = True
+
+    def getCycleMode(self):
+        previousCycleMode = self.selectedCycleMode
+        self.selectedCycleMode = k1.read_position(len(self.cycleModes))
+        
+        if previousCycleMode != self.selectedCycleMode:
+            self.screenRefreshNeeded = True
+            #print(self.selectedCycleMode)
 
     def updateScreen(self):
         if not self.screenRefreshNeeded:
@@ -173,8 +207,13 @@ class EgressusMelodium(EuroPiScript):
         # oled.text('M' + str(self.analogInputMode), 85, 25, 1)
 
         # Show the pattern number
+        oled.text('Patt',10, 0, 1)
         oled.text(str(self.CvPattern),10 , 16, 1)
+        oled.text('Len',50, 0, 1)
         oled.text(str(self.patternLength),50 , 16, 1)
+        if self.cycleMode:
+            oled.text('Cycle',80, 0, 1)
+        oled.text(str(self.cycleModes[self.selectedCycleMode]),80 , 16, 1)
 
         oled.show()
         self.screenRefreshNeeded = False
