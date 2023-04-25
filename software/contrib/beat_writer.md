@@ -23,3 +23,4 @@ Inputs and Outputs:
 - **cv 1:** a copy of the digital input
 - **cv 2:** channel 1 output
 - **cv 3:** channel 2 output
+- **cv 4:** start of sequence trigger

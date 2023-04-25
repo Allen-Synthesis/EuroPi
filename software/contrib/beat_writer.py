@@ -23,6 +23,7 @@ class BeatWriter(EuroPiScript):
         self.din_out = cv1
         self.rhythm_1_output = cv2
         self.rhythm_2_output = cv5
+        self.start_output = cv4
         
         din.handler(self.increment_step)
         
@@ -59,9 +60,11 @@ class BeatWriter(EuroPiScript):
         self.previous_step_length = ticks_diff(current_ticks, self.previous_step_ticks)
         self.previous_step_ticks = current_ticks
         
+        self.start_output.value(0)
         self.step += 1
         if self.step == self.length:
             self.step = 0
+            self.start_output.value(1)
             
         self.update_outputs()
         self.update_display()
