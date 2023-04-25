@@ -10237,7 +10237,7 @@
     (property "Datasheet" "https://www.usb.org/sites/default/files/documents/usb_type-c.zip" (at 86.36 91.44 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "JLC" "C309361" (at 82.55 72.39 0)
+    (property "JLC" "C2927037" (at 82.55 72.39 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "A1" (uuid 241def09-caa3-42e4-a391-70878f7a4ede))
