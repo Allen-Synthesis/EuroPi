@@ -39,13 +39,12 @@ class EgressusMelodium(EuroPiScript):
         # Initialize variables
         self.step = 0
         self.clock_step = 0
-        #self.pattern = 0
         self.minAnalogInputVoltage = 0.5
         self.randomness = 0
         self.CvPattern = 0
         self.numCvPatterns = 4  # Initial number, this can be increased
         self.reset_timeout = 1000
-        self.maxRandomPatterns = 32  # This prevents a memory allocation error
+        self.maxRandomPatterns = 4  # This prevents a memory allocation error (happens with > 5, but 4 is nice round number!)
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
         self.patternLength = 16
         self.maxStepLength = 32
@@ -54,12 +53,15 @@ class EgressusMelodium(EuroPiScript):
         self.cycleMode = False
         self.cycleStep = 0
         self.selectedCycleMode = 0
+        self.debugMode = True
         
         self.loadState()
 
         # Triggered on each clock into digital input. Output stepped CV.
         @din.handler
         def clockTrigger():
+            if self.debugMode:
+                print(f"[{self.clock_step}] [{self.step}] : [{self.CvPattern}] [0] [{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
             for idx, pattern in enumerate(self.cvPatternBanks):
                 cvs[idx].voltage(pattern[self.CvPattern][self.step])
 
@@ -69,6 +71,7 @@ class EgressusMelodium(EuroPiScript):
             if self.step < self.maxStepLength -1 and self.step < self.patternLength -1:
                 self.step += 1
             else:
+                # We are back at step 0. Decide what to do with the CV Patterns
                 self.step = 0
                 if self.cycleMode:
             
@@ -80,7 +83,7 @@ class EgressusMelodium(EuroPiScript):
                         #print(str(self.cycleStep),':', str(int(self.cycleModes[self.selectedCycleMode][self.cycleStep])))
                         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
                         self.screenRefreshNeeded = True
-                    if self.cycleStep <= int(len(self.cycleModes[self.selectedCycleMode])-2):
+                    if self.cycleStep <= int(len(self.cycleModes[self.selectedCycleMode])-1):
                         self.cycleStep += 1
                     else:
                         self.cycleStep = 0
@@ -98,6 +101,8 @@ class EgressusMelodium(EuroPiScript):
                 if self.CvPattern != 0:
                     self.CvPattern -= 1
                     self.screenRefreshNeeded = True
+                    if self.debugMode:
+                        print('CV Pattern down')
             self.saveState()
 
         @b2.handler_falling
@@ -107,15 +112,19 @@ class EgressusMelodium(EuroPiScript):
                 self.cycleMode = not self.cycleMode
                 self.screenRefreshNeeded = True
             else:
-                if self.CvPattern < self.numCvPatterns: # change to next CV pattern
+                if self.CvPattern < self.numCvPatterns-1: # change to next CV pattern
                     self.CvPattern += 1
                     self.screenRefreshNeeded = True
+                    if self.debugMode:
+                        print('CV Pattern up')
                 else:
-                    if self.numCvPatterns < self.maxRandomPatterns: # We need to try and generate a new CV value
+                    if self.CvPattern < self.maxRandomPatterns-1: # We need to try and generate a new CV value
                         if self.generateNewRandomCVPattern():
                             self.CvPattern += 1
                             self.numCvPatterns += 1
                             self.screenRefreshNeeded = True
+                            if self.debugMode:
+                                print('Generating NEW pattern')
             self.saveState()
 
     def initCvPatternBanks(self):
@@ -127,7 +136,7 @@ class EgressusMelodium(EuroPiScript):
         self.random5 = []
         self.random6 = []
         self.cvPatternBanks = [self.random1, self.random2, self.random3, self.random4, self.random5, self.random6]
-        for n in range(self.numCvPatterns):
+        for n in range(self.maxRandomPatterns):
             self.generateNewRandomCVPattern(self)
         return self.cvPatternBanks 
 
@@ -206,7 +215,14 @@ class EgressusMelodium(EuroPiScript):
         self.CvPattern = self.state.get("CvPattern", 0)
         if len(self.cvPatternBanks) == 0:
             self.initCvPatternBanks()
+            if self.debugMode:
+                print('Initializing CV Pattern banks')
+        else:
+            if self.debugMode:
+                print(f"Loaded {len(self.cvPatternBanks[0])} CV Pattern Banks")
         self.saveState()
+        # Let the rest of the script know how many pattern banks we have
+        self.numCvPatterns = len(self.cvPatternBanks[0])
 
     '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
     def updateScreen(self):
