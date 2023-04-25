@@ -1,6 +1,7 @@
 from time import sleep_ms, ticks_ms, ticks_diff
 from europi import *
 from europi_script import EuroPiScript
+from random import randint
 
 machine.freq(250_000_000)
 
@@ -18,7 +19,7 @@ class BeatWriter(EuroPiScript):
         self.previous_step_length = 0
     
         self.step = 0
-        
+                
         self.din_out = cv1
         self.rhythm_1_output = cv2
         self.rhythm_2_output = cv5
@@ -41,9 +42,17 @@ class BeatWriter(EuroPiScript):
             rhythm.append(0)
         return rhythm
     
+    def update_randomisation(self):
+        self.randomisation_1 = k1.read_position()
+        self.randomisation_2 = k2.read_position()
+    
     def update_outputs(self):
-        self.rhythm_1_output.value(self.rhythm_1[self.step])
-        self.rhythm_2_output.value(self.rhythm_2[self.step])
+        self.update_randomisation()
+        output_1_value = randint(0, 1) if randint(2, 98) < self.randomisation_1 else self.rhythm_1[self.step]
+        output_2_value = randint(0, 1) if randint(2, 98) < self.randomisation_2 else self.rhythm_2[self.step]
+        
+        self.rhythm_1_output.value(output_1_value)
+        self.rhythm_2_output.value(output_2_value)
     
     def increment_step(self):
         current_ticks = ticks_ms()
@@ -77,8 +86,10 @@ class BeatWriter(EuroPiScript):
         
     def update_display(self):
         oled.fill(0)
-        oled.text(f"{self.convert_rhythm_to_string(self.rhythm_1)}", 0, 0, 1)
-        oled.text(f"{self.convert_rhythm_to_string(self.rhythm_2)}", 0, 20, 1)
+        oled.text(f"{self.randomisation_1}%", 0, 0, 1)
+        oled.text(f"{self.randomisation_2}%", 64, 0, 1)
+        oled.text(f"{self.convert_rhythm_to_string(self.rhythm_1)}", 0, 12, 1)
+        oled.text(f"{self.convert_rhythm_to_string(self.rhythm_2)}", 0, 24, 1)
         oled.show()
     
     def convert_rhythm_to_string(self, rhythm):

@@ -6,7 +6,7 @@ directory, specifically [the section on contrib scripts](/contributing.md#contri
 # List of packaged scripts
 
 ### Beat Writer \[ documentation](/software/contrib/beat_writer.md) | [script](/software/contrib/beat_writer.py) \]
-A beat programmer for 2 channels of trigger patterns
+A beat programmer for 2 channels of trigger patterns with randomisation
 
 User input on both buttons is recorded, grid quantized, and played back to the time of an external clock source
 
