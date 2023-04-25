@@ -15,6 +15,7 @@ from bootloader import BootloaderMenu
 
 # Scripts that are included in the menu
 EUROPI_SCRIPTS = [
+    "contrib.beat_writer.BeatWriter",
     "contrib.bernoulli_gates.BernoulliGates",
     "contrib.coin_toss.CoinToss",
     "contrib.consequencer.Consequencer",
