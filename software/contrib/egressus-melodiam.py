@@ -49,7 +49,7 @@ class EgressusMelodium(EuroPiScript):
         self.patternLength = 16
         self.maxStepLength = 32
         self.screenRefreshNeeded = True
-        self.cycleModes = ['01', '0001', '0011', '12', '1112', '1122', '0012', '23', '2223', '2233', '0123']
+        self.cycleModes = ['0101', '0001', '0011', '1212', '1112', '1122', '0012', '2323', '2223', '2233', '0123']
         self.cycleMode = False
         self.cycleStep = 0
         self.selectedCycleMode = 0
@@ -79,13 +79,17 @@ class EgressusMelodium(EuroPiScript):
                 # Move to next CV Pattern in the cycle if cycleMode is enabled
                 if self.cycleMode:
             
-                    # A cycleMode was selected which is shorter than the current cycleStep. Set to zero to avoid an error
+                    # safeguard: A cycleMode was selected which is shorter than the current cycleStep. Set to zero to avoid an error
                     if self.cycleStep >= len(self.cycleModes[self.selectedCycleMode]):
                         self.cycleStep = 0
 
+                    # Advance to the next CV Pattern in the cycle, unless (safeguard) the cycle refers to a CV pattern that does not exist
                     if self.numCvPatterns >= int(self.cycleModes[self.selectedCycleMode][self.cycleStep]):
                         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
+                        # Update screen with CV Pattern
                         self.screenRefreshNeeded = True
+                    
+                    # Advance the cycle step, unless we are at the end, then reset to 0
                     if self.cycleStep <= int(len(self.cycleModes[self.selectedCycleMode])-1):
                         self.cycleStep += 1
                     else:
@@ -103,6 +107,7 @@ class EgressusMelodium(EuroPiScript):
                 # Play previous CV Pattern, unless we are at the first pattern
                 if self.CvPattern != 0:
                     self.CvPattern -= 1
+                    # Update screen with CV Pattern
                     self.screenRefreshNeeded = True
                     if self.debugMode:
                         print('CV Pattern down')
@@ -113,18 +118,22 @@ class EgressusMelodium(EuroPiScript):
             if ticks_diff(ticks_ms(), b2.last_pressed()) > 300 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
                 # Toggle cycle mode
                 self.cycleMode = not self.cycleMode
+                # Update screen with CV Pattern
                 self.screenRefreshNeeded = True
             else:
                 if self.CvPattern < self.numCvPatterns-1: # change to next CV pattern
                     self.CvPattern += 1
+                    # Update screen with CV Pattern
                     self.screenRefreshNeeded = True
                     if self.debugMode:
                         print('CV Pattern up')
                 else:
-                    if self.CvPattern < self.maxRandomPatterns-1: # We need to try and generate a new CV value
+                    # Generate a new CV pattern, unless we have reached the maximum allowed
+                    if self.CvPattern < self.maxRandomPatterns-1:
                         if self.generateNewRandomCVPattern():
                             self.CvPattern += 1
                             self.numCvPatterns += 1
+                            # Update screen with CV Pattern
                             self.screenRefreshNeeded = True
                             if self.debugMode:
                                 print('Generating NEW pattern')
@@ -172,6 +181,7 @@ class EgressusMelodium(EuroPiScript):
                 self.cycleStep = 0
                 if self.numCvPatterns >= int(self.cycleModes[self.selectedCycleMode][self.cycleStep]):
                     self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
+                # Update screen with the upcoming CV pattern
                 self.screenRefreshNeeded = True
 
     '''Get the CV pattern length from k2 / ain'''
