@@ -158,7 +158,7 @@ class EgressusMelodium(EuroPiScript):
     def generateRandomPattern(self, length, min, max):
         self.t=[]
         for i in range(0, length):
-            self.t.append(uniform(min,max))
+            self.t.append(round(uniform(min,max),3))
         return self.t
 
 
