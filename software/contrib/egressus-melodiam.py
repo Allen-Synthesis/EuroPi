@@ -57,6 +57,15 @@ class EgressusMelodium(EuroPiScript):
         
         self.loadState()
 
+        # Dump the entire CV Pattern structure to screen
+        if self.debugMode:
+            for idx, output in enumerate(self.cvPatternBanks):
+                print(f"Output Channel: {idx}")
+                for idx, n in enumerate(output):
+                    print(f"  CV Pattern Bank: {idx}")
+                    for idx, voltage in enumerate(n):
+                        print(f"    Step {idx}: {voltage}")
+
         # Triggered on each clock into digital input. Output stepped CV.
         @din.handler
         def clockTrigger():
