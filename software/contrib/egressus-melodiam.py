@@ -129,13 +129,7 @@ class EgressusMelodium(EuroPiScript):
 
     def initCvPatternBanks(self):
         # Init CV pattern banks
-        self.random1 = []
-        self.random2 = []
-        self.random3 = []
-        self.random4 = []
-        self.random5 = []
-        self.random6 = []
-        self.cvPatternBanks = [self.random1, self.random2, self.random3, self.random4, self.random5, self.random6]
+        self.cvPatternBanks = [[], [], [], [], [], []]
         for n in range(self.maxRandomPatterns):
             self.generateNewRandomCVPattern(self)
         return self.cvPatternBanks 
