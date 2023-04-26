@@ -62,12 +62,14 @@ class EgressusMelodium(EuroPiScript):
         def clockTrigger():
             if self.debugMode:
                 print(f"[{self.clock_step}] [{self.step}] : [{self.CvPattern}] [0] [{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
+            # Cycle through outputs and output CV voltage based on currently selected CV Pattern and Step
             for idx, pattern in enumerate(self.cvPatternBanks):
                 cvs[idx].voltage(pattern[self.CvPattern][self.step])
 
             # Incremenent the clock step
             self.clock_step +=1
-            # increment / reset step
+
+            # Increment / reset step unless we have reached the max step length, or selected pattern length
             if self.step < self.maxStepLength -1 and self.step < self.patternLength -1:
                 self.step += 1
             else:
@@ -80,7 +82,6 @@ class EgressusMelodium(EuroPiScript):
                         self.cycleStep = 0
 
                     if self.numCvPatterns >= int(self.cycleModes[self.selectedCycleMode][self.cycleStep]):
-                        #print(str(self.cycleStep),':', str(int(self.cycleModes[self.selectedCycleMode][self.cycleStep])))
                         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
                         self.screenRefreshNeeded = True
                     if self.cycleStep <= int(len(self.cycleModes[self.selectedCycleMode])-1):
