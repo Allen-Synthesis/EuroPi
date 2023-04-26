@@ -7082,6 +7082,11 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 0a6f43de-f2c0-49a1-a3a8-ae736dbac910)
   )
+  (text "The DAC_X_OFFSET signals\nare inverted to make them\nnegative for use in the\nDAC output circuit"
+    (at 143.51 476.25 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 0da351ba-327d-4be7-be8b-c712982cb8a9)
+  )
   (text "OUTPUT_MODE is a digital signal\nfrom the RP2040 that can be set in code\nto determine the polarity of the outputs:\n\n0 - unipolar 0-10V\n1 - bipolar ±5V"
     (at 212.09 270.51 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -7282,6 +7287,11 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid c821c2af-e88e-4f4a-aaac-6609b4cec0ea)
   )
+  (text "-4.096V or\n-2.048V\ndepending on\nOUTPUT_MODE\nsetting"
+    (at 207.01 472.44 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid c9c659b3-95e3-4fb8-a9f7-8714d8643353)
+  )
   (text "PIN10" (at 342.9 163.83 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid d351024c-5464-4d17-b762-b815e3888d51)
@@ -7304,8 +7314,8 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid e404bdd2-64dc-4e4c-be4d-4fd0c0c57c01)
   )
-  (text "The Neopixel LEDs are serial controlled, meaning only a single\npin of the RP2040 is connected to the first LED, and the remaning\nLEDs are connected in series.\n\nThey are powered by 5V, but the \nRP2040 signal is only 3.3V, so a level shifter is used."
-    (at 518.16 95.25 0)
+  (text "The Neopixel LEDs are serial controlled, meaning only a single\npin of the RP2040 is connected to the first LED, and the remaning\nLEDs are connected in series.\n\nThey are powered by 5V, but the \nRP2040 signal is only 3.3V, so a\nBSS138 MOSFET is used as a\nlevel shifter"
+    (at 518.16 107.95 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ea4531b4-b426-412a-b63b-77227f5c71a6)
   )
@@ -8274,10 +8284,6 @@
   (label "ADC_INPUT_4" (at 495.3 306.07 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid f9ce9d49-f7fb-4614-a363-1167c3a55a1a)
-  )
-  (label "DAC_1_OFFSET" (at 358.14 389.89 180) (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify right bottom))
-    (uuid f9d7f41f-f073-45d0-9cd8-184a7a8cfd0c)
   )
   (label "DAC_2_OFFSET" (at 269.24 449.58 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
