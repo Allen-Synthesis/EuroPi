@@ -6,6 +6,9 @@
 
 from europi import *
 from europi_script import EuroPiScript
+
+from contrib.screensaver import Screensaver
+
 import time
 import random
 
@@ -26,22 +29,19 @@ MODE_RANDOM=3
 #  =20 minutes
 SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 
-class ScreensaverScreen:
+class ScreensaverScreen(Screensaver):
     """Blank the screen when idle
     Eventually it might be neat to have an animation, but that's
     not necessary for now
     """
     
     def __init__(self, parent):
+        Screensaver.__init__(self)
         self.parent = parent
         
     def on_button1(self):
         self.parent.active_screen = self.parent.switch_screen
         self.parent.on_trigger()
-    
-    def draw(self):
-        oled.fill(0)
-        oled.show()
 
 class SwitchScreen:
     """Default display: shows what output is currently active

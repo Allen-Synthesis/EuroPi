@@ -76,6 +76,13 @@ Users have a copy of the original trigger signal, a sample and hold and a track 
 <i>Author: [seanbechhofer](https://github.com/seanbechhofer)</i>
 <br><i>Labels: gates, sample&hold, track&hold</i>
 
+### Pam's "EuroPi" Workout \[ [documentation](/software/contrib/pams.md) | [script](/software/contrib/pams.py) \]
+A re-imaging of [ALM/Busy Circuit's Pamela's "NEW" Workout](https://busycircuits.com/alm017/). Turns the EuroPi into a clocked modulation
+source with multiple wave shapes, optional quantization, euclidean rhythm outputs and external start/stop trigger input.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: clock, euclidean, gate, lfo, quantizer, random, trigger</i>
+
 ### Poly Square \[ [documentation](/software/contrib/poly_square.md) | [script](/software/contrib/poly_square.py) \]
 Six independent oscillators which output on CVs 1-6.
 

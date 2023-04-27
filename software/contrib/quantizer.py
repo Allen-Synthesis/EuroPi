@@ -8,6 +8,9 @@ Features configurable intervals for multiple outputs and customizable scale
 
 from europi import *
 from europi_script import EuroPiScript
+
+from contrib.screensaver import Screensaver
+
 import time
 
 ## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
@@ -39,21 +42,18 @@ SELECT_OPTION_Y = 16
 HALF_CHAR_WIDTH = int(CHAR_WIDTH / 2)
 
 
-class ScreensaverScreen:
+class ScreensaverScreen(Screensaver):
     """Blank the screen when idle
 
     Eventually it might be neat to have an animation, but that's
     not necessary for now
     """
     def __init__(self, quantizer):
+        Screensaver.__init__(self)
         self.quantizer = quantizer
         
     def on_button1(self):
         self.quantizer.active_screen = self.quantizer.kb
-    
-    def draw(self):
-        oled.fill(0)
-        oled.show()
 
 class KeyboardScreen:
     """Draws a pretty keyboard and indicates what notes are enabled

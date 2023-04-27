@@ -12,6 +12,8 @@ noted below
 from europi import *
 from europi_script import EuroPiScript
 
+from contrib.screensaver import Screensaver
+
 import random
 import time
 
@@ -62,6 +64,8 @@ def generate_euclidean_pattern(steps, pulses, rot=0):
         raise ValueError
     if steps == 0:
         return []
+    if pulses == 0:
+        return [0]*steps
     pattern = []    
     counts = []
     remainders = []
@@ -329,17 +333,6 @@ class SettingsMenu:
             self.generator.skip = new_setting / 100.0
             
         self.generator.regenerate()
-        
-
-class Screensaver:
-    """Blanks the screen to prevent burn-in
-    """
-    def __init__(self):
-        pass
-    
-    def draw(self):
-        oled.fill(0);
-        oled.show()
 
 class EuclideanRhythms(EuroPiScript):
     """Generates 6 different Euclidean rhythms, one per output
