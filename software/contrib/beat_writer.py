@@ -126,6 +126,10 @@ class BeatWriter(EuroPiScript):
         
         self.save_state()
         
+    def splash_screen(self):
+        oled.centre_text('BEAT WRITER\n\nplug in clock')
+        oled.hline(0, 14, OLED_WIDTH, 1)
+        oled.show()
     
     def save_state(self):
         """Save the current state variables as JSON."""
@@ -136,9 +140,7 @@ class BeatWriter(EuroPiScript):
         self.save_state_json(state)
 
     def main(self):
-        oled.centre_text('BEAT WRITER\n\nplug in clock')
-        oled.hline(0, 14, OLED_WIDTH, 1)
-        oled.show()
+        self.splash_screen()
         while din.value() == 0:
             sleep_ms(100)
         while True:
