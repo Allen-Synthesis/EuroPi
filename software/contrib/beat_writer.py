@@ -2,6 +2,7 @@ from time import sleep_ms, ticks_ms, ticks_diff
 from europi import *
 from europi_script import EuroPiScript
 from random import randint
+from machine import freq
 
 machine.freq(250_000_000)
 
