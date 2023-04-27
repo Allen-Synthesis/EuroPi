@@ -13,6 +13,7 @@
 1. In the new terminal window, type 'software\uf2_build\build_uf2.bat'
 1. Press Enter
 1. Wait for .uf2 to compile (this may take some time, do not close the terminal window
+1. The custom .uf2 build can be found at `EuroPi/software/uf2_build/europi-dev.uf2`
 
 ## Compiling the firmware on Linux
 The instructions below describe the steps needed to build the uf2 locally on your machine for
