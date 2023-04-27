@@ -136,6 +136,11 @@ class BeatWriter(EuroPiScript):
         self.save_state_json(state)
 
     def main(self):
+        oled.centre_text('BEAT WRITER\n\nplug in clock')
+        oled.hline(0, 14, OLED_WIDTH, 1)
+        oled.show()
+        while din.value() == 0:
+            sleep_ms(100)
         while True:
             self.din_out.value(din.value())
 
