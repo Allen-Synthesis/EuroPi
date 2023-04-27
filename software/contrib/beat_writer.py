@@ -4,7 +4,7 @@ from europi_script import EuroPiScript
 from random import randint
 from machine import freq
 
-machine.freq(250_000_000)
+freq(250_000_000)
 
 class BeatWriter(EuroPiScript):
     def __init__(self):
