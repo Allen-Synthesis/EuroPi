@@ -26,7 +26,12 @@ class BeatWriter(EuroPiScript):
         self.rhythm_2_output = cv5
         self.start_output = cv4
         
-        din.handler(self.increment_step)
+        self.clock_input = din
+        self.restart_input = DigitalInput(26)
+        
+        self.clock_input.handler(self.increment_step)
+        self.restart_input.handler(self.restart_rhythms)
+        
         
         b1.handler(self.place_beat)
         b2.handler(self.place_beat)
@@ -70,6 +75,11 @@ class BeatWriter(EuroPiScript):
         self.update_outputs()
         self.update_display()
         
+    def restart_rhythms(self):
+        self.step = 0
+        self.update_outputs()
+        self.update_display()
+        
     def check_if_reset_rhythm_1(self):
         current_ticks = ticks_ms()
         b1_difference = ticks_diff(current_ticks, b1.last_pressed())
@@ -90,9 +100,12 @@ class BeatWriter(EuroPiScript):
         
     def update_display(self):
         oled.fill(0)
-        oled.text(f"{self.randomisation_1}%", 0, 0, 1)
-        oled.text(f"{self.randomisation_2}%", 64, 0, 1)
-        oled.text(f"{self.convert_rhythm_to_string(self.rhythm_1)}", 0, 12, 1)
+        
+        oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT + 3, 1)
+        oled.vline(60, 0, CHAR_HEIGHT + 3, 0)
+        oled.text(f"RND:{self.randomisation_1}%", 1, 2, 0)
+        oled.text(f"RND2:{self.randomisation_2}%", 63, 2, 0)
+        oled.text(f"{self.convert_rhythm_to_string(self.rhythm_1)}", 0, 14, 1)
         oled.text(f"{self.convert_rhythm_to_string(self.rhythm_2)}", 0, 24, 1)
         oled.show()
     
@@ -141,10 +154,12 @@ class BeatWriter(EuroPiScript):
 
     def main(self):
         self.splash_screen()
-        while din.value() == 0:
+        
+        while self.clock_input.value() == 0:	#Stay on the splash screen until an external clock is plugged in
             sleep_ms(100)
+            
         while True:
-            self.din_out.value(din.value())
+            self.din_out.value(self.clock_input.value())
 
 if __name__ == "__main__":
     BeatWriter().main()
