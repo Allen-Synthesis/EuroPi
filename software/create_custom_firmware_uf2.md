@@ -2,7 +2,6 @@
 
 ## Compiling the firmware on Windows
 1. If not already installed, install [Docker](https://docs.docker.com/desktop/install/windows-install/)
-1. If not already installed, install [GitHub Desktop](https://desktop.github.com/)
 1. If not already cloned, [create a local clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository?tool=desktop) of the EuroPi repository
 1. Run Docker
 1. Click the windows file manager file path *inside* the root folder of your clone of the EuroPi repo (the folder named 'EuroPi', not any of the folders inside it)  
