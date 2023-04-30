@@ -16,37 +16,6 @@ labels: clock, divider
 
 A master clock and clock divider. Each output sends a +5V trigger/gate at different divisions of the master clock, or randomly if condigured with a division of zero.
 Pulse width (gate/trigger duration) is configurable up to a maximum of 50% of the pulse width of output 1.
-
-All configuration (BPM, Pulse Width, output clock divisions) is automatically saved, then loaded when the module is restarted.
-
-For wonky/more interesting clock patterns try these:
-- Reset to step 1 using a gate into the digital input, or by using an odd value for the maximum division
-- Vary BPM by sending CV into the analog input
-- Set the division to zero for an output, this will cause the output to randomly go from high (+5V) to low (0V)
-
-Demo video: TBC
-
-digital_in: (optional) Reset step count on rising edge
-analog_in: (optional) Adjust BPM
-
-knob_1: (in config mode) Select option to edit 
-knob_2: (in config mode) Edit selected option 
-
-button_1: Short Press (<500ms): Start/Stop (when using internal clock). Long Press (>500ms): Select clock source (Internal/External)
-button_2: Short Press (<500ms): Not used. Long Press (>500ms): Enter config mode
-
-Defaults:
-output_1: clock / 1
-output_2: clock / 2
-output_3: clock / 4
-output_4: clock / 8
-output_5: clock / 16
-output_6: clock / 32
-
-Known Issues:
-- If playback is restarted while screen 2 is in config mode, playback will be slightly irratic, especially when moving knobs
-- BPM occasionally drifts by 1ms - possibly due to asyncio, pico performance limitations, or some other as-yet unknown error
-
 '''
 
 '''
