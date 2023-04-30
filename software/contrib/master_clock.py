@@ -49,6 +49,12 @@ Known Issues:
 
 '''
 
+'''
+Version History (with lots missing from the early days!):
+1.1 - Updates by @awoknak to reduce calls to oled.show() as it causes short hangs causes latency
+1.2 - Updates by @nik: fix inability to activate internal/external clock with a long-press of B1
+'''
+
 class MasterClockInner(EuroPiScript):
     def __init__(self):
         # Overclock the Pico for improved performance.
@@ -67,6 +73,9 @@ class MasterClockInner(EuroPiScript):
         self.previousClockTime = 0
         self.inputClockDiffs = []
         self.clockSelectionScreenActive = False
+        
+        # State flag to determine if UI state has changed and display should update.
+        self._updateUI = True
 
         self.MIN_BPM = 20  # Successfully calibrated to >= 20 and <= 240 BPM
         self.MAX_BPM = 240
@@ -149,6 +158,9 @@ class MasterClockInner(EuroPiScript):
                 else:
                     self.screen = 1
 
+            # Screen has changed
+            self._updateUI = True
+
         # Trigger clock if using an external clock, or reset if not
         @din.handler
         def dinTrigger():
@@ -168,7 +180,10 @@ class MasterClockInner(EuroPiScript):
                             del self.inputClockDiffs[0]
 
                         if self.clockInputNum > 3: # Only calculate is there are > 3 entries
-                            self.bpm = self.calculateBpm(self.inputClockDiffs)
+                            bpm = self.calculateBpm(self.inputClockDiffs)
+                            if bpm != self.bpm:
+                                self.bpm = bpm
+                                self._updateUI = True
                     self.previousClockTime = ticks_ms()
                     
                 self.clockInputNum += 1
@@ -182,7 +197,8 @@ class MasterClockInner(EuroPiScript):
         oled.text("Clock Source:", 0, 0, 1)
         oled.text("B1: Internal", 0, 9, 1)
         oled.text("B2: External", 0, 17, 1)
-        oled.show()
+        self._updateUI = True
+        self.updateDisplay()
         while True:
             if b1.value() == 1:
                 self.externalClockInput = False
@@ -196,6 +212,7 @@ class MasterClockInner(EuroPiScript):
             time.sleep(0.05)
         
         self.saveState()
+        self._updateUI = True
 
     def bpmFromMs(self, ms):
         return int(((1/(ms/1000))*60)/4)
@@ -209,13 +226,15 @@ class MasterClockInner(EuroPiScript):
 
     '''Show running status'''
     def screen1(self):
+        if not self._updateUI:
+            return
         oled.fill(0)
         oled.text(str(self.completedCycles) + ':' + str(self.step), 0, 0, 1)
         if not self.running:
             oled.text('B1:Start', 0, 23, 1)
         else:
             oled.text('B1:Stop', 0, 23, 1)
-        oled.show()
+        self.updateDisplay()
 
     '''config screen'''
     def screen2(self):
@@ -233,6 +252,7 @@ class MasterClockInner(EuroPiScript):
             if self.previousActiveOption != self.activeOption:
                 self.k2Unlocked = False
                 self.saveState()
+                self._updateUI = True
 
             # Prevent the BPM from being configured if using an external clock input
             if self.activeOption == 1 and not self.externalClockInput:
@@ -241,13 +261,14 @@ class MasterClockInner(EuroPiScript):
                 # unlock the knob if it has reached near the same value - avoids messy UX
                 if abs(newBpm - self.state.get('bpm')) <= 10:
                     self.k2Unlocked = True
-                # update config value if k2 is unlocked
-                if self.k2Unlocked:
+                # update config value if k2 is unlocked and bpm has changed
+                if self.k2Unlocked and self.bpm != newBpm:
                     self.bpm = newBpm
                     # calculate the new pulse width in milliseconds based on the new bpm
                     self.calcSleepTime()
                     self.getPulseWidth()
-                    
+                    self._updateUI = True
+                        
             elif self.activeOption == 2:
                 # read current knob value
                 newPw = k2.read_position(steps=self.MAX_PW_PERCENTAGE) + 1
@@ -255,10 +276,11 @@ class MasterClockInner(EuroPiScript):
                 if abs(newPw - self.state.get('pulseWidthPercent')) <= 2:
                     self.k2Unlocked = True
                 # update config value if k2 is unlocked
-                if self.k2Unlocked:
+                if self.k2Unlocked and self.pulseWidthPercent != newPw:
                     self.pulseWidthPercent = newPw
                     self.calcSleepTime()
                     self.getPulseWidth()
+                self._updateUI = True
 
             elif self.activeOption > 2:
                 # k2 adjusts clock division
@@ -269,6 +291,7 @@ class MasterClockInner(EuroPiScript):
                     self.outputDivisions[self.activeOption - 3] = selectedDivision
                 
                 self.previousSelectedDivision = selectedDivision
+                self._updateUI = True
             
             self.previousActiveOption = self.activeOption
                     
@@ -284,7 +307,7 @@ class MasterClockInner(EuroPiScript):
         oled.text('/' + str(self.outputDivisions[4]), 45, 24, 1)
         oled.text('/' + str(self.outputDivisions[5]), 85, 24, 1)
         oled.text(configMarker, self.markerPositions[self.activeOption-1][0], self.markerPositions[self.activeOption-1][1], 1)
-        oled.show() 
+        self.updateDisplay() 
 
     ''' Holds given output (cv) high for pulseWidthMs duration '''
     async def outputPulse(self, cv):
@@ -300,14 +323,16 @@ class MasterClockInner(EuroPiScript):
         val = 100 * ain.percent()
         # If there is an analogue input voltage use that for BPM. clamp ensures it is higher than MIN and lower than MAX
         if val > self.MIN_AIN_VOLTAGE:
-            self.bpm = clamp(int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM), self.MIN_BPM, self.MAX_BPM)
-            self.calcSleepTime()
-            self.getPulseWidth()
+            bpm = clamp(int((((self.MAX_BPM) / 100) * val) + self.MIN_BPM), self.MIN_BPM, self.MAX_BPM)
         else:
             # No analog input, revert to last saved state
-            self.bpm = self.state.get("bpm", 100)
+            bpm = self.state.get("bpm", 100)
+        
+        if self.bpm != bpm:
+            self.bpm = bpm
             self.calcSleepTime()
             self.getPulseWidth()
+            self._updateUI = True
 
     def getPulseWidth(self):
         # Set max of self.MAX_PW_PERCENTAGE percent of total cycle time
@@ -356,6 +381,9 @@ class MasterClockInner(EuroPiScript):
         # Get time of last step to use in the auto reset function
         self.previousStepTime = ticks_ms()
 
+        # Display may update on clock trigger.
+        self._updateUI = True
+
         # Debug task output to check for overrunning tasks i.e. memory leaks
         if self.DEBUG:
             for i in self.tasks:
@@ -363,6 +391,12 @@ class MasterClockInner(EuroPiScript):
                     print(f'[{i}] done: {str(i.done())}. state: {str(i.state)}. data: {str(i.data)}. coro: {str(i.coro)}')
                 else:
                     print(0)
+    
+    def updateDisplay(self):
+        """Update the display if UI state has changed."""
+        if self._updateUI:
+            oled.show()
+            self._updateUI = False
 
     ''' Save working vars to a save state file'''
     def saveState(self):
@@ -428,6 +462,5 @@ class MasterClock(EuroPiScript):
 if __name__ == '__main__':
     m = MasterClock()
     m.main()
-
 
 
