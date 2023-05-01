@@ -547,6 +547,29 @@ class Output:
             self.on()
         else:
             self.off()
+            
+
+
+
+
+class InputDetect:
+    """iknfnmvd"""
+    
+    def __init__(self, pin=13):
+        self.signal_output = Pin(pin)
+        self.test_signal = [1, 0, 1, 0, 1, 0, 1]
+        
+    def check_input(self, analogue_input):
+        if analogue_input.read_voltage(1) > 0.5	#If the voltage is above 0.5V, the input must be patched as this is well above what would be due to noise
+            return True	#True means that a jack is plugged in
+        else:
+            for bit in self.test_signal:
+                start_ticks = ticks_ms()
+                while (1 if analogue_input.read_voltage(1) < 1.8 else 0) != bit:
+                    if ticks_diff(ticks_ms(), start_ticks) > 10:	#Timeout after 10ms between correct readings
+                        return True
+        return False	#Only if every bit is correctly read without timing out, then the jack must be unplugged
+    
 
 
 ## Initialize EuroPi global singleton instance variables.
