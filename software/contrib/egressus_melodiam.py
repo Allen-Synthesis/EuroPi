@@ -11,25 +11,9 @@ author: Nik Ansell (github.com/gamecat69)
 date: 22-Apr-23
 labels: sequencer, CV, randomness
 
-A stepped CV sequencer based on outputs 4,5&6 from the Consequencer.
-
-Demo video: TBC
-
-digital_in: clock in
-analog_in: Adjusts pattern length - summed with k2
-
-knob_1: Set cycle mode pattern
-knob_2: Set Pattern Length - summed with ain
-
-button_1: Short Press: Select CV Pattern (-). Long Press: Generates new CV pattern in existing bank
-button_2: Short Press: Select CV Pattern (+). Long Press: Enables / Disables cycle mode
-
-output_1: randomly generated CV
-output_2: randomly generated CV
-output_3: randomly generated CV
-output_4: randomly generated CV
-output_5: randomly generated CV
-output_6: randomly generated CV
+Generates variable length looping patterns of random stepped CV.
+Patterns can be linked together into sequences to create rhymically evolving CV patterns.
+Inspired by the Noise Engineering Mimetic Digitalis.
 
 '''
 
@@ -67,7 +51,7 @@ class EgressusMelodium(EuroPiScript):
                     for idx, voltage in enumerate(n):
                         print(f"    Step {idx}: {voltage}")
 
-        # Triggered on each clock into digital input. Output stepped CV.
+        '''Triggered on each clock into digital input. Output stepped CV'''
         @din.handler
         def clockTrigger():
             if self.debugMode:
@@ -107,6 +91,7 @@ class EgressusMelodium(EuroPiScript):
             self.clock_step +=1
             self.screenRefreshNeeded = True
 
+        '''Triggered when B1 is pressed and released'''
         @b1.handler_falling
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000:
@@ -124,6 +109,7 @@ class EgressusMelodium(EuroPiScript):
                     if self.debugMode:
                         print('CV Pattern down')
 
+        '''Triggered when B1 is pressed and released'''
         @b2.handler_falling
         def b2Pressed():
             if ticks_diff(ticks_ms(), b2.last_pressed()) > 300 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
@@ -150,6 +136,7 @@ class EgressusMelodium(EuroPiScript):
                             if self.debugMode:
                                 print('Generating NEW pattern')
 
+    '''Initialize CV pattern banks'''
     def initCvPatternBanks(self):
         # Init CV pattern banks
         self.cvPatternBanks = [[], [], [], [], [], []]
@@ -253,37 +240,17 @@ class EgressusMelodium(EuroPiScript):
         # oled.clear() - dont use this, it causes the screen to flicker!
         oled.fill(0)
 
-        # # Show selected pattern visually
-        # lpos = 8-(self.step*8)
-        # oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), lpos, 0, 1)
-        # oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), lpos, 10, 1)
-        # oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), lpos, 20, 1)
-
-        # # If the random toggle is on, show a rectangle
-        # if self.random_HH:
-        #     oled.fill_rect(0, 29, 10, 3, 1)
-
-        # # Show self.output4isClock indicator
-        # if self.output4isClock:
-        #     oled.rect(12, 29, 10, 3, 1)
-
-        # # Show randomness
-        # oled.text('R' + str(int(self.randomness)), 26, 25, 1)
-
-        # # Show CV pattern
-        # oled.text('C' + str(self.CvPattern), 56, 25, 1)
-
-        # # Show the analogInputMode
-        # oled.text('M' + str(self.analogInputMode), 85, 25, 1)
-
         # Show the pattern number
         oled.text('P',10, 0, 1)
         oled.text(str(self.CvPattern),10 , 16, 1)
-        
+
+        # Show the pattern length        
         oled.text('Len',30, 0, 1)
         oled.text(f"{str(self.step)}/{str(self.patternLength)}",30 , 16, 1)
+        
+        # Show the pattern sequence
         if self.cycleMode:
-            oled.text('Cycle',80, 0, 1)
+            oled.text('Seq',80, 0, 1)
             oled.text(str(self.cycleModes[self.selectedCycleMode]),80 , 16, 1)
             cycleIndicatorPosition = 80 +(self.cycleStep * 8)
             #print('position:', str(cycleIndicatorPosition))
