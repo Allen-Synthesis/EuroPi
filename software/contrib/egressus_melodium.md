@@ -5,7 +5,7 @@ date: 22-Apr-23
 labels: sequencer, CV, randomness
 
 Generates variable length looping patterns of random stepped CV.
-Patterns can be linked together into sequences to create rhymically evolving CV patterns.
+Patterns can be linked together into sequences to create rhythmically evolving CV patterns.
 Inspired by the Noise Engineering Mimetic Digitalis.
 
 Demo video: TBC
