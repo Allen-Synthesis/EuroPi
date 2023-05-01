@@ -1,7 +1,7 @@
 Custom Font support
 ===================
 
-The `CustomFontWriter` class if adapted from https://github.com/peterhinch/micropython-font-to-py/tree/master/writer.
+The `CustomFontWriter` class is adapted from https://github.com/peterhinch/micropython-font-to-py/tree/master/writer.
 
 How to generate custom fonts :
 ------------------------------
