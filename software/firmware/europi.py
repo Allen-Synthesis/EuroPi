@@ -490,6 +490,28 @@ class Display(SSD1306_I2C):
         self.show()
 
 
+
+class MCP4728:
+    """aksnfkjsnevicmsopmcxlmk"""
+    
+    def __init__(self, sda=0, scl=1, channel=0):
+        self.dac = "MCP4728(Pin(sda), Pin(scl), channel)"	#Replace with actual MCP4728 library initialisation
+        
+    def set_output(self, channel, voltage):
+        "self.dac.channel.set_voltage(voltage)"	#Replace with the actual DAC method
+        
+class OutputMCP4728:
+    """aojsnjnvfjhjbvfnkjjn"""
+    
+    def __init__(self, dac, channel):
+        self.dac = dac
+        self.channel = channel
+        
+    def set_voltage(self, voltage):
+        self.dac.set_output(self.channel, voltage)
+        
+
+
 class Output:
     """A class for sending digital or analogue voltage to an output jack.
 
