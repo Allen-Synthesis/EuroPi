@@ -40,6 +40,14 @@ class EgressusMelodium(EuroPiScript):
         self.debugMode = False
         self.dataDumpToScreen = False
         
+        self.experimentalSlewMode = False
+        self.slewResolution = 30  # number of values in slewArray between clock step voltages
+        self.slewArray = []
+        self.msBetweenClocks = 0
+        self.lastClockTime = 0
+        self.lastSlewVoltageOutput = 0
+        self.slewGeneratorObject = self.slewGenerator([0])
+
         self.loadState()
 
         # Dump the entire CV Pattern structure to screen
@@ -61,6 +69,9 @@ class EgressusMelodium(EuroPiScript):
                 print(f"[{reset}{self.clock_step}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
             # Cycle through outputs and output CV voltage based on currently selected CV Pattern and Step
             for idx, pattern in enumerate(self.cvPatternBanks):
+                if self.experimentalSlewMode:
+                    if idx == 0:
+                        continue
                 cvs[idx].voltage(pattern[self.CvPattern][self.step])
 
             # Increment / reset step unless we have reached the max step length, or selected pattern length
@@ -90,6 +101,26 @@ class EgressusMelodium(EuroPiScript):
             # Incremenent the clock step
             self.clock_step +=1
             self.screenRefreshNeeded = True
+
+            # Generate slew voltages between steps,
+            # only if we have more than >= 2 clock steps to calculate the time between clocks
+            if self.clock_step >= 2:
+                self.msBetweenClocks = ticks_ms() - self.lastClockTime
+                # Gerate slew voltages between steps
+                if self.step == self.patternLength-1:
+                    nextStep = 0
+                else:
+                    nextStep = self.step+1
+                self.slewArray = self.linspace(
+                        self.cvPatternBanks[0][self.CvPattern][self.step],
+                        self.cvPatternBanks[0][self.CvPattern][nextStep],
+                        self.slewResolution
+                        )
+                self.slewGeneratorObject = self.slewGenerator(self.slewArray)
+                #print(f"self.msBetweenClocks: {self.msBetweenClocks}")
+                #print(f"slewArray: {self.slewArray}")
+            
+            self.lastClockTime = ticks_ms()
 
         '''Triggered when B1 is pressed and released'''
         @b1.handler_falling
@@ -172,6 +203,15 @@ class EgressusMelodium(EuroPiScript):
             self.updateScreen()
             self.getPatternLength()
             self.getCycleMode()
+
+            # experimental slew mode....
+            if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
+                try:
+                    v = next(self.slewGeneratorObject)
+                    cvs[0].voltage(v)
+                except StopIteration:
+                    v = 0
+                self.lastSlewVoltageOutput = ticks_ms()
             # If I have been running, then stopped for longer than reset_timeout, reset all steps to 0
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
@@ -258,6 +298,17 @@ class EgressusMelodium(EuroPiScript):
 
         oled.show()
         self.screenRefreshNeeded = False
+
+    def linspace(self, start, stop, num):
+        w = []
+        diff = (float(stop) - start)/(num - 1)
+        for i in range(num):
+            w.append(diff * i + start)
+        return w
+
+    def slewGenerator(self, arr):
+        for s in range(len(arr)):
+            yield arr[s]
 
 if __name__ == '__main__':
     # Reset module display state.
