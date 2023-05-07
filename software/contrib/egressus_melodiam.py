@@ -71,7 +71,7 @@ class EgressusMelodium(EuroPiScript):
                 print(f"[{reset}{self.clock_step}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
             # Cycle through outputs and output CV voltage based on currently selected CV Pattern and Step
             for idx, pattern in enumerate(self.cvPatternBanks):
-                if self.experimentalSlewMode:
+                if self.experimentalSlewMode and self.slewShape > 0:
                     if idx == 0:
                         continue
                 cvs[idx].voltage(pattern[self.CvPattern][self.step])
@@ -146,6 +146,7 @@ class EgressusMelodium(EuroPiScript):
                 else:
                     self.slewShape += 1
                 self.screenRefreshNeeded = True
+                self.saveState()
                 #self.experimentalSlewMode = not self.experimentalSlewMode
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
@@ -221,7 +222,7 @@ class EgressusMelodium(EuroPiScript):
             self.getCycleMode()
 
             # experimental slew mode....
-            if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
+            if self.experimentalSlewMode and self.slewShape > 0 and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 try:
                     v = next(self.slewGeneratorObject)
                     cvs[0].voltage(v)
@@ -263,7 +264,8 @@ class EgressusMelodium(EuroPiScript):
         self.state = {
             "cvPatternBanks": self.cvPatternBanks,
             "cycleMode": self.cycleMode,
-            "CvPattern": self.CvPattern
+            "CvPattern": self.CvPattern,
+            "slewShape": self.slewShape
         }
         self.save_state_json(self.state)
 
@@ -273,6 +275,7 @@ class EgressusMelodium(EuroPiScript):
         self.cvPatternBanks = self.state.get("cvPatternBanks", [])
         self.cycleMode = self.state.get("cycleMode", False)
         self.CvPattern = self.state.get("CvPattern", 0)
+        self.slewShape = self.state.get("slewShape", 0)
         if len(self.cvPatternBanks) == 0:
             self.initCvPatternBanks()
             if self.debugMode:
