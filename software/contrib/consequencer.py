@@ -293,10 +293,26 @@ class Consequencer(EuroPiScript):
         oled.fill(0)
 
         # Show selected pattern visually
-        lpos = 8-(self.step*8)
-        oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), lpos, 0, 1)
-        oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), lpos, 10, 1)
-        oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), lpos, 20, 1)
+        
+        # Calculate the length of the current pattern
+        current_pattern_length = len(self.BD[self.pattern])
+        
+        # Calculate the width of one full pattern in pixels
+        lpos_offset = current_pattern_length * CHAR_WIDTH
+        
+        # Calculate the x position of the first pattern to be drawn
+        normal_lpos = lpos = 8 - (self.step * 8)
+        
+        # Calculate the number of patterns required to fill the OLED width
+        number_of_offset_patterns = 2 * max(int(OLED_WIDTH / lpos_offset), 1)
+        
+        # Draw as many offset patterns as required to fill the OLED
+        for pattern_offset in range(number_of_offset_patterns):
+            # Draw the current pattern
+            oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), normal_lpos, 0, 1)
+            oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), normal_lpos, 10, 1)
+            oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), normal_lpos, 20, 1)
+            normal_lpos += lpos_offset
 
         # If the random toggle is on, show a rectangle
         if self.random_HH:
