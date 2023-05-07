@@ -18,8 +18,8 @@ analog_in: Adjusts pattern length - summed with k2 (0 to +9V)
 knob_1: Set pattern sequence
 knob_2: Set pattern length - summed with ain
 
-button_1: Short Press: Select CV Pattern bank (-). Long Press: Generates new CV pattern in existing bank
-button_2: Short Press: Select CV Pattern bank (+). Long Press: Enables / Disables pattern sequence mode
+button_1: Short Press: Select CV Pattern bank (-). Medium Press (> 0.3s < 2s) cycle experimental slew mode Long Press (>2s): Generates new CV pattern in existing bank
+button_2: Short Press: Select CV Pattern bank (+). Long Press (>2s): Enables / Disables pattern sequence mode
 
 output_1: randomly generated CV (0 to +9V)
 output_2: randomly generated CV (0 to +9V)

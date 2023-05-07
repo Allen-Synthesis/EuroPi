@@ -40,13 +40,15 @@ class EgressusMelodium(EuroPiScript):
         self.debugMode = False
         self.dataDumpToScreen = False
         
-        self.experimentalSlewMode = False
-        self.slewResolution = 30  # number of values in slewArray between clock step voltages
+        self.experimentalSlewMode = True
+        self.slewResolution = 40  # number of values in slewArray between clock step voltages
         self.slewArray = []
         self.msBetweenClocks = 0
         self.lastClockTime = 0
         self.lastSlewVoltageOutput = 0
         self.slewGeneratorObject = self.slewGenerator([0])
+        self.slewShapes = ['none','log','linear']
+        self.slewShape = 0
 
         self.loadState()
 
@@ -111,11 +113,20 @@ class EgressusMelodium(EuroPiScript):
                     nextStep = 0
                 else:
                     nextStep = self.step+1
-                self.slewArray = self.linspace(
-                        self.cvPatternBanks[0][self.CvPattern][self.step],
-                        self.cvPatternBanks[0][self.CvPattern][nextStep],
-                        self.slewResolution
-                        )
+                if self.slewShapes[self.slewShape] == 'linear':
+                    self.slewArray = self.linspace(
+                            self.cvPatternBanks[0][self.CvPattern][self.step],
+                            self.cvPatternBanks[0][self.CvPattern][nextStep],
+                            self.slewResolution
+                            )
+                elif self.slewShapes[self.slewShape] == 'log':
+                    self.slewArray = self.logspace(
+                            self.cvPatternBanks[0][self.CvPattern][self.step],
+                            self.cvPatternBanks[0][self.CvPattern][nextStep],
+                            self.slewResolution
+                            )
+                else:
+                    pass
                 self.slewGeneratorObject = self.slewGenerator(self.slewArray)
                 #print(f"self.msBetweenClocks: {self.msBetweenClocks}")
                 #print(f"slewArray: {self.slewArray}")
@@ -130,7 +141,12 @@ class EgressusMelodium(EuroPiScript):
                 self.generateNewRandomCVPattern(new=False)
                 self.saveState()
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
-                pass
+                if self.slewShape == len(self.slewShapes)-1:
+                    self.slewShape = 0
+                else:
+                    self.slewShape += 1
+                self.screenRefreshNeeded = True
+                #self.experimentalSlewMode = not self.experimentalSlewMode
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
                 if self.CvPattern != 0:
@@ -296,14 +312,50 @@ class EgressusMelodium(EuroPiScript):
             #print('position:', str(cycleIndicatorPosition))
             oled.text('_', cycleIndicatorPosition, 22, 1)
 
+        if self.experimentalSlewMode:
+            if self.slewShapes[self.slewShape] == 'log':
+                # log
+                oled.pixel(123, 9, 1)
+                oled.pixel(123, 8, 1)
+                oled.pixel(123, 7, 1)
+                oled.pixel(124, 6, 1)
+                oled.pixel(124, 5, 1)
+                oled.pixel(124, 4, 1)
+                oled.pixel(124, 3, 1)
+                oled.pixel(125, 2, 1)
+                oled.pixel(126, 1, 1)
+                oled.pixel(127, 1, 1)
+                oled.pixel(128, 0, 1)
+                oled.pixel(128, 0, 1)
+            if self.slewShapes[self.slewShape] == 'linear':
+                oled.pixel(120, 9, 1)
+                oled.pixel(121, 8, 1)
+                oled.pixel(122, 7, 1)
+                oled.pixel(123, 6, 1)
+                oled.pixel(124, 5, 1)
+                oled.pixel(125, 4, 1)
+                oled.pixel(126, 3, 1)
+                oled.pixel(127, 2, 1)
+                oled.pixel(128, 1, 1)
+
         oled.show()
         self.screenRefreshNeeded = False
 
+    '''Produces an evenly spaced set of num numbers between start and stop using linear transitions'''
     def linspace(self, start, stop, num):
         w = []
         diff = (float(stop) - start)/(num - 1)
         for i in range(num):
             w.append(diff * i + start)
+        return w
+
+    '''Produces an evenly spaced set of num numbers between start and stop using logarithmic transitions'''
+    def logspace(self, start, stop, num):
+        w = []
+        for i in range(num-1):
+            x = 1 - ((stop - float(start))/(i+1)) + stop
+            w.append(x-1)
+        w.append(stop)
         return w
 
     def slewGenerator(self, arr):
