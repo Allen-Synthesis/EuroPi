@@ -205,7 +205,7 @@ class MasterClockInner(EuroPiScript):
                 # unlock the knob if it has reached near the same value - avoids messy UX
                 if abs(newBpm - self.state.get('bpm')) <= 10:
                     self.k2Unlocked = True
-                # update config value if k2 is unlocked and bpm has changed
+                # update config value if k2 is unlocked
                 if self.k2Unlocked:
                     self.bpm = newBpm
                     # calculate the new pulse width in milliseconds based on the new bpm
