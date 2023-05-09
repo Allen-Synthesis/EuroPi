@@ -382,11 +382,6 @@ class MasterClockInner(EuroPiScript):
     async def main(self):
         while True:
             if not self.clockSelectionScreenActive:
-                # # Display selected screen
-                # if self.screen == 1:
-                #     self.screen1()
-                # else:
-                #     self.screen2()
                 self.showScreen()
 
             # Auto reset function after resetTimeout
