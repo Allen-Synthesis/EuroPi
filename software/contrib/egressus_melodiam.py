@@ -61,6 +61,10 @@ class EgressusMelodium(EuroPiScript):
                     for idx, voltage in enumerate(n):
                         print(f"    Step {idx}: {voltage}")
 
+        @din.handler_falling
+        def handleFalingDin():
+            cvs[5].off()
+        
         '''Triggered on each clock into digital input. Output stepped CV'''
         @din.handler
         def clockTrigger():
@@ -74,7 +78,12 @@ class EgressusMelodium(EuroPiScript):
                 if self.experimentalSlewMode and self.slewShape > 0:
                     if idx == 0:
                         continue
-                cvs[idx].voltage(pattern[self.CvPattern][self.step])
+                if idx != 5:
+                    cvs[idx].voltage(pattern[self.CvPattern][self.step])
+                else:
+                    if self.step == self.patternLength - 1:
+                        # send end of cycle gate
+                        cvs[5].on()
 
             # Increment / reset step unless we have reached the max step length, or selected pattern length
             if self.step < self.maxStepLength -1 and self.step < self.patternLength -1:
