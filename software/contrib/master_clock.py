@@ -219,7 +219,7 @@ class MasterClockInner(EuroPiScript):
                 if abs(newBpm - self.state.get('bpm')) <= 10:
                     self.k2Unlocked = True
                 # update config value if k2 is unlocked and bpm has changed
-                if self.k2Unlocked: # and self.bpm != newBpm:
+                if self.k2Unlocked:
                     self.bpm = newBpm
                     # calculate the new pulse width in milliseconds based on the new bpm
                     self.calcSleepTime()
