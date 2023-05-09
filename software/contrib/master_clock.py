@@ -180,20 +180,7 @@ class MasterClockInner(EuroPiScript):
     def average(self, list):
         return sum(list) / len(list)
 
-    '''Show running status'''
-    def screen1(self):
-        if not self._updateUI:
-            return
-        oled.fill(0)
-        oled.text(str(self.completedCycles) + ':' + str(self.step), 0, 0, 1)
-        if not self.externalClockInput:
-            if not self.running:
-                oled.text('B1:Start', 0, 23, 1)
-            else:
-                oled.text('B1:Stop', 0, 23, 1)
-        self.updateDisplay()
-
-    '''config screen'''
+    '''main screen'''
     def showScreen(self):
         # k1 adjusts selected option. Remove option 1 (bpm) if using an external clock
         if self.externalClockInput:
