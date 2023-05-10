@@ -27,7 +27,7 @@ class EgressusMelodium(EuroPiScript):
         self.randomness = 0
         self.CvPattern = 0
         self.numCvPatterns = 4  # Initial number, this can be increased
-        self.reset_timeout = 1000
+        self.reset_timeout = 3000
         self.maxRandomPatterns = 4  # This prevents a memory allocation error (happens with > 5, but 4 is nice round number!)
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
         self.patternLength = 16
@@ -314,7 +314,7 @@ class EgressusMelodium(EuroPiScript):
 
         # Show the pattern length        
         oled.text('Len',30, 0, 1)
-        oled.text(f"{str(self.step)}/{str(self.patternLength)}",30 , 16, 1)
+        oled.text(f"{str(self.step+1)}/{str(self.patternLength)}",30 , 16, 1)
         
         # Show the pattern sequence
         if self.cycleMode:
