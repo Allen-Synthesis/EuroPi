@@ -39,9 +39,11 @@ class EgressusMelodium(EuroPiScript):
         self.selectedCycleMode = 0
         self.debugMode = False
         self.dataDumpToScreen = False
+        self.shreadedVis = False
+        self.shreadedVisClockStep = 0
         
         self.experimentalSlewMode = True
-        self.slewResolution = 80  # number of values in slewArray between clock step voltages
+        self.slewResolution = 20  # number of values in slewArray between clock step voltages
         self.slewArray = []
         self.msBetweenClocks = 0
         self.lastClockTime = 0
@@ -117,6 +119,11 @@ class EgressusMelodium(EuroPiScript):
             # only if we have more than >= 2 clock steps to calculate the time between clocks
             if self.clock_step >= 2:
                 self.msBetweenClocks = ticks_ms() - self.lastClockTime
+                # Increase slew resolution for slower BPM for better smoothing
+                if self.msBetweenClocks <= 500:
+                    self.slewResolution = 20
+                else:
+                    self.slewResolution = int(self.msBetweenClocks / 25)
                 # Gerate slew voltages between steps
                 if self.step == self.patternLength-1:
                     nextStep = 0
@@ -141,6 +148,10 @@ class EgressusMelodium(EuroPiScript):
                 #print(f"slewArray: {self.slewArray}")
             
             self.lastClockTime = ticks_ms()
+            
+            # Hide the shreaded vis clock step after 2 clock steps
+            if self.clock_step > self.shreadedVisClockStep -2:
+                self.shreadedVis = False
 
         '''Triggered when B1 is pressed and released'''
         @b1.handler_falling
@@ -148,6 +159,9 @@ class EgressusMelodium(EuroPiScript):
             if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000:
                 # Generate new pattern for existing pattern
                 self.generateNewRandomCVPattern(new=False)
+                self.shreadedVis = True
+                self.screenRefreshNeeded = True
+                self.shreadedVisClockStep = self.clock_step
                 self.saveState()
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 if self.slewShape == len(self.slewShapes)-1:
@@ -253,9 +267,9 @@ class EgressusMelodium(EuroPiScript):
         previousPatternLength = self.patternLength
         val = 100 * ain.percent()
         if val > self.minAnalogInputVoltage:
-            self.patternLength = min(int((self.maxStepLength / 100) * val) + k2.read_position(self.maxStepLength), self.maxStepLength-1) + 1
+            self.patternLength = min(int((self.maxStepLength / 100) * val) + k1.read_position(self.maxStepLength), self.maxStepLength-1) + 1
         else:
-            self.patternLength = k2.read_position(self.maxStepLength) + 1
+            self.patternLength = k1.read_position(self.maxStepLength) + 1
         
         if previousPatternLength != self.patternLength:
             self.screenRefreshNeeded = True
@@ -263,7 +277,7 @@ class EgressusMelodium(EuroPiScript):
     '''Get the cycle mode from k1'''
     def getCycleMode(self):
         previousCycleMode = self.selectedCycleMode
-        self.selectedCycleMode = k1.read_position(len(self.cycleModes))
+        self.selectedCycleMode = k2.read_position(len(self.cycleModes))
         
         if previousCycleMode != self.selectedCycleMode:
             self.screenRefreshNeeded = True
@@ -326,20 +340,22 @@ class EgressusMelodium(EuroPiScript):
 
         if self.experimentalSlewMode:
             if self.slewShapes[self.slewShape] == 'log':
-                # log
-                oled.pixel(123, 9, 1)
-                oled.pixel(123, 8, 1)
-                oled.pixel(123, 7, 1)
-                oled.pixel(124, 6, 1)
-                oled.pixel(124, 5, 1)
-                oled.pixel(124, 4, 1)
-                oled.pixel(124, 3, 1)
-                oled.pixel(125, 2, 1)
+                oled.pixel(120, 9, 1)
+                oled.pixel(120, 8, 1)
+                oled.pixel(120, 7, 1)
+                oled.pixel(120, 6, 1)
+                oled.pixel(120, 5, 1)
+                oled.pixel(121, 4, 1)
+                oled.pixel(121, 3, 1)
+                oled.pixel(122, 3, 1)
+                oled.pixel(122, 2, 1)
+                oled.pixel(123, 1, 1)
+                oled.pixel(124, 1, 1)
+                oled.pixel(125, 1, 1)
                 oled.pixel(126, 1, 1)
                 oled.pixel(127, 1, 1)
-                oled.pixel(128, 0, 1)
-                oled.pixel(128, 0, 1)
-            if self.slewShapes[self.slewShape] == 'linear':
+                oled.pixel(128, 1, 1)
+            elif self.slewShapes[self.slewShape] == 'linear':
                 oled.pixel(120, 9, 1)
                 oled.pixel(121, 8, 1)
                 oled.pixel(122, 7, 1)
@@ -349,6 +365,15 @@ class EgressusMelodium(EuroPiScript):
                 oled.pixel(126, 3, 1)
                 oled.pixel(127, 2, 1)
                 oled.pixel(128, 1, 1)
+            else: # square
+                oled.vline(116, 1, 8, 1)
+                oled.hline(116, 1, 6, 1)
+                oled.vline(122, 1, 8, 1)
+                oled.hline(122, 8, 6, 1)
+                oled.vline(128, 1, 8, 1)
+
+        if self.shreadedVis:
+            oled.text('x',120 ,23)
 
         oled.show()
         self.screenRefreshNeeded = False
@@ -359,12 +384,13 @@ class EgressusMelodium(EuroPiScript):
         diff = (float(stop) - start)/(num - 1)
         for i in range(num):
             w.append(diff * i + start)
+        #print(w)
         return w
 
     '''Produces an evenly spaced set of num numbers between start and stop using logarithmic transitions'''
     def logspace(self, start, stop, num):
         w = []
-        for i in range(num-1):
+        for i in range(num-2):
             x = 1 - ((stop - float(start))/(i+1)) + stop
             w.append(x-1)
         w.append(stop)
