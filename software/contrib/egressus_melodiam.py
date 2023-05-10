@@ -27,7 +27,7 @@ class EgressusMelodium(EuroPiScript):
         self.randomness = 0
         self.CvPattern = 0
         self.numCvPatterns = 4  # Initial number, this can be increased
-        self.reset_timeout = 3000
+        self.reset_timeout = 10000
         self.maxRandomPatterns = 4  # This prevents a memory allocation error (happens with > 5, but 4 is nice round number!)
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
         self.patternLength = 16
@@ -41,7 +41,7 @@ class EgressusMelodium(EuroPiScript):
         self.dataDumpToScreen = False
         
         self.experimentalSlewMode = True
-        self.slewResolution = 40  # number of values in slewArray between clock step voltages
+        self.slewResolution = 80  # number of values in slewArray between clock step voltages
         self.slewArray = []
         self.msBetweenClocks = 0
         self.lastClockTime = 0
