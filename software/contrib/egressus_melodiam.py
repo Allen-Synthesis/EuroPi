@@ -49,7 +49,7 @@ class EgressusMelodium(EuroPiScript):
         self.lastClockTime = 0
         self.lastSlewVoltageOutput = 0
         self.slewGeneratorObject = self.slewGenerator([0])
-        self.slewShapes = ['none','log','linear']
+        self.slewShapes = ['square','log1','log2','linear']
         self.slewShape = 0
 
         self.loadState()
@@ -129,14 +129,20 @@ class EgressusMelodium(EuroPiScript):
                     nextStep = 0
                 else:
                     nextStep = self.step+1
-                if self.slewShapes[self.slewShape] == 'linear':
+                if self.slewShape == 3:
                     self.slewArray = self.linspace(
                             self.cvPatternBanks[0][self.CvPattern][self.step],
                             self.cvPatternBanks[0][self.CvPattern][nextStep],
                             self.slewResolution
                             )
-                elif self.slewShapes[self.slewShape] == 'log':
-                    self.slewArray = self.logspace(
+                if self.slewShape == 2:
+                    self.slewArray = self.logspace2(
+                            self.cvPatternBanks[0][self.CvPattern][self.step],
+                            self.cvPatternBanks[0][self.CvPattern][nextStep],
+                            self.slewResolution
+                            )
+                if self.slewShape == 1:
+                    self.slewArray = self.logspace1(
                             self.cvPatternBanks[0][self.CvPattern][self.step],
                             self.cvPatternBanks[0][self.CvPattern][nextStep],
                             self.slewResolution
@@ -339,7 +345,31 @@ class EgressusMelodium(EuroPiScript):
             oled.text('_', cycleIndicatorPosition, 22, 1)
 
         if self.experimentalSlewMode:
-            if self.slewShapes[self.slewShape] == 'log':
+            print(self.slewShapes[self.slewShape])
+            if self.slewShape == 3: # linear
+                oled.pixel(120, 9, 1)
+                oled.pixel(121, 8, 1)
+                oled.pixel(122, 7, 1)
+                oled.pixel(123, 6, 1)
+                oled.pixel(124, 5, 1)
+                oled.pixel(125, 4, 1)
+                oled.pixel(126, 3, 1)
+                oled.pixel(127, 2, 1)
+                oled.pixel(128, 1, 1)
+            elif self.slewShape == 2: # exp up log down
+                oled.pixel(120, 9, 1)
+                oled.pixel(121, 9, 1)
+                oled.pixel(122, 9, 1)
+                oled.pixel(123, 8, 1)
+                oled.pixel(124, 8, 1)
+                oled.pixel(125, 7, 1)
+                oled.pixel(126, 6, 1)
+                oled.pixel(127, 5, 1)
+                oled.pixel(127, 4, 1)
+                oled.pixel(127, 3, 1)
+                oled.pixel(127, 2, 1)
+                oled.pixel(127, 1, 1)
+            elif self.slewShape == 1: # log up exp down
                 oled.pixel(120, 9, 1)
                 oled.pixel(120, 8, 1)
                 oled.pixel(120, 7, 1)
@@ -355,16 +385,6 @@ class EgressusMelodium(EuroPiScript):
                 oled.pixel(126, 1, 1)
                 oled.pixel(127, 1, 1)
                 oled.pixel(128, 1, 1)
-            elif self.slewShapes[self.slewShape] == 'linear':
-                oled.pixel(120, 9, 1)
-                oled.pixel(121, 8, 1)
-                oled.pixel(122, 7, 1)
-                oled.pixel(123, 6, 1)
-                oled.pixel(124, 5, 1)
-                oled.pixel(125, 4, 1)
-                oled.pixel(126, 3, 1)
-                oled.pixel(127, 2, 1)
-                oled.pixel(128, 1, 1)
             else: # square
                 oled.vline(116, 1, 8, 1)
                 oled.hline(116, 1, 6, 1)
@@ -378,21 +398,43 @@ class EgressusMelodium(EuroPiScript):
         oled.show()
         self.screenRefreshNeeded = False
 
-    '''Produces an evenly spaced set of num numbers between start and stop using linear transitions'''
+    '''Produces linear transitions'''
     def linspace(self, start, stop, num):
         w = []
-        diff = (float(stop) - start)/(num - 1)
+        # offset changes the top of the shape
+        # - a val between 0 and 10 creates a vertical step in the curve
+        # - a value between -2 and -10 creates a flat at the peak
+        # - a val of -1 produces a perflect line
+        # - a val of -3 seems to be look best on a scope
+        offset = -1
+        # calculate the increment between each value
+        diff = (float(stop) - start)/(num+offset)
         for i in range(num):
-            w.append(diff * i + start)
-        #print(w)
+            val = (diff * i + start)
+            w.append(val)
         return w
 
-    '''Produces an evenly spaced set of num numbers between start and stop using logarithmic transitions'''
-    def logspace(self, start, stop, num):
+    '''Produces log up and exponential down'''
+    def logspace1(self, start, stop, num):
         w = []
+        if stop >= start:
+            for i in range(num):
+                x = 1 - ((stop - float(start))/(i+1)) + stop
+                w.append(x-1)
+        else:
+            for i in range(num):
+                x = 1 - ((stop - float(start))/(i+1.1)) + stop
+                w.append(x-1) 
+        return w
+
+    '''Produces log down and exponential up'''
+    def logspace2(self, start, stop, num):
+        w = []
+        w.append(start)
         for i in range(num-2):
-            x = 1 - ((stop - float(start))/(i+1)) + stop
-            w.append(x-1)
+            i += 1
+            val = start + ((stop - start) / (num-i) * 2)
+            w.append(val)
         w.append(stop)
         return w
 
@@ -405,3 +447,5 @@ if __name__ == '__main__':
     [cv.off() for cv in cvs]
     dm = EgressusMelodium()
     dm.main()
+
+
