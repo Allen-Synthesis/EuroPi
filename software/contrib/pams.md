@@ -121,7 +121,7 @@ The submenu for each CV output has the following options:
 - Reset: ignored
 - Start: ignored
 - Run: ignored
-- AIN: offset voltage as a percentage of the maximum output
+- AIN: ignored
 
 ### Reset and Run Waves
 

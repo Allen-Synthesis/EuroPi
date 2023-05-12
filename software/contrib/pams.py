@@ -231,29 +231,6 @@ DIN_MODES = [
     DIN_MODE_TRIGGER
 ]
 
-class Semaphore:
-    """A very basic semaphore to provide minimal thread-safety for objects being manipulated in multiple ISRs
-    """
-    def __init__(self, value=1):
-        """Create a semaphore with an initial value
-        """
-        self.value = value
-
-    def lock(self):
-        """Wait until the semaphore is unlocked and then lock it
-
-        This will busy-wait the current thread, so use carefully to avoid deadlocking your system!
-        """
-        while self.value <= 0:
-            pass
-
-        self.value = self.value - 1
-
-    def release(self):
-        """Release our ownership of the semaphore
-        """
-        self.value = self.value + 1
-
 class Setting:
     """A single setting that can be loaded, saved, or dynamically read from an analog input
     """
@@ -750,7 +727,7 @@ class PamsOutput:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.get_value() == WAVE_AIN:
                 if rising_edge and not self.skip_this_step:
-                    wave_sample = CV_INS["AIN"].get_value() * (self.amplitude.get_value() / 100.0) + (self.width.get_value() / 100.0)
+                    wave_sample = CV_INS["AIN"].get_value() / MAX_OUTPUT_VOLTAGE
                 else:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.get_value() == WAVE_SQUARE:
