@@ -49,8 +49,11 @@ class EgressusMelodium(EuroPiScript):
         self.lastClockTime = 0
         self.lastSlewVoltageOutput = 0
         self.slewGeneratorObject = self.slewGenerator([0])
-        self.slewShapes = ['square','log1','log2','linear']
+        self.slewShapes = [self.stepUpStepDown, self.linspace, self.logUpExpDown, self.expUpLogDown, self.logUpStepDown, self.stepUpExpDown]
+        #self.slewShapes = ['square','log1','log2','linear']
         self.slewShape = 0
+        self.voltageExtremes=[0, 10]
+        self.voltageExtremeFlipFlop = False
 
         self.loadState()
 
@@ -77,7 +80,7 @@ class EgressusMelodium(EuroPiScript):
                 print(f"[{reset}{self.clock_step}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
             # Cycle through outputs and output CV voltage based on currently selected CV Pattern and Step
             for idx, pattern in enumerate(self.cvPatternBanks):
-                if self.experimentalSlewMode and self.slewShape > 0:
+                if self.experimentalSlewMode:
                     if idx == 0:
                         continue
                 if idx != 5:
@@ -129,26 +132,22 @@ class EgressusMelodium(EuroPiScript):
                     nextStep = 0
                 else:
                     nextStep = self.step+1
-                if self.slewShape == 3:
-                    self.slewArray = self.linspace(
-                            self.cvPatternBanks[0][self.CvPattern][self.step],
-                            self.cvPatternBanks[0][self.CvPattern][nextStep],
-                            self.slewResolution
-                            )
-                if self.slewShape == 2:
-                    self.slewArray = self.logspace2(
-                            self.cvPatternBanks[0][self.CvPattern][self.step],
-                            self.cvPatternBanks[0][self.CvPattern][nextStep],
-                            self.slewResolution
-                            )
-                if self.slewShape == 1:
-                    self.slewArray = self.logspace1(
-                            self.cvPatternBanks[0][self.CvPattern][self.step],
-                            self.cvPatternBanks[0][self.CvPattern][nextStep],
-                            self.slewResolution
-                            )
+                
+                # If length is two, cycle between high and low voltages (traditional LFO)
+                if self.patternLength == 2:
+                    self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
+                    self.slewArray = self.slewShapes[self.slewShape](
+                        self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
+                        self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
+                        self.slewResolution
+                        )
                 else:
-                    pass
+                    # Call selected slew function
+                    self.slewArray = self.slewShapes[self.slewShape](
+                        self.cvPatternBanks[0][self.CvPattern][self.step],
+                        self.cvPatternBanks[0][self.CvPattern][nextStep],
+                        self.slewResolution
+                        )
                 self.slewGeneratorObject = self.slewGenerator(self.slewArray)
                 #print(f"self.msBetweenClocks: {self.msBetweenClocks}")
                 #print(f"slewArray: {self.slewArray}")
@@ -251,7 +250,7 @@ class EgressusMelodium(EuroPiScript):
             self.getCycleMode()
 
             # experimental slew mode....
-            if self.experimentalSlewMode and self.slewShape > 0 and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
+            if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 try:
                     v = next(self.slewGeneratorObject)
                     cvs[0].voltage(v)
@@ -341,62 +340,74 @@ class EgressusMelodium(EuroPiScript):
             oled.text('Seq',80, 0, 1)
             oled.text(str(self.cycleModes[self.selectedCycleMode]),80 , 16, 1)
             cycleIndicatorPosition = 80 +(self.cycleStep * 8)
-            #print('position:', str(cycleIndicatorPosition))
             oled.text('_', cycleIndicatorPosition, 22, 1)
 
         if self.experimentalSlewMode:
-            print(self.slewShapes[self.slewShape])
-            if self.slewShape == 3: # linear
-                oled.pixel(120, 9, 1)
-                oled.pixel(121, 8, 1)
-                oled.pixel(122, 7, 1)
-                oled.pixel(123, 6, 1)
-                oled.pixel(124, 5, 1)
-                oled.pixel(125, 4, 1)
-                oled.pixel(126, 3, 1)
-                oled.pixel(127, 2, 1)
-                oled.pixel(128, 1, 1)
-            elif self.slewShape == 2: # exp up log down
-                oled.pixel(120, 9, 1)
-                oled.pixel(121, 9, 1)
-                oled.pixel(122, 9, 1)
-                oled.pixel(123, 8, 1)
-                oled.pixel(124, 8, 1)
-                oled.pixel(125, 7, 1)
-                oled.pixel(126, 6, 1)
-                oled.pixel(127, 5, 1)
-                oled.pixel(127, 4, 1)
-                oled.pixel(127, 3, 1)
-                oled.pixel(127, 2, 1)
-                oled.pixel(127, 1, 1)
-            elif self.slewShape == 1: # log up exp down
-                oled.pixel(120, 9, 1)
-                oled.pixel(120, 8, 1)
-                oled.pixel(120, 7, 1)
-                oled.pixel(120, 6, 1)
-                oled.pixel(120, 5, 1)
-                oled.pixel(121, 4, 1)
-                oled.pixel(121, 3, 1)
-                oled.pixel(122, 3, 1)
-                oled.pixel(122, 2, 1)
-                oled.pixel(123, 1, 1)
-                oled.pixel(124, 1, 1)
-                oled.pixel(125, 1, 1)
-                oled.pixel(126, 1, 1)
-                oled.pixel(127, 1, 1)
-                oled.pixel(128, 1, 1)
-            else: # square
-                oled.vline(116, 1, 8, 1)
-                oled.hline(116, 1, 6, 1)
-                oled.vline(122, 1, 8, 1)
-                oled.hline(122, 8, 6, 1)
-                oled.vline(128, 1, 8, 1)
+            oled.text(str(self.slewShape), 120, 0, 1)
+            # if self.slewShape == 3: # linear
+            #     oled.pixel(120, 9, 1)
+            #     oled.pixel(121, 8, 1)
+            #     oled.pixel(122, 7, 1)
+            #     oled.pixel(123, 6, 1)
+            #     oled.pixel(124, 5, 1)
+            #     oled.pixel(125, 4, 1)
+            #     oled.pixel(126, 3, 1)
+            #     oled.pixel(127, 2, 1)
+            #     oled.pixel(128, 1, 1)
+            # elif self.slewShape == 2: # exp up log down
+            #     oled.pixel(120, 9, 1)
+            #     oled.pixel(121, 9, 1)
+            #     oled.pixel(122, 9, 1)
+            #     oled.pixel(123, 8, 1)
+            #     oled.pixel(124, 8, 1)
+            #     oled.pixel(125, 7, 1)
+            #     oled.pixel(126, 6, 1)
+            #     oled.pixel(127, 5, 1)
+            #     oled.pixel(127, 4, 1)
+            #     oled.pixel(127, 3, 1)
+            #     oled.pixel(127, 2, 1)
+            #     oled.pixel(127, 1, 1)
+            # elif self.slewShape == 1: # log up exp down
+            #     oled.pixel(120, 9, 1)
+            #     oled.pixel(120, 8, 1)
+            #     oled.pixel(120, 7, 1)
+            #     oled.pixel(120, 6, 1)
+            #     oled.pixel(120, 5, 1)
+            #     oled.pixel(121, 4, 1)
+            #     oled.pixel(121, 3, 1)
+            #     oled.pixel(122, 3, 1)
+            #     oled.pixel(122, 2, 1)
+            #     oled.pixel(123, 1, 1)
+            #     oled.pixel(124, 1, 1)
+            #     oled.pixel(125, 1, 1)
+            #     oled.pixel(126, 1, 1)
+            #     oled.pixel(127, 1, 1)
+            #     oled.pixel(128, 1, 1)
+            # else: # square
+            #     oled.vline(116, 1, 8, 1)
+            #     oled.hline(116, 1, 6, 1)
+            #     oled.vline(122, 1, 8, 1)
+            #     oled.hline(122, 8, 6, 1)
+            #     oled.vline(128, 1, 8, 1)
 
         if self.shreadedVis:
             oled.text('x',120 ,23)
 
         oled.show()
         self.screenRefreshNeeded = False
+
+# -----------------------------
+# Slew functions
+# -----------------------------
+
+# [self.stepUpStepDown, self.linspace, self.logUpExpDown, self.expUpLogDown, self.logUpStepDown, self.stepUpExpDown]
+
+    '''Produces step up, step down'''
+    def stepUpStepDown(self, start, stop, num):
+        w = []
+        for i in range(num-1):
+            w.append(stop)
+        return w
 
     '''Produces linear transitions'''
     def linspace(self, start, stop, num):
@@ -414,28 +425,56 @@ class EgressusMelodium(EuroPiScript):
             w.append(val)
         return w
 
-    '''Produces log up and exponential down'''
-    def logspace1(self, start, stop, num):
+    '''Produces log up, exponential down'''
+    def logUpExpDown(self, start, stop, num):
         w = []
         if stop >= start:
-            for i in range(num):
-                x = 1 - ((stop - float(start))/(i+1)) + stop
-                w.append(x-1)
+            for i in range(num-1):
+                i = max(i, 1)
+                x = 1 - ((stop - float(start))/(i)) + (stop-1)
+                w.append(x)
         else:
-            for i in range(num):
-                x = 1 - ((stop - float(start))/(i+1.1)) + stop
-                w.append(x-1) 
+            for i in range(num-1):
+                i = max(i, 1)
+                x = 1 - ((stop - float(start))/(i)) + (stop-1)
+                w.append(x) 
         return w
 
-    '''Produces log down and exponential up'''
-    def logspace2(self, start, stop, num):
+    '''Produces exponential up, log down'''
+    def expUpLogDown(self, start, stop, num):
         w = []
-        w.append(start)
-        for i in range(num-2):
-            i += 1
-            val = start + ((stop - start) / (num-i) * 2)
+        #w.append(start)
+        for i in range(num-1):
+            l = max(1, (num-i))
+            val = start + ((stop - start) / (l) * 2)
             w.append(val)
-        w.append(stop)
+        #w.append(stop)
+        return w
+
+    '''Produces log up, step down'''
+    def logUpStepDown(self, start, stop, num):
+        w = []
+        if stop >= start:
+            for i in range(num-1):
+                i = max(i, 1)
+                x = 1 - ((stop - float(start))/(i)) + (stop-1)
+                w.append(x)
+        else:
+            for i in range(num-1):
+                w.append(stop)
+        return w
+
+    '''Produces step up, exp down'''
+    def stepUpExpDown(self, start, stop, num):
+        w = []
+        if stop <= start:
+            for i in range(num-1):
+                i = max(i, 1)
+                x = 1 - ((stop - float(start))/(i)) + (stop-1)
+                w.append(x)
+        else:
+            for i in range(num):
+                w.append(stop)
         return w
 
     def slewGenerator(self, arr):
