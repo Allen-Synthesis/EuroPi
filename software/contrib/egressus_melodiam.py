@@ -22,12 +22,12 @@ class EgressusMelodium(EuroPiScript):
 
         # Initialize variables
         self.step = 0
-        self.clock_step = 0
+        self.clockStep = 0
         self.minAnalogInputVoltage = 0.5
         self.randomness = 0
         self.CvPattern = 0
         self.numCvPatterns = 4  # Initial number, this can be increased
-        self.reset_timeout = 10000
+        self.resetTimeout = 10000
         self.maxRandomPatterns = 4  # This prevents a memory allocation error (happens with > 5, but 4 is nice round number!)
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
         self.patternLength = 16
@@ -75,9 +75,9 @@ class EgressusMelodium(EuroPiScript):
         def clockTrigger():
             if self.debugMode:
                 reset=''
-                if self.clock_step % 16 == 0:
+                if self.clockStep % 16 == 0:
                     reset = '*******'
-                print(f"[{reset}{self.clock_step}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
+                print(f"[{reset}{self.clockStep}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
             # Cycle through outputs and output CV voltage based on currently selected CV Pattern and Step
             for idx, pattern in enumerate(self.cvPatternBanks):
                 if self.experimentalSlewMode:
@@ -96,7 +96,7 @@ class EgressusMelodium(EuroPiScript):
             else:
                 # Reset step back to 0
                 if self.debugMode:
-                    print(f'[{self.clock_step}] [{self.step}]reset step to 0')
+                    print(f'[{self.clockStep}] [{self.step}]reset step to 0')
                 self.step = 0
                 self.screenRefreshNeeded = True
 
@@ -115,12 +115,12 @@ class EgressusMelodium(EuroPiScript):
                     #self.screenRefreshNeeded = True
 
             # Incremenent the clock step
-            self.clock_step +=1
+            self.clockStep +=1
             self.screenRefreshNeeded = True
 
             # Generate slew voltages between steps,
             # only if we have more than >= 2 clock steps to calculate the time between clocks
-            if self.clock_step >= 2:
+            if self.clockStep >= 2:
                 self.msBetweenClocks = ticks_ms() - self.lastClockTime
                 self.slewResolution = min(40, int(self.msBetweenClocks / 15))
                 if self.step == self.patternLength-1:
@@ -150,7 +150,7 @@ class EgressusMelodium(EuroPiScript):
             self.lastClockTime = ticks_ms()
             
             # Hide the shreaded vis clock step after 2 clock steps
-            if self.clock_step > self.shreadedVisClockStep -2:
+            if self.clockStep > self.shreadedVisClockStep -2:
                 self.shreadedVis = False
 
         '''Triggered when B1 is pressed and released'''
@@ -161,7 +161,7 @@ class EgressusMelodium(EuroPiScript):
                 self.generateNewRandomCVPattern(new=False)
                 self.shreadedVis = True
                 self.screenRefreshNeeded = True
-                self.shreadedVisClockStep = self.clock_step
+                self.shreadedVisClockStep = self.clockStep
                 self.saveState()
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 if self.slewShape == len(self.slewShapes)-1:
@@ -252,10 +252,10 @@ class EgressusMelodium(EuroPiScript):
                 except StopIteration:
                     v = 0
                 self.lastSlewVoltageOutput = ticks_ms()
-            # If I have been running, then stopped for longer than reset_timeout, reset all steps to 0
-            if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
+            # If I have been running, then stopped for longer than resetTimeout, reset all steps to 0
+            if self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
                 self.step = 0
-                self.clock_step = 0
+                self.clockStep = 0
                 self.cycleStep = 0
                 if self.numCvPatterns >= int(self.cycleModes[self.selectedCycleMode][self.cycleStep]):
                     self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
