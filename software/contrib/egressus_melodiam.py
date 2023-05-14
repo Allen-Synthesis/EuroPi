@@ -43,7 +43,7 @@ class EgressusMelodium(EuroPiScript):
         self.shreadedVisClockStep = 0
         
         self.experimentalSlewMode = True
-        self.slewResolution = 20  # number of values in slewArray between clock step voltages
+        self.slewResolution = 50  # number of values in slewArray between clock step voltages
         self.slewArray = []
         self.msBetweenClocks = 0
         self.lastClockTime = 0
@@ -122,12 +122,7 @@ class EgressusMelodium(EuroPiScript):
             # only if we have more than >= 2 clock steps to calculate the time between clocks
             if self.clock_step >= 2:
                 self.msBetweenClocks = ticks_ms() - self.lastClockTime
-                # Increase slew resolution for slower BPM for better smoothing
-                if self.msBetweenClocks <= 500:
-                    self.slewResolution = 20
-                else:
-                    self.slewResolution = int(self.msBetweenClocks / 25)
-                # Gerate slew voltages between steps
+                self.slewResolution = min(40, int(self.msBetweenClocks / 15))
                 if self.step == self.patternLength-1:
                     nextStep = 0
                 else:
@@ -419,9 +414,9 @@ class EgressusMelodium(EuroPiScript):
         # - a val of -3 seems to be look best on a scope
         offset = -1
         # calculate the increment between each value
-        diff = (float(stop) - start)/(num+offset)
-        for i in range(num):
-            val = (diff * i + start)
+        diff = (float(stop) - start)/(num)
+        for i in range(num-1):
+            val = ((diff * i) + start)
             w.append(val)
         return w
 
