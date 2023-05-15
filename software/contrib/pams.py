@@ -522,6 +522,9 @@ class PamsOutput:
         #  For now, stick to square waves for triggers & gates
         self.wave_shape = Setting("Wave", "wave", WAVE_SHAPE_LABELS, WAVE_SHAPES, default_value=WAVE_SQUARE, allow_cv_in=False)
 
+        ## The phase offset of the output as a [0, 100] percentage
+        self.phase = Setting("Phase", "phase", list(range(101)), list(range(101)), default_value=0)
+
         ## The amplitude of the output as a [0, 100] percentage
         self.amplitude = Setting("Ampl.", "ampl", list(range(101)), list(range(101)), default_value=50)
 
@@ -579,6 +582,7 @@ class PamsOutput:
             "e_rot"     : self.e_rot.to_dict(),
             "skip"      : self.skip.to_dict(),
             "wave"      : self.wave_shape.to_dict(),
+            "phase"     : self.phase.to_dict(),
             "amplitude" : self.amplitude.to_dict(),
             "width"     : self.width.to_dict(),
             "quantizer" : self.quantizer.to_dict()
@@ -601,6 +605,8 @@ class PamsOutput:
             self.skip.load(settings["skip"])
         if "wave" in settings.keys():
             self.wave_shape.load(settings["wave"])
+        if "phase" in settings.keys():
+            self.phase.load(settings["phase"])
         if "amplitude" in settings.keys():
             self.amplitude.load(settings["amplitude"])
         if "width" in settings.keys():
@@ -636,7 +642,13 @@ class PamsOutput:
         # the first part of the square wave is on, the last part is off
         # cutoff depends on the duty-cycle/pulse width
         duty_cycle = n_ticks * self.width.get_value() / 100.0
-        if tick < duty_cycle:
+
+        # because of phase offset the wave _can_ start at e.g. 75% of the ticks and end at the following window's 25%
+        start_tick = self.phase.get_value() * n_ticks / 100.0 
+        end_tick = (start_tick + duty_cycle) % n_ticks
+
+        if (start_tick < end_tick and tick >= start_tick and tick < end_tick) or \
+           (start_tick > end_tick and (tick < end_tick or tick >= start_tick)):
             return 1.0
         else:
             return 0.0
@@ -654,6 +666,8 @@ class PamsOutput:
         falling_ticks = n_ticks - rising_ticks
         peak = 1.0
         y = 0.0
+
+        tick = int(tick + self.phase.get_value() * n_ticks / 100.0) % n_ticks
 
         if tick < rising_ticks:
             # we're on the rising side of the triangle wave
@@ -679,7 +693,7 @@ class PamsOutput:
         are at 1.0 and 0.0 respectively
         """
         # bog-standard sine wave
-        theta = tick / n_ticks * 2 * math.pi  # covert the tick to radians
+        theta = (tick + self.phase.get_value() / 100.0 * n_ticks) / n_ticks * 2 * math.pi  # covert the tick to radians
         s_theta = (math.sin(theta) + 1) / 2   # (sin(x) + 1)/2 since we can't output negative voltages
         return s_theta
 
@@ -714,7 +728,7 @@ class PamsOutput:
             e_step = self.e_pattern[self.e_position]
             wave_position = self.sample_position
             # are we starting a new repeat of the pattern?
-            rising_edge = wave_position == 0 and e_step
+            rising_edge = wave_position == int(self.phase.get_value() * ticks_per_note / 100.0) and e_step
             # determine if we should skip this sample playback
             if rising_edge:
                 self.skip_this_step = random.randint(0, 100) < self.skip.get_value()
@@ -864,6 +878,7 @@ class PamsMenu:
             self.items.append(SettingChooser(prefix, ch.clock_mod, None, [
                 SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS, []),
                 SettingChooser(prefix, ch.width),
+                SettingChooser(prefix, ch.phase),
                 SettingChooser(prefix, ch.amplitude),
                 SettingChooser(prefix, ch.skip),
                 SettingChooser(prefix, ch.e_step),
