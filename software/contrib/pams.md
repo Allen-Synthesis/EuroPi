@@ -189,7 +189,7 @@ and 12V is the equivalent of choosing the last item in the menu.
 
 NOTE: the `Wave Shape` parameter of the CV outputs works differently. Instead of dynamically
 choosing the output wave shape, the CV output acts as a sample & hold of the signal coming into
-`ain. The digital attenuation (see below) is applied BEFORE the sample & hold operation is applied.
+`ain`. The digital attenuation (see below) is applied BEFORE the sample & hold operation is applied.
 The `Amplitude` parameter acts as a secondary virtual attenuator, and the `Width` parameter acts
 as an offset voltage.
 

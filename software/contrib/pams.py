@@ -14,19 +14,12 @@ from contrib.euclid import generate_euclidean_pattern
 from contrib.quantizer import Quantizer
 from contrib.screensaver import Screensaver
 
+from collections import OrderedDict
 from machine import Timer
 
 import math
 import time
 import random
-
-## The version of Pam's Workout
-#
-#  Ideally this should sync 1:1 with a tag in the development branch
-#
-#  This is shown on a splash screen when the script starts to help with
-#  debugging/bug-reports
-VERSION = "0.0.1"
 
 ## Vertical screen offset for placing user input
 SELECT_OPTION_Y = 16
@@ -38,92 +31,59 @@ HALF_CHAR_WIDTH = int(CHAR_WIDTH / 2)
 LONG_PRESS_MS = 500
 
 ## The scales that each PamsOutput can quantize to
-QUANTIZERS = {
-    "None"      : None,
-    #                        C      C#     D      D#     E      F      F#     G      G#     A      A#     B
-    "Chromatic" : Quantizer([True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True]),
+QUANTIZERS = OrderedDict([
+    ["None"      , None],
+    #                         C      C#     D      D#     E      F      F#     G      G#     A      A#     B
+    ["Chromatic" , Quantizer([True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True])],
 
     # Major scales
-    "Nat Maj"   : Quantizer([True,  False, True,  False, True,  True,  False, True,  False, True,  False, True]),
-    "Har Maj"   : Quantizer([True,  False, True,  False, True,  True,  False, True,  True,  False, True,  False]),
-    "Maj 135"   : Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, False]),
-    "Maj 1356"  : Quantizer([True,  False, False, False, True,  False, False, True,  False, True,  False, False]),
-    "Maj 1357"  : Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, True]),
+    ["Nat Maj"   , Quantizer([True,  False, True,  False, True,  True,  False, True,  False, True,  False, True])],
+    ["Har Maj"   , Quantizer([True,  False, True,  False, True,  True,  False, True,  True,  False, True,  False])],
+    ["Maj 135"   , Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, False])],
+    ["Maj 1356"  , Quantizer([True,  False, False, False, True,  False, False, True,  False, True,  False, False])],
+    ["Maj 1357"  , Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, True])],
 
     # Minor scales
-    "Nat Min"   : Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, True,  False]),
-    "Har Min"   : Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, False, True]),
-    "Min 135"   : Quantizer([True,  False, False, True,  False, False, False, True,  False, False, False, False]),
-    "Min 1356"  : Quantizer([True,  False, False, True,  False, False, False, True,  True,  False, False, False]),
-    "Min 1357"  : Quantizer([True,  False, False, True,  False, False, False, True,  False, False, True,  False]),
+    ["Nat Min"   , Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, True,  False])],
+    ["Har Min"   , Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, False, True])],
+    ["Min 135"   , Quantizer([True,  False, False, True,  False, False, False, True,  False, False, False, False])],
+    ["Min 1356"  , Quantizer([True,  False, False, True,  False, False, False, True,  True,  False, False, False])],
+    ["Min 1357"  , Quantizer([True,  False, False, True,  False, False, False, True,  False, False, True,  False])],
 
     # Blues scales
-    "Maj Blues" : Quantizer([True,  False, True,  True,  True,  False, False, True,  False, True,  False, False]),  # 1-2-b3-3-5-6
-    "Min Blues" : Quantizer([True,  False, False, True,  False, True,  True,  True,  False,  False, True,  False]), # 1-b3-4-b5-5-b7
+    ["Maj Blues" , Quantizer([True,  False, True,  True,  True,  False, False, True,  False, True,  False, False])],  # 1-2-b3-3-5-6
+    ["Min Blues" , Quantizer([True,  False, False, True,  False, True,  True,  True,  False,  False, True,  False])], # 1-b3-4-b5-5-b7
 
     # Misc
-    "Whole"     : Quantizer([True,  False, True,  False, True,  False, True,  False, True,  False, True,  False]),
-    "Penta"     : Quantizer([True,  False, True,  False, True,  False, False, True,  False, True,  False, False]),
-    "Dom 7"     : Quantizer([True,  False, False, False, True,  False, False, True,  False, False, True,  False])
-}
+    ["Whole"     , Quantizer([True,  False, True,  False, True,  False, True,  False, True,  False, True,  False])],
+    ["Penta"     , Quantizer([True,  False, True,  False, True,  False, False, True,  False, True,  False, False])],
+    ["Dom 7"     , Quantizer([True,  False, False, False, True,  False, False, True,  False, False, True,  False])]
+])
 
 ## Sorted list of names for the quantizers to display
-QUANTIZER_LABELS = [
-    "None",
-    "Chromatic",
-    "Nat Maj",
-    "Har Maj",
-    "Maj 135",
-    "Maj 1356",
-    "Maj 1357",
-    "Nat Min",
-    "Har Min",
-    "Min 135",
-    "Min 1356",
-    "Min 1357",
-    "Maj Blues",
-    "Min Blues",
-    "Penta",
-    "Whole",
-    "Dom 7"
-]
+QUANTIZER_LABELS = list(QUANTIZERS.keys())
 
 ## Available clock modifiers
-CLOCK_MODS = {
-    "x16": 16.0,
-    "x12": 12.0,
-    "x8" : 8.0,
-    "x6" : 6.0,
-    "x4" : 4.0,
-    "x3" : 3.0,
-    "x2" : 2.0,
-    "x1" : 1.0,
-    "/2" : 1/2.0,
-    "/3" : 1/3.0,
-    "/4" : 1/4.0,
-    "/6" : 1/6.0,
-    "/8" : 1/8.0,
-    "/12" : 1/12.0,
-    "/16" : 1/16.0
-}
+CLOCK_MODS = OrderedDict([
+    ["/16" , 1/16.0],
+    ["/12" , 1/12.0],
+    ["/8" , 1/8.0],
+    ["/6" , 1/6.0],
+    ["/4" , 1/4.0],
+    ["/3" , 1/3.0],
+    ["/2" , 1/2.0],
+    ["x1" , 1.0],
+    ["x2" , 2.0],
+    ["x3" , 3.0],
+    ["x4" , 4.0],
+    ["x6" , 6.0],
+    ["x8" , 8.0],
+    ["x12", 12.0],
+    ["x16", 16.0]
+])
 
 ## Sorted list of labels for the clock modifers to display
-CLOCK_MOD_LABELS = [
-    "/16",
-    "/12",
-    "/8",
-    "/6",
-    "/4",
-    "/3",
-    "/2",
-    "x1",
-    "x2",
-    "x3",
-    "x4",
-    "x6",
-    "x8",
-    "x16"
-]
+CLOCK_MOD_LABELS = list(CLOCK_MODS.keys())
 
 ## Standard pulse/square wave with PWM
 WAVE_SQUARE = 0
@@ -236,16 +196,12 @@ class Setting:
     """
     def __init__(self, display_name, storage_name, display_options, options, allow_cv_in=True, on_change_fn=None, value_dict=None, default_value=None):
         self.display_name = display_name
-        self.display_options = []
-        for o in display_options:
-            self.display_options.append(o)
+        self.display_options = [o for o in display_options]
 
         self.on_change_fn = on_change_fn
 
         self.storage_name = storage_name
-        self.options = []
-        for o in options:
-            self.options.append(o)
+        self.options = [o for o in options]
 
         self.allow_cv_in = allow_cv_in
         if allow_cv_in:
@@ -260,7 +216,7 @@ class Setting:
             self.choice = 0
         
     def __str__(self):
-        return f"{self.display_name}"
+        return self.display_name
 
     def __len__(self):
         return len(self.options)
@@ -319,6 +275,10 @@ class Setting:
 
 class AnalogInReader:
     """A wrapper for `ain` that can be shared across multiple Settings
+
+    This allows `ain` to be read once during the main loop, but keep its value across multiple
+    accesses across each output channel.  It also adds gain & precision settings that can
+    be adjusted in application's menu
     """
     def __init__(self, cv_in):
         self.cv_in = cv_in
@@ -340,6 +300,12 @@ class AnalogInReader:
             self.precision.load(settings["precision"])
 
     def update(self):
+        """Read the current voltage from the analog input using the configured precision
+
+        Sets self.last_voltage, which is returned by self.get_value()
+
+        @return The voltage read from the analog input multiplied by self.gain
+        """
         self.last_voltage = self.cv_in.read_voltage(self.precision.get_value()) * self.gain.get_value() / 100.0
         return self.last_voltage
 
@@ -916,7 +882,7 @@ class PamsMenu:
         self.visible_item.draw()
 
 class SplashScreen:
-    """A splash screen we show during startup to indicate the version of this script
+    """A splash screen we show during startup
     """
     def draw(self):
         """Draw the splash screen to the OLED
@@ -925,7 +891,7 @@ class SplashScreen:
         ```
         +-------------------+
         | %%% Pam's Workout |
-        | %%% vA.B.C        |
+        | %%%               |
         +-------------------+
         ```
         """
@@ -941,7 +907,6 @@ class SplashScreen:
         oled.blit(imgFB, 0, 0)
 
         oled.text("Pam's Workout", LOGO_WIDTH+2, 0)
-        oled.text(f"v{VERSION}", LOGO_WIDTH+2, SELECT_OPTION_Y)
         oled.show()
 
 class PamsWorkout(EuroPiScript):
@@ -1008,8 +973,7 @@ class PamsWorkout(EuroPiScript):
             Wake up the display if it's asleep.  We do this on release to keep the
             wake up behavior the same for both buttons
             """
-            now = time.ticks_ms()
-            self.last_interaction_time = now
+            self.last_interaction_time = time.ticks_ms()
 
 
         @b2.handler_falling
@@ -1084,8 +1048,7 @@ class PamsWorkout(EuroPiScript):
         return "Pam's Workout"
 
     def main(self):
-        splash = SplashScreen()
-        splash.draw()
+        SplashScreen().draw()
 
         self.load()
 
@@ -1097,9 +1060,10 @@ class PamsWorkout(EuroPiScript):
             for cv in CV_INS.values():
                 cv.update()
 
-            if time.ticks_diff(now, self.last_interaction_time) > BLANK_TIMEOUT_MS:
+            elapsed_time = time.ticks_diff(now, self.last_interaction_time)
+            if elapsed_time > BLANK_TIMEOUT_MS:
                 self.screensaver.draw_blank()
-            elif time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
+            elif elapsed_time > SCREENSAVER_TIMEOUT_MS:
                 self.screensaver.draw()
             else:
                 oled.fill(0)
