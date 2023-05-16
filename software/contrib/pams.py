@@ -790,7 +790,16 @@ class SettingChooser:
 
         text_left = 0
 
-        oled.text(f"{self.prefix}{self.setting.display_name}", 0, 0)
+        # If we're in a top-level menu the submenu is non-empty. In that case, the prefix in inverted text
+        # Otherwise, the title in inverted text to indicate we're in the sub-menu
+        if len(self.submenu) != 0:
+            oled.fill_rect(0, 0, len(self.prefix)*CHAR_WIDTH+3, CHAR_HEIGHT+4, 1)
+            oled.text(self.prefix, 1, 1, 0)
+            oled.text(str(self.setting), len(self.prefix)*CHAR_WIDTH+4, 1, 1)
+        else:
+            oled.text(self.prefix, 1, 1, 1)
+            oled.fill_rect(len(self.prefix)*CHAR_WIDTH+3, 0, len(str(self.setting))*CHAR_WIDTH+3, CHAR_HEIGHT+4, 1)
+            oled.text(str(self.setting), len(self.prefix)*CHAR_WIDTH+4, 1, 0)
 
         if self.option_gfx is not None:
             # draw the option thumbnail to the screen
@@ -836,13 +845,13 @@ class PamsMenu:
         self.pams_workout = script
 
         self.items = [
-            SettingChooser("", script.clock.bpm, None, [
-                SettingChooser("", script.din_mode),
-                SettingChooser("", script.clock.reset_on_start)
+            SettingChooser("Clk", script.clock.bpm, None, [
+                SettingChooser("Clk", script.din_mode),
+                SettingChooser("Clk", script.clock.reset_on_start)
             ])
         ]
         for i in range(len(script.channels)):
-            prefix = f"CV{i+1} | "
+            prefix = f"CV{i+1}"
             ch = script.channels[i]
             self.items.append(SettingChooser(prefix, ch.clock_mod, None, [
                 SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS),
@@ -856,8 +865,8 @@ class PamsMenu:
                 SettingChooser(prefix, ch.quantizer)
             ]))
         for ch in CV_INS.keys():
-            self.items.append(SettingChooser(f"{ch} | ", CV_INS[ch].gain, None, [
-                SettingChooser(f"{ch} | Precision", CV_INS[ch].precision)
+            self.items.append(SettingChooser(ch, CV_INS[ch].gain, None, [
+                SettingChooser(ch, CV_INS[ch].precision)
             ]))
 
         self.active_items = self.items
