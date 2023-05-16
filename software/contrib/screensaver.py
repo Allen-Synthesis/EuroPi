@@ -6,6 +6,7 @@
 """
 
 from europi import *
+from europi_script import EuroPiScript
 import random
 import time
 
