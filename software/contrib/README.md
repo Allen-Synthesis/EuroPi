@@ -1,6 +1,6 @@
 # Contributions
 
-Please see the [contributing guide](/contributing.md) for details on how to contribute a script to this 
+Please see the [contributing guide](/contributing.md) for details on how to contribute a script to this
 directory, specifically [the section on contrib scripts](/contributing.md#contrib-scripts).
 
 # List of packaged scripts
@@ -123,6 +123,12 @@ The outputs can also be rotated as inspired by the 4MS Rotating Clock Divider
 
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: n/a</i>
+
+### Screensaver \[ [documentation](/software/contrib/screensaver.md) | [script](/software/contrib/screensaver.py) \]
+Displays the EuroPi logo in random screen locations every 2s.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: screensaver</i>
 
 ### Sequential Switch \[ [documentation](/software/contrib/sequential_switch.md) | [script](/software/contrib/sequential_switch.py) \]
 A 2-6 output sequential switch.  The analogue input is mirrored to one of the outputs, with the specific output changed every time a trigger is received.
