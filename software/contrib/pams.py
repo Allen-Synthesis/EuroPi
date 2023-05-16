@@ -14,6 +14,8 @@ from contrib.euclid import generate_euclidean_pattern
 from contrib.quantizer import Quantizer
 from contrib.screensaver import Screensaver
 
+from experimental.knobs import KnobBank
+
 from collections import OrderedDict
 from machine import Timer
 
@@ -214,7 +216,7 @@ class Setting:
             self.choice = self.options.index(default_value)
         else:
             self.choice = 0
-        
+
     def __str__(self):
         return self.display_name
 
@@ -229,7 +231,7 @@ class Setting:
         return {
             "value": self.choice
         }
-    
+
     def update_options(self, display_options, options):
         if self.choice >= len(options):
             self.choice = len(options)-1
@@ -240,7 +242,7 @@ class Setting:
         self.options = []
         for o in options:
             self.options.append(o)
-            
+
         if self.allow_cv_in:
             for cv in CV_INS.keys():
                 self.display_options.append(cv)
@@ -263,7 +265,7 @@ class Setting:
             return self.value_dict[opt]
         else:
             return opt
-        
+
     def get_display_value(self):
         return self.display_options[self.choice]
 
@@ -283,7 +285,7 @@ class AnalogInReader:
     def __init__(self, cv_in):
         self.cv_in = cv_in
         self.last_voltage = 0.0
-        
+
         self.gain = Setting("Gain", "gain", list(range(301)), list(range(301)), allow_cv_in=False, default_value=100)
         self.precision = Setting("Precision", "precision", ["Low", "Med", "High"], [int(DEFAULT_SAMPLES/2), DEFAULT_SAMPLES, int(DEFAULT_SAMPLES*2)], allow_cv_in=False, default_value=DEFAULT_SAMPLES)
 
@@ -292,7 +294,7 @@ class AnalogInReader:
             "gain": self.gain.to_dict(),
             "precision": self.precision.to_dict()
         }
-    
+
     def load_settings(self, settings):
         if "gain" in settings.keys():
             self.gain.load(settings["gain"])
@@ -313,7 +315,7 @@ class AnalogInReader:
         return self.last_voltage
 
 ## Wrapped copies of all CV inputs so we can iterate through them
-CV_INS = {    
+CV_INS = {
     "AIN": AnalogInReader(ain)
 }
 
@@ -610,7 +612,7 @@ class PamsOutput:
         duty_cycle = n_ticks * self.width.get_value() / 100.0
 
         # because of phase offset the wave _can_ start at e.g. 75% of the ticks and end at the following window's 25%
-        start_tick = self.phase.get_value() * n_ticks / 100.0 
+        start_tick = self.phase.get_value() * n_ticks / 100.0
         end_tick = (start_tick + duty_cycle) % n_ticks
 
         if (start_tick < end_tick and tick >= start_tick and tick < end_tick) or \
@@ -751,18 +753,20 @@ class PamsOutput:
 class SettingChooser:
     """Menu UI element for displaying a Setting object and the options associated with it
     """
-    def __init__(self, prefix, setting, gfx=None, submenu=[]):
+    def __init__(self, prefix, setting, gfx=None, level_label="", submenu=[]):
         """Create a setting chooser for a given item
 
         @param prefix  A prefix we show before the option title (e.g. 'CV1 | ')
         @param setting  The Setting object we're manipulating
         @param submenu  A list of SettingChooser items that make up this setting's submenu
         @param gfx  A list of 12x12 pixel bitmaps we can optionally display beside option_txt
+        @param level_label  An optional string to display in the lower-right corner to indicate the menu level
         """
         self.prefix = prefix
         self.setting = setting
         self.submenu = submenu
         self.option_gfx = gfx
+        self.level_label = level_label
 
         self.is_writable = False
 
@@ -815,6 +819,10 @@ class SettingChooser:
             choice_text = f"{self.setting.get_display_value()}"
             oled.text(choice_text, text_left+1, SELECT_OPTION_Y+2, 1)
 
+        if self.level_label:
+            oled.text(self.level_label, OLED_WIDTH-CHAR_WIDTH * len(self.level_label), SELECT_OPTION_Y+2, 1)
+
+
     def on_click(self):
         if self.is_writable:
             self.set_editable(False)
@@ -833,34 +841,34 @@ class PamsMenu:
         self.pams_workout = script
 
         self.items = [
-            SettingChooser("", script.clock.bpm, None, [
-                SettingChooser("", script.din_mode, None, []),
-                SettingChooser("", script.clock.reset_on_start, None, [])
+            SettingChooser("", script.clock.bpm, None, None, [
+                SettingChooser("", script.din_mode, None, "clk", []),
+                SettingChooser("", script.clock.reset_on_start, None, "clk", [])
             ])
         ]
         for i in range(len(script.channels)):
             prefix = f"CV{i+1} | "
             ch = script.channels[i]
-            self.items.append(SettingChooser(prefix, ch.clock_mod, None, [
-                SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS, []),
-                SettingChooser(prefix, ch.width),
-                SettingChooser(prefix, ch.phase),
-                SettingChooser(prefix, ch.amplitude),
-                SettingChooser(prefix, ch.skip),
-                SettingChooser(prefix, ch.e_step),
-                SettingChooser(prefix, ch.e_trig),
-                SettingChooser(prefix, ch.e_rot),
-                SettingChooser(prefix, ch.quantizer)
+            self.items.append(SettingChooser(prefix, ch.clock_mod, None, None, [
+                SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS, f"cv{i+1}", []),
+                SettingChooser(prefix, ch.width, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.phase, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.amplitude, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.skip, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.e_step, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.e_trig, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.e_rot, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.quantizer, level_label=f"cv{i+1}")
             ]))
         for ch in CV_INS.keys():
-            self.items.append(SettingChooser(f"{ch} | ", CV_INS[ch].gain, None, [
-                SettingChooser(f"{ch} | Precision", CV_INS[ch].precision)
+            self.items.append(SettingChooser(f"{ch} | ", CV_INS[ch].gain, None, None, [
+                SettingChooser(f"{ch} | Precision", CV_INS[ch].precision, level_label=ch.lower())
             ]))
 
         self.active_items = self.items
 
         ## The item we're actually drawing to the screen _right_now_
-        self.visible_item = k1.choice(self.active_items)
+        self.visible_item = self.pams_workout.k1_bank.current.choice(self.active_items)
 
     def on_long_press(self):
         # return the active item to the read-only state
@@ -877,7 +885,7 @@ class PamsMenu:
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = k1.choice(self.active_items)
+            self.visible_item = self.pams_workout.k1_bank.current.choice(self.active_items)
 
         self.visible_item.draw()
 
@@ -916,6 +924,13 @@ class PamsWorkout(EuroPiScript):
         super().__init__()
 
         self.din_mode = Setting("DIN Mode", "din", DIN_MODES, DIN_MODES, False)
+
+        self.k1_bank = (
+            KnobBank.builder(k1)
+            .with_unlocked_knob("lvl_1")
+            .with_locked_knob("lvl_2", initial_percentage_value=0)
+            .build()
+        )
 
         self.clock = MasterClock(120)
         self.channels = [
@@ -992,6 +1007,7 @@ class PamsWorkout(EuroPiScript):
                 if time.ticks_diff(now, b2.last_pressed()) > LONG_PRESS_MS:
                     # long press
                     # change between the main & sub menus
+                    self.k1_bank.next()
                     self.main_menu.on_long_press()
                 else:
                     # short press
