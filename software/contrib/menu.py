@@ -37,6 +37,7 @@ EUROPI_SCRIPTS = [
     "contrib.quantizer.QuantizerScript",
     "contrib.radio_scanner.RadioScanner",
     "contrib.scope.Scope",
+    "contrib.screensaver.ScreensaverScript",
     "contrib.sequential_switch.SequentialSwitch",
     "contrib.smooth_random_voltages.SmoothRandomVoltages",
     "contrib.strange_attractor.StrangeAttractor",
