@@ -841,28 +841,28 @@ class PamsMenu:
         self.pams_workout = script
 
         self.items = [
-            SettingChooser("", script.clock.bpm, None, "a", [
-                SettingChooser("", script.din_mode, None, "b", []),
-                SettingChooser("", script.clock.reset_on_start, None, "b", [])
+            SettingChooser("", script.clock.bpm, None, None, [
+                SettingChooser("", script.din_mode, None, "clk", []),
+                SettingChooser("", script.clock.reset_on_start, None, "clk", [])
             ])
         ]
         for i in range(len(script.channels)):
             prefix = f"CV{i+1} | "
             ch = script.channels[i]
-            self.items.append(SettingChooser(prefix, ch.clock_mod, None, "a", [
-                SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS, "b", []),
-                SettingChooser(prefix, ch.width, level_label="b"),
-                SettingChooser(prefix, ch.phase, level_label="b"),
-                SettingChooser(prefix, ch.amplitude, level_label="b"),
-                SettingChooser(prefix, ch.skip, level_label="b"),
-                SettingChooser(prefix, ch.e_step, level_label="b"),
-                SettingChooser(prefix, ch.e_trig, level_label="b"),
-                SettingChooser(prefix, ch.e_rot, level_label="b"),
-                SettingChooser(prefix, ch.quantizer, level_label="b")
+            self.items.append(SettingChooser(prefix, ch.clock_mod, None, None, [
+                SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS, f"cv{i+1}", []),
+                SettingChooser(prefix, ch.width, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.phase, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.amplitude, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.skip, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.e_step, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.e_trig, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.e_rot, level_label=f"cv{i+1}"),
+                SettingChooser(prefix, ch.quantizer, level_label=f"cv{i+1}")
             ]))
         for ch in CV_INS.keys():
-            self.items.append(SettingChooser(f"{ch} | ", CV_INS[ch].gain, None, "a", [
-                SettingChooser(f"{ch} | Precision", CV_INS[ch].precision, level_label="b")
+            self.items.append(SettingChooser(f"{ch} | ", CV_INS[ch].gain, None, None, [
+                SettingChooser(f"{ch} | Precision", CV_INS[ch].precision, level_label=ch.lower())
             ]))
 
         self.active_items = self.items
