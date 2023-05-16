@@ -753,20 +753,18 @@ class PamsOutput:
 class SettingChooser:
     """Menu UI element for displaying a Setting object and the options associated with it
     """
-    def __init__(self, prefix, setting, gfx=None, level_label="", submenu=[]):
+    def __init__(self, prefix, setting, gfx=None, submenu=[]):
         """Create a setting chooser for a given item
 
         @param prefix  A prefix we show before the option title (e.g. 'CV1 | ')
         @param setting  The Setting object we're manipulating
         @param submenu  A list of SettingChooser items that make up this setting's submenu
         @param gfx  A list of 12x12 pixel bitmaps we can optionally display beside option_txt
-        @param level_label  An optional string to display in the lower-right corner to indicate the menu level
         """
         self.prefix = prefix
         self.setting = setting
         self.submenu = submenu
         self.option_gfx = gfx
-        self.level_label = level_label
 
         self.is_writable = False
 
@@ -819,9 +817,6 @@ class SettingChooser:
             choice_text = f"{self.setting.get_display_value()}"
             oled.text(choice_text, text_left+1, SELECT_OPTION_Y+2, 1)
 
-        if self.level_label:
-            oled.text(self.level_label, OLED_WIDTH-CHAR_WIDTH * len(self.level_label), SELECT_OPTION_Y+2, 1)
-
 
     def on_click(self):
         if self.is_writable:
@@ -841,28 +836,28 @@ class PamsMenu:
         self.pams_workout = script
 
         self.items = [
-            SettingChooser("", script.clock.bpm, None, None, [
-                SettingChooser("", script.din_mode, None, "clk", []),
-                SettingChooser("", script.clock.reset_on_start, None, "clk", [])
+            SettingChooser("", script.clock.bpm, None, [
+                SettingChooser("", script.din_mode),
+                SettingChooser("", script.clock.reset_on_start)
             ])
         ]
         for i in range(len(script.channels)):
             prefix = f"CV{i+1} | "
             ch = script.channels[i]
-            self.items.append(SettingChooser(prefix, ch.clock_mod, None, None, [
-                SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS, f"cv{i+1}", []),
-                SettingChooser(prefix, ch.width, level_label=f"cv{i+1}"),
-                SettingChooser(prefix, ch.phase, level_label=f"cv{i+1}"),
-                SettingChooser(prefix, ch.amplitude, level_label=f"cv{i+1}"),
-                SettingChooser(prefix, ch.skip, level_label=f"cv{i+1}"),
-                SettingChooser(prefix, ch.e_step, level_label=f"cv{i+1}"),
-                SettingChooser(prefix, ch.e_trig, level_label=f"cv{i+1}"),
-                SettingChooser(prefix, ch.e_rot, level_label=f"cv{i+1}"),
-                SettingChooser(prefix, ch.quantizer, level_label=f"cv{i+1}")
+            self.items.append(SettingChooser(prefix, ch.clock_mod, None, [
+                SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS),
+                SettingChooser(prefix, ch.width),
+                SettingChooser(prefix, ch.phase),
+                SettingChooser(prefix, ch.amplitude),
+                SettingChooser(prefix, ch.skip),
+                SettingChooser(prefix, ch.e_step),
+                SettingChooser(prefix, ch.e_trig),
+                SettingChooser(prefix, ch.e_rot),
+                SettingChooser(prefix, ch.quantizer)
             ]))
         for ch in CV_INS.keys():
-            self.items.append(SettingChooser(f"{ch} | ", CV_INS[ch].gain, None, None, [
-                SettingChooser(f"{ch} | Precision", CV_INS[ch].precision, level_label=ch.lower())
+            self.items.append(SettingChooser(f"{ch} | ", CV_INS[ch].gain, None, [
+                SettingChooser(f"{ch} | Precision", CV_INS[ch].precision)
             ]))
 
         self.active_items = self.items
