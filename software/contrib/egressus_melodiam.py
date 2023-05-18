@@ -51,7 +51,7 @@ class EgressusMelodium(EuroPiScript):
         self.lastClockTime = 0
         self.lastSlewVoltageOutput = 0
         self.slewGeneratorObject = self.slewGenerator([0])
-        self.slewShapes = [self.stepUpStepDown, self.linspace, self.logUpStepDown, self.stepUpExpDown, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse]
+        self.slewShapes = [self.stepUpStepDown, self.linspace, self.ramp, self.saw, self.logUpStepDown, self.stepUpExpDown, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse]
         self.slewShape = 0
         self.voltageExtremes=[0, 10]
         self.voltageExtremeFlipFlop = False
@@ -426,6 +426,33 @@ class EgressusMelodium(EuroPiScript):
         for i in range(num-1):
             val = ((diff * i) + start)
             w.append(val)
+        return w
+
+    '''Produces half-ramp wave'''
+    def ramp(self, start, stop, num):
+        w = []
+        if stop >= start:
+            diff = (float(stop) - start)/(num)
+            for i in range(1, num):
+                val = ((diff * i) + start)
+                w.append(val)
+        else:
+            for i in range(num-1):
+                w.append(stop)
+        return w
+
+    '''Produces flat-top saw wave'''
+    def saw(self, start, stop, num):
+        w = []
+        if stop >= start:
+            for i in range(num-1):
+                w.append(stop)
+        else:
+            diff = (float(stop) - start)/(num)
+            for i in range(1, num):
+                val = ((diff * i) + start)
+                w.append(val)
+        print(w)
         return w
 
     '''Produces log up, step down'''
