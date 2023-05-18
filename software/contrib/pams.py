@@ -789,17 +789,20 @@ class SettingChooser:
         """
 
         text_left = 0
+        prefix_left = 1
+        prefix_right = len(self.prefix)*CHAR_WIDTH
+        title_left = len(self.prefix)*CHAR_WIDTH + 4
 
         # If we're in a top-level menu the submenu is non-empty. In that case, the prefix in inverted text
         # Otherwise, the title in inverted text to indicate we're in the sub-menu
         if len(self.submenu) != 0:
-            oled.fill_rect(0, 0, len(self.prefix)*CHAR_WIDTH+3, CHAR_HEIGHT+4, 1)
-            oled.text(self.prefix, 1, 1, 0)
-            oled.text(str(self.setting), len(self.prefix)*CHAR_WIDTH+4, 1, 1)
+            oled.fill_rect(prefix_left-1, 0, prefix_right+1, CHAR_HEIGHT+2, 1)
+            oled.text(self.prefix, prefix_left, 1, 0)
+            oled.text(str(self.setting), title_left, 1, 1)
         else:
-            oled.text(self.prefix, 1, 1, 1)
-            oled.fill_rect(len(self.prefix)*CHAR_WIDTH+3, 0, len(str(self.setting))*CHAR_WIDTH+3, CHAR_HEIGHT+4, 1)
-            oled.text(str(self.setting), len(self.prefix)*CHAR_WIDTH+4, 1, 0)
+            oled.fill_rect(title_left-1, 0, len(str(self.setting))*CHAR_WIDTH+2, CHAR_HEIGHT+2, 1)
+            oled.text(self.prefix, prefix_left, 1, 1)
+            oled.text(str(self.setting), title_left, 1, 0)
 
         if self.option_gfx is not None:
             # draw the option thumbnail to the screen
