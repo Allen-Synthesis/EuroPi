@@ -25,6 +25,10 @@ clock multiplier or divider, chosen from the following:
 | `k2`          | Scroll through allowed values for the current setting             |
 | `cv1` - `cv6` | Output signals. Configuration is explained below                  |
 
+If you accidentally press `b2` and enter edit mode, you can long-press `b2` to change
+menu levels and cancel the current operation, without modifying the setting you had
+selected.
+
 ## Menu Navigation
 
 Rotate `k1` to scroll through the current menu. Pressing and holding `b2` for 0.5s will
