@@ -40,6 +40,7 @@ EUROPI_SCRIPTS = [
     "contrib.smooth_random_voltages.SmoothRandomVoltages",
     "contrib.strange_attractor.StrangeAttractor",
     "contrib.turing_machine.EuroPiTuringMachine",
+    "contrib.pong.Pong",
     "calibrate.Calibrate",
 ]
 

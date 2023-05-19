@@ -147,6 +147,12 @@ as faithfully as possible on the EuroPi hardware.
 <i>Author: [mjaskula](https://github.com/mjaskula)</i>
 <br><i>Labels: sequencer, random, triggers</i>
 
+### Pong \[ [script](/software/contrib/turing_machine.py) \]
+EuroPi version of the classic Pong game.
+
+<i>Author: [Igor Nawrocki](https://github.com/Bugari)</i>
+<br><i>Labels: game</i>
+
 ---
 
 <details>
