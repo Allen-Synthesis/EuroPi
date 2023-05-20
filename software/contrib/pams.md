@@ -116,6 +116,58 @@ The submenu for each CV output has the following options:
 - `ERot` -- rotation of the euclidean rhythm
 - `Quant` -- quantization scale
 
+### Phase Offsets
+
+The following ascii art shows the effect of phase on a squarewave.  Note that the wave is not clipped; the entire wave
+form is simply shifted to the right by the phase percentage.
+
+```
+x1, phase = 0
+ ____      ____      ____      ____
+|    |    |    |    |    |    |    |
+|    |    |    |    |    |    |    |
+|    |____|    |____|    |____|    |____
+
+x1, phase = 50
+      ____      ____      ____      ____
+     |    |    |    |    |    |    |    |
+     |    |    |    |    |    |    |    |
+ ____|    |____|    |____|    |____|    |
+
+x1, phase = 25
+   ____      ____      ____      ____
+  |    |    |    |    |    |    |    |
+  |    |    |    |    |    |    |    |
+__|    |____|    |____|    |____|    |__
+```
+
+### `AIN` and `Random` Waves
+
+`AIN` and `Random` wave modes are treated like a sample-hand-hold of the incoming signal, with the sample taken on the
+rising edge of a similarly-configured square wave.
+
+For example, imagine `AIN` has a saw wave being sent into it.  For example, below we have a saw LFO being sent into
+`AIN` with CV1 configured to read it.
+```
+AIN
+      /|      /|      /|      /|      /|
+    /  |    /  |    /  |    /  |    /  |
+  /    |  /    |  /    |  /    |  /    |
+/      |/      |/      |/      |/      |
+
+CV1 clock x1, phase = 0
+ ____      ____      ____      ____
+|    |    |    |    |    |    |    |
+|    |    |    |    |    |    |    |
+|    |____|    |____|    |____|    |____
+
+CV1 Output
+
+      ____           ____
+     |    |____     |    |____
+_____|         |____|         |__________
+```
+
 ### Effects of Width on Different Wave Shapes
 
 - Square: Duty cycle control. 0% is always off, 100% is always on
@@ -184,6 +236,9 @@ The following scales are available:
 - `Whole` -- whole tone scale (C D E F# G# A#)
 - `Penta` -- pentatonic scale (C D E G A)
 - `Dom 7` -- dominant 7th chord (C E G Bb)
+- `AIN` -- CV control to select one of the preceding options
+
+The 1/3/5 (+6|7) modes were inspired by the Doepfer A-156 quantizer.
 
 ## External CV Routing
 
