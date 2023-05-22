@@ -56,6 +56,7 @@ class EgressusMelodium(EuroPiScript):
         self.slewShape = 0
         self.voltageExtremes=[0, 10]
         self.voltageExtremeFlipFlop = False
+        self.slewResolutionMultiplier = 1
 
         self.loadState()
 
@@ -134,23 +135,31 @@ class EgressusMelodium(EuroPiScript):
 
                 # Cycle through outputs and generate slew for each
                 for idx in range(len(cvs)):
-                    # If length is two, cycle between high and low voltages (traditional LFO)
+
+                    # test clock divider
+                    if self.clockStep % 3 != 0 and (idx == 1 or idx == 4):
+                        self.slewResolutionMultiplier = 2
+                    elif self.clockStep % 5 != 0 and (idx == 2 or idx == 5):
+                        self.slewResolutionMultiplier = 4
+                    else:
+                        self.slewResolutionMultiplier = 1
+
+                    # If length is one, cycle between high and low voltages (traditional LFO)
                     if self.patternLength == 1:
                         
                         self.slewArray = self.slewShapes[self.slewShape](
                             self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
                             self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
-                            self.slewResolution
+                            self.slewResolution * self.slewResolutionMultiplier
                             )
                     else:
                         # Call selected slew function
                         self.slewArray = self.slewShapes[self.slewShape](
                             self.cvPatternBanks[idx][self.CvPattern][self.step],
                             self.cvPatternBanks[idx][self.CvPattern][nextStep],
-                            self.slewResolution
+                            self.slewResolution * self.slewResolutionMultiplier
                             )
 
-                    #self.slewGeneratorObject = self.slewGenerator(self.slewArray)
                     self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
             
             self.lastClockTime = ticks_ms()
@@ -254,6 +263,10 @@ class EgressusMelodium(EuroPiScript):
             # experimental slew mode....
             if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
+                    if self.clockStep % 3 != 0 and (idx == 1 or idx == 4):
+                        continue
+                    elif self.clockStep % 5 != 0 and (idx == 2 or idx == 5):
+                        continue
                     try:
                         v = next(self.slewGeneratorObjects[idx])
                         cvs[idx].voltage(v)
