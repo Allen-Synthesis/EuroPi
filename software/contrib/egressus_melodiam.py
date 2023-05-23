@@ -261,6 +261,7 @@ class EgressusMelodium(EuroPiScript):
             self.getFirstStep()
 
             # experimental slew mode....
+            self.slewResolution = max(1, self.slewResolution)  # Avoid possible divide by zero
             if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
                     if self.clockStep % 3 != 0 and (idx == 1 or idx == 4):
