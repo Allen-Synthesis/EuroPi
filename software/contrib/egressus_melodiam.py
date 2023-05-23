@@ -540,7 +540,7 @@ class EgressusMelodium(EuroPiScript):
                 w.append(round(val+amplitudeOffset,4))
         return w
 
-    '''Produces an exponential(ish) up log(ish) down using a quarter cosine'''
+    '''Produces an exponential(ish) up and log(ish) down using a quarter cosine'''
     def sharkToothReverse(self, start, stop, sampleRate):
         w = []
         freqHz = 0.25 # We want to complete quarter of a cycle
