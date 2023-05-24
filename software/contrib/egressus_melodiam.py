@@ -18,6 +18,15 @@ Inspired by the Noise Engineering Mimetic Digitalis.
 
 '''
 
+'''
+To do:
+- Finalize UI controls for various functions
+- Decide if slew types can be different per output
+- Test outputs 2,3 5,6 to make sure they are useful
+- Create slew icons
+- Revampe Screen output
+'''
+
 class EgressusMelodium(EuroPiScript):
     def __init__(self):
 
@@ -68,10 +77,6 @@ class EgressusMelodium(EuroPiScript):
                     print(f"  CV Pattern Bank: {idx}")
                     for idx, voltage in enumerate(n):
                         print(f"    Step {idx}: {voltage}")
-
-        # @din.handler_falling
-        # def handleFalingDin():
-        #     cvs[5].off()
         
         '''Triggered on each clock into digital input. Output stepped CV'''
         @din.handler
@@ -81,6 +86,9 @@ class EgressusMelodium(EuroPiScript):
                 if self.clockStep % 16 == 0:
                     reset = '*******'
                 print(f"[{reset}{self.clockStep}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
+
+            # Old code: Simple Step up and Step down with cv 5 being END of cycle
+            # Maybe have this as an UI option?
             # Cycle through outputs and output CV voltage based on currently selected CV Pattern and Step
             # for idx, pattern in enumerate(self.cvPatternBanks):
             #     if self.experimentalSlewMode:
@@ -137,9 +145,11 @@ class EgressusMelodium(EuroPiScript):
                 for idx in range(len(cvs)):
 
                     # test clock divider
-                    if self.clockStep % 3 != 0 and (idx == 1 or idx == 4):
+                    if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
+                        self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
                         self.slewResolutionMultiplier = 2
-                    elif self.clockStep % 5 != 0 and (idx == 2 or idx == 5):
+                    elif self.clockStep % 4 != 0 and (idx == 2 or idx == 5):
+                        self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
                         self.slewResolutionMultiplier = 4
                     else:
                         self.slewResolutionMultiplier = 1
@@ -185,7 +195,6 @@ class EgressusMelodium(EuroPiScript):
                     self.slewShape += 1
                 self.screenRefreshNeeded = True
                 self.saveState()
-                #self.experimentalSlewMode = not self.experimentalSlewMode
             else:
                 # Play previous CV Pattern, unless we are at the first pattern
                 if self.CvPattern != 0:
@@ -264,9 +273,9 @@ class EgressusMelodium(EuroPiScript):
             self.slewResolution = max(1, self.slewResolution)  # Avoid possible divide by zero
             if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
-                    if self.clockStep % 3 != 0 and (idx == 1 or idx == 4):
+                    if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
                         continue
-                    elif self.clockStep % 5 != 0 and (idx == 2 or idx == 5):
+                    elif self.clockStep % 4 != 0 and (idx == 2 or idx == 5):
                         continue
                     try:
                         v = next(self.slewGeneratorObjects[idx])
@@ -301,7 +310,6 @@ class EgressusMelodium(EuroPiScript):
     '''Get the firstStep from k1'''
     def getFirstStep(self):
         previousFirstStep = self.firstStep
-        #self.firstStep = k1.read_position(self.maxStepLength)
         self.firstStep = k1.read_position(self.maxStepLength-self.patternLength)
         
         if previousFirstStep != self.firstStep:
@@ -433,20 +441,19 @@ class EgressusMelodium(EuroPiScript):
     '''Produces step up, step down'''
     def stepUpStepDown(self, start, stop, num):
         w = []
-        for i in range(num-1):
-            w.append(stop)
+        if self.patternLength == 1: # LFO Mode, make sure we complete a full cycle
+            for i in range(num/2):
+                w.append(start)      
+            for i in range(num/2):
+                w.append(stop)
+        else:
+            for i in range(num-1):
+                w.append(stop)
         return w
 
     '''Produces linear transitions'''
     def linspace(self, start, stop, num):
         w = []
-        # offset changes the top of the shape
-        # - a val between 0 and 10 creates a vertical step in the curve
-        # - a value between -2 and -10 creates a flat at the peak
-        # - a val of -1 produces a perflect line
-        # - a val of -3 seems to be look best on a scope
-        offset = -1
-        # calculate the increment between each value
         diff = (float(stop) - start)/(num)
         for i in range(num-1):
             val = ((diff * i) + start)
@@ -456,14 +463,24 @@ class EgressusMelodium(EuroPiScript):
     '''Produces log up, step down'''
     def logUpStepDown(self, start, stop, num):
         w = []
-        if stop >= start:
-            for i in range(num-1):
+
+        if self.patternLength == 1: # LFO Mode, make sure we complete a full cycle
+            # if stop >= start:
+            for i in range(num/2):
                 i = max(i, 1)
                 x = 1 - ((stop - float(start))/(i)) + (stop-1)
                 w.append(x)
-        else:
-            for i in range(num-1):
+            for i in range(num/2):
                 w.append(stop)
+        else:
+            if stop >= start:
+                for i in range(num-1):
+                    i = max(i, 1)
+                    x = 1 - ((stop - float(start))/(i)) + (stop-1)
+                    w.append(x)
+            else:
+                for i in range(num-1):
+                    w.append(stop)
         return w
 
     '''Produces step up, exp down'''
