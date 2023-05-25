@@ -67,6 +67,8 @@ class EgressusMelodium(EuroPiScript):
         self.voltageExtremeFlipFlop = False
         self.slewResolutionMultiplier = 1
         self.slewSampleCounter = 0
+        self.outputLfoModes = [2, 3, 4, 5, 6, 7]
+        self.outputSlewModes = [0, 1, 2, 3, 6, 7]
 
         self.loadState()
 
@@ -149,9 +151,9 @@ class EgressusMelodium(EuroPiScript):
                     if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
                         self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
                         self.slewResolutionMultiplier = 2
-                    elif self.clockStep % 4 != 0 and (idx == 2 or idx == 5):
+                    elif self.clockStep % 2 != 0 and (idx == 2 or idx == 5):
                         self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-                        self.slewResolutionMultiplier = 4
+                        self.slewResolutionMultiplier = 2
                     else:
                         self.slewResolutionMultiplier = 1
 
@@ -159,13 +161,13 @@ class EgressusMelodium(EuroPiScript):
                     # Each output uses a different shape, which is idx for simplicity
                     if self.patternLength == 1:
                         
-                        self.slewArray = self.slewShapes[idx](
+                        self.slewArray = self.slewShapes[self.outputLfoModes[idx]](
                             self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
                             self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
                             self.slewResolution * self.slewResolutionMultiplier
                             )
                     else:
-                        self.slewArray = self.slewShapes[self.slewShape](
+                        self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                             self.cvPatternBanks[idx][self.CvPattern][self.step],
                             self.cvPatternBanks[idx][self.CvPattern][nextStep],
                             self.slewResolution * self.slewResolutionMultiplier
