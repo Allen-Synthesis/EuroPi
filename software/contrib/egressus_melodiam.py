@@ -67,9 +67,8 @@ class EgressusMelodium(EuroPiScript):
         self.voltageExtremeFlipFlop = False
         self.slewResolutionMultiplier = 1
         self.slewSampleCounter = 0
-        self.outputLfoModes =  [2, 3, 4, 5, 6, 7]
-        self.outputSlewModes = [0, 1, 2, 3, 6, 7]
-        self.outputDivisions = [1, 2, 4, 5, 6, 7]
+        self.outputSlewModes = [0, 2, 2, 3, 6, 6]
+        self.outputDivisions = [1, 2, 4, 1, 3, 6]
         self.receivingClocks = False
 
         self.loadState()
@@ -350,11 +349,13 @@ class EgressusMelodium(EuroPiScript):
         else:
             nextStep = self.step+1
 
-        # flip the flip flop value for LFO mode
-        self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-
         # Cycle through outputs and generate slew for each
         for idx in range(len(cvs)):
+
+            # flip the flip flop value for LFO mode
+            # This can be simpler. But it may be a nice way to get a full wave at different output divisions
+            if self.clockStep % 2 == 0 and self.outputDivisions[idx] % 2 == 0 and self.outputSlewModes[idx] != 0:
+                self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
 
             # Increase the sample rate for slower divisions
             self.slewResolutionMultiplier = self.outputDivisions[idx]
@@ -375,7 +376,7 @@ class EgressusMelodium(EuroPiScript):
                 # Each output uses a different shape, which is idx for simplicity
                 if self.patternLength == 1:
                     
-                    self.slewArray = self.slewShapes[self.outputLfoModes[idx]](
+                    self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
                         self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
                         self.slewResolution * self.slewResolutionMultiplier
