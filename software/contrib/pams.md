@@ -77,9 +77,11 @@ The main clock menu has the following options:
 
 The submenu for the main clock has the following options:
 
-- `DIN Mode` -- either `Gate` or `Trigger`.  If `Gate` the clock will run when the input is high. Otherwise
-  the clock will toggle on/off on the rising edge of the input signal
-- `Reset` -- if true, all waves & euclidean patterns will reset when the clock starts.
+- `DIN Mode` -- Control the action taken when a gate or trigger is sent to `DIN`:
+  - `Gate`: the clock will start on a rising edge and stop on a falling edge
+  - `Trigger`: the clock will toggle between the running & stopped states on a rising edge
+  - `Reset`: the clock will not change, but all waveforms & euclidean patterns will reset to the beginning
+- `Stop-Rst` -- Stop & Reset: if true, all waves & euclidean patterns will reset when the clock starts.
   Otherwise they will continue from where they stopped
 
 ## CV Channel Options

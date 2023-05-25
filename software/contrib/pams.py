@@ -188,9 +188,13 @@ DIN_MODE_GATE = 'Gate'
 ## Do we toggle the module on/off with a trigger on din?
 DIN_MODE_TRIGGER = 'Trig'
 
+## Reset on a rising edge, but don't start/stop the clock
+DIN_MODE_RESET = 'Reset'
+
 DIN_MODES = [
     DIN_MODE_GATE,
-    DIN_MODE_TRIGGER
+    DIN_MODE_TRIGGER,
+    DIN_MODE_RESET
 ]
 
 class Setting:
@@ -348,7 +352,7 @@ class MasterClock:
         self.is_running = False
 
         self.bpm = Setting("BPM", "bpm", list(range(self.MIN_BPM, self.MAX_BPM+1)), list(range(self.MIN_BPM, self.MAX_BPM+1)), on_change_fn=self.recalculate_timer_hz, default_value=60)
-        self.reset_on_start = Setting("Reset", "reset_on_start", ["On", "Off"], [True, False], False)
+        self.reset_on_start = Setting("Stop-Rst", "reset_on_start", ["On", "Off"], [True, False], False)
 
         self.tick_hz = 1.0
         self.timer = Timer()
@@ -921,7 +925,7 @@ class SplashScreen:
         imgFB = FrameBuffer(logo, LOGO_WIDTH, LOGO_HEIGHT, MONO_HLSB)
         oled.blit(imgFB, 0, 0)
 
-        oled.text("Pam's Workout", LOGO_WIDTH+2, 0)
+        oled.text("Pam's Workout", LOGO_WIDTH+2, 8)
         oled.show()
 
 class PamsWorkout(EuroPiScript):
@@ -966,6 +970,9 @@ class PamsWorkout(EuroPiScript):
         def on_din_rising():
             if self.din_mode == DIN_MODE_GATE:
                 self.clock.start()
+            elif self.din_mode == DIN_MODE_RESET:
+                for ch in self.channels:
+                    ch.reset()
             else:
                 if self.clock.is_running:
                     self.clock.stop()
@@ -1075,7 +1082,7 @@ class PamsWorkout(EuroPiScript):
 
         self.load()
 
-        time.sleep(0.5)
+        time.sleep(1.5)
 
         while True:
             now = time.ticks_ms()
