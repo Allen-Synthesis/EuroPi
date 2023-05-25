@@ -54,9 +54,9 @@ class EgressusMelodium(EuroPiScript):
         self.shreadedVisClockStep = 0
         
         self.experimentalSlewMode = True
-        self.slewResolution = 50  # number of values in slewArray between clock step voltages
         self.slewArray = []
-        self.msBetweenClocks = 0
+        self.msBetweenClocks = 976
+        self.slewResolution = min(40, int(self.msBetweenClocks / 15))
         self.lastClockTime = 0
         self.lastSlewVoltageOutput = 0
         self.slewGeneratorObject = self.slewGenerator([0])
@@ -69,6 +69,7 @@ class EgressusMelodium(EuroPiScript):
         self.slewSampleCounter = 0
         self.outputLfoModes = [2, 3, 4, 5, 6, 7]
         self.outputSlewModes = [0, 1, 2, 3, 6, 7]
+        self.receivingClocks = False
 
         self.loadState()
 
@@ -135,45 +136,45 @@ class EgressusMelodium(EuroPiScript):
             if self.clockStep >= 2:
                 self.msBetweenClocks = ticks_ms() - self.lastClockTime
                 self.slewResolution = min(40, int(self.msBetweenClocks / 15))
-                # calculate the next step
-                if self.step == (self.firstStep + self.patternLength)-1:
-                    nextStep = self.firstStep
+            # calculate the next step
+            if self.step == (self.firstStep + self.patternLength)-1:
+                nextStep = self.firstStep
+            else:
+                nextStep = self.step+1
+            
+            # flip the flip flop value for LFO mode
+            self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
+
+            # Cycle through outputs and generate slew for each
+            for idx in range(len(cvs)):
+
+                # test clock divider
+                if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
+                    self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
+                    self.slewResolutionMultiplier = 2
+                elif self.clockStep % 2 != 0 and (idx == 2 or idx == 5):
+                    self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
+                    self.slewResolutionMultiplier = 2
                 else:
-                    nextStep = self.step+1
-                
-                # flip the flip flop value for LFO mode
-                self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
+                    self.slewResolutionMultiplier = 1
 
-                # Cycle through outputs and generate slew for each
-                for idx in range(len(cvs)):
+                # If length is one, cycle between high and low voltages (traditional LFO)
+                # Each output uses a different shape, which is idx for simplicity
+                if self.patternLength == 1:
+                    
+                    self.slewArray = self.slewShapes[self.outputLfoModes[idx]](
+                        self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
+                        self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
+                        self.slewResolution * self.slewResolutionMultiplier
+                        )
+                else:
+                    self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
+                        self.cvPatternBanks[idx][self.CvPattern][self.step],
+                        self.cvPatternBanks[idx][self.CvPattern][nextStep],
+                        self.slewResolution * self.slewResolutionMultiplier
+                        )
 
-                    # test clock divider
-                    if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
-                        self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-                        self.slewResolutionMultiplier = 2
-                    elif self.clockStep % 2 != 0 and (idx == 2 or idx == 5):
-                        self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-                        self.slewResolutionMultiplier = 2
-                    else:
-                        self.slewResolutionMultiplier = 1
-
-                    # If length is one, cycle between high and low voltages (traditional LFO)
-                    # Each output uses a different shape, which is idx for simplicity
-                    if self.patternLength == 1:
-                        
-                        self.slewArray = self.slewShapes[self.outputLfoModes[idx]](
-                            self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
-                            self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
-                            self.slewResolution * self.slewResolutionMultiplier
-                            )
-                    else:
-                        self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
-                            self.cvPatternBanks[idx][self.CvPattern][self.step],
-                            self.cvPatternBanks[idx][self.CvPattern][nextStep],
-                            self.slewResolution * self.slewResolutionMultiplier
-                            )
-
-                    self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
+                self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
             
             self.lastClockTime = ticks_ms()
             
@@ -289,6 +290,10 @@ class EgressusMelodium(EuroPiScript):
                         v = 0
                 self.slewSampleCounter += 1
                 self.lastSlewVoltageOutput = ticks_ms()
+                if not self.receivingClocks and self.slewSampleCounter % self.slewResolution == 1:
+                    self.clockStep +=1
+                    self.manualClockStep()
+
 
 
             # If I have been running, then stopped for longer than resetTimeout, reset all steps to 0
@@ -301,6 +306,53 @@ class EgressusMelodium(EuroPiScript):
                     self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
                 # Update screen with the upcoming CV pattern
                 self.screenRefreshNeeded = True
+                self.receivingClocks = False
+
+
+    def manualClockStep(self):
+
+        # flip the flip flop value for LFO mode
+        self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
+
+        # Cycle through outputs and generate slew for each
+        for idx in range(len(cvs)):
+
+            # test clock divider
+            if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
+                self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
+                self.slewResolutionMultiplier = 2
+            elif self.clockStep % 2 != 0 and (idx == 2 or idx == 5):
+                self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
+                self.slewResolutionMultiplier = 2
+            else:
+                self.slewResolutionMultiplier = 1
+
+            # If length is one, cycle between high and low voltages (traditional LFO)
+            # Each output uses a different shape, which is idx for simplicity
+            if self.patternLength == 1:
+                
+                self.slewArray = self.slewShapes[self.outputLfoModes[idx]](
+                    self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
+                    self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
+                    self.slewResolution * self.slewResolutionMultiplier
+                    )
+            else:
+                self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
+                    self.cvPatternBanks[idx][self.CvPattern][self.step],
+                    self.cvPatternBanks[idx][self.CvPattern][nextStep],
+                    self.slewResolution * self.slewResolutionMultiplier
+                    )
+
+            self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
+        
+        self.lastClockTime = ticks_ms()
+        
+        # Hide the shreaded vis clock step after 2 clock steps
+        if self.clockStep > self.shreadedVisClockStep -2:
+            self.shreadedVis = False
+
+
+
 
     '''Get the CV pattern length from k2 / ain'''
     def getPatternLength(self):
