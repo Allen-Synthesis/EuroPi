@@ -61,11 +61,12 @@ class EgressusMelodium(EuroPiScript):
         self.lastSlewVoltageOutput = 0
         self.slewGeneratorObject = self.slewGenerator([0])
         self.slewGeneratorObjects = [self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0])]
-        self.slewShapes = [self.stepUpStepDown, self.linspace, self.logUpStepDown, self.stepUpExpDown, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse]
+        self.slewShapes = [self.stepUpStepDown, self.linspace, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse, self.logUpStepDown, self.stepUpExpDown]
         self.slewShape = 0
         self.voltageExtremes=[0, 10]
         self.voltageExtremeFlipFlop = False
         self.slewResolutionMultiplier = 1
+        self.slewSampleCounter = 0
 
         self.loadState()
 
@@ -155,15 +156,15 @@ class EgressusMelodium(EuroPiScript):
                         self.slewResolutionMultiplier = 1
 
                     # If length is one, cycle between high and low voltages (traditional LFO)
+                    # Each output uses a different shape, which is idx for simplicity
                     if self.patternLength == 1:
                         
-                        self.slewArray = self.slewShapes[self.slewShape](
+                        self.slewArray = self.slewShapes[idx](
                             self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
                             self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
                             self.slewResolution * self.slewResolutionMultiplier
                             )
                     else:
-                        # Call selected slew function
                         self.slewArray = self.slewShapes[self.slewShape](
                             self.cvPatternBanks[idx][self.CvPattern][self.step],
                             self.cvPatternBanks[idx][self.CvPattern][nextStep],
@@ -273,16 +274,20 @@ class EgressusMelodium(EuroPiScript):
             self.slewResolution = max(1, self.slewResolution)  # Avoid possible divide by zero
             if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
-                    if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
-                        continue
-                    elif self.clockStep % 4 != 0 and (idx == 2 or idx == 5):
-                        continue
+                    # skip some slew points for some outputs unless in LFO mode
+                    if self.patternLength != 1:
+                        if self.slewSampleCounter % 2 != 0 and (idx == 1 or idx == 4):
+                            continue
+                        elif self.slewSampleCounter % 4 != 0 and (idx == 2 or idx == 5):
+                            continue
                     try:
                         v = next(self.slewGeneratorObjects[idx])
                         cvs[idx].voltage(v)
                     except StopIteration:
                         v = 0
-                    self.lastSlewVoltageOutput = ticks_ms()
+                self.slewSampleCounter += 1
+                self.lastSlewVoltageOutput = ticks_ms()
+
 
             # If I have been running, then stopped for longer than resetTimeout, reset all steps to 0
             if self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
