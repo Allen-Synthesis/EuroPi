@@ -64,12 +64,11 @@ class EgressusMelodium(EuroPiScript):
         self.slewShapes = [self.stepUpStepDown, self.linspace, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse, self.logUpStepDown, self.stepUpExpDown]
         self.slewShape = 0
         self.voltageExtremes=[0, 10]
-        self.voltageExtremeFlipFlop = False
-        self.slewResolutionMultiplier = 1
         self.slewSampleCounter = 0
-        self.outputSlewModes = [0, 2, 2, 3, 6, 6]
-        self.outputDivisions = [1, 2, 4, 1, 3, 6]
+        self.outputSlewModes = [0, 1, 2, 3, 4, 5]
+        self.outputDivisions = [1, 2, 4, 1, 2, 3]
         self.receivingClocks = False
+        self.outputVoltageFlipFlops = [True, True, True, True, True, True] # Flipflops between self.VoltageExtremes
 
         self.loadState()
 
@@ -279,16 +278,9 @@ class EgressusMelodium(EuroPiScript):
             self.getFirstStep()
 
             # experimental slew mode....
-            #self.slewResolution = max(1, self.slewResolution)  # Avoid possible divide by zero
             self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
             if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
-                    # skip some slew points for some outputs unless in LFO mode
-                    if self.patternLength != 1:
-                        if self.slewSampleCounter % 2 != 0 and (idx == 1 or idx == 4):
-                            continue
-                        elif self.slewSampleCounter % 4 != 0 and (idx == 2 or idx == 5):
-                            continue
                     try:
                         v = next(self.slewGeneratorObjects[idx])
                         cvs[idx].voltage(v)
@@ -317,8 +309,6 @@ class EgressusMelodium(EuroPiScript):
 
     def handleClockStep(self):
 
-
-
         # Increment / reset step unless we have reached the max step length, or selected pattern length
         if self.step < self.maxStepLength -1 and self.step < (self.firstStep + self.patternLength) -1:
             self.step += 1
@@ -341,8 +331,6 @@ class EgressusMelodium(EuroPiScript):
                 
                 self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
 
-
-
         # calculate the next step
         if self.step == (self.firstStep + self.patternLength)-1:
             nextStep = self.firstStep
@@ -352,42 +340,27 @@ class EgressusMelodium(EuroPiScript):
         # Cycle through outputs and generate slew for each
         for idx in range(len(cvs)):
 
-            # flip the flip flop value for LFO mode
-            # This can be simpler. But it may be a nice way to get a full wave at different output divisions
-            if self.clockStep % 2 == 0 and self.outputDivisions[idx] % 2 == 0 and self.outputSlewModes[idx] != 0:
-                self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-
-            # Increase the sample rate for slower divisions
-            self.slewResolutionMultiplier = self.outputDivisions[idx]
-
+            # If the clockstep is a division of the output
             if self.clockStep % (self.outputDivisions[idx]) == 0:
 
-                # # test clock divider
-                # if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
-                #     self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-                #     self.slewResolutionMultiplier = 2
-                # elif self.clockStep % 2 != 0 and (idx == 2 or idx == 5):
-                #     self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-                #     self.slewResolutionMultiplier = 2
-                # else:
-                #     self.slewResolutionMultiplier = 1
-
+                # flip the flip flop value for LFO mode
+                self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
+                
                 # If length is one, cycle between high and low voltages (traditional LFO)
                 # Each output uses a different shape, which is idx for simplicity
                 if self.patternLength == 1:
                     
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
-                        self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
-                        self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
-                        self.slewResolution * self.slewResolutionMultiplier
+                        self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
+                        self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
+                        self.slewResolution * self.outputDivisions[idx] # Increase the sample rate for slower divisions
                         )
                 else:
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
                         self.cvPatternBanks[idx][self.CvPattern][nextStep],
-                        self.slewResolution * self.slewResolutionMultiplier
+                        self.slewResolution * self.outputDivisions[idx] # Increase the sample rate for slower divisions
                         )
-
                 self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
         
         self.lastClockTime = ticks_ms()
