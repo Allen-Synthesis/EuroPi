@@ -57,6 +57,7 @@ class EgressusMelodium(EuroPiScript):
         self.slewArray = []
         self.msBetweenClocks = 976
         self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+        #self.slewResolution = 40
         self.lastClockTime = 0
         self.lastSlewVoltageOutput = 0
         self.slewGeneratorObject = self.slewGenerator([0])
@@ -65,12 +66,22 @@ class EgressusMelodium(EuroPiScript):
         self.slewShape = 0
         self.voltageExtremes=[0, 10]
         self.slewSampleCounter = 0
-        self.outputSlewModes = [0, 2, 5, 3, 4, 5]
+        self.outputSlewModes = [0, 0, 0, 0, 0, 0]
         self.outputDivisions = [1, 2, 4, 1, 2, 3]
         self.receivingClocks = False
         self.outputVoltageFlipFlops = [True, True, True, True, True, True] # Flipflops between self.VoltageExtremes
 
         self.selectedOutput = 0
+        self.maxOutputDivision = 8
+        self.lastK1Reading = 0
+        self.currentK1Reading = 0
+
+        # pre-create slew buffers to avoid memory allocation errors
+        self.slewBuffers = []
+        for n in range(6): # for each output 0-5
+            self.slewBuffers.append([]) # add new empty list to the buffer list
+            for m in range(42 * self.maxOutputDivision): # 41 is maximum resolution/samplerate
+                self.slewBuffers[n].append(0.0) # add 0.0 (float) as a default value
 
         self.loadState()
 
@@ -217,7 +228,6 @@ class EgressusMelodium(EuroPiScript):
                 # short press
                 self.outputSlewModes[self.selectedOutput] = (self.outputSlewModes[self.selectedOutput] + 1) % len(self.slewShapes)
                 self.screenRefreshNeeded = True
-                print(f"len(self.slewShapes): {len(self.slewShapes)}. mode: {self.outputSlewModes[self.selectedOutput]}")
                 #sself.saveState()
 
         # '''Triggered when B1 is pressed and released'''
@@ -309,10 +319,12 @@ class EgressusMelodium(EuroPiScript):
             self.updateScreen()
             self.getPatternLength()
             #self.getCycleMode()
-            self.getFirstStep()
+            #self.getFirstStep()
+            self.getOutputDivision()
 
             # experimental slew mode....
             self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+            #self.slewResolution = 40
             if self.experimentalSlewMode and ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
                     try:
@@ -387,13 +399,15 @@ class EgressusMelodium(EuroPiScript):
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
                         self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
-                        self.slewResolution * self.outputDivisions[idx] # Increase the sample rate for slower divisions
+                        self.slewResolution * self.outputDivisions[idx], # Increase the sample rate for slower divisions
+                        self.slewBuffers[idx]
                         )
                 else:
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
                         self.cvPatternBanks[idx][self.CvPattern][nextStep],
-                        self.slewResolution * self.outputDivisions[idx] # Increase the sample rate for slower divisions
+                        self.slewResolution * self.outputDivisions[idx], # Increase the sample rate for slower divisions
+                        self.slewBuffers[idx]
                         )
                 self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
         
@@ -402,9 +416,6 @@ class EgressusMelodium(EuroPiScript):
         # Hide the shreaded vis clock step after 2 clock steps
         if self.clockStep > self.shreadedVisClockStep -2:
             self.shreadedVis = False
-
-
-
 
     '''Get the CV pattern length from k2 / ain'''
     def getPatternLength(self):
@@ -418,13 +429,23 @@ class EgressusMelodium(EuroPiScript):
         if previousPatternLength != self.patternLength:
             self.screenRefreshNeeded = True
 
-    '''Get the firstStep from k1'''
-    def getFirstStep(self):
-        previousFirstStep = self.firstStep
-        self.firstStep = k1.read_position(self.maxStepLength-self.patternLength)
+    # '''Get the firstStep from k1'''
+    # def getFirstStep(self):
+    #     previousFirstStep = self.firstStep
+    #     self.firstStep = k1.read_position(self.maxStepLength-self.patternLength)
         
-        if previousFirstStep != self.firstStep:
+    #     if previousFirstStep != self.firstStep:
+    #         self.screenRefreshNeeded = True
+
+    '''Get the output division from k1'''
+    def getOutputDivision(self):
+        #previousOutputDivision = self.outputDivisions[self.selectedOutput]
+        self.currentK1Reading = (k1.read_position(self.maxOutputDivision) + 1)
+        
+        if self.currentK1Reading != self.lastK1Reading:
+            self.outputDivisions[self.selectedOutput] = (k1.read_position(self.maxOutputDivision) + 1)
             self.screenRefreshNeeded = True
+            self.lastK1Reading = self.currentK1Reading
 
     # '''Get the cycle mode from k1'''
     # def getCycleMode(self):
@@ -468,12 +489,6 @@ class EgressusMelodium(EuroPiScript):
         self.numCvPatterns = len(self.cvPatternBanks[0])
 
     def draw_wave(self):
-        #shape = self.modes[self.selected_lfo]
-        #self.slewShapes = [self.stepUpStepDown, self.linspace, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse, self.logUpStepDown, self.stepUpExpDown]
-        #self.slewShape = 0
-
-        #print(self.outputSlewModes[self.selectedOutput])
-
         if self.outputSlewModes[self.selectedOutput] == 0: # stepUpStepDown
             oled.vline(3, 24, 8, 1)
             oled.hline(3, 24, 6, 1)
@@ -637,6 +652,37 @@ class EgressusMelodium(EuroPiScript):
 
         self.draw_wave()
 
+        # Draw pattern length
+        row1 = ''
+        row2 = ''
+        row3 = ''
+        row4 = ''
+        if self.patternLength > 24:
+            # draw two rows
+            row1 = '........'
+            row2 = '........'
+            row3 = '........'
+            for i in range(24, self.patternLength):
+                row4 = row4 + '.'
+        elif self.patternLength > 16:
+            row1 = '........'
+            row2 = '........'
+            for i in range(16, self.patternLength):
+                row3 = row3 + '.'
+        elif self.patternLength > 8:
+            row1 = '........'
+            for i in range(8, self.patternLength):
+                row2 = row2 + '.'
+        else:
+            # draw one row
+            for i in range(self.patternLength):
+                row1 = row1 + '.'
+
+        xStart = 40
+        oled.text(row1,xStart, 0, 1)
+        oled.text(row2,xStart, 6, 1)
+        oled.text(row3,xStart, 12, 1)
+        oled.text(row4,xStart, 18, 1)
         oled.show()
 
     '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
@@ -661,54 +707,6 @@ class EgressusMelodium(EuroPiScript):
             cycleIndicatorPosition = 80 +(self.cycleStep * 8)
             oled.text('_', cycleIndicatorPosition, 22, 1)
 
-        if self.experimentalSlewMode:
-            oled.text(str(self.slewShape), 120, 0, 1)
-            # if self.slewShape == 3: # linear
-            #     oled.pixel(120, 9, 1)
-            #     oled.pixel(121, 8, 1)
-            #     oled.pixel(122, 7, 1)
-            #     oled.pixel(123, 6, 1)
-            #     oled.pixel(124, 5, 1)
-            #     oled.pixel(125, 4, 1)
-            #     oled.pixel(126, 3, 1)
-            #     oled.pixel(127, 2, 1)
-            #     oled.pixel(128, 1, 1)
-            # elif self.slewShape == 2: # exp up log down
-            #     oled.pixel(120, 9, 1)
-            #     oled.pixel(121, 9, 1)
-            #     oled.pixel(122, 9, 1)
-            #     oled.pixel(123, 8, 1)
-            #     oled.pixel(124, 8, 1)
-            #     oled.pixel(125, 7, 1)
-            #     oled.pixel(126, 6, 1)
-            #     oled.pixel(127, 5, 1)
-            #     oled.pixel(127, 4, 1)
-            #     oled.pixel(127, 3, 1)
-            #     oled.pixel(127, 2, 1)
-            #     oled.pixel(127, 1, 1)
-            # elif self.slewShape == 1: # log up exp down
-            #     oled.pixel(120, 9, 1)
-            #     oled.pixel(120, 8, 1)
-            #     oled.pixel(120, 7, 1)
-            #     oled.pixel(120, 6, 1)
-            #     oled.pixel(120, 5, 1)
-            #     oled.pixel(121, 4, 1)
-            #     oled.pixel(121, 3, 1)
-            #     oled.pixel(122, 3, 1)
-            #     oled.pixel(122, 2, 1)
-            #     oled.pixel(123, 1, 1)
-            #     oled.pixel(124, 1, 1)
-            #     oled.pixel(125, 1, 1)
-            #     oled.pixel(126, 1, 1)
-            #     oled.pixel(127, 1, 1)
-            #     oled.pixel(128, 1, 1)
-            # else: # square
-            #     oled.vline(116, 1, 8, 1)
-            #     oled.hline(116, 1, 6, 1)
-            #     oled.vline(122, 1, 8, 1)
-            #     oled.hline(122, 8, 6, 1)
-            #     oled.vline(128, 1, 8, 1)
-
         if self.shreadedVis:
             oled.text('x',120 ,23)
 
@@ -719,69 +717,75 @@ class EgressusMelodium(EuroPiScript):
 # Slew functions
 # -----------------------------
 
-# [self.stepUpStepDown, self.linspace, self.logUpExpDown, self.expUpLogDown, self.logUpStepDown, self.stepUpExpDown]
-
     '''Produces step up, step down'''
-    def stepUpStepDown(self, start, stop, num):
-        w = []
+    def stepUpStepDown(self, start, stop, num, buffer):
+        c = 0
         if self.patternLength == 1: # LFO Mode, make sure we complete a full cycle
             for i in range(num/2):
-                w.append(start)      
+                buffer[c] = start
+                c += 1
             for i in range(num/2):
-                w.append(stop)
+                buffer[c] = stop
+                c += 1
         else:
             for i in range(num-1):
-                w.append(stop)
-        return w
+                buffer[c] = stop
+                c += 1
+        return buffer
 
     '''Produces linear transitions'''
-    def linspace(self, start, stop, num):
-        w = []
+    def linspace(self, start, stop, num, buffer):
+        c = 0
         diff = (float(stop) - start)/(num)
         for i in range(num-1):
             val = ((diff * i) + start)
-            w.append(val)
-        return w
+            buffer[c] = val
+            c += 1
+        return buffer
 
     '''Produces log up, step down'''
-    def logUpStepDown(self, start, stop, num):
-        w = []
-
+    def logUpStepDown(self, start, stop, num, buffer):
+        c = 0
         if self.patternLength == 1: # LFO Mode, make sure we complete a full cycle
-            # if stop >= start:
             for i in range(num/2):
                 i = max(i, 1)
                 x = 1 - ((stop - float(start))/(i)) + (stop-1)
-                w.append(x)
+                buffer[c] = x
+                c += 1
             for i in range(num/2):
-                w.append(stop)
+                buffer[c] = stop
+                c += 1
         else:
             if stop >= start:
                 for i in range(num-1):
                     i = max(i, 1)
                     x = 1 - ((stop - float(start))/(i)) + (stop-1)
-                    w.append(x)
+                    buffer[c] = x
+                    c += 1
             else:
                 for i in range(num-1):
-                    w.append(stop)
-        return w
+                    buffer[c] = stop
+                    c += 1
+        return buffer
 
     '''Produces step up, exp down'''
-    def stepUpExpDown(self, start, stop, num):
-        w = []
+    def stepUpExpDown(self, start, stop, num, buffer):
+        c = 0
         if stop <= start:
             for i in range(num-1):
                 i = max(i, 1)
                 x = 1 - ((stop - float(start))/(i)) + (stop-1)
-                w.append(x)
+                buffer[c] = x
+                c += 1
         else:
             for i in range(num):
-                w.append(stop)
-        return w
+                buffer[c] = stop
+                c += 1
+        return buffer
 
     '''Produces smooth curve using half a cosine wave'''
-    def smooth(self, start, stop, sampleRate):
-        w = []
+    def smooth(self, start, stop, sampleRate, buffer):
+        c = 0
         freqHz = 0.5 # We want to complete half a cycle
         amplitude = abs((stop - start) / 2) # amplitude is half of the diff between start and stop (this is peak to peak)
         if start <= stop:
@@ -795,12 +799,13 @@ class EgressusMelodium(EuroPiScript):
         for i in range(sampleRate):
             i += startOffset
             val = amplitude + float(amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate)))
-            w.append(round(val+amplitudeOffset,4))
-        return w
+            buffer[c] = round(val+amplitudeOffset,4)
+            c += 1
+        return buffer
 
     '''Produces a pointy exponential wave using a quarter cosine'''
-    def expUpexpDown(self, start, stop, sampleRate):
-        w = []
+    def expUpexpDown(self, start, stop, sampleRate, buffer):
+        c = 0
         freqHz = 0.25 # We want to complete quarter of a cycle
         amplitude = abs((stop - start)) # amplitude is half of the diff between start and stop (this is peak to peak)
         if start <= stop:
@@ -809,19 +814,21 @@ class EgressusMelodium(EuroPiScript):
             for i in range(sampleRate):
                 i += startOffset
                 val = amplitude + float(amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate)))
-                w.append(round(val+amplitudeOffset,4))
+                buffer[c] = round(val+amplitudeOffset,4)
+                c += 1
         else:
             startOffset = sampleRate
             amplitudeOffset = stop
             for i in range(sampleRate):
                 i += startOffset
                 val = amplitude + float(amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate)))
-                w.append(round(val+amplitudeOffset,4))
-        return w
+                buffer[c] = round(val+amplitudeOffset,4)
+                c += 1
+        return buffer
 
     '''Produces a log(ish) up and exponential(ish) down using a quarter cosine'''
-    def sharkTooth(self, start, stop, sampleRate):
-        w = []
+    def sharkTooth(self, start, stop, sampleRate, buffer):
+        c = 0
         freqHz = 0.25 # We want to complete quarter of a cycle
         amplitude = abs((stop - start)) # amplitude is half of the diff between start and stop (this is peak to peak)
         if start <= stop:
@@ -830,19 +837,21 @@ class EgressusMelodium(EuroPiScript):
             for i in range(sampleRate):
                 i += startOffset
                 val = amplitude + float(amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate)))
-                w.append(round(val+amplitudeOffset,4))
+                buffer[c] = round(val+amplitudeOffset,4)
+                c += 1
         else:
             startOffset = sampleRate
             amplitudeOffset = stop
             for i in range(sampleRate):
                 i += startOffset
                 val = amplitude + float(amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate)))
-                w.append(round(val+amplitudeOffset,4))
-        return w
+                buffer[c] = round(val+amplitudeOffset,4)
+                c += 1
+        return buffer
 
     '''Produces an exponential(ish) up and log(ish) down using a quarter cosine'''
-    def sharkToothReverse(self, start, stop, sampleRate):
-        w = []
+    def sharkToothReverse(self, start, stop, sampleRate, buffer):
+        c = 0
         freqHz = 0.25 # We want to complete quarter of a cycle
         amplitude = abs((stop - start)) # amplitude is half of the diff between start and stop (this is peak to peak)
         if start <= stop:
@@ -851,15 +860,17 @@ class EgressusMelodium(EuroPiScript):
             for i in range(sampleRate):
                 i += startOffset
                 val = amplitude + float(amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate)))
-                w.append(round(val+amplitudeOffset,4))
+                buffer[c] = round(val+amplitudeOffset,4)
+                c += 1
         else:
             startOffset = 0
             amplitudeOffset = 1 - (amplitude - stop + 1)
             for i in range(sampleRate):
                 i += startOffset
                 val = amplitude + float(amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate)))
-                w.append(round(val+amplitudeOffset,4))
-        return w
+                buffer[c] = round(val+amplitudeOffset,4)
+                c += 1
+        return buffer
 
     def slewGenerator(self, arr):
         for s in range(len(arr)):
@@ -870,5 +881,3 @@ if __name__ == '__main__':
     [cv.off() for cv in cvs]
     dm = EgressusMelodium()
     dm.main()
-
-
