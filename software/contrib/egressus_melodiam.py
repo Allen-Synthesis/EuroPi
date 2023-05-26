@@ -65,10 +65,12 @@ class EgressusMelodium(EuroPiScript):
         self.slewShape = 0
         self.voltageExtremes=[0, 10]
         self.slewSampleCounter = 0
-        self.outputSlewModes = [0, 1, 2, 3, 4, 5]
+        self.outputSlewModes = [0, 2, 5, 3, 4, 5]
         self.outputDivisions = [1, 2, 4, 1, 2, 3]
         self.receivingClocks = False
         self.outputVoltageFlipFlops = [True, True, True, True, True, True] # Flipflops between self.VoltageExtremes
+
+        self.selectedOutput = 0
 
         self.loadState()
 
@@ -190,54 +192,86 @@ class EgressusMelodium(EuroPiScript):
         @b1.handler_falling
         def b1Pressed():
             if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000:
-                # Generate new pattern for existing pattern
-                self.generateNewRandomCVPattern(new=False)
-                self.shreadedVis = True
-                self.screenRefreshNeeded = True
-                self.shreadedVisClockStep = self.clockStep
+                # long press
                 self.saveState()
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
-                if self.slewShape == len(self.slewShapes)-1:
-                    self.slewShape = 0
-                else:
-                    self.slewShape += 1
-                self.screenRefreshNeeded = True
+                # medium press
                 self.saveState()
             else:
-                # Play previous CV Pattern, unless we are at the first pattern
-                if self.CvPattern != 0:
-                    self.CvPattern -= 1
-                    # Update screen with CV Pattern
-                    self.screenRefreshNeeded = True
-                    if self.debugMode:
-                        print('CV Pattern down')
+                # short press
+                self.selectedOutput = (self.selectedOutput + 1) % 6
+                self.screenRefreshNeeded = True
+                #self.saveState()
 
-        '''Triggered when B1 is pressed and released'''
+
+        '''Triggered when B2 is pressed and released'''
         @b2.handler_falling
         def b2Pressed():
-            if ticks_diff(ticks_ms(), b2.last_pressed()) > 300 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
-                # Toggle cycle mode
-                self.cycleMode = not self.cycleMode
-                # Update screen with CV Pattern
-                self.screenRefreshNeeded = True
+            if ticks_diff(ticks_ms(), b2.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
+                # long press
+                self.saveState()
+            elif ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
+                # medium press
+                self.saveState()
             else:
-                if self.CvPattern < self.numCvPatterns-1: # change to next CV pattern
-                    self.CvPattern += 1
-                    # Update screen with CV Pattern
-                    self.screenRefreshNeeded = True
-                    if self.debugMode:
-                        print('CV Pattern up')
-                else:
-                    # Generate a new CV pattern, unless we have reached the maximum allowed
-                    if self.CvPattern < self.maxRandomPatterns-1:
-                        if self.generateNewRandomCVPattern():
-                            self.CvPattern += 1
-                            self.numCvPatterns += 1
-                            self.saveState()
-                            # Update screen with CV Pattern
-                            self.screenRefreshNeeded = True
-                            if self.debugMode:
-                                print('Generating NEW pattern')
+                # short press
+                self.outputSlewModes[self.selectedOutput] = (self.outputSlewModes[self.selectedOutput] + 1) % len(self.slewShapes)
+                self.screenRefreshNeeded = True
+                print(f"len(self.slewShapes): {len(self.slewShapes)}. mode: {self.outputSlewModes[self.selectedOutput]}")
+                #sself.saveState()
+
+        # '''Triggered when B1 is pressed and released'''
+        # @b1.handler_falling
+        # def b1Pressed():
+        #     if ticks_diff(ticks_ms(), b1.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000:
+        #         # Generate new pattern for existing pattern
+        #         self.generateNewRandomCVPattern(new=False)
+        #         self.shreadedVis = True
+        #         self.screenRefreshNeeded = True
+        #         self.shreadedVisClockStep = self.clockStep
+        #         self.saveState()
+        #     elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
+        #         if self.slewShape == len(self.slewShapes)-1:
+        #             self.slewShape = 0
+        #         else:
+        #             self.slewShape += 1
+        #         self.screenRefreshNeeded = True
+        #         self.saveState()
+        #     else:
+        #         # Play previous CV Pattern, unless we are at the first pattern
+        #         if self.CvPattern != 0:
+        #             self.CvPattern -= 1
+        #             # Update screen with CV Pattern
+        #             self.screenRefreshNeeded = True
+        #             if self.debugMode:
+        #                 print('CV Pattern down')
+
+        # '''Triggered when B1 is pressed and released'''
+        # @b2.handler_falling
+        # def b2Pressed():
+        #     if ticks_diff(ticks_ms(), b2.last_pressed()) > 300 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
+        #         # Toggle cycle mode
+        #         self.cycleMode = not self.cycleMode
+        #         # Update screen with CV Pattern
+        #         self.screenRefreshNeeded = True
+        #     else:
+        #         if self.CvPattern < self.numCvPatterns-1: # change to next CV pattern
+        #             self.CvPattern += 1
+        #             # Update screen with CV Pattern
+        #             self.screenRefreshNeeded = True
+        #             if self.debugMode:
+        #                 print('CV Pattern up')
+        #         else:
+        #             # Generate a new CV pattern, unless we have reached the maximum allowed
+        #             if self.CvPattern < self.maxRandomPatterns-1:
+        #                 if self.generateNewRandomCVPattern():
+        #                     self.CvPattern += 1
+        #                     self.numCvPatterns += 1
+        #                     self.saveState()
+        #                     # Update screen with CV Pattern
+        #                     self.screenRefreshNeeded = True
+        #                     if self.debugMode:
+        #                         print('Generating NEW pattern')
 
     '''Initialize CV pattern banks'''
     def initCvPatternBanks(self):
@@ -438,133 +472,152 @@ class EgressusMelodium(EuroPiScript):
         #self.slewShapes = [self.stepUpStepDown, self.linspace, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse, self.logUpStepDown, self.stepUpExpDown]
         #self.slewShape = 0
 
-        if self.slewShape == 0: # stepUpStepDown
+        #print(self.outputSlewModes[self.selectedOutput])
+
+        if self.outputSlewModes[self.selectedOutput] == 0: # stepUpStepDown
             oled.vline(3, 24, 8, 1)
             oled.hline(3, 24, 6, 1)
             oled.vline(9, 24, 8, 1)
             oled.hline(9, 31, 6, 1)
             oled.vline(15, 24, 8, 1)
-        elif self.slewShape == 1: # linspace Todo
-            oled.vline(3, 24, 8, 1)
-            oled.hline(3, 24, 6, 1)
-            oled.vline(9, 24, 8, 1)
-            oled.hline(9, 31, 6, 1)
-            oled.vline(15, 24, 8, 1)
-        elif self.slewShape == 2: # smooth (cosine)
-            oled.pixel(3, 31, 1)
-            oled.pixel(3, 30, 1)
+        elif self.outputSlewModes[self.selectedOutput] == 1: # linspace
             oled.pixel(3, 29, 1)
             oled.pixel(4, 28, 1)
+            oled.pixel(5, 27, 1)
+            oled.pixel(6, 26, 1)
+            oled.pixel(7, 25, 1)
+            oled.pixel(8, 24, 1)
+            oled.pixel(9, 23, 1)
+            oled.pixel(10, 24, 1)
+            oled.pixel(11, 25, 1)
+            oled.pixel(12, 26, 1)
+            oled.pixel(13, 27, 1)
+            oled.pixel(14, 28, 1)
+            oled.pixel(15, 29, 1)
+        elif self.outputSlewModes[self.selectedOutput] == 2: # smooth (cosine)
+            oled.pixel(3, 23, 1)
+            oled.pixel(4, 23, 1)
+            oled.pixel(5, 24, 1)
+            oled.pixel(6, 25, 1)
+            oled.pixel(6, 26, 1)
+            oled.pixel(6, 27, 1)
+            oled.pixel(7, 28, 1)
+            oled.pixel(7, 29, 1)
+            oled.pixel(7, 30, 1)
+            oled.pixel(8, 31, 1)
+            oled.pixel(9, 31, 1)
+            oled.pixel(10, 31, 1)
+            oled.pixel(11, 30, 1)
+            oled.pixel(11, 29, 1)
+            oled.pixel(11, 28, 1)
+            oled.pixel(12, 27, 1)
+            oled.pixel(12, 26, 1)
+            oled.pixel(12, 25, 1)
+            oled.pixel(13, 24, 1)
+            oled.pixel(14, 23, 1)
+            oled.pixel(15, 23, 1)
+            #oled.pixel(16, 24, 1)
+        elif self.outputSlewModes[self.selectedOutput] == 3: # expUpexpDown
+            oled.pixel(3, 31, 1)
+            oled.pixel(4, 30, 1)
+            oled.pixel(5, 30, 1)
+            oled.pixel(6, 29, 1)
+            oled.pixel(6, 29, 1)
+            oled.pixel(6, 27, 1)
+            oled.pixel(7, 26, 1)
+            oled.pixel(8, 25, 1)
+            oled.pixel(8, 24, 1)
+            oled.pixel(9, 23, 1)
+            oled.pixel(10, 24, 1)
+            oled.pixel(10, 25, 1)
+            oled.pixel(11, 26, 1)
+            oled.pixel(12, 27, 1)
+            oled.pixel(12, 28, 1)
+            oled.pixel(12, 29, 1)
+            oled.pixel(13, 30, 1)
+            oled.pixel(14, 30, 1)
+            oled.pixel(15, 31, 1)
+        elif self.outputSlewModes[self.selectedOutput] == 4: # sharkTooth
+            oled.pixel(3, 30, 1)
+            oled.pixel(3, 29, 1)
+            oled.pixel(3, 28, 1)
             oled.pixel(4, 27, 1)
             oled.pixel(4, 26, 1)
-            oled.pixel(4, 25, 1)
-            oled.pixel(5, 24, 1)
-            oled.pixel(6, 23, 1)
-            oled.pixel(7, 23, 1)
+            oled.pixel(5, 25, 1)
+            oled.pixel(6, 25, 1)
+            oled.pixel(7, 24, 1)
             oled.pixel(8, 24, 1)
-            oled.pixel(9, 25, 1)
-            oled.pixel(9, 26, 1)
+            oled.pixel(9, 23, 1)
+            oled.pixel(10, 24, 1)
+            oled.pixel(10, 25, 1)
+            oled.pixel(10, 26, 1)
+            oled.pixel(11, 27, 1)
+            oled.pixel(11, 28, 1)
+            oled.pixel(12, 28, 1)
+            oled.pixel(13, 29, 1)
+            oled.pixel(14, 29, 1)
+            oled.pixel(15, 30, 1)
+        elif self.outputSlewModes[self.selectedOutput] == 5: # sharkToothReverse
+            oled.pixel(3, 30, 1)
+            oled.pixel(4, 29, 1)
+            oled.pixel(5, 29, 1)
+            oled.pixel(6, 28, 1)
+            oled.pixel(7, 28, 1)
+            oled.pixel(7, 27, 1)
+            oled.pixel(8, 26, 1)
+            oled.pixel(8, 25, 1)
+            oled.pixel(8, 24, 1)
+            oled.pixel(9, 23, 1)
+            oled.pixel(10, 24, 1)
+            oled.pixel(11, 24, 1)
+            oled.pixel(12, 25, 1)
+            oled.pixel(13, 25, 1)
+            oled.pixel(14, 26, 1)
+            oled.pixel(14, 27, 1)
+            oled.pixel(15, 28, 1)
+            oled.pixel(15, 29, 1)
+            oled.pixel(15, 30, 1)
+        elif self.outputSlewModes[self.selectedOutput] == 6: # logUpStepDown
+            oled.pixel(5, 31, 1)
+            oled.pixel(5, 30, 1)
+            oled.pixel(6, 29, 1)
+            oled.pixel(7, 28, 1)
+            oled.pixel(7, 27, 1)
+            oled.pixel(8, 26, 1)
+            oled.pixel(8, 25, 1)
+            oled.pixel(9, 24, 1)
+            oled.pixel(10, 23, 1)
+            oled.pixel(11, 23, 1)
+            oled.pixel(12, 23, 1)
+            oled.pixel(13, 33, 1)
+            oled.pixel(13, 24, 1)
+            oled.pixel(13, 25, 1)
+            oled.pixel(13, 26, 1)
+            oled.pixel(13, 27, 1)
+            oled.pixel(13, 28, 1)
+            oled.pixel(13, 29, 1)
+            oled.pixel(13, 30, 1)
+            oled.pixel(13, 31, 1)
+        elif self.outputSlewModes[self.selectedOutput] == 7: # stepUpExpDown
+            oled.pixel(5, 31, 1)
+            oled.pixel(5, 30, 1)
+            oled.pixel(5, 29, 1)
+            oled.pixel(5, 28, 1)
+            oled.pixel(5, 27, 1)
+            oled.pixel(5, 26, 1)
+            oled.pixel(5, 25, 1)
+            oled.pixel(5, 24, 1)
+            oled.pixel(5, 23, 1)
+            oled.pixel(6, 23, 1)
+            oled.pixel(7, 24, 1)
+            oled.pixel(7, 25, 1)
+            oled.pixel(8, 26, 1)
             oled.pixel(9, 27, 1)
-            oled.pixel(10, 28, 1)
+            oled.pixel(9, 28, 1)
             oled.pixel(10, 29, 1)
             oled.pixel(11, 30, 1)
             oled.pixel(12, 31, 1)
             oled.pixel(13, 31, 1)
-            oled.pixel(14, 30, 1)
-            oled.pixel(15, 29, 1)
-            oled.pixel(15, 28, 1)
-            oled.pixel(15, 27, 1)
-            oled.pixel(15, 26, 1)
-            oled.pixel(16, 25, 1)
-            oled.pixel(16, 24, 1)
-            oled.pixel(16, 23, 1)
-        #elif shape == self.MODES_SHAPES['SAW']:
-        elif self.slewShape == 3: # expUpexpDown todo
-            oled.line(3, 31, 9, 24, 1)
-            oled.vline(9, 24, 8, 1)
-            oled.line(9, 31, 15, 24, 1)
-            oled.vline(15, 24, 8, 1)
-        #elif shape == self.MODES_SHAPES['RANDOM']:
-        elif self.slewShape == 4: # sharkTooth todo
-            oled.pixel(3, 29, 1)
-            oled.pixel(4, 28, 1)
-            oled.pixel(4, 27, 1)
-            oled.pixel(5, 26, 1)
-            oled.pixel(6, 26, 1)
-            oled.pixel(7, 27, 1)
-            oled.pixel(8, 28, 1)
-            oled.pixel(9, 28, 1)
-            oled.pixel(10, 27, 1)
-            oled.pixel(10, 26, 1)
-            oled.pixel(10, 25, 1)
-            oled.pixel(11, 24, 1)
-            oled.pixel(12, 25, 1)
-            oled.pixel(13, 26, 1)
-            oled.pixel(13, 27, 1)
-            oled.pixel(14, 28, 1)
-            oled.pixel(14, 29, 1)
-            oled.pixel(15, 30, 1)
-            oled.pixel(16, 30, 1)
-        #elif shape == self.MODES_SHAPES['NOISE']:
-        elif self.slewShape == 5: # sharkToothReverse todo
-            oled.pixel(3, 26, 1)
-            oled.pixel(3, 30, 1)
-            oled.pixel(4, 24, 1)
-            oled.pixel(4, 23, 1)
-            oled.pixel(5, 31, 1)
-            oled.pixel(5, 29, 1)
-            oled.pixel(6, 25, 1)
-            oled.pixel(6, 23, 1)
-            oled.pixel(7, 29, 1)
-            oled.pixel(7, 25, 1)
-            oled.pixel(8, 26, 1)
-            oled.pixel(8, 30, 1)
-            oled.pixel(9, 27, 1)
-            oled.pixel(9, 24, 1)
-            oled.pixel(10, 26, 1)
-            oled.pixel(10, 29, 1)
-            oled.pixel(11, 24, 1)
-            oled.pixel(11, 30, 1)
-            oled.pixel(12, 23, 1)
-            oled.pixel(12, 25, 1)
-            oled.pixel(13, 29, 1)
-            oled.pixel(13, 25, 1)
-            oled.pixel(14, 28, 1)
-            oled.pixel(14, 26, 1)
-            oled.pixel(15, 24, 1)
-            oled.pixel(15, 31, 1)
-            oled.pixel(16, 27, 1)
-            oled.pixel(16, 30, 1)
-        elif self.slewShape == 6: # logUpStepDown todo
-            oled.pixel(3, 26, 1)
-            oled.pixel(3, 30, 1)
-            oled.pixel(4, 24, 1)
-            oled.pixel(4, 23, 1)
-            oled.pixel(5, 31, 1)
-            oled.pixel(5, 29, 1)
-            oled.pixel(6, 25, 1)
-            oled.pixel(6, 23, 1)
-            oled.pixel(7, 29, 1)
-            oled.pixel(7, 25, 1)
-            oled.pixel(8, 26, 1)
-            oled.pixel(8, 30, 1)
-            oled.pixel(9, 27, 1)
-            oled.pixel(9, 24, 1)
-        elif self.slewShape == 7: # stepUpExpDown todo
-            oled.pixel(3, 26, 1)
-            oled.pixel(3, 30, 1)
-            oled.pixel(4, 24, 1)
-            oled.pixel(4, 23, 1)
-            oled.pixel(5, 31, 1)
-            oled.pixel(5, 29, 1)
-            oled.pixel(6, 25, 1)
-            oled.pixel(6, 23, 1)
-            oled.pixel(7, 29, 1)
-            oled.pixel(7, 25, 1)
-            oled.pixel(8, 26, 1)
-            oled.pixel(8, 30, 1)
-            oled.pixel(9, 27, 1)
-            oled.pixel(9, 24, 1)
 
     '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
     def updateScreen(self):
@@ -574,12 +627,11 @@ class EgressusMelodium(EuroPiScript):
         # Clear screen
         oled.fill(0)
 
-        self.selected_lfo = 1
         oled.fill_rect(0, 0, 20, 32, 0)
         oled.fill_rect(0, 0, 20, 9, 1)
-        oled.text(f'{self.selected_lfo + 1}', 6, 1, 0)
+        oled.text(f'{self.selectedOutput + 1}', 6, 1, 0)
         
-        number = self.outputDivisions[self.selected_lfo]
+        number = self.outputDivisions[self.selectedOutput]
         x = 2 if number >= 10 else 6
         oled.text(f'{number}', x, 12, 1)
 
