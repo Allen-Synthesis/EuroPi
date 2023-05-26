@@ -41,7 +41,7 @@ class EgressusMelodium(EuroPiScript):
         self.resetTimeout = 10000
         self.maxRandomPatterns = 4  # This prevents a memory allocation error (happens with > 5, but 4 is nice round number!)
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
-        self.patternLength = 16
+        #self.patternLength = 16
         self.maxStepLength = 32
         self.screenRefreshNeeded = True
         self.cycleModes = ['0000', '0101', '0001', '0011', '1212', '1112', '1122', '0012', '2323', '2223', '2233', '0123']
@@ -55,9 +55,6 @@ class EgressusMelodium(EuroPiScript):
         
         self.experimentalSlewMode = True
         self.slewArray = []
-        self.msBetweenClocks = 976
-        self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
-        #self.slewResolution = 40
         self.lastClockTime = 0
         self.lastSlewVoltageOutput = 0
         self.slewGeneratorObject = self.slewGenerator([0])
@@ -66,8 +63,8 @@ class EgressusMelodium(EuroPiScript):
         self.slewShape = 0
         self.voltageExtremes=[0, 10]
         self.slewSampleCounter = 0
-        self.outputSlewModes = [0, 0, 0, 0, 0, 0]
-        self.outputDivisions = [1, 2, 4, 1, 2, 3]
+        #self.outputSlewModes = [0, 0, 0, 0, 0, 0]
+        #self.outputDivisions = [1, 2, 4, 1, 2, 3]
         self.receivingClocks = False
         self.outputVoltageFlipFlops = [True, True, True, True, True, True] # Flipflops between self.VoltageExtremes
 
@@ -84,6 +81,10 @@ class EgressusMelodium(EuroPiScript):
                 self.slewBuffers[n].append(0.0) # add 0.0 (float) as a default value
 
         self.loadState()
+
+        #self.msBetweenClocks = 976
+        self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+        #self.slewResolution = 40
 
         # Dump the entire CV Pattern structure to screen
         if self.debugMode and self.dataDumpToScreen:
@@ -150,6 +151,8 @@ class EgressusMelodium(EuroPiScript):
             if self.clockStep >= 2:
                 self.msBetweenClocks = ticks_ms() - self.lastClockTime
                 self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+                if self.clockStep == 2 or self.clockStep % 48 == 0:
+                    self.saveState()
 
             # # calculate the next step
             # if self.step == (self.firstStep + self.patternLength)-1:
@@ -212,7 +215,7 @@ class EgressusMelodium(EuroPiScript):
                 # short press
                 self.selectedOutput = (self.selectedOutput + 1) % 6
                 self.screenRefreshNeeded = True
-                #self.saveState()
+                self.saveState()
 
 
         '''Triggered when B2 is pressed and released'''
@@ -228,7 +231,7 @@ class EgressusMelodium(EuroPiScript):
                 # short press
                 self.outputSlewModes[self.selectedOutput] = (self.outputSlewModes[self.selectedOutput] + 1) % len(self.slewShapes)
                 self.screenRefreshNeeded = True
-                #sself.saveState()
+                self.saveState()
 
         # '''Triggered when B1 is pressed and released'''
         # @b1.handler_falling
@@ -428,6 +431,7 @@ class EgressusMelodium(EuroPiScript):
         
         if previousPatternLength != self.patternLength:
             self.screenRefreshNeeded = True
+            self.saveState()
 
     # '''Get the firstStep from k1'''
     # def getFirstStep(self):
@@ -461,7 +465,11 @@ class EgressusMelodium(EuroPiScript):
             "cvPatternBanks": self.cvPatternBanks,
             "cycleMode": self.cycleMode,
             "CvPattern": self.CvPattern,
-            "slewShape": self.slewShape
+            "slewShape": self.slewShape,
+            "outputSlewModes": self.outputSlewModes,
+            "outputDivisions": self.outputDivisions,
+            "patternLength": self.patternLength,
+            "msBetweenClocks": self.msBetweenClocks
         }
         self.save_state_json(self.state)
 
@@ -472,6 +480,11 @@ class EgressusMelodium(EuroPiScript):
         self.cycleMode = self.state.get("cycleMode", False)
         self.CvPattern = self.state.get("CvPattern", 0)
         self.slewShape = self.state.get("slewShape", 0)
+        self.outputSlewModes = self.state.get("outputSlewModes", [0, 0, 0, 0, 0, 0])
+        self.outputDivisions = self.state.get("outputDivisions", [1, 2, 4, 1, 2, 4])
+        self.patternLength = self.state.get("patternLength", 1)
+        self.msBetweenClocks = self.state.get("msBetweenClocks", 976)
+
         if len(self.cvPatternBanks) == 0:
             self.initCvPatternBanks()
             if self.debugMode:
