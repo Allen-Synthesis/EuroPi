@@ -433,8 +433,162 @@ class EgressusMelodium(EuroPiScript):
         # Let the rest of the script know how many pattern banks we have
         self.numCvPatterns = len(self.cvPatternBanks[0])
 
+    def draw_wave(self):
+        #shape = self.modes[self.selected_lfo]
+        #self.slewShapes = [self.stepUpStepDown, self.linspace, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse, self.logUpStepDown, self.stepUpExpDown]
+        #self.slewShape = 0
+
+        if self.slewShape == 0: # stepUpStepDown
+            oled.vline(3, 24, 8, 1)
+            oled.hline(3, 24, 6, 1)
+            oled.vline(9, 24, 8, 1)
+            oled.hline(9, 31, 6, 1)
+            oled.vline(15, 24, 8, 1)
+        elif self.slewShape == 1: # linspace Todo
+            oled.vline(3, 24, 8, 1)
+            oled.hline(3, 24, 6, 1)
+            oled.vline(9, 24, 8, 1)
+            oled.hline(9, 31, 6, 1)
+            oled.vline(15, 24, 8, 1)
+        elif self.slewShape == 2: # smooth (cosine)
+            oled.pixel(3, 31, 1)
+            oled.pixel(3, 30, 1)
+            oled.pixel(3, 29, 1)
+            oled.pixel(4, 28, 1)
+            oled.pixel(4, 27, 1)
+            oled.pixel(4, 26, 1)
+            oled.pixel(4, 25, 1)
+            oled.pixel(5, 24, 1)
+            oled.pixel(6, 23, 1)
+            oled.pixel(7, 23, 1)
+            oled.pixel(8, 24, 1)
+            oled.pixel(9, 25, 1)
+            oled.pixel(9, 26, 1)
+            oled.pixel(9, 27, 1)
+            oled.pixel(10, 28, 1)
+            oled.pixel(10, 29, 1)
+            oled.pixel(11, 30, 1)
+            oled.pixel(12, 31, 1)
+            oled.pixel(13, 31, 1)
+            oled.pixel(14, 30, 1)
+            oled.pixel(15, 29, 1)
+            oled.pixel(15, 28, 1)
+            oled.pixel(15, 27, 1)
+            oled.pixel(15, 26, 1)
+            oled.pixel(16, 25, 1)
+            oled.pixel(16, 24, 1)
+            oled.pixel(16, 23, 1)
+        #elif shape == self.MODES_SHAPES['SAW']:
+        elif self.slewShape == 3: # expUpexpDown todo
+            oled.line(3, 31, 9, 24, 1)
+            oled.vline(9, 24, 8, 1)
+            oled.line(9, 31, 15, 24, 1)
+            oled.vline(15, 24, 8, 1)
+        #elif shape == self.MODES_SHAPES['RANDOM']:
+        elif self.slewShape == 4: # sharkTooth todo
+            oled.pixel(3, 29, 1)
+            oled.pixel(4, 28, 1)
+            oled.pixel(4, 27, 1)
+            oled.pixel(5, 26, 1)
+            oled.pixel(6, 26, 1)
+            oled.pixel(7, 27, 1)
+            oled.pixel(8, 28, 1)
+            oled.pixel(9, 28, 1)
+            oled.pixel(10, 27, 1)
+            oled.pixel(10, 26, 1)
+            oled.pixel(10, 25, 1)
+            oled.pixel(11, 24, 1)
+            oled.pixel(12, 25, 1)
+            oled.pixel(13, 26, 1)
+            oled.pixel(13, 27, 1)
+            oled.pixel(14, 28, 1)
+            oled.pixel(14, 29, 1)
+            oled.pixel(15, 30, 1)
+            oled.pixel(16, 30, 1)
+        #elif shape == self.MODES_SHAPES['NOISE']:
+        elif self.slewShape == 5: # sharkToothReverse todo
+            oled.pixel(3, 26, 1)
+            oled.pixel(3, 30, 1)
+            oled.pixel(4, 24, 1)
+            oled.pixel(4, 23, 1)
+            oled.pixel(5, 31, 1)
+            oled.pixel(5, 29, 1)
+            oled.pixel(6, 25, 1)
+            oled.pixel(6, 23, 1)
+            oled.pixel(7, 29, 1)
+            oled.pixel(7, 25, 1)
+            oled.pixel(8, 26, 1)
+            oled.pixel(8, 30, 1)
+            oled.pixel(9, 27, 1)
+            oled.pixel(9, 24, 1)
+            oled.pixel(10, 26, 1)
+            oled.pixel(10, 29, 1)
+            oled.pixel(11, 24, 1)
+            oled.pixel(11, 30, 1)
+            oled.pixel(12, 23, 1)
+            oled.pixel(12, 25, 1)
+            oled.pixel(13, 29, 1)
+            oled.pixel(13, 25, 1)
+            oled.pixel(14, 28, 1)
+            oled.pixel(14, 26, 1)
+            oled.pixel(15, 24, 1)
+            oled.pixel(15, 31, 1)
+            oled.pixel(16, 27, 1)
+            oled.pixel(16, 30, 1)
+        elif self.slewShape == 6: # logUpStepDown todo
+            oled.pixel(3, 26, 1)
+            oled.pixel(3, 30, 1)
+            oled.pixel(4, 24, 1)
+            oled.pixel(4, 23, 1)
+            oled.pixel(5, 31, 1)
+            oled.pixel(5, 29, 1)
+            oled.pixel(6, 25, 1)
+            oled.pixel(6, 23, 1)
+            oled.pixel(7, 29, 1)
+            oled.pixel(7, 25, 1)
+            oled.pixel(8, 26, 1)
+            oled.pixel(8, 30, 1)
+            oled.pixel(9, 27, 1)
+            oled.pixel(9, 24, 1)
+        elif self.slewShape == 7: # stepUpExpDown todo
+            oled.pixel(3, 26, 1)
+            oled.pixel(3, 30, 1)
+            oled.pixel(4, 24, 1)
+            oled.pixel(4, 23, 1)
+            oled.pixel(5, 31, 1)
+            oled.pixel(5, 29, 1)
+            oled.pixel(6, 25, 1)
+            oled.pixel(6, 23, 1)
+            oled.pixel(7, 29, 1)
+            oled.pixel(7, 25, 1)
+            oled.pixel(8, 26, 1)
+            oled.pixel(8, 30, 1)
+            oled.pixel(9, 27, 1)
+            oled.pixel(9, 24, 1)
+
     '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
     def updateScreen(self):
+        # Only update if something has changed
+        if not self.screenRefreshNeeded:
+            return
+        # Clear screen
+        oled.fill(0)
+
+        self.selected_lfo = 1
+        oled.fill_rect(0, 0, 20, 32, 0)
+        oled.fill_rect(0, 0, 20, 9, 1)
+        oled.text(f'{self.selected_lfo + 1}', 6, 1, 0)
+        
+        number = self.outputDivisions[self.selected_lfo]
+        x = 2 if number >= 10 else 6
+        oled.text(f'{number}', x, 12, 1)
+
+        self.draw_wave()
+
+        oled.show()
+
+    '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
+    def updateScreenOld(self):
         if not self.screenRefreshNeeded:
             return
         # oled.clear() - dont use this, it causes the screen to flicker!
