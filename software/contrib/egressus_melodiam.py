@@ -78,6 +78,9 @@ class EgressusMelodium(EuroPiScript):
         self.k2LfoSpeed = False
         self.k2LfoSpeedIndicator = ['', 'L']
         self.minLfoCycleMs = 200
+        self.numConsecutiveMsChanges = 0
+
+        self.clockDetector = [0, 0, 0, 0]
 
         # pre-create slew buffers to avoid memory allocation errors
         self.slewBuffers = []
@@ -115,14 +118,30 @@ class EgressusMelodium(EuroPiScript):
 
             # Incremenent the clock step
             self.clockStep +=1
-            #self.screenRefreshNeeded = True
+            #self.screenRefreshNeeded = True            
 
             # Update msBetweenClocks and slewResolution if we have more than 2 clock steps
             if self.clockStep >= 2 and not self.k2LfoSpeed:
-                self.msBetweenClocks = ticks_ms() - self.lastClockTime
-                self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
-                if self.clockStep == 2 or self.clockStep % 48 == 0:
-                    self.saveState()
+                newDiffBetweenClocks = ticks_ms() - self.lastClockTime
+
+                # add ms diff to list
+                self.clockDetector[self.clockStep % len(self.clockDetector)] = abs(self.msBetweenClocks - newDiffBetweenClocks)
+                print(self.clockDetector)
+
+                if (sum(self.clockDetector) / len(self.clockDetector) > 11):
+                    print('Average > 10')
+
+                if abs(self.msBetweenClocks - newDiffBetweenClocks) > 10:
+                    self.numConsecutiveMsChanges += 1
+                else:
+                    self.numConsecutiveMsChanges = 0
+                if self.numConsecutiveMsChanges > 3:
+                    print('tempo change')
+                    self.msBetweenClocks = newDiffBetweenClocks
+                    self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+                    if self.clockStep == 2 or self.clockStep % 48 == 0:
+                        self.saveState()
+                    self.numConsecutiveMsChanges = 0
             
             self.handleClockStep()
 
