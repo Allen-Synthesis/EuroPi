@@ -72,6 +72,12 @@ class EgressusMelodium(EuroPiScript):
         self.maxOutputDivision = 8
         self.lastK1Reading = 0
         self.currentK1Reading = 0
+        self.lastK2Reading = 0
+        self.currentK2Reading = 0
+
+        self.k2LfoSpeed = False
+        self.k2LfoSpeedIndicator = ['', 'L']
+        self.minLfoCycleMs = 200
 
         # pre-create slew buffers to avoid memory allocation errors
         self.slewBuffers = []
@@ -148,7 +154,7 @@ class EgressusMelodium(EuroPiScript):
             self.screenRefreshNeeded = True
 
             # Update msBetweenClocks and slewResolution if we have more than 2 clock steps
-            if self.clockStep >= 2:
+            if self.clockStep >= 2 and not self.k2LfoSpeed:
                 self.msBetweenClocks = ticks_ms() - self.lastClockTime
                 self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
                 if self.clockStep == 2 or self.clockStep % 48 == 0:
@@ -226,7 +232,8 @@ class EgressusMelodium(EuroPiScript):
                 self.saveState()
             elif ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
                 # medium press
-                self.saveState()
+                self.k2LfoSpeed = not self.k2LfoSpeed
+                #self.saveState()
             else:
                 # short press
                 self.outputSlewModes[self.selectedOutput] = (self.outputSlewModes[self.selectedOutput] + 1) % len(self.slewShapes)
@@ -320,7 +327,7 @@ class EgressusMelodium(EuroPiScript):
     def main(self):
         while True:
             self.updateScreen()
-            self.getPatternLength()
+            self.getK2Value()
             #self.getCycleMode()
             #self.getFirstStep()
             self.getOutputDivision()
@@ -421,17 +428,41 @@ class EgressusMelodium(EuroPiScript):
             self.shreadedVis = False
 
     '''Get the CV pattern length from k2 / ain'''
-    def getPatternLength(self):
-        previousPatternLength = self.patternLength
-        val = 100 * ain.percent()
-        if val > self.minAnalogInputVoltage:
-            self.patternLength = min(int((self.maxStepLength / 100) * val) + k2.read_position(self.maxStepLength), self.maxStepLength-1) + 1
-        else:
-            self.patternLength = k2.read_position(self.maxStepLength) + 1
+    def getK2Value(self):
+        # previousPatternLength = self.patternLength
+        # val = 100 * ain.percent()
+        # if val > self.minAnalogInputVoltage:
+        #     self.patternLength = min(int((self.maxStepLength / 100) * val) + k2.read_position(self.maxStepLength), self.maxStepLength-1) + 1
+        # else:
+        #     self.patternLength = k2.read_position(self.maxStepLength) + 1
         
-        if previousPatternLength != self.patternLength:
-            self.screenRefreshNeeded = True
+        # if previousPatternLength != self.patternLength:
+        #     self.screenRefreshNeeded = True
+        #     self.lastK2Reading = self.currentK2Reading
+        #     self.saveState()
+
+        self.currentK2Reading = k2.read_position(100) + 1
+        
+        if self.currentK2Reading != self.lastK2Reading:
+            # knob has moved
+            if self.k2LfoSpeed:
+                # Set LFO speed
+                self.msBetweenClocks = self.minLfoCycleMs + (self.currentK2Reading * 10)
+                print(self.msBetweenClocks)
+            else:
+                # Set pattern length
+                #self.patternLength = k2.read_position(self.maxStepLength) + 1
+                self.patternLength = int((self.maxStepLength / 100) * (self.currentK2Reading-1)) + 1
+                print(self.patternLength)
+                
+            
+            # Something changed, update screen and save state
             self.saveState()
+            self.screenRefreshNeeded = True
+        
+        self.lastK2Reading = self.currentK2Reading
+
+
 
     # '''Get the firstStep from k1'''
     # def getFirstStep(self):
@@ -450,6 +481,7 @@ class EgressusMelodium(EuroPiScript):
             self.outputDivisions[self.selectedOutput] = (k1.read_position(self.maxOutputDivision) + 1)
             self.screenRefreshNeeded = True
             self.lastK1Reading = self.currentK1Reading
+            self.saveState()
 
     # '''Get the cycle mode from k1'''
     # def getCycleMode(self):
@@ -658,6 +690,9 @@ class EgressusMelodium(EuroPiScript):
         oled.fill_rect(0, 0, 20, 32, 0)
         oled.fill_rect(0, 0, 20, 9, 1)
         oled.text(f'{self.selectedOutput + 1}', 6, 1, 0)
+
+        # Show K1 mode indicator
+        oled.text(f'{self.k2LfoSpeedIndicator[int(self.k2LfoSpeed)]}', 22, 2, 1)
         
         number = self.outputDivisions[self.selectedOutput]
         x = 2 if number >= 10 else 6
@@ -750,7 +785,7 @@ class EgressusMelodium(EuroPiScript):
     def linspace(self, start, stop, num, buffer):
         c = 0
         diff = (float(stop) - start)/(num)
-        for i in range(num-1):
+        for i in range(num):
             val = ((diff * i) + start)
             buffer[c] = val
             c += 1
