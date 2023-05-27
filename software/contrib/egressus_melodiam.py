@@ -113,45 +113,9 @@ class EgressusMelodium(EuroPiScript):
                     reset = '*******'
                 print(f"[{reset}{self.clockStep}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
 
-            # Old code: Simple Step up and Step down with cv 5 being END of cycle
-            # Maybe have this as an UI option?
-            # Cycle through outputs and output CV voltage based on currently selected CV Pattern and Step
-            # for idx, pattern in enumerate(self.cvPatternBanks):
-            #     if self.experimentalSlewMode:
-            #         if idx == 0:
-            #             continue
-            #     if idx != 5:
-            #         cvs[idx].voltage(pattern[self.CvPattern][self.step])
-            #     else:
-            #         if self.step == (self.firstStep + self.patternLength) - 1:
-            #             # send end of cycle gate
-            #             cvs[5].on()
-
-            # # Increment / reset step unless we have reached the max step length, or selected pattern length
-            # if self.step < self.maxStepLength -1 and self.step < (self.firstStep + self.patternLength) -1:
-            #     self.step += 1
-            # else:
-            #     # Reset step back to 0
-            #     if self.debugMode:
-            #         print(f'[{self.clockStep}] [{self.step}]reset step to 0')
-            #     #self.step = 0
-            #     self.step = self.firstStep
-            #     self.screenRefreshNeeded = True
-
-            #     # Move to next CV Pattern in the cycle if cycleMode is enabled
-            #     if self.cycleMode:
-
-            #         # Advance the cycle step, unless we are at the end, then reset to 0
-            #         if self.cycleStep < int(len(self.cycleModes[self.selectedCycleMode])-1):
-            #             self.cycleStep += 1
-            #         else:
-            #             self.cycleStep = 0
-                    
-            #         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
-
             # Incremenent the clock step
             self.clockStep +=1
-            self.screenRefreshNeeded = True
+            #self.screenRefreshNeeded = True
 
             # Update msBetweenClocks and slewResolution if we have more than 2 clock steps
             if self.clockStep >= 2 and not self.k2LfoSpeed:
@@ -159,54 +123,8 @@ class EgressusMelodium(EuroPiScript):
                 self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
                 if self.clockStep == 2 or self.clockStep % 48 == 0:
                     self.saveState()
-
-            # # calculate the next step
-            # if self.step == (self.firstStep + self.patternLength)-1:
-            #     nextStep = self.firstStep
-            # else:
-            #     nextStep = self.step+1
             
             self.handleClockStep()
-
-            # # flip the flip flop value for LFO mode
-            # self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-
-            # # Cycle through outputs and generate slew for each
-            # for idx in range(len(cvs)):
-
-            #     # test clock divider
-            #     if self.clockStep % 2 != 0 and (idx == 1 or idx == 4):
-            #         self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-            #         self.slewResolutionMultiplier = 2
-            #     elif self.clockStep % 2 != 0 and (idx == 2 or idx == 5):
-            #         self.voltageExtremeFlipFlop = not self.voltageExtremeFlipFlop
-            #         self.slewResolutionMultiplier = 2
-            #     else:
-            #         self.slewResolutionMultiplier = 1
-
-            #     # If length is one, cycle between high and low voltages (traditional LFO)
-            #     # Each output uses a different shape, which is idx for simplicity
-            #     if self.patternLength == 1:
-                    
-            #         self.slewArray = self.slewShapes[self.outputLfoModes[idx]](
-            #             self.voltageExtremes[int(self.voltageExtremeFlipFlop)],
-            #             self.voltageExtremes[int(not self.voltageExtremeFlipFlop)],
-            #             self.slewResolution * self.slewResolutionMultiplier
-            #             )
-            #     else:
-            #         self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
-            #             self.cvPatternBanks[idx][self.CvPattern][self.step],
-            #             self.cvPatternBanks[idx][self.CvPattern][nextStep],
-            #             self.slewResolution * self.slewResolutionMultiplier
-            #             )
-
-            #     self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
-            
-            # self.lastClockTime = ticks_ms()
-            
-            # # Hide the shreaded vis clock step after 2 clock steps
-            # if self.clockStep > self.shreadedVisClockStep -2:
-            #     self.shreadedVis = False
 
         '''Triggered when B1 is pressed and released'''
         @b1.handler_falling
@@ -427,7 +345,7 @@ class EgressusMelodium(EuroPiScript):
         if self.clockStep > self.shreadedVisClockStep -2:
             self.shreadedVis = False
 
-    '''Get the CV pattern length from k2 / ain'''
+    '''Get the k2 value, update params if changed'''
     def getK2Value(self):
         # previousPatternLength = self.patternLength
         # val = 100 * ain.percent()
@@ -451,7 +369,6 @@ class EgressusMelodium(EuroPiScript):
                 print(self.msBetweenClocks)
             else:
                 # Set pattern length
-                #self.patternLength = k2.read_position(self.maxStepLength) + 1
                 self.patternLength = int((self.maxStepLength / 100) * (self.currentK2Reading-1)) + 1
                 print(self.patternLength)
                 
@@ -461,7 +378,6 @@ class EgressusMelodium(EuroPiScript):
             self.screenRefreshNeeded = True
         
         self.lastK2Reading = self.currentK2Reading
-
 
 
     # '''Get the firstStep from k1'''
