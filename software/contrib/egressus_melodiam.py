@@ -39,7 +39,7 @@ class EgressusMelodium(EuroPiScript):
         self.CvPattern = 0
         self.numCvPatterns = 4  # Initial number, this can be increased
         self.resetTimeout = 10000
-        self.maxRandomPatterns = 4  # This prevents a memory allocation error (happens with > 5, but 4 is nice round number!)
+        self.maxRandomPatterns = 2  # This prevents a memory allocation error (happens with > 5, but 4 is nice round number!)
         self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
         #self.patternLength = 16
         self.maxStepLength = 32
@@ -80,6 +80,9 @@ class EgressusMelodium(EuroPiScript):
         self.minLfoCycleMs = 200
         self.numConsecutiveMsChanges = 0
 
+        self.inputClockDiffs = []
+        self.bpm = 0
+
         self.clockDetector = [0, 0, 0, 0]
 
         # pre-create slew buffers to avoid memory allocation errors
@@ -118,30 +121,25 @@ class EgressusMelodium(EuroPiScript):
 
             # Incremenent the clock step
             self.clockStep +=1
-            #self.screenRefreshNeeded = True            
+
+            newDiffBetweenClocks = ticks_ms() - self.lastClockTime
+            self.inputClockDiffs.append(newDiffBetweenClocks)
+            # Only keep 20 values in the buffer
+            if len(self.inputClockDiffs) == 20:
+                del self.inputClockDiffs[0]
 
             # Update msBetweenClocks and slewResolution if we have more than 2 clock steps
-            if self.clockStep >= 2 and not self.k2LfoSpeed:
-                newDiffBetweenClocks = ticks_ms() - self.lastClockTime
 
-                # add ms diff to list
-                self.clockDetector[self.clockStep % len(self.clockDetector)] = abs(self.msBetweenClocks - newDiffBetweenClocks)
-                print(self.clockDetector)
-
-                if (sum(self.clockDetector) / len(self.clockDetector) > 11):
-                    print('Average > 10')
-
-                if abs(self.msBetweenClocks - newDiffBetweenClocks) > 10:
-                    self.numConsecutiveMsChanges += 1
-                else:
-                    self.numConsecutiveMsChanges = 0
-                if self.numConsecutiveMsChanges > 3:
-                    print('tempo change')
+            if self.clockStep >= 4 and not self.k2LfoSpeed:
+                newBpm = self.calculateBpm(self.inputClockDiffs)
+                if abs(newBpm - self.bpm) > 2:
+                    self.bpm = newBpm
+                    if self.debugMode:
+                        print(f'new BPM: {self.bpm}')
                     self.msBetweenClocks = newDiffBetweenClocks
                     self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
                     if self.clockStep == 2 or self.clockStep % 48 == 0:
                         self.saveState()
-                    self.numConsecutiveMsChanges = 0
             
             self.handleClockStep()
 
@@ -230,6 +228,19 @@ class EgressusMelodium(EuroPiScript):
         #                     if self.debugMode:
         #                         print('Generating NEW pattern')
 
+    def bpmFromMs(self, ms):
+        return int(((1/(ms/1000))*60)/4)
+
+    def calculateBpm(self, list):
+        self.averageDiff = self.average(list)
+        return self.bpmFromMs(self.averageDiff)
+
+    def average(self, list):
+        myList = list.copy()
+        #myList.remove(max(myList))
+        #myList.remove(max(myList))
+        return sum(myList) / len(myList)
+
     '''Initialize CV pattern banks'''
     def initCvPatternBanks(self):
         # Init CV pattern banks
@@ -311,7 +322,7 @@ class EgressusMelodium(EuroPiScript):
                 print(f'[{self.clockStep}] [{self.step}]reset step to 0')
             #self.step = 0
             self.step = self.firstStep
-            self.screenRefreshNeeded = True
+            #self.screenRefreshNeeded = True
 
             # Move to next CV Pattern in the cycle if cycleMode is enabled
             if self.cycleMode:
@@ -385,11 +396,11 @@ class EgressusMelodium(EuroPiScript):
             if self.k2LfoSpeed:
                 # Set LFO speed
                 self.msBetweenClocks = self.minLfoCycleMs + (self.currentK2Reading * 10)
-                print(self.msBetweenClocks)
+                #print(self.msBetweenClocks)
             else:
                 # Set pattern length
                 self.patternLength = int((self.maxStepLength / 100) * (self.currentK2Reading-1)) + 1
-                print(self.patternLength)
+                #print(self.patternLength)
                 
             
             # Something changed, update screen and save state
@@ -461,7 +472,7 @@ class EgressusMelodium(EuroPiScript):
                 print(f"Loaded {len(self.cvPatternBanks[0])} CV Pattern Banks")
         
         if self.cycleMode:
-            print(f"[loadState]Setting self.CvPattern to {int(self.cycleModes[self.selectedCycleMode][self.cycleStep])}")
+            #print(f"[loadState]Setting self.CvPattern to {int(self.cycleModes[self.selectedCycleMode][self.cycleStep])}")
             self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
 
         self.saveState()
