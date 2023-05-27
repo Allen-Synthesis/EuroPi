@@ -397,6 +397,8 @@ class MasterClock:
             for ch in self.channels:
                 ch.tick()
             self.elapsed_pulses = self.elapsed_pulses + 1
+            for ch in self.channels:
+                ch.apply()
 
     def start(self):
         """Start the timer
@@ -474,6 +476,7 @@ class PamsOutput:
         @param clock  The MasterClock that controls the timing of this output
         """
 
+        self.out_volts = 0.0
         self.cv_out = cv_out
         self.clock = clock
 
@@ -680,7 +683,10 @@ class PamsOutput:
         self.sample_position = 0
 
     def tick(self):
-        """Advance the current pattern one tick and set the output voltage
+        """Advance the current pattern one tick and calculate the output voltage
+
+        Call apply() to actually send the voltage. This lets us calculate all output channels and THEN set the
+        outputs after so they're more synchronized
         """
         if self.wave_shape.get_value() == WAVE_START:
             # start waves are weird; they're only on during the first 10ms or 1 PPQN (whichever is longer)
@@ -752,7 +758,12 @@ class PamsOutput:
                     if self.e_position >= len(self.e_pattern):
                         self.e_position = 0
 
-        self.cv_out.voltage(out_volts)
+        self.out_volts = out_volts
+
+    def apply(self):
+        """Apply the calculated voltage to the output channel
+        """
+        self.cv_out.voltage(self.out_volts)
 
 class SettingChooser:
     """Menu UI element for displaying a Setting object and the options associated with it
