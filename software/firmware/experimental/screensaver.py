@@ -4,6 +4,8 @@
 @year   2023
 """
 
+import time
+
 
 class Screensaver:
     """A screensaver for the EuroPi
