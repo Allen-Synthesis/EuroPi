@@ -3,6 +3,8 @@
 @author Chris Iverach-Brereton <ve4cib@gmail.com>
 @year   2023
 """
+
+
 class Screensaver:
     """A screensaver for the EuroPi
 
@@ -32,8 +34,8 @@ class Screensaver:
 
         ms = time.ticks_ms()
         if force or ms % LOGO_UPDATE_INTERVAL == 0:
-            x = random.randint(0, OLED_WIDTH-self.LOGO_WIDTH)
-            y = random.randint(0, OLED_HEIGHT-self.LOGO_HEIGHT)
+            x = random.randint(0, OLED_WIDTH - self.LOGO_WIDTH)
+            y = random.randint(0, OLED_HEIGHT - self.LOGO_HEIGHT)
 
             oled.fill(0)
             fb = FrameBuffer(self.LOGO, self.LOGO_WIDTH, self.LOGO_HEIGHT, MONO_HLSB)
@@ -41,7 +43,6 @@ class Screensaver:
             oled.show()
 
     def draw_blank(self):
-        """Blank the screen completely
-        """
+        """Blank the screen completely"""
         oled.fill(0)
         oled.show()

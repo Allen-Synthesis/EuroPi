@@ -43,7 +43,7 @@ def generate_euclidean_pattern(steps, pulses, rot=0):
     if steps == 0:
         return []
     if pulses == 0:
-        return [0]*steps
+        return [0] * steps
     pattern = []
     counts = []
     remainders = []

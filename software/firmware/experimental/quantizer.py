@@ -32,7 +32,7 @@ class Quantizer:
                       or disabled (False)
         """
         if notes is None:
-            self.notes = [True]*12
+            self.notes = [True] * 12
         else:
             self.notes = notes
 
@@ -77,57 +77,27 @@ class Quantizer:
 
 class CommonScales:
     """A collection of common scales that can be used in other scripts to support quantization"""
-    #    C      C#     D      D#     E      F      F#     G      G#     A      A#     B
-    Chromatic    = Quantizer(
-        [True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True]
-    )
-    NatMajor     = Quantizer(
-        [True,  False, True,  False, True,  True,  False, True,  False, True,  False, True]
-    )
-    HarMajor     = Quantizer(
-        [True,  False, True,  False, True,  True,  False, True,  True,  False, True,  False]
-    )
-    Major135     = Quantizer(
-        [True,  False, False, False, True,  False, False, True,  False, False, False, False]
-    )
-    Major1356    = Quantizer(
-        [True,  False, False, False, True,  False, False, True,  False, True,  False, False]
-    )
-    Major1357    = Quantizer(
-        [True,  False, False, False, True,  False, False, True,  False, False, False, True]
-    )
+    # fmt: off
+    #                         C      C#     D      D#     E      F      F#     G      G#     A      A#     B
+    Chromatic    = Quantizer([True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True])
+    NatMajor     = Quantizer([True,  False, True,  False, True,  True,  False, True,  False, True,  False, True])
+    HarMajor     = Quantizer([True,  False, True,  False, True,  True,  False, True,  True,  False, True,  False])
+    Major135     = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, False])
+    Major1356    = Quantizer([True,  False, False, False, True,  False, False, True,  False, True,  False, False])
+    Major1357    = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, True])
 
-    NatMinor     = Quantizer(
-        [True,  False, True,  True,  False, True,  False, True,  True,  False, True,  False]
-    )
-    HarMinor     = Quantizer(
-        [True,  False, True,  True,  False, True,  False, True,  True,  False, False, True]
-    )
-    Minor135     = Quantizer(
-        [True,  False, False, True,  False, False, False, True,  False, False, False, False]
-    )
-    Minor1356    = Quantizer(
-        [True,  False, False, True,  False, False, False, True,  True,  False, False, False]
-    )
-    Minor1357    = Quantizer(
-        [True,  False, False, True,  False, False, False, True,  False, False, True,  False]
-    )
+    NatMinor     = Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, True,  False])
+    HarMinor     = Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, False, True])
+    Minor135     = Quantizer([True,  False, False, True,  False, False, False, True,  False, False, False, False])
+    Minor1356    = Quantizer([True,  False, False, True,  False, False, False, True,  True,  False, False, False])
+    Minor1357    = Quantizer([True,  False, False, True,  False, False, False, True,  False, False, True,  False])
 
     ## 1-b3-4-b5-5-b7
-    MajorBlues   = Quantizer(
-        [True,  False, True,  True,  True,  False, False, True,  False, True,  False, False]
-    )
+    MajorBlues   = Quantizer([True,  False, True,  True,  True,  False, False, True,  False, True,  False, False])
     ## 1-2-b3-3-5-6
-    MinorBlues   = Quantizer(
-        [True,  False, False, True,  False, True,  True,  True,  False,  False, True,  False]
-    )
+    MinorBlues   = Quantizer([True,  False, False, True,  False, True,  True,  True,  False,  False, True,  False])
 
-    WholeTone    = Quantizer(
-        [True,  False, True,  False, True,  False, True,  False, True,  False, True,  False]
-    )
-    Pentatonic   = Quantizer(
-        [True,  False, True,  False, True,  False, False, True,  False, True,  False, False]
-    )
-    Dominant7    = Quantizer(
-        [True,  False, False, False, True,  False, False, True,  False, False, True,  False]
-    )
+    WholeTone    = Quantizer([True,  False, True,  False, True,  False, True,  False, True,  False, True,  False])
+    Pentatonic   = Quantizer([True,  False, True,  False, True,  False, False, True,  False, True,  False, False])
+    Dominant7    = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, True,  False])
+    # fmt: on
