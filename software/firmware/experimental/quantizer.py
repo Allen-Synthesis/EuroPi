@@ -16,6 +16,7 @@ SEMITONES_PER_OCTAVE = 12
 ## How many volts per semitone
 VOLTS_PER_SEMITONE = float(VOLTS_PER_OCTAVE) / float(SEMITONES_PER_OCTAVE)
 
+
 class Quantizer:
     """Represents a set of semitones we can quantize input voltages to
 
@@ -75,8 +76,10 @@ class Quantizer:
 
         return (volts, nearest_on_scale)
 
+
 class CommonScales:
     """A collection of common scales that can be used in other scripts to support quantization"""
+
     # fmt: off
     #                         C      C#     D      D#     E      F      F#     G      G#     A      A#     B
     Chromatic    = Quantizer([True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True])
