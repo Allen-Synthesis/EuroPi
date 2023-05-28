@@ -40,7 +40,9 @@ class Quantizer:
             self.notes = [True] * SEMITONES_PER_OCTAVE
         else:
             if len(notes) != SEMITONES_PER_OCTAVE:
-                raise ValueError(f"Wrong size for notes array: {len(notes)} but expected {SEMITONES_PER_OCTAVE}")
+                raise ValueError(
+                    f"Wrong size for notes array: {len(notes)} but expected {SEMITONES_PER_OCTAVE}"
+                )
 
             self.notes = [n for n in notes]
 
