@@ -20,11 +20,10 @@ Inspired by the Noise Engineering Mimetic Digitalis.
 
 '''
 To do:
-- Finalize UI controls for various functions
-- Decide if slew types can be different per output
-- Test outputs 2,3 5,6 to make sure they are useful
-- Create slew icons
-- Revampe Screen output
+- Finalize UI controls and OLED
+- Remove self.firstStep control
+- Add knob histeris blocking?
+- Add stepped triangle?
 '''
 
 class EgressusMelodium(EuroPiScript):
@@ -75,6 +74,8 @@ class EgressusMelodium(EuroPiScript):
 
         self.inputClockDiffs = []
         self.bpm = 0
+
+        self.sampleCounter = 0
 
         # pre-create slew buffers to avoid memory allocation errors
         self.initSlewBuffers()
@@ -277,7 +278,6 @@ class EgressusMelodium(EuroPiScript):
             #self.getFirstStep()
             self.getOutputDivision()
 
-            # experimental slew mode....
             self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
             #self.slewResolution = 40
             if ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
@@ -285,6 +285,9 @@ class EgressusMelodium(EuroPiScript):
                     try:
                         v = next(self.slewGeneratorObjects[idx])
                         cvs[idx].voltage(v)
+                        # if idx == 0:
+                        #     self.sampleCounter += 1
+                        #     print(f'Sample Num: {self.sampleCounter}')
                     except StopIteration:
                         v = 0
                 self.slewSampleCounter += 1
@@ -306,7 +309,7 @@ class EgressusMelodium(EuroPiScript):
                 # Update screen with the upcoming CV pattern
                 self.screenRefreshNeeded = True
 
-
+    '''Advances step and generates voltage slew voltages to next value in CV pattern'''
     def handleClockStep(self):
 
         # Increment / reset step unless we have reached the max step length, or selected pattern length
@@ -340,22 +343,30 @@ class EgressusMelodium(EuroPiScript):
         # Cycle through outputs and generate slew for each
         for idx in range(len(cvs)):
 
-            # If the clockstep is a division of the output
+            # If the clockstep is a division of the output division
             if self.clockStep % (self.outputDivisions[idx]) == 0:
 
                 # flip the flip flop value for LFO mode
                 self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
                 
+                if not self.unClockedMode:
+                    sampleReductionOffset = (self.outputDivisions[idx] - 1)
+                else:
+                    sampleReductionOffset = 0
+
                 # If length is one, cycle between high and low voltages (traditional LFO)
-                # Each output uses a different shape, which is idx for simplicity
+                # Each output uses a its configured slew shape
                 if self.patternLength == 1:
-                    
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
                         self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
-                        self.slewResolution * self.outputDivisions[idx], # Increase the sample rate for slower divisions
+                        #(self.slewResolution * self.outputDivisions[idx]), # Increase the sample rate for slower divisions
+                        (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
                         self.slewBuffers[idx]
                         )
+                    # if idx == 0:
+                    #     print(f'Asking for a buffer with {self.slewResolution * self.outputDivisions[idx]} values')
+                    # self.sampleCounter = 0
                 else:
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
@@ -367,7 +378,7 @@ class EgressusMelodium(EuroPiScript):
         
         self.lastClockTime = ticks_ms()
         
-        # Hide the shreaded vis clock step after 2 clock steps
+        # Hide the shreaded visual indicator after 2 clock steps
         if self.clockStep > self.shreadedVisClockStep + 2:
             self.shreadedVis = False
 
@@ -465,7 +476,6 @@ class EgressusMelodium(EuroPiScript):
                 print(f"Loaded {len(self.cvPatternBanks[0])} CV Pattern Banks")
         
         if self.cycleMode:
-            #print(f"[loadState]Setting self.CvPattern to {int(self.cycleModes[self.selectedCycleMode][self.cycleStep])}")
             self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
 
         self.saveState()
@@ -620,6 +630,7 @@ class EgressusMelodium(EuroPiScript):
 
     '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
     def updateScreen(self):
+
         # Only update if something has changed
         if not self.screenRefreshNeeded:
             return
@@ -629,9 +640,6 @@ class EgressusMelodium(EuroPiScript):
         oled.fill_rect(0, 0, 20, 32, 0)
         oled.fill_rect(0, 0, 20, 9, 1)
         oled.text(f'{self.selectedOutput + 1}', 6, 1, 0)
-
-        # Show K1 mode indicator
-        #oled.text(f'{self.unClockedModeIndicator[int(self.unClockedMode)]}', 22, 2, 1)
         
         number = self.outputDivisions[self.selectedOutput]
         x = 2 if number >= 10 else 6
@@ -735,7 +743,7 @@ class EgressusMelodium(EuroPiScript):
     def linspace(self, start, stop, num, buffer):
         c = 0
         diff = (float(stop) - start)/(num)
-        for i in range(num):
+        for i in range(num ):
             val = ((diff * i) + start)
             buffer[c] = val
             c += 1
