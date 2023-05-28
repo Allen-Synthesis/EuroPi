@@ -33,7 +33,7 @@ class Quantizer:
                       or disabled (False)
         """
         if notes is None:
-            self.notes = [True] * 12
+            self.notes = [True] * SEMITONES_PER_OCTAVE
         else:
             self.notes = notes
 
