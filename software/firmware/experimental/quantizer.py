@@ -22,6 +22,8 @@ class Quantizer:
 
     By default this represents a chromatic scale, with all notes enabled.  Notes can be changed
     by setting scale[n] = True/False, where n is the index of the semitone to toggle
+
+    Implements __get_item__ and __set_item__ so you can use Quantizer like an array to set notes on/off
     """
 
     def __init__(self, notes=None):
@@ -43,10 +45,10 @@ class Quantizer:
             self.notes = [n for n in notes]
 
     def __getitem__(self, n):
-        return self.notes[n]
+        return self.notes[n % len(self.notes)]
 
     def __setitem__(self, n, value):
-        self.notes[n] = value
+        self.notes[n % len(self.notes)] = value
 
     def __len__(self):
         return len(self.notes)
@@ -106,4 +108,62 @@ class CommonScales:
     WholeTone    = Quantizer([True,  False, True,  False, True,  False, True,  False, True,  False, True,  False])
     Pentatonic   = Quantizer([True,  False, True,  False, True,  False, False, True,  False, True,  False, False])
     Dominant7    = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, True,  False])
+    # fmt: on
+
+
+class Intervals:
+    """A collection of musical intervals as indices for the Quantizer __get_item__ and __set_item__ methods
+
+    For example, if you have a Quantizer and want to enable the Perfect4th you can simply use
+
+    q = Quantizer(...)
+    q[Intervals.P4] = True
+
+    This class uses the short notation for intervals.  See https://en.wikipedia.org/wiki/Interval_(music)
+    for more information.
+
+    The abridged summary:
+        - single case-sensitive letter for the interval type
+        - a number from 1-8 indicating the size of the interval
+        - P = perfect
+        - M = major
+        - m = minor
+        - d = diminished
+        - A = augmented
+        - three exceptions:
+            - S = semitone (equivalent to m2/A1)
+            - T = Tone (equivalent to M2/d3)
+            - TT = Tritone (equivalent to d5/A4)
+    """
+
+    # fmt: off
+    P1 =  0
+    d2 =  0
+    m2 =  1
+    A1 =  1
+    S  =  1
+    M2 =  2
+    d3 =  2
+    T  =  2
+    m3 =  3
+    A2 =  3
+    M3 =  4
+    d4 =  4
+    P4 =  5
+    A3 =  5
+    d5 =  6
+    A4 =  6
+    TT =  6
+    P5 =  7
+    d6 =  7
+    m6 =  8
+    A5 =  8
+    M6 =  9
+    d7 =  9
+    m7 = 10
+    A6 = 10
+    M7 = 11
+    d8 = 11
+    P8 = 12
+    A7 = 12
     # fmt: on
