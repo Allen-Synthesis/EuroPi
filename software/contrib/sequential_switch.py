@@ -7,7 +7,7 @@
 from europi import *
 from europi_script import EuroPiScript
 
-from contrib.screensaver import Screensaver
+from experimental.screensaver import Screensaver
 
 import time
 import random

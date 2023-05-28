@@ -10,11 +10,10 @@ See pams.md for complete feature list
 from europi import *
 from europi_script import EuroPiScript
 
-from contrib.euclid import generate_euclidean_pattern
-from contrib.quantizer import CommonScales, Quantizer
-from contrib.screensaver import Screensaver
-
+from experimental.euclid import generate_euclidean_pattern
 from experimental.knobs import KnobBank
+from experimental.quantizer import CommonScales, Quantizer
+from experimental.screensaver import Screensaver
 
 from collections import OrderedDict
 from machine import Timer

@@ -1,15 +1,8 @@
-#!/usr/bin/env python3
-"""A simple screensaver for the EuroPi
+"""A simple screensaver class for the EuroPi
 
 @author Chris Iverach-Brereton <ve4cib@gmail.com>
 @year   2023
 """
-
-from europi import *
-from europi_script import EuroPiScript
-import random
-import time
-
 class Screensaver:
     """A screensaver for the EuroPi
 
@@ -52,15 +45,3 @@ class Screensaver:
         """
         oled.fill(0)
         oled.show()
-
-class ScreensaverScript(EuroPiScript):
-    def __init__(self):
-        super().__init__()
-        self.screensaver = Screensaver()
-
-    def main(self):
-        while True:
-            self.screensaver.draw()
-
-if __name__ == "__main__":
-    ScreensaverScript().main()
