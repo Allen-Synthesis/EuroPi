@@ -9,22 +9,10 @@ Features configurable intervals for multiple outputs and customizable scale
 from europi import *
 from europi_script import EuroPiScript
 
-from experimental.quantizer import Quantizer
+from experimental.quantizer import Quantizer, VOLTS_PER_OCTAVE, VOLTS_PER_SEMITONE, SEMITONES_PER_OCTAVE
 from experimental.screensaver import Screensaver
 
 import time
-
-## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
-#
-#  Just in case someone needs Buchla compatibility, this is defined
-#  but nobody is likely to need this
-VOLTS_PER_OCTAVE = 1.0
-
-## Standard wester music scale has 12 semitones per octave
-SEMITONES_PER_OCTAVE = 12
-
-## How many volts per semitone
-VOLTS_PER_SEMITONE = float(VOLTS_PER_OCTAVE) / float(SEMITONES_PER_OCTAVE)
 
 ## Whe in triggered mode we only quantize when we receive an external clock signal
 MODE_TRIGGERED=0

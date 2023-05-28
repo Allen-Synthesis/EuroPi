@@ -3,6 +3,19 @@
     @author Chris Iverach-Brereton <ve4cib@gmail.com>
     @year   2023
 """
+
+## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
+#
+#  Just in case someone needs Buchla compatibility, this is defined
+#  but nobody is likely to need this
+VOLTS_PER_OCTAVE = 1.0
+
+## Standard wester music scale has 12 semitones per octave
+SEMITONES_PER_OCTAVE = 12
+
+## How many volts per semitone
+VOLTS_PER_SEMITONE = float(VOLTS_PER_OCTAVE) / float(SEMITONES_PER_OCTAVE)
+
 class Quantizer:
     """Represents a set of semitones we can quantize input voltages to
 
