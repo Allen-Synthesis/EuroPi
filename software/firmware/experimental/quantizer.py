@@ -10,7 +10,7 @@
 #  but nobody is likely to need this
 VOLTS_PER_OCTAVE = 1.0
 
-## Standard wester music scale has 12 semitones per octave
+## Standard western music scale has 12 semitones per octave
 SEMITONES_PER_OCTAVE = 12
 
 ## How many volts per semitone
@@ -27,15 +27,20 @@ class Quantizer:
     def __init__(self, notes=None):
         """Constructor; can specify what notes are enabled/disabled
 
-        Undesired results may happen if you use an array that's not of length 12
+        @param notes  A boolean array of length SEMITONES_PER_OCTAVE indicating what semitones are enabled (True)
+                      or disabled (False).  Defaults to a chromatic scale (all notes enabled) if None is passed.
+                      The values of notes are copied into a new array to prevent possible issues with multiple
+                      Quantizer instances sharing the same set of notes.
 
-        @param notes  A boolean array of length 12 indicating what semitones are enabled (True)
-                      or disabled (False)
+        @raises ValueError if len(notes) is not equal to SEMITONES_PER_OCTAVE
         """
         if notes is None:
             self.notes = [True] * SEMITONES_PER_OCTAVE
         else:
-            self.notes = notes
+            if len(notes) != SEMITONES_PER_OCTAVE:
+                raise ValueError(f"Wrong size for notes array: {len(notes)} but expected {SEMITONES_PER_OCTAVE}")
+
+            self.notes = [n for n in notes]
 
     def __getitem__(self, n):
         return self.notes[n]
