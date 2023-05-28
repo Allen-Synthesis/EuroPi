@@ -11,7 +11,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from contrib.euclid import generate_euclidean_pattern
-from contrib.quantizer import Quantizer
+from contrib.quantizer import CommonScales, Quantizer
 from contrib.screensaver import Screensaver
 
 from experimental.knobs import KnobBank
@@ -35,31 +35,30 @@ LONG_PRESS_MS = 500
 ## The scales that each PamsOutput can quantize to
 QUANTIZERS = OrderedDict([
     ["None"      , None],
-    #                         C      C#     D      D#     E      F      F#     G      G#     A      A#     B
-    ["Chromatic" , Quantizer([True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True])],
+    ["Chromatic" , CommonScales.Chromatic],
 
     # Major scales
-    ["Nat Maj"   , Quantizer([True,  False, True,  False, True,  True,  False, True,  False, True,  False, True])],
-    ["Har Maj"   , Quantizer([True,  False, True,  False, True,  True,  False, True,  True,  False, True,  False])],
-    ["Maj 135"   , Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, False])],
-    ["Maj 1356"  , Quantizer([True,  False, False, False, True,  False, False, True,  False, True,  False, False])],
-    ["Maj 1357"  , Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, True])],
+    ["Nat Maj"   , CommonScales.NatMajor],
+    ["Har Maj"   , CommonScales.HarMajor],
+    ["Maj 135"   , CommonScales.Major135],
+    ["Maj 1356"  , CommonScales.Major1356],
+    ["Maj 1357"  , CommonScales.Major1357],
 
     # Minor scales
-    ["Nat Min"   , Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, True,  False])],
-    ["Har Min"   , Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, False, True])],
-    ["Min 135"   , Quantizer([True,  False, False, True,  False, False, False, True,  False, False, False, False])],
-    ["Min 1356"  , Quantizer([True,  False, False, True,  False, False, False, True,  True,  False, False, False])],
-    ["Min 1357"  , Quantizer([True,  False, False, True,  False, False, False, True,  False, False, True,  False])],
+    ["Nat Min"   , CommonScales.NatMinor],
+    ["Har Min"   , CommonScales.HarMinor],
+    ["Min 135"   , CommonScales.Minor135],
+    ["Min 1356"  , CommonScales.Minor1356],
+    ["Min 1357"  , CommonScales.Minor1357],
 
     # Blues scales
-    ["Maj Blues" , Quantizer([True,  False, True,  True,  True,  False, False, True,  False, True,  False, False])],  # 1-2-b3-3-5-6
-    ["Min Blues" , Quantizer([True,  False, False, True,  False, True,  True,  True,  False,  False, True,  False])], # 1-b3-4-b5-5-b7
+    ["Maj Blues" , CommonScales.MajorBlues],
+    ["Min Blues" , CommonScales.MinorBlues],
 
     # Misc
-    ["Whole"     , Quantizer([True,  False, True,  False, True,  False, True,  False, True,  False, True,  False])],
-    ["Penta"     , Quantizer([True,  False, True,  False, True,  False, False, True,  False, True,  False, False])],
-    ["Dom 7"     , Quantizer([True,  False, False, False, True,  False, False, True,  False, False, True,  False])]
+    ["Whole"     , CommonScales.WholeTone],
+    ["Penta"     , CommonScales.Pentatonic],
+    ["Dom 7"     , CommonScales.Dominant7]
 ])
 
 ## Sorted list of names for the quantizers to display
