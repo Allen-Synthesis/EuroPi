@@ -100,10 +100,8 @@ class CommonScales:
     Minor1356    = Quantizer([True,  False, False, True,  False, False, False, True,  True,  False, False, False])
     Minor1357    = Quantizer([True,  False, False, True,  False, False, False, True,  False, False, True,  False])
 
-    ## 1-b3-4-b5-5-b7
     MajorBlues   = Quantizer([True,  False, True,  True,  True,  False, False, True,  False, True,  False, False])
-    ## 1-2-b3-3-5-6
-    MinorBlues   = Quantizer([True,  False, False, True,  False, True,  True,  True,  False,  False, True,  False])
+    MinorBlues   = Quantizer([True,  False, False, True,  False, True,  True,  True,  False, False, True,  False])
 
     WholeTone    = Quantizer([True,  False, True,  False, True,  False, True,  False, True,  False, True,  False])
     Pentatonic   = Quantizer([True,  False, True,  False, True,  False, False, True,  False, True,  False, False])
