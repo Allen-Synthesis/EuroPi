@@ -87,7 +87,10 @@ class Quantizer:
 
 
 class CommonScales:
-    """A collection of common scales that can be used in other scripts to support quantization"""
+    """A collection of common scales that can be used in other scripts to support quantization
+
+    The Major135[6|7] and Minor135[6|7] scales are inspired by the Doepfer A-156 quantizer
+    """
 
     # fmt: off
     #                         C      C#     D      D#     E      F      F#     G      G#     A      A#     B
