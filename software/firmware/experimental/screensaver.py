@@ -4,6 +4,8 @@
 @year   2023
 """
 
+from europi import *
+import random
 import time
 
 
