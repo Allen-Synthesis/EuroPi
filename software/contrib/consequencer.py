@@ -702,7 +702,7 @@ class pattern:
 
 if __name__ == '__main__':
     # Reset module display state.
-    [cv.off() for cv in cvs]
+    turn_off_all_cvs()
     dm = Consequencer()
     dm.main()
 
