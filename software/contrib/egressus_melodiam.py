@@ -104,11 +104,12 @@ class EgressusMelodium(EuroPiScript):
                 print(f"[{reset}{self.clockStep}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
 
             if not self.unClockedMode:
-                # Incremenent the clock step
-                self.clockStep +=1
+                # # Incremenent the clock step
+                # self.clockStep +=1
 
                 # calculate different between input clock triggers using a 20 value FiFo list (inputClockDiffs)
                 newDiffBetweenClocks = ticks_ms() - self.lastClockTime
+                self.lastClockTime = ticks_ms()
                 self.inputClockDiffs.append(newDiffBetweenClocks)
                 # Remove first item to keep only 20 values in the list
                 if len(self.inputClockDiffs) == 20:
@@ -128,6 +129,8 @@ class EgressusMelodium(EuroPiScript):
                             self.saveState()
             
                 self.handleClockStep()
+                # Incremenent the clock step
+                self.clockStep +=1
 
         '''Triggered when B1 is pressed and released'''
         @b1.handler_falling
@@ -295,8 +298,9 @@ class EgressusMelodium(EuroPiScript):
 
                 # Trigger a clock step without a din interrupt - free running mode
                 if self.unClockedMode and self.slewSampleCounter % self.slewResolution == 0:
-                    self.clockStep +=1
+                    #self.clockStep +=1
                     self.handleClockStep()
+                    self.clockStep +=1
 
             # If I have been running, then stopped for longer than resetTimeout, reset all steps to 0
             if not self.unClockedMode and self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
@@ -311,6 +315,78 @@ class EgressusMelodium(EuroPiScript):
 
     '''Advances step and generates voltage slew voltages to next value in CV pattern'''
     def handleClockStep(self):
+
+        # # Increment / reset step unless we have reached the max step length, or selected pattern length
+        # if self.step < self.maxStepLength -1 and self.step < (self.firstStep + self.patternLength) -1:
+        #     self.step += 1
+        # else:
+        #     # Reset step back to 0
+        #     if self.debugMode:
+        #         print(f'[{self.clockStep}] [{self.step}]reset step to 0')
+        #     #self.step = 0
+        #     self.step = self.firstStep
+        #     #self.screenRefreshNeeded = True
+
+        #     # Move to next CV Pattern in the cycle if cycleMode is enabled
+        #     if self.cycleMode:
+
+        #         # Advance the cycle step, unless we are at the end, then reset to 0
+        #         if self.cycleStep < int(len(self.cycleModes[self.selectedCycleMode])-1):
+        #             self.cycleStep += 1
+        #         else:
+        #             self.cycleStep = 0
+                
+        #         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
+
+        # calculate the next step
+        if self.step == (self.firstStep + self.patternLength)-1:
+            nextStep = self.firstStep
+        else:
+            nextStep = self.step+1
+
+        # Cycle through outputs and generate slew for each
+        for idx in range(len(cvs)):
+
+            # If the clockstep is a division of the output division
+            if self.clockStep % (self.outputDivisions[idx]) == 0:
+
+                # flip the flip flop value for LFO mode
+                self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
+                
+                if not self.unClockedMode:
+                    sampleReductionOffset = (self.outputDivisions[idx])
+                else:
+                    sampleReductionOffset = 0
+
+                # If length is one, cycle between high and low voltages (traditional LFO)
+                # Each output uses a its configured slew shape
+                if self.patternLength == 1:
+                    self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
+                        self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
+                        self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
+                        #(self.slewResolution * self.outputDivisions[idx]), # Increase the sample rate for slower divisions
+                        (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
+                        self.slewBuffers[idx]
+                        )
+                    # if idx == 0:
+                    #     print(f'{self.sampleCounter} Asking for a buffer with {(self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)} values')
+                    #     self.sampleCounter = 0
+                else:
+                    self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
+                        self.cvPatternBanks[idx][self.CvPattern][self.step],
+                        self.cvPatternBanks[idx][self.CvPattern][nextStep],
+                        self.slewResolution * self.outputDivisions[idx], # Increase the sample rate for slower divisions
+                        self.slewBuffers[idx]
+                        )
+                self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
+        
+        # Moved to clockTrigger to lower the inpact of processing latency
+        # self.lastClockTime = ticks_ms()
+        
+        # Hide the shreaded visual indicator after 2 clock steps
+        if self.clockStep > self.shreadedVisClockStep + 2:
+            self.shreadedVis = False
+
 
         # Increment / reset step unless we have reached the max step length, or selected pattern length
         if self.step < self.maxStepLength -1 and self.step < (self.firstStep + self.patternLength) -1:
@@ -334,53 +410,6 @@ class EgressusMelodium(EuroPiScript):
                 
                 self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
 
-        # calculate the next step
-        if self.step == (self.firstStep + self.patternLength)-1:
-            nextStep = self.firstStep
-        else:
-            nextStep = self.step+1
-
-        # Cycle through outputs and generate slew for each
-        for idx in range(len(cvs)):
-
-            # If the clockstep is a division of the output division
-            if self.clockStep % (self.outputDivisions[idx]) == 0:
-
-                # flip the flip flop value for LFO mode
-                self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
-                
-                if not self.unClockedMode:
-                    sampleReductionOffset = (self.outputDivisions[idx] - 1)
-                else:
-                    sampleReductionOffset = 0
-
-                # If length is one, cycle between high and low voltages (traditional LFO)
-                # Each output uses a its configured slew shape
-                if self.patternLength == 1:
-                    self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
-                        self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
-                        self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
-                        #(self.slewResolution * self.outputDivisions[idx]), # Increase the sample rate for slower divisions
-                        (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
-                        self.slewBuffers[idx]
-                        )
-                    # if idx == 0:
-                    #     print(f'Asking for a buffer with {self.slewResolution * self.outputDivisions[idx]} values')
-                    # self.sampleCounter = 0
-                else:
-                    self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
-                        self.cvPatternBanks[idx][self.CvPattern][self.step],
-                        self.cvPatternBanks[idx][self.CvPattern][nextStep],
-                        self.slewResolution * self.outputDivisions[idx], # Increase the sample rate for slower divisions
-                        self.slewBuffers[idx]
-                        )
-                self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
-        
-        self.lastClockTime = ticks_ms()
-        
-        # Hide the shreaded visual indicator after 2 clock steps
-        if self.clockStep > self.shreadedVisClockStep + 2:
-            self.shreadedVis = False
 
     '''Get the k2 value, update params if changed'''
     def getK2Value(self):
