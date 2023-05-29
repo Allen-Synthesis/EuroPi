@@ -60,7 +60,7 @@ class EgressusMelodium(EuroPiScript):
         self.slewSampleCounter = 0
         self.outputVoltageFlipFlops = [True, True, True, True, True, True] # Flipflops between self.VoltageExtremes for LFO mode
 
-        self.msBetweenClocks = 0
+        #self.msBetweenClocks = 0
         self.selectedOutput = 0
         self.maxOutputDivision = 8
         self.lastK1Reading = 0
@@ -72,7 +72,6 @@ class EgressusMelodium(EuroPiScript):
         self.unClockedModeIndicator = ['', 'U']
         self.minLfoCycleMs = 50
 
-        self.inputClockDiffs = []
         self.bpm = 0
 
         self.sampleCounter = 0
@@ -81,6 +80,12 @@ class EgressusMelodium(EuroPiScript):
         self.initSlewBuffers()
 
         self.loadState()
+
+        # Initialize using previous self.msBetweenClocks from loadState()
+        self.inputClockDiffs = []
+        self.inputClockDiffListLength = 5 # Larger number creates better smoothing with unreliable clocks
+        for n in range (self.inputClockDiffListLength):
+            self.inputClockDiffs.append(self.msBetweenClocks)
 
         self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
 
@@ -97,35 +102,26 @@ class EgressusMelodium(EuroPiScript):
         @din.handler
         def clockTrigger():
 
-            if self.debugMode:
-                reset=''
-                if self.clockStep % 16 == 0:
-                    reset = '*******'
-                print(f"[{reset}{self.clockStep}] : [0][{self.CvPattern}][{self.step}][{self.cvPatternBanks[0][self.CvPattern][self.step]}]")
-
             if not self.unClockedMode:
-                # # Incremenent the clock step
-                # self.clockStep +=1
 
                 # calculate different between input clock triggers using a 20 value FiFo list (inputClockDiffs)
                 newDiffBetweenClocks = ticks_ms() - self.lastClockTime
                 self.lastClockTime = ticks_ms()
-                self.inputClockDiffs.append(newDiffBetweenClocks)
-                # Remove first item to keep only 20 values in the list
-                if len(self.inputClockDiffs) == 20:
-                    del self.inputClockDiffs[0]
+                # Add time diff between clocks to inputClockDiffs list, skipping the first as we have no reference
+                print(self.inputClockDiffs)
+                if self.clockStep > 0:
+                    self.inputClockDiffs[self.clockStep % self.inputClockDiffListLength] = newDiffBetweenClocks
 
                 # Attempt to BPM change and sync to it
                 if self.clockStep >= 4:
                     newBpm = self.calculateBpm(self.inputClockDiffs)
-                    if abs(newBpm - self.bpm) > 2:
+                    # Resync If BPM difference is >= 2
+                    if abs(newBpm - self.bpm) >= 2:
                         self.bpm = newBpm
-                        if self.debugMode:
-                            print(f'new BPM: {self.bpm}')
                         self.msBetweenClocks = newDiffBetweenClocks
                         self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
                         # Save state every n clock steps
-                        if self.clockStep == 2 or self.clockStep % 16 == 0:
+                        if self.clockStep % 16 == 0:
                             self.saveState()
             
                 self.handleClockStep()
@@ -368,7 +364,6 @@ class EgressusMelodium(EuroPiScript):
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
                         self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
-                        #(self.slewResolution * self.outputDivisions[idx]), # Increase the sample rate for slower divisions
                         (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
                         self.slewBuffers[idx]
                         )
@@ -383,9 +378,6 @@ class EgressusMelodium(EuroPiScript):
                         self.slewBuffers[idx]
                         )
                 self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
-        
-        # Moved to clockTrigger to lower the inpact of processing latency
-        # self.lastClockTime = ticks_ms()
         
         # Hide the shreaded visual indicator after 2 clock steps
         if self.clockStep > self.shreadedVisClockStep + 2:
