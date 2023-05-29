@@ -31,7 +31,7 @@ class EgressusMelodium(EuroPiScript):
 
         # Initialize variables
         self.step = 0
-        self.firstStep = 0
+        #self.firstStep = 0
         self.clockStep = 0
         self.minAnalogInputVoltage = 0.5
         self.CvPattern = 0
@@ -304,8 +304,8 @@ class EgressusMelodium(EuroPiScript):
 
             # If I have been running, then stopped for longer than resetTimeout, reset all steps to 0
             if not self.unClockedMode and self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
-                #self.step = 0
-                self.step = self.firstStep
+                self.step = 0
+                #self.step = self.firstStep
                 #self.clockStep = 0
                 self.cycleStep = 0
                 if self.numCvPatterns >= int(self.cycleModes[self.selectedCycleMode][self.cycleStep]):
@@ -393,26 +393,29 @@ class EgressusMelodium(EuroPiScript):
 
 
         # Increment / reset step unless we have reached the max step length, or selected pattern length
-        if self.step < self.maxStepLength -1 and self.step < (self.firstStep + self.patternLength) -1:
-            self.step += 1
-        else:
-            # Reset step back to 0
-            if self.debugMode:
-                print(f'[{self.clockStep}] [{self.step}]reset step to 0')
-            #self.step = 0
-            self.step = self.firstStep
-            #self.screenRefreshNeeded = True
+        self.step = (self.clockStep % self.patternLength)
+        #print(self.step)
+        # print(f'%: {self.step % self.patternLength}')
+        # if self.step < self.maxStepLength -1 and self.step < (self.patternLength) -1:
+        #     self.step += 1
+        # else:
+        #     # Reset step back to 0
+        #     if self.debugMode:
+        #         print(f'[{self.clockStep}] [{self.step}]reset step to 0')
+        #     self.step = 0
+        #     #self.step = self.firstStep
+        #     #self.screenRefreshNeeded = True
+        #     print(self.step)
+        #     # Move to next CV Pattern in the cycle if cycleMode is enabled
+        #     if self.cycleMode:
 
-            # Move to next CV Pattern in the cycle if cycleMode is enabled
-            if self.cycleMode:
-
-                # Advance the cycle step, unless we are at the end, then reset to 0
-                if self.cycleStep < int(len(self.cycleModes[self.selectedCycleMode])-1):
-                    self.cycleStep += 1
-                else:
-                    self.cycleStep = 0
+        #         # Advance the cycle step, unless we are at the end, then reset to 0
+        #         if self.cycleStep < int(len(self.cycleModes[self.selectedCycleMode])-1):
+        #             self.cycleStep += 1
+        #         else:
+        #             self.cycleStep = 0
                 
-                self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
+        #         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
 
 
     '''Get the k2 value, update params if changed'''
