@@ -21,7 +21,6 @@ Inspired by the Noise Engineering Mimetic Digitalis.
 '''
 To do:
 - Finalize UI controls and OLED
-- Remove self.firstStep control
 - Add knob histeris blocking?
 - Add stepped triangle?
 '''
@@ -31,7 +30,6 @@ class EgressusMelodium(EuroPiScript):
 
         # Initialize variables
         self.step = 0
-        #self.firstStep = 0
         self.clockStep = 0
         self.minAnalogInputVoltage = 0.5
         self.CvPattern = 0
@@ -71,22 +69,20 @@ class EgressusMelodium(EuroPiScript):
         self.unClockedMode = False
         self.unClockedModeIndicator = ['', 'U']
         self.minLfoCycleMs = 50
-
         self.bpm = 0
-
-        self.sampleCounter = 0
 
         # pre-create slew buffers to avoid memory allocation errors
         self.initSlewBuffers()
 
         self.loadState()
 
-        # Initialize using previous self.msBetweenClocks from loadState()
+        # Initialize inputClockDiffs (for bpm detection) using previous self.msBetweenClocks from loadState()
         self.inputClockDiffs = []
         self.inputClockDiffListLength = 5 # Larger number creates better smoothing with unreliable clocks
         for n in range (self.inputClockDiffListLength):
             self.inputClockDiffs.append(self.msBetweenClocks)
 
+        # Calculate slew rate based on self.msBetweenClocks (from loadState)
         self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
 
         # Dump the entire CV Pattern structure to screen
@@ -98,6 +94,10 @@ class EgressusMelodium(EuroPiScript):
                     for idx, voltage in enumerate(n):
                         print(f"    Step {idx}: {voltage}")
 
+        # -----------------------------
+        # Interupt Handling functions
+        # -----------------------------
+
         '''Triggered on each clock into digital input'''
         @din.handler
         def clockTrigger():
@@ -108,7 +108,6 @@ class EgressusMelodium(EuroPiScript):
                 newDiffBetweenClocks = ticks_ms() - self.lastClockTime
                 self.lastClockTime = ticks_ms()
                 # Add time diff between clocks to inputClockDiffs list, skipping the first as we have no reference
-                print(self.inputClockDiffs)
                 if self.clockStep > 0:
                     self.inputClockDiffs[self.clockStep % self.inputClockDiffListLength] = newDiffBetweenClocks
 
@@ -274,19 +273,14 @@ class EgressusMelodium(EuroPiScript):
             self.updateScreen()
             self.getK2Value()
             #self.getCycleMode()
-            #self.getFirstStep()
             self.getOutputDivision()
 
             self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
-            #self.slewResolution = 40
             if ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
                     try:
                         v = next(self.slewGeneratorObjects[idx])
                         cvs[idx].voltage(v)
-                        # if idx == 0:
-                        #     self.sampleCounter += 1
-                        #     print(f'Sample Num: {self.sampleCounter}')
                     except StopIteration:
                         v = 0
                 self.slewSampleCounter += 1
@@ -301,7 +295,6 @@ class EgressusMelodium(EuroPiScript):
             # If I have been running, then stopped for longer than resetTimeout, reset all steps to 0
             if not self.unClockedMode and self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
                 self.step = 0
-                #self.step = self.firstStep
                 #self.clockStep = 0
                 self.cycleStep = 0
                 if self.numCvPatterns >= int(self.cycleModes[self.selectedCycleMode][self.cycleStep]):
@@ -334,13 +327,6 @@ class EgressusMelodium(EuroPiScript):
                 
         #         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
 
-
-        # if self.step == (self.firstStep + self.patternLength)-1:
-        #     nextStep = self.firstStep
-        # else:
-        #     nextStep = self.step+1
-        # print(f"[{self.step}] Next Step: {nextStep} vs % {(self.step+1) % (self.patternLength)}")
-
         # Cycle through outputs and generate slew for each
         for idx in range(len(cvs)):
 
@@ -367,9 +353,6 @@ class EgressusMelodium(EuroPiScript):
                         (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
                         self.slewBuffers[idx]
                         )
-                    # if idx == 0:
-                    #     print(f'{self.sampleCounter} Asking for a buffer with {(self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)} values')
-                    #     self.sampleCounter = 0
                 else:
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
@@ -441,14 +424,6 @@ class EgressusMelodium(EuroPiScript):
         
         self.lastK2Reading = self.currentK2Reading
 
-
-    # '''Get the firstStep from k1'''
-    # def getFirstStep(self):
-    #     previousFirstStep = self.firstStep
-    #     self.firstStep = k1.read_position(self.maxStepLength-self.patternLength)
-        
-    #     if previousFirstStep != self.firstStep:
-    #         self.screenRefreshNeeded = True
 
     '''Get the output division from k1'''
     def getOutputDivision(self):
@@ -718,34 +693,6 @@ class EgressusMelodium(EuroPiScript):
             oled.text('x', 22, 12, 1)
 
         oled.show()
-
-    '''Update the screen only if something has changed. oled.show() hogs the processor and causes latency.'''
-    def updateScreenOld(self):
-        if not self.screenRefreshNeeded:
-            return
-        # oled.clear() - dont use this, it causes the screen to flicker!
-        oled.fill(0)
-
-        # Show the pattern number
-        oled.text('P',10, 0, 1)
-        oled.text(str(self.CvPattern),10 , 16, 1)
-
-        # Show the pattern length        
-        oled.text('Len',30, 0, 1)
-        oled.text(f"{str(self.step+1)}({self.firstStep+1})/{str(self.patternLength)}",30 , 16, 1)
-        
-        # Show the pattern sequence
-        if self.cycleMode:
-            oled.text('Seq',80, 0, 1)
-            oled.text(str(self.cycleModes[self.selectedCycleMode]),80 , 16, 1)
-            cycleIndicatorPosition = 80 +(self.cycleStep * 8)
-            oled.text('_', cycleIndicatorPosition, 22, 1)
-
-        if self.shreadedVis:
-            oled.text('x',120 ,23)
-
-        oled.show()
-        self.screenRefreshNeeded = False
 
 # -----------------------------
 # Slew functions
