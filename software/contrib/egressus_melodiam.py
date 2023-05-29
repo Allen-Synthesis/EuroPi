@@ -338,14 +338,18 @@ class EgressusMelodium(EuroPiScript):
                 
         #         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
 
-        # calculate the next step
-        if self.step == (self.firstStep + self.patternLength)-1:
-            nextStep = self.firstStep
-        else:
-            nextStep = self.step+1
+
+        # if self.step == (self.firstStep + self.patternLength)-1:
+        #     nextStep = self.firstStep
+        # else:
+        #     nextStep = self.step+1
+        # print(f"[{self.step}] Next Step: {nextStep} vs % {(self.step+1) % (self.patternLength)}")
 
         # Cycle through outputs and generate slew for each
         for idx in range(len(cvs)):
+
+            # calculate the next step based on the pattern length
+            nextStep = (self.step + (1 * self.outputDivisions[idx])) % self.patternLength
 
             # If the clockstep is a division of the output division
             if self.clockStep % (self.outputDivisions[idx]) == 0:
@@ -771,6 +775,7 @@ class EgressusMelodium(EuroPiScript):
     '''Produces linear transitions'''
     def linspace(self, start, stop, num, buffer):
         c = 0
+        num = max(1, num) # avoid divide by zero
         diff = (float(stop) - start)/(num)
         for i in range(num ):
             val = ((diff * i) + start)
