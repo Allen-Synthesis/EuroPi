@@ -358,7 +358,7 @@ class EgressusMelodium(EuroPiScript):
                 self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
                 
                 if not self.unClockedMode:
-                    sampleReductionOffset = (self.outputDivisions[idx])
+                    sampleReductionOffset = (self.outputDivisions[idx] - 1)
                 else:
                     sampleReductionOffset = 0
 
