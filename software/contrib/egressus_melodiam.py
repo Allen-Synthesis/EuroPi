@@ -16,6 +16,13 @@ Generates variable length looping patterns of random stepped CV.
 Patterns can be linked together into sequences to create rhythmically evolving CV patterns.
 Inspired by the Noise Engineering Mimetic Digitalis.
 
+Known Issues:
+- Clocks with significant variability between clocks produce interesting / potentially unwanted wave shapes occassionally
+- Calls to saveState() add processing latency which affects reliability. Therefore this is called sparingly.
+- Variable processing latency occassionally produces slightly squiffy waveshapes.
+    These mostly introduce a slightly natural variabilty in the wave rather than bold glitches
+- Switching between unclocked and clocked mode confuses the wave outputs for a couple of clocks
+- Input clocks > 140BPM cause waveshape glitches which are most noticeable when using non-square slew shape
 '''
 
 '''
@@ -70,6 +77,7 @@ class EgressusMelodium(EuroPiScript):
         self.unClockedModeIndicator = ['', 'U']
         self.minLfoCycleMs = 50
         self.bpm = 0
+        self.previousOutputVoltage = [0, 0, 0, 0, 0, 0]
 
         # pre-create slew buffers to avoid memory allocation errors
         self.initSlewBuffers()
@@ -119,6 +127,7 @@ class EgressusMelodium(EuroPiScript):
                         self.bpm = newBpm
                         self.msBetweenClocks = newDiffBetweenClocks
                         self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+                        #print(f"bpm: {self.bpm} diff: {self.msBetweenClocks} resolution: {self.slewResolution}")
                         # Save state every n clock steps - this causes glitches
                         # if self.clockStep % 16 == 0:
                         #     self.saveState()
@@ -158,7 +167,7 @@ class EgressusMelodium(EuroPiScript):
             elif ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
                 # medium press
                 self.unClockedMode = not self.unClockedMode
-                self.clearSlewBuffers()
+                #self.clearSlewBuffers()
                 self.saveState()
             else:
                 # short press
@@ -283,11 +292,16 @@ class EgressusMelodium(EuroPiScript):
                         v = next(self.slewGeneratorObjects[idx])
                         # if idx == 0:
                         #     print(f"{self.lastSlewVoltageOutput} {v}")
-                        cvs[idx].voltage(v)
+                        if v != 99:
+                            cvs[idx].voltage(v)
+                            self.previousOutputVoltage[idx] = v
+                        else:
+                            # Buffer underrung: We ran out of samples (probably due to a bpm change)
+                            # Output previous voltage to keep output as smooth as possible
+                            cvs[idx].voltage(self.previousOutputVoltage[idx])
+                            print(f"{idx} ran out of samples")
                     except StopIteration:
                         continue
-                        v = 99
-                        print(f"{self.lastSlewVoltageOutput} {v}")
                 #print(f"[{self.slewSampleCounter}] {ticks_diff(ticks_ms(), self.lastSlewVoltageOutput)}")
                 self.slewSampleCounter += 1
                 self.lastSlewVoltageOutput = ticks_ms()
