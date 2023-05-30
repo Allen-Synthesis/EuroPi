@@ -49,8 +49,8 @@ March-23    decreased maxRandomPatterns to 32 to avoid crashes on some systems
 
 class Consequencer(EuroPiScript):
     def __init__(self):
-        # Initialize sequencer pattern arrays   
-        p = pattern()     
+        # Initialize sequencer pattern arrays
+        p = pattern()
         self.BD=p.BD
         self.SN=p.SN
         self.HH=p.HH
@@ -64,7 +64,7 @@ class Consequencer(EuroPiScript):
         # If the probability string len is < pattern len, automatically fill out with the last digit:
         # - 9   becomes 999999999
         # - 95  becomes 955555555
-        # - 952 becomes 952222222 
+        # - 952 becomes 952222222
         for pi in range(len(self.BD)):
             if len(self.BdProb[pi]) < len(self.BD[pi]):
                 self.BdProb[pi] = self.BdProb[pi] + (self.BdProb[pi][-1] * (len(self.BD[pi]) - len(self.BdProb[pi])))
@@ -94,10 +94,10 @@ class Consequencer(EuroPiScript):
         #self.random_HH = False
         #self.output4isClock = False
         self.loadState()
-        
+
         # Calculate the longest pattern length to be used when generating random sequences
         self.maxStepLength = len(max(self.BD, key=len))
-        
+
         # Generate random CV for cv4-6
         self.random4 = []
         self.random5 = []
@@ -125,7 +125,7 @@ class Consequencer(EuroPiScript):
                     if len(self.random4) < self.maxRandomPatterns: # We need to try and generate a new CV value
                         if self.generateNewRandomCVPattern():
                             self.CvPattern += 1
-            
+
         # Triggered when button 1 is released
         # Short press: Play previous CV pattern for cv4-6
         # Long press: Toggle random high-hat mode
@@ -148,9 +148,9 @@ class Consequencer(EuroPiScript):
 
             # function timing code. Leave in and activate as needed
             #t = time.ticks_us()
-            
+
             self.step_length = len(self.BD[self.pattern])
-            
+
             # A pattern was selected which is shorter than the current step. Set to zero to avoid an error
             if self.step >= self.step_length:
                 self.step = 0
@@ -242,7 +242,7 @@ class Consequencer(EuroPiScript):
             self.pattern = min(int((len(self.BD) / 100) * val) + k2.read_position(len(self.BD)), len(self.BD)-1)
         else:
             self.pattern = k2.read_position(len(self.BD))
-        
+
         self.step_length = len(self.BD[self.pattern])
 
     def getCvPattern(self):
@@ -293,19 +293,19 @@ class Consequencer(EuroPiScript):
         oled.fill(0)
 
         # Show selected pattern visually
-        
+
         # Calculate the length of the current pattern
         current_pattern_length = len(self.BD[self.pattern])
-        
+
         # Calculate the width of one full pattern in pixels
         lpos_offset = current_pattern_length * CHAR_WIDTH
-        
+
         # Calculate the x position of the first pattern to be drawn
         normal_lpos = lpos = 8 - (self.step * 8)
-        
+
         # Calculate the number of patterns required to fill the OLED width
         number_of_offset_patterns = 2 * max(int(OLED_WIDTH / lpos_offset), 1)
-        
+
         # Draw as many offset patterns as required to fill the OLED
         for pattern_offset in range(number_of_offset_patterns):
             # Draw the current pattern
@@ -705,5 +705,3 @@ if __name__ == '__main__':
     [cv.off() for cv in cvs]
     dm = Consequencer()
     dm.main()
-
-
