@@ -35,8 +35,8 @@ class EgressusMelodium(EuroPiScript):
         self.CvPattern = 0
         self.numCvPatterns = 4  # Initial number, this can be increased
         self.resetTimeout = 10000
-        self.maxRandomPatterns = 2  # This prevents a memory allocation error (happens with > 5, but 4 is nice round number!)
-        self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
+        self.maxRandomPatterns = 3  # lower number reduces the chance of memalloc errors
+        self.maxCvVoltage = 5  # The maximum is 9 to maintain single digits in the voltage list
         self.maxStepLength = 32
         self.screenRefreshNeeded = True
         self.cycleModes = ['0000', '0101', '0001', '0011', '1212', '1112', '1122', '0012', '2323', '2223', '2233', '0123']
@@ -54,7 +54,7 @@ class EgressusMelodium(EuroPiScript):
         self.slewGeneratorObject = self.slewGenerator([0])
         self.slewGeneratorObjects = [self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0])]
         self.slewShapes = [self.stepUpStepDown, self.linspace, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse, self.logUpStepDown, self.stepUpExpDown]
-        self.voltageExtremes=[0, 10]
+        self.voltageExtremes=[0, self.maxCvVoltage]
         self.slewSampleCounter = 0
         self.outputVoltageFlipFlops = [True, True, True, True, True, True] # Flipflops between self.VoltageExtremes for LFO mode
 
@@ -119,9 +119,9 @@ class EgressusMelodium(EuroPiScript):
                         self.bpm = newBpm
                         self.msBetweenClocks = newDiffBetweenClocks
                         self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
-                        # Save state every n clock steps
-                        if self.clockStep % 16 == 0:
-                            self.saveState()
+                        # Save state every n clock steps - this causes glitches
+                        # if self.clockStep % 16 == 0:
+                        #     self.saveState()
             
                 self.handleClockStep()
                 # Incremenent the clock step
@@ -139,7 +139,8 @@ class EgressusMelodium(EuroPiScript):
                 self.saveState()
             elif ticks_diff(ticks_ms(), b1.last_pressed()) >  300:
                 # medium press
-                self.saveState()
+                #self.saveState()
+                pass
             else:
                 # short press
                 self.selectedOutput = (self.selectedOutput + 1) % 6
@@ -152,7 +153,8 @@ class EgressusMelodium(EuroPiScript):
         def b2Pressed():
             if ticks_diff(ticks_ms(), b2.last_pressed()) > 2000 and ticks_diff(ticks_ms(), b2.last_pressed()) < 5000:
                 # long press
-                self.saveState()
+                #self.saveState()
+                pass
             elif ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
                 # medium press
                 self.unClockedMode = not self.unClockedMode
@@ -217,7 +219,7 @@ class EgressusMelodium(EuroPiScript):
         for n in range(6): # for each output 0-5
             self.slewBuffers.append([]) # add new empty list to the buffer list
             for m in range(42 * self.maxOutputDivision): # 41 is maximum resolution/samplerate
-                self.slewBuffers[n].append(0.0) # add 0.0 (float) as a default value
+                self.slewBuffers[n].append(99) # add 0.0 (float) as a default value
 
     def clearSlewBuffers(self):
         for n in range(6): # for each output 0-5
@@ -275,20 +277,23 @@ class EgressusMelodium(EuroPiScript):
             #self.getCycleMode()
             self.getOutputDivision()
 
-            self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
             if ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
                     try:
                         v = next(self.slewGeneratorObjects[idx])
+                        # if idx == 0:
+                        #     print(f"{self.lastSlewVoltageOutput} {v}")
                         cvs[idx].voltage(v)
                     except StopIteration:
-                        v = 0
+                        continue
+                        v = 99
+                        print(f"{self.lastSlewVoltageOutput} {v}")
+                #print(f"[{self.slewSampleCounter}] {ticks_diff(ticks_ms(), self.lastSlewVoltageOutput)}")
                 self.slewSampleCounter += 1
                 self.lastSlewVoltageOutput = ticks_ms()
 
                 # Trigger a clock step without a din interrupt - free running mode
                 if self.unClockedMode and self.slewSampleCounter % self.slewResolution == 0:
-                    #self.clockStep +=1
                     self.handleClockStep()
                     self.clockStep +=1
 
@@ -301,6 +306,7 @@ class EgressusMelodium(EuroPiScript):
                     self.CvPattern = int(self.cycleModes[self.selectedCycleMode][self.cycleStep])
                 # Update screen with the upcoming CV pattern
                 self.screenRefreshNeeded = True
+                self.saveState()
 
     '''Advances step and generates voltage slew voltages to next value in CV pattern'''
     def handleClockStep(self):
@@ -326,7 +332,7 @@ class EgressusMelodium(EuroPiScript):
         #             self.cycleStep = 0
                 
         #         self.CvPattern = int(self.cycleModes[self.selectedCycleMode][int(self.cycleStep)])
-
+        #print(f"clock: {self.clockStep}")
         # Cycle through outputs and generate slew for each
         for idx in range(len(cvs)):
 
@@ -339,8 +345,11 @@ class EgressusMelodium(EuroPiScript):
                 # flip the flip flop value for LFO mode
                 self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
                 
+                # When not in unClockedMode, processing time between clock steps varies a little
+                # At BPMs > ~100, this results in occasional vertical perculiarities at the peak or trough of an LFO wave
+                # Adding sampleReductionOffset seems to reduce the impact of these anomalies
                 if not self.unClockedMode:
-                    sampleReductionOffset = (self.outputDivisions[idx] - 1)
+                    sampleReductionOffset = max(1, self.outputDivisions[idx] - 4)
                 else:
                     sampleReductionOffset = 0
 
@@ -357,7 +366,7 @@ class EgressusMelodium(EuroPiScript):
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
                         self.cvPatternBanks[idx][self.CvPattern][nextStep],
-                        self.slewResolution * self.outputDivisions[idx], # Increase the sample rate for slower divisions
+                        self.slewResolution * self.outputDivisions[idx] + 1, # Increase the sample rate for slower divisions
                         self.slewBuffers[idx]
                         )
                 self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
