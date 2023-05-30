@@ -363,7 +363,7 @@ class EgressusMelodium(EuroPiScript):
                 # At BPMs > ~100, this results in occasional vertical perculiarities at the peak or trough of an LFO wave
                 # Adding sampleReductionOffset seems to reduce the impact of these anomalies
                 if not self.unClockedMode:
-                    sampleReductionOffset = max(1, self.outputDivisions[idx] - 4)
+                    sampleReductionOffset = max(1, self.outputDivisions[idx] - 2)
                 else:
                     sampleReductionOffset = 0
 
