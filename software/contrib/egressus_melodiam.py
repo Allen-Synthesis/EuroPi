@@ -305,7 +305,7 @@ class EgressusMelodium(EuroPiScript):
                     try:
                         print(f"[{idx}] num: {self.slewBufferPosition[idx]} target: {self.slewBufferSampleNum[idx]}")
                         # Do we have a sample in the buffer?
-                        if self.slewBufferPosition[idx] <= self.slewBufferSampleNum[idx]:
+                        if self.slewBufferPosition[idx] < self.slewBufferSampleNum[idx]:
                             # Yes, we have a sample, output voltage to match the sample, reset underrun counter and advance position in buffer
                             v = next(self.slewGeneratorObjects[idx])
                             cvs[idx].voltage(v)
@@ -324,12 +324,13 @@ class EgressusMelodium(EuroPiScript):
                                 # Output previus voltage
                                 cvs[idx].voltage(self.previousOutputVoltage[idx])
                                 print(f"[{idx}] under-runs {self.bufferUnderruns[idx]}")
+                                print(f"[{idx}] output V: {self.previousOutputVoltage[idx]}")
                     except StopIteration:
                         # we shouldn't ever get here. the master sampler buffer is empty
                         continue
             #print(f"[{self.slewSampleCounter}] {ticks_diff(ticks_ms(), self.lastSlewVoltageOutputTime)}")
-            self.slewSampleCounter += 1
-            self.lastSlewVoltageOutputTime = ticks_ms()
+                self.slewSampleCounter += 1
+                self.lastSlewVoltageOutputTime = ticks_ms()
 
             # Trigger a clock step without a din interrupt - free running mode
             if self.unClockedMode and self.slewSampleCounter % self.slewResolution == 0:
@@ -392,6 +393,8 @@ class EgressusMelodium(EuroPiScript):
                 # Adding sampleReductionOffset seems to reduce the impact of these anomalies
                 if not self.unClockedMode:
                     sampleReductionOffset = max(1, self.outputDivisions[idx] - 2)
+                    #sampleReductionOffset = int(max(1, (self.averageMsBetweenClocks / (25 * self.outputDivisions[idx]))) - 1)
+                    
                 else:
                     sampleReductionOffset = 0
 
@@ -399,22 +402,27 @@ class EgressusMelodium(EuroPiScript):
                 # Each output uses a its configured slew shape
                 if self.patternLength == 1:
                     #numSamplesNeeded = (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)
+                    self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)) - 1
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
                         self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
-                        (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
+                        #(self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
+                        self.slewBufferSampleNum[idx],
                         self.slewBuffers[idx]
                         )
-                    self.slewBufferSampleNum[idx] = (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)
+                    #self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)) - 1
                 else:
+                    self.slewBufferSampleNum[idx] = (self.slewResolution * self.outputDivisions[idx] + 1) - 1
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
                         self.cvPatternBanks[idx][self.CvPattern][nextStep],
-                        self.slewResolution * self.outputDivisions[idx] + 1, # Increase the sample rate for slower divisions
+                        #self.slewResolution * self.outputDivisions[idx] + 1, # Increase the sample rate for slower divisions
+                        self.slewBufferSampleNum[idx],
                         self.slewBuffers[idx]
                         )
-                    self.slewBufferSampleNum[idx] = self.slewResolution * self.outputDivisions[idx] + 1
+                    #self.slewBufferSampleNum[idx] = (self.slewResolution * self.outputDivisions[idx] + 1) - 1
                 self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
+                #print(f"[{idx}] :{self.slewArray[0:self.slewBufferSampleNum[idx]]}")
                 # Add buffer sample count to list and reset counter
                 if self.slewBufferSampleNum[idx] - self.slewBufferPosition[idx] > 1:
                     print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {self.slewBufferSampleNum[idx] - self.slewBufferPosition[idx]} ({self.averageMsBetweenClocks})")
