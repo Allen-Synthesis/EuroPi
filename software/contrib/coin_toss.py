@@ -103,9 +103,11 @@ class CoinToss(EuroPiScript):
 
             sleep_ms(10)
             if self.gate_mode:
+                # Only turn off clock triggers.
                 cv3.off()
                 cv6.off()
             else:
+                # Turn of all cvs in trigger mode.
                 turn_off_all_cvs()
 
             # Draw threshold line
