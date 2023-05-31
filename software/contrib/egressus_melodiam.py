@@ -57,7 +57,7 @@ class EgressusMelodium(EuroPiScript):
         
         self.slewArray = []
         self.lastClockTime = 0
-        self.lastSlewVoltageOutput = 0
+        self.lastSlewVoltageOutputTime = 0
         self.slewGeneratorObject = self.slewGenerator([0])
         self.slewGeneratorObjects = [self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0]), self.slewGenerator([0])]
         self.slewShapes = [self.stepUpStepDown, self.linspace, self.smooth, self.expUpexpDown, self.sharkTooth, self.sharkToothReverse, self.logUpStepDown, self.stepUpExpDown]
@@ -81,8 +81,8 @@ class EgressusMelodium(EuroPiScript):
         self.minLfoCycleMs = 50
         self.bpm = 0
         self.previousOutputVoltage = [0, 0, 0, 0, 0, 0]
-        self.slewBufferCount = [0, 0, 0, 0, 0, 0]
-        self.slewCounter = [0, 0, 0, 0, 0, 0]
+        self.slewBufferSampleNum = [0, 0, 0, 0, 0, 0]
+        self.slewBufferPosition = [0, 0, 0, 0, 0, 0]
 
         # pre-create slew buffers to avoid memory allocation errors
         self.initSlewBuffers()
@@ -94,10 +94,11 @@ class EgressusMelodium(EuroPiScript):
         self.inputClockDiffListLength = 5 # Larger number creates better smoothing with unreliable clocks
         for n in range (self.inputClockDiffListLength):
             self.inputClockDiffs.append(self.msBetweenClocks)
+        self.averageMsBetweenClocks = self.average(self.inputClockDiffs)
 
         # Calculate slew rate based on self.msBetweenClocks (from loadState)
         #self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
-        self.slewResolution = int(self.msBetweenClocks / 15) + 1
+        self.slewResolution = int(self.averageMsBetweenClocks / 15) + 1
 
         # Dump the entire CV Pattern structure to screen
         if self.debugMode and self.dataDumpToScreen:
@@ -135,7 +136,7 @@ class EgressusMelodium(EuroPiScript):
                         self.bpm = newBpm
                         self.msBetweenClocks = newDiffBetweenClocks
                         #self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
-                        self.slewResolution = int(self.msBetweenClocks / 15) + 1
+                        self.slewResolution = int(self.averageMsBetweenClocks / 15) + 1
                         #print(f"bpm: {self.bpm} diff: {self.msBetweenClocks} resolution: {self.slewResolution}")
                         # Save state every n clock steps - this causes glitches
                         # if self.clockStep % 16 == 0:
@@ -297,47 +298,43 @@ class EgressusMelodium(EuroPiScript):
             #self.getCycleMode()
             self.getOutputDivision()
 
-            if ticks_diff(ticks_ms(), self.lastSlewVoltageOutput) >= (self.msBetweenClocks / self.slewResolution):
+            if ticks_diff(ticks_ms(), self.lastSlewVoltageOutputTime) >= (self.averageMsBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
+                    # if self.slewBufferSampleNum[idx] == 0:
+                    #     continue
                     try:
-                        v = next(self.slewGeneratorObjects[idx])
-                        self.slewCounter[idx] += 1
-                        print(f"[{idx}] num: {self.slewCounter[idx]} target: {self.slewBufferCount[idx]}")
-                        if self.slewCounter[idx] > self.slewBufferCount[idx]:
-                            # Buffer underrun: We ran out of samples (probably due to a bpm change)
-                            # Output previous voltage to keep output as smooth as possible
-                            self.bufferUnderruns[idx] += 1
-                            if self.bufferUnderruns[idx] > 1000:
-                                for cv in cvs:
-                                    cv.off()
-                            else:
-                                print(f"[{idx}] underruns {self.bufferUnderruns[idx]}")
-                                cvs[idx].voltage(self.previousOutputVoltage[idx])
-                        else:
+                        print(f"[{idx}] num: {self.slewBufferPosition[idx]} target: {self.slewBufferSampleNum[idx]}")
+                        # Do we have a sample in the buffer?
+                        if self.slewBufferPosition[idx] <= self.slewBufferSampleNum[idx]:
+                            # Yes, we have a sample, output voltage to match the sample, reset underrun counter and advance position in buffer
+                            v = next(self.slewGeneratorObjects[idx])
                             cvs[idx].voltage(v)
                             self.previousOutputVoltage[idx] = v
                             self.bufferUnderruns[idx] = 0
-                            # if self.running and self.bufferUnderruns[idx] < 2:
-                            #     # Buffer underrun: We ran out of samples (probably due to a bpm change)
-                            #     # Output previous voltage to keep output as smooth as possible
-                            #     self.bufferUnderruns[idx] += 1
-                            #     cvs[idx].voltage(self.previousOutputVoltage[idx])
-                            #     print(f"unerruns {self.bufferUnderruns[idx]}")
-                            #     if idx == 0:
-                            #         print(f"{idx} ran out of samples")
-                            # else:
-                            #     self.running = False
-                            #     continue
+                            self.slewBufferPosition[idx] += 1
+                        else:
+                            # We do not have a sample - buffer under run
+                            # Output the previous voltage to keep things as smooth as possible
+                            self.bufferUnderruns[idx] += 1
+                            
+                            if self.bufferUnderruns[idx] > 10:
+                                # We have been looping buffer under runs for a while, reset CV
+                                cvs[idx].off()
+                            else:
+                                # Output previus voltage
+                                cvs[idx].voltage(self.previousOutputVoltage[idx])
+                                print(f"[{idx}] under-runs {self.bufferUnderruns[idx]}")
                     except StopIteration:
+                        # we shouldn't ever get here. the master sampler buffer is empty
                         continue
-                #print(f"[{self.slewSampleCounter}] {ticks_diff(ticks_ms(), self.lastSlewVoltageOutput)}")
-                self.slewSampleCounter += 1
-                self.lastSlewVoltageOutput = ticks_ms()
+            #print(f"[{self.slewSampleCounter}] {ticks_diff(ticks_ms(), self.lastSlewVoltageOutputTime)}")
+            self.slewSampleCounter += 1
+            self.lastSlewVoltageOutputTime = ticks_ms()
 
-                # Trigger a clock step without a din interrupt - free running mode
-                if self.unClockedMode and self.slewSampleCounter % self.slewResolution == 0:
-                    self.handleClockStep()
-                    self.clockStep +=1
+            # Trigger a clock step without a din interrupt - free running mode
+            if self.unClockedMode and self.slewSampleCounter % self.slewResolution == 0:
+                self.handleClockStep()
+                self.clockStep +=1
 
             # If I have been running, then stopped for longer than resetTimeout, reset all steps to 0
             if not self.unClockedMode and self.clockStep != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.resetTimeout:
@@ -408,7 +405,7 @@ class EgressusMelodium(EuroPiScript):
                         (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
                         self.slewBuffers[idx]
                         )
-                    self.slewBufferCount[idx] = (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)
+                    self.slewBufferSampleNum[idx] = (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)
                 else:
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
@@ -416,10 +413,13 @@ class EgressusMelodium(EuroPiScript):
                         self.slewResolution * self.outputDivisions[idx] + 1, # Increase the sample rate for slower divisions
                         self.slewBuffers[idx]
                         )
-                    self.slewBufferCount[idx] = self.slewResolution * self.outputDivisions[idx] + 1
+                    self.slewBufferSampleNum[idx] = self.slewResolution * self.outputDivisions[idx] + 1
                 self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
                 # Add buffer sample count to list and reset counter
-                self.slewCounter[idx] = 0
+                if self.slewBufferSampleNum[idx] - self.slewBufferPosition[idx] > 1:
+                    print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {self.slewBufferSampleNum[idx] - self.slewBufferPosition[idx]} ({self.averageMsBetweenClocks})")
+                
+                self.slewBufferPosition[idx] = 0
         
         # Hide the shreaded visual indicator after 2 clock steps
         if self.clockStep > self.shreadedVisClockStep + 2:
@@ -472,7 +472,7 @@ class EgressusMelodium(EuroPiScript):
             # knob has moved
             if self.unClockedMode:
                 # Set LFO speed
-                self.msBetweenClocks = self.minLfoCycleMs + (self.currentK2Reading * 5)
+                self.averageMsBetweenClocks = self.minLfoCycleMs + (self.currentK2Reading * 5)
             else:
                 # Set pattern length
                 self.patternLength = int((self.maxStepLength / 100) * (self.currentK2Reading-1)) + 1
@@ -712,7 +712,7 @@ class EgressusMelodium(EuroPiScript):
         if self.unClockedMode:
 
             if self.msBetweenClocks != 0:
-                oled.text(f"Cycle: {self.msBetweenClocks * 2}ms", 24, 1, 1)
+                oled.text(f"Cycle: {self.averageMsBetweenClocks * 2}ms", 24, 1, 1)
         
         else:
 
