@@ -73,11 +73,16 @@ class EgressusMelodium(EuroPiScript):
         self.lastK2Reading = 0
         self.currentK2Reading = 0
 
+        self.running = False
+        self.bufferUnderruns = [0, 0, 0, 0, 0, 0]
+
         self.unClockedMode = False
         self.unClockedModeIndicator = ['', 'U']
         self.minLfoCycleMs = 50
         self.bpm = 0
         self.previousOutputVoltage = [0, 0, 0, 0, 0, 0]
+        self.slewBufferCount = [0, 0, 0, 0, 0, 0]
+        self.slewCounter = [0, 0, 0, 0, 0, 0]
 
         # pre-create slew buffers to avoid memory allocation errors
         self.initSlewBuffers()
@@ -91,7 +96,8 @@ class EgressusMelodium(EuroPiScript):
             self.inputClockDiffs.append(self.msBetweenClocks)
 
         # Calculate slew rate based on self.msBetweenClocks (from loadState)
-        self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+        #self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+        self.slewResolution = int(self.msBetweenClocks / 15) + 1
 
         # Dump the entire CV Pattern structure to screen
         if self.debugMode and self.dataDumpToScreen:
@@ -110,6 +116,8 @@ class EgressusMelodium(EuroPiScript):
         @din.handler
         def clockTrigger():
 
+            self.running = True
+
             if not self.unClockedMode:
 
                 # calculate different between input clock triggers using a 20 value FiFo list (inputClockDiffs)
@@ -126,7 +134,8 @@ class EgressusMelodium(EuroPiScript):
                     if abs(newBpm - self.bpm) >= 2:
                         self.bpm = newBpm
                         self.msBetweenClocks = newDiffBetweenClocks
-                        self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+                        #self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
+                        self.slewResolution = int(self.msBetweenClocks / 15) + 1
                         #print(f"bpm: {self.bpm} diff: {self.msBetweenClocks} resolution: {self.slewResolution}")
                         # Save state every n clock steps - this causes glitches
                         # if self.clockStep % 16 == 0:
@@ -167,6 +176,8 @@ class EgressusMelodium(EuroPiScript):
             elif ticks_diff(ticks_ms(), b2.last_pressed()) >  300:
                 # medium press
                 self.unClockedMode = not self.unClockedMode
+                if self.unClockedMode:
+                    self.running = True
                 #self.clearSlewBuffers()
                 self.saveState()
             else:
@@ -227,7 +238,7 @@ class EgressusMelodium(EuroPiScript):
         self.slewBuffers = []
         for n in range(6): # for each output 0-5
             self.slewBuffers.append([]) # add new empty list to the buffer list
-            for m in range(42 * self.maxOutputDivision): # 41 is maximum resolution/samplerate
+            for m in range(128 * self.maxOutputDivision): # 41 is maximum resolution/samplerate
                 self.slewBuffers[n].append(99) # add 0.0 (float) as a default value
 
     def clearSlewBuffers(self):
@@ -290,16 +301,33 @@ class EgressusMelodium(EuroPiScript):
                 for idx in range(len(cvs)):
                     try:
                         v = next(self.slewGeneratorObjects[idx])
-                        # if idx == 0:
-                        #     print(f"{self.lastSlewVoltageOutput} {v}")
-                        if v != 99:
+                        self.slewCounter[idx] += 1
+                        print(f"[{idx}] num: {self.slewCounter[idx]} target: {self.slewBufferCount[idx]}")
+                        if self.slewCounter[idx] > self.slewBufferCount[idx]:
+                            # Buffer underrun: We ran out of samples (probably due to a bpm change)
+                            # Output previous voltage to keep output as smooth as possible
+                            self.bufferUnderruns[idx] += 1
+                            if self.bufferUnderruns[idx] > 1000:
+                                for cv in cvs:
+                                    cv.off()
+                            else:
+                                print(f"[{idx}] underruns {self.bufferUnderruns[idx]}")
+                                cvs[idx].voltage(self.previousOutputVoltage[idx])
+                        else:
                             cvs[idx].voltage(v)
                             self.previousOutputVoltage[idx] = v
-                        else:
-                            # Buffer underrung: We ran out of samples (probably due to a bpm change)
-                            # Output previous voltage to keep output as smooth as possible
-                            cvs[idx].voltage(self.previousOutputVoltage[idx])
-                            print(f"{idx} ran out of samples")
+                            self.bufferUnderruns[idx] = 0
+                            # if self.running and self.bufferUnderruns[idx] < 2:
+                            #     # Buffer underrun: We ran out of samples (probably due to a bpm change)
+                            #     # Output previous voltage to keep output as smooth as possible
+                            #     self.bufferUnderruns[idx] += 1
+                            #     cvs[idx].voltage(self.previousOutputVoltage[idx])
+                            #     print(f"unerruns {self.bufferUnderruns[idx]}")
+                            #     if idx == 0:
+                            #         print(f"{idx} ran out of samples")
+                            # else:
+                            #     self.running = False
+                            #     continue
                     except StopIteration:
                         continue
                 #print(f"[{self.slewSampleCounter}] {ticks_diff(ticks_ms(), self.lastSlewVoltageOutput)}")
@@ -321,6 +349,9 @@ class EgressusMelodium(EuroPiScript):
                 # Update screen with the upcoming CV pattern
                 self.screenRefreshNeeded = True
                 self.saveState()
+                self.running = False
+                for cv in cvs:
+                    cv.off()
 
     '''Advances step and generates voltage slew voltages to next value in CV pattern'''
     def handleClockStep(self):
@@ -370,12 +401,14 @@ class EgressusMelodium(EuroPiScript):
                 # If length is one, cycle between high and low voltages (traditional LFO)
                 # Each output uses a its configured slew shape
                 if self.patternLength == 1:
+                    #numSamplesNeeded = (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
                         self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
                         (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset), # Increase the sample rate for slower divisions. '- (self.outputDivisions[idx] - 1)' reduces the chance of not completing all samples before the next clock
                         self.slewBuffers[idx]
                         )
+                    self.slewBufferCount[idx] = (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)
                 else:
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
@@ -383,7 +416,10 @@ class EgressusMelodium(EuroPiScript):
                         self.slewResolution * self.outputDivisions[idx] + 1, # Increase the sample rate for slower divisions
                         self.slewBuffers[idx]
                         )
+                    self.slewBufferCount[idx] = self.slewResolution * self.outputDivisions[idx] + 1
                 self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
+                # Add buffer sample count to list and reset counter
+                self.slewCounter[idx] = 0
         
         # Hide the shreaded visual indicator after 2 clock steps
         if self.clockStep > self.shreadedVisClockStep + 2:
@@ -882,7 +918,5 @@ class EgressusMelodium(EuroPiScript):
             yield arr[s]
 
 if __name__ == '__main__':
-    # Reset module display state.
-    [cv.off() for cv in cvs]
     dm = EgressusMelodium()
     dm.main()
