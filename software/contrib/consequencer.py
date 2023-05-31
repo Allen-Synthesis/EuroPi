@@ -51,9 +51,9 @@ class Consequencer(EuroPiScript):
     def __init__(self):
         # Initialize sequencer pattern arrays
         p = pattern()
-        self.BD=p.BD
-        self.SN=p.SN
-        self.HH=p.HH
+        self.BD = p.BD
+        self.SN = p.SN
+        self.HH = p.HH
 
         # Initialize sequencer pattern probabiltiies
         self.BdProb = p.BdProb
@@ -61,19 +61,9 @@ class Consequencer(EuroPiScript):
         self.HhProb = p.HhProb
 
         # Load and populate probability patterns
-        # If the probability string len is < pattern len, automatically fill out with the last digit:
-        # - 9   becomes 999999999
-        # - 95  becomes 955555555
-        # - 952 becomes 952222222
-        for pi in range(len(self.BD)):
-            if len(self.BdProb[pi]) < len(self.BD[pi]):
-                self.BdProb[pi] = self.BdProb[pi] + (self.BdProb[pi][-1] * (len(self.BD[pi]) - len(self.BdProb[pi])))
-        for pi in range(len(self.SN)):
-            if len(self.SnProb[pi]) < len(self.SN[pi]):
-                self.SnProb[pi] = self.SnProb[pi] + (self.SnProb[pi][-1] * (len(self.SN[pi]) - len(self.SnProb[pi])))
-        for pi in range(len(self.HH)):
-            if len(self.HhProb[pi]) < len(self.HH[pi]):
-                self.HhProb[pi] = self.HhProb[pi] + (self.HhProb[pi][-1] * (len(self.HH[pi]) - len(self.HhProb[pi])))
+        probability_extender(self.BD, self.BdProb)
+        probability_extender(self.SN, self.SnProb)
+        probability_extender(self.HH, self.HhProb)
 
         # Initialize variables
         self.step = 0
@@ -227,9 +217,9 @@ class Consequencer(EuroPiScript):
     def generateNewRandomCVPattern(self):
         try:
             gc.collect()
-            self.random4.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
-            self.random5.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
-            self.random6.append(self.generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            self.random4.append(generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            self.random5.append(generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
+            self.random6.append(generateRandomPattern(self.maxStepLength, 0, self.maxCvVoltage))
             return True
         except Exception:
             return False
@@ -237,11 +227,13 @@ class Consequencer(EuroPiScript):
     def getPattern(self):
         # If mode 2 and there is CV on the analogue input use it, if not use the knob position
         val = 100 * ain.percent()
+        bd_length = len(self.BD)
+        k2_value = k2.read_position(bd_length)
         if self.analogInputMode == 2 and val > self.minAnalogInputVoltage:
-            self.pattern = int((len(self.BD) / 100) * val)
-            self.pattern = min(int((len(self.BD) / 100) * val) + k2.read_position(len(self.BD)), len(self.BD)-1)
+            self.pattern = int((bd_length / 100) * val)
+            self.pattern = min(self.pattern + k2_value, bd_length - 1)
         else:
-            self.pattern = k2.read_position(len(self.BD))
+            self.pattern = k2_value
 
         self.step_length = len(self.BD[self.pattern])
 
@@ -252,20 +244,14 @@ class Consequencer(EuroPiScript):
             # Convert percentage value to a representative index of the pattern array
             self.CvPattern = int((len(self.random4) / 100) * val)
 
-    def generateRandomPattern(self, length, min, max):
-        self.t=[]
-        for i in range(0, length):
-            self.t.append(uniform(0,9))
-        return self.t
-
-
     def getRandomness(self):
         # If mode 1 and there is CV on the analogue input use it, if not use the knob position
         val = 100 * ain.percent()
+        k1_value = k1.read_position()
         if self.analogInputMode == 1 and val > self.minAnalogInputVoltage:
-            self.randomness = min(val + k1.read_position(), 99)
+            self.randomness = min(val + k1_value, 99)
         else:
-            self.randomness = k1.read_position()
+            self.randomness = k1_value
 
     def main(self):
         while True:
@@ -277,16 +263,6 @@ class Consequencer(EuroPiScript):
             if self.clock_step != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
                 self.step = 0
                 self.clock_step = 0
-
-    def visualizePattern(self, pattern, prob):
-        output=''
-        for s in range (len(pattern)):
-            if pattern[s] == "1":
-                char = '^' if prob[s] == '9' else '-'
-                output = output + char
-            else:
-                output = output + ' '
-        return output
 
     def updateScreen(self):
         # oled.clear() - dont use this, it causes the screen to flicker!
@@ -306,12 +282,16 @@ class Consequencer(EuroPiScript):
         # Calculate the number of patterns required to fill the OLED width
         number_of_offset_patterns = 2 * max(int(OLED_WIDTH / lpos_offset), 1)
 
+        bd_visualized = visualize_pattern(self.BD[self.pattern], self.BdProb[self.pattern])
+        sn_visualized = visualize_pattern(self.SN[self.pattern], self.SnProb[self.pattern])
+        hh_visualized = visualize_pattern(self.HH[self.pattern], self.HhProb[self.pattern])
+
         # Draw as many offset patterns as required to fill the OLED
         for pattern_offset in range(number_of_offset_patterns):
             # Draw the current pattern
-            oled.text(self.visualizePattern(self.BD[self.pattern], self.BdProb[self.pattern]), normal_lpos, 0, 1)
-            oled.text(self.visualizePattern(self.SN[self.pattern], self.SnProb[self.pattern]), normal_lpos, 10, 1)
-            oled.text(self.visualizePattern(self.HH[self.pattern], self.HhProb[self.pattern]), normal_lpos, 20, 1)
+            oled.text(bd_visualized, normal_lpos, 0, 1)
+            oled.text(sn_visualized, normal_lpos, 10, 1)
+            oled.text(hh_visualized, normal_lpos, 20, 1)
             normal_lpos += lpos_offset
 
         # If the random toggle is on, show a rectangle
@@ -335,6 +315,44 @@ class Consequencer(EuroPiScript):
         oled.text(str(self.pattern), 110, 25, 1)
 
         oled.show()
+
+
+def generateRandomPattern(self, length, least, greatest):
+    result = [
+        uniform(least, greatest)
+        for i in range(length)
+    ]
+    return result
+
+
+def probability_extender(drum_seq, drum_prob):
+    """Extends the number of digits in the drum probability
+    to match the length of the drum sequence. Automatically
+    fills out probability with the last digit:
+      - 9   becomes 999999999
+      - 95  becomes 955555555
+      - 952 becomes 952222222
+    """
+    for pi in range(len(drum_seq)):
+        prob_pi = drum_prob[pi]
+        prob_length = len(prob_pi)
+        drum_length = len(drum_seq[pi])
+        if prob_length < drum_length:
+            extension = prob_pi[-1] * (drum_length - prob_length)
+            drum_prob[pi] = prob_pi + extension
+
+
+def visualize_pattern(pattern, prob):
+    def to_character(index):
+        char = '^' if prob[index] == '9' else '-'
+        return char if pattern[index] == '1' else ' '
+
+    visualized = [
+        to_character(s)
+        for s in range(len(pattern))
+    ]
+    return ''.join(visualized)
+
 
 class pattern:
 
