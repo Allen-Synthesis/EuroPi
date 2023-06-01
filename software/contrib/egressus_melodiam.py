@@ -74,7 +74,8 @@ class EgressusMelodium(EuroPiScript):
         self.currentK2Reading = 0
 
         self.running = False
-        self.bufferUnderruns = [0, 0, 0, 0, 0, 0]
+        self.bufferUnderrunCounter = [0, 0, 0, 0, 0, 0]
+        self.bufferOverrunSamples = [0, 0, 0, 0, 0, 0]
 
         self.unClockedMode = False
         self.unClockedModeIndicator = ['', 'U']
@@ -83,7 +84,7 @@ class EgressusMelodium(EuroPiScript):
         self.previousOutputVoltage = [0, 0, 0, 0, 0, 0]
         self.slewBufferSampleNum = [0, 0, 0, 0, 0, 0]
         self.slewBufferPosition = [0, 0, 0, 0, 0, 0]
-        self.slewBufferUnderunxxxxx = [0, 0, 0, 0, 0, 0]
+        self.bufferSampleOffsets = [0, 0, 0, 0, 0, 0]
 
         # pre-create slew buffers to avoid memory allocation errors
         self.initSlewBuffers()
@@ -301,8 +302,6 @@ class EgressusMelodium(EuroPiScript):
 
             if ticks_diff(ticks_ms(), self.lastSlewVoltageOutputTime) >= (self.averageMsBetweenClocks / self.slewResolution):
                 for idx in range(len(cvs)):
-                    # if self.slewBufferSampleNum[idx] == 0:
-                    #     continue
                     try:
                         print(f"[{idx}] num: {self.slewBufferPosition[idx]} target: {self.slewBufferSampleNum[idx]}")
                         # Do we have a sample in the buffer?
@@ -311,21 +310,21 @@ class EgressusMelodium(EuroPiScript):
                             v = next(self.slewGeneratorObjects[idx])
                             cvs[idx].voltage(v)
                             self.previousOutputVoltage[idx] = v
-                            self.bufferUnderruns[idx] = 0
-                            self.slewBufferPosition[idx] += 1
+                            self.bufferUnderrunCounter[idx] = 0
                         else:
                             # We do not have a sample - buffer under run
                             # Output the previous voltage to keep things as smooth as possible
-                            self.bufferUnderruns[idx] += 1
+                            self.bufferUnderrunCounter[idx] += 1
                             
-                            if self.bufferUnderruns[idx] > 10:
+                            if self.bufferUnderrunCounter[idx] > 10:
                                 # We have been looping buffer under runs for a while, reset CV
                                 cvs[idx].off()
                             else:
                                 # Output previus voltage
                                 cvs[idx].voltage(self.previousOutputVoltage[idx])
-                                print(f"[{idx}] under-runs {self.bufferUnderruns[idx]}")
-                                print(f"[{idx}] output V: {self.previousOutputVoltage[idx]}")
+                                print(f"[{idx}] under-runs {self.bufferUnderrunCounter[idx]}")
+                                #print(f"[{idx}] output V: {self.previousOutputVoltage[idx]}")
+                        self.slewBufferPosition[idx] += 1
                     except StopIteration:
                         # we shouldn't ever get here. the master sampler buffer is empty
                         continue
@@ -389,11 +388,24 @@ class EgressusMelodium(EuroPiScript):
                 # flip the flip flop value for LFO mode
                 self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
 
-                # Did a buffer over-run occur due to excessive processing latency (a vertical line in the wave)
+                # Catch buffer over-runs by detecting that not all samples were used in the last cycle
+                if self.clockStep > 10:
+                    self.bufferOverrunSamples[idx] = (self.slewBufferPosition[idx] - self.slewBufferSampleNum[idx])
+                    if self.slewBufferPosition[idx] > self.slewBufferSampleNum[idx]:
+                        print(f"[{idx}]***** position > buffer length")
+                    elif self.slewBufferSampleNum[idx] > self.slewBufferPosition[idx]:
+                        print(f"[{idx}]***** position < buffer length")
+                    else:
+                        print(f"[{idx}]***** position == buffer length")
+                    print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {self.bufferOverrunSamples[idx]} ({self.averageMsBetweenClocks})")
+                    print(f"[{idx}] offset before: {self.bufferSampleOffsets[idx]}")
+                    self.bufferSampleOffsets[idx] = self.bufferSampleOffsets[idx] - self.bufferOverrunSamples[idx]
+                    print(f"[{idx}] offset after: {self.bufferSampleOffsets[idx]}")
 
-                overrun = self.slewBufferSampleNum[idx] - self.slewBufferPosition[idx]
-                print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {overrun} ({self.averageMsBetweenClocks})")
-                self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - overrun)
+                
+                # Set the target number of samples for the next cycle, factoring in any previous overruns
+                #self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - self.bufferOverrunSamples[idx])
+                self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - self.bufferSampleOffsets[idx])
 
                 # if overrun > 1:
                 #     print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {overrun} ({self.averageMsBetweenClocks})")
@@ -404,12 +416,12 @@ class EgressusMelodium(EuroPiScript):
                 # When not in unClockedMode, processing time between clock steps varies a little
                 # At BPMs > ~100, this results in occasional vertical perculiarities at the peak or trough of an LFO wave
                 # Adding sampleReductionOffset seems to reduce the impact of these anomalies
-                if not self.unClockedMode:
-                    sampleReductionOffset = max(1, self.outputDivisions[idx] - 2)
-                    #sampleReductionOffset = int(max(1, (self.averageMsBetweenClocks / (25 * self.outputDivisions[idx]))) - 1)
+                # if not self.unClockedMode:
+                #     sampleReductionOffset = max(1, self.outputDivisions[idx] - 2)
+                #     #sampleReductionOffset = int(max(1, (self.averageMsBetweenClocks / (25 * self.outputDivisions[idx]))) - 1)
                     
-                else:
-                    sampleReductionOffset = 0
+                # else:
+                #     sampleReductionOffset = 0
 
                 # If length is one, cycle between high and low voltages (traditional LFO)
                 # Each output uses a its configured slew shape
@@ -510,6 +522,8 @@ class EgressusMelodium(EuroPiScript):
             self.outputDivisions[self.selectedOutput] = (k1.read_position(self.maxOutputDivision) + 1)
             self.screenRefreshNeeded = True
             self.lastK1Reading = self.currentK1Reading
+            for n in range(6):
+                self.bufferSampleOffsets[n] = 0
             self.saveState()
 
     # '''Get the cycle mode from k1'''
