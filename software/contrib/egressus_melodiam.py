@@ -83,6 +83,7 @@ class EgressusMelodium(EuroPiScript):
         self.previousOutputVoltage = [0, 0, 0, 0, 0, 0]
         self.slewBufferSampleNum = [0, 0, 0, 0, 0, 0]
         self.slewBufferPosition = [0, 0, 0, 0, 0, 0]
+        self.slewBufferUnderunxxxxx = [0, 0, 0, 0, 0, 0]
 
         # pre-create slew buffers to avoid memory allocation errors
         self.initSlewBuffers()
@@ -387,7 +388,19 @@ class EgressusMelodium(EuroPiScript):
 
                 # flip the flip flop value for LFO mode
                 self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
-                
+
+                # Did a buffer over-run occur due to excessive processing latency (a vertical line in the wave)
+
+                overrun = self.slewBufferSampleNum[idx] - self.slewBufferPosition[idx]
+                print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {overrun} ({self.averageMsBetweenClocks})")
+                self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - overrun)
+
+                # if overrun > 1:
+                #     print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {overrun} ({self.averageMsBetweenClocks})")
+                #     self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - overrun)
+                # else:
+                #     # previous value
+                #     self.slewBufferSampleNum[idx] = self.slewBufferSampleNum[idx]
                 # When not in unClockedMode, processing time between clock steps varies a little
                 # At BPMs > ~100, this results in occasional vertical perculiarities at the peak or trough of an LFO wave
                 # Adding sampleReductionOffset seems to reduce the impact of these anomalies
@@ -402,7 +415,7 @@ class EgressusMelodium(EuroPiScript):
                 # Each output uses a its configured slew shape
                 if self.patternLength == 1:
                     #numSamplesNeeded = (self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)
-                    self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)) - 1
+                    #self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)) - 1
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
                         self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
@@ -412,7 +425,7 @@ class EgressusMelodium(EuroPiScript):
                         )
                     #self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - (sampleReductionOffset)) - 1
                 else:
-                    self.slewBufferSampleNum[idx] = (self.slewResolution * self.outputDivisions[idx] + 1) - 1
+                    #self.slewBufferSampleNum[idx] = (self.slewResolution * self.outputDivisions[idx] + 1) - 1
                     self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
                         self.cvPatternBanks[idx][self.CvPattern][self.step],
                         self.cvPatternBanks[idx][self.CvPattern][nextStep],
@@ -423,10 +436,6 @@ class EgressusMelodium(EuroPiScript):
                     #self.slewBufferSampleNum[idx] = (self.slewResolution * self.outputDivisions[idx] + 1) - 1
                 self.slewGeneratorObjects[idx] = self.slewGenerator(self.slewArray)
                 #print(f"[{idx}] :{self.slewArray[0:self.slewBufferSampleNum[idx]]}")
-                # Add buffer sample count to list and reset counter
-                if self.slewBufferSampleNum[idx] - self.slewBufferPosition[idx] > 1:
-                    print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {self.slewBufferSampleNum[idx] - self.slewBufferPosition[idx]} ({self.averageMsBetweenClocks})")
-                
                 self.slewBufferPosition[idx] = 0
         
         # Hide the shreaded visual indicator after 2 clock steps
