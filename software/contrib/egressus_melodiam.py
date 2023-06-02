@@ -136,7 +136,8 @@ class EgressusMelodium(EuroPiScript):
                     # Resync If BPM difference is >= 2
                     if abs(newBpm - self.bpm) >= 2:
                         self.bpm = newBpm
-                        self.msBetweenClocks = newDiffBetweenClocks
+                        #self.msBetweenClocks = newDiffBetweenClocks
+                        self.averageMsBetweenClocks = self.average(self.inputClockDiffs)
                         #self.slewResolution = min(40, int(self.msBetweenClocks / 15)) + 1
                         self.slewResolution = int(self.averageMsBetweenClocks / 15) + 1
                         #print(f"bpm: {self.bpm} diff: {self.msBetweenClocks} resolution: {self.slewResolution}")
@@ -389,23 +390,29 @@ class EgressusMelodium(EuroPiScript):
                 self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
 
                 # Catch buffer over-runs by detecting that not all samples were used in the last cycle
-                if self.clockStep > self.inputClockDiffListLength:
+                if self.clockStep > self.inputClockDiffListLength and not self.unClockedMode:
                     self.bufferOverrunSamples[idx] = (self.slewBufferPosition[idx] - self.slewBufferSampleNum[idx])
-                    if self.slewBufferPosition[idx] > self.slewBufferSampleNum[idx]:
-                        print(f"[{idx}]***** position > buffer length")
-                    elif self.slewBufferSampleNum[idx] > self.slewBufferPosition[idx]:
-                        print(f"[{idx}]***** position < buffer length")
-                    else:
-                        print(f"[{idx}]***** position == buffer length")
-                    print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {self.bufferOverrunSamples[idx]} ({self.averageMsBetweenClocks})")
-                    print(f"[{idx}] offset before: {self.bufferSampleOffsets[idx]}")
+                    # if self.slewBufferPosition[idx] > self.slewBufferSampleNum[idx]:
+                    #     # Buffer Under-run (Not enough samples in the buffer)
+                    #     print(f"[{idx}]***** position > buffer length")
+                    # elif self.slewBufferSampleNum[idx] > self.slewBufferPosition[idx]:
+                    #     # Buffer Over run (Too many samples in the buffer)
+                    #     print(f"[{idx}]***** position < buffer length")
+                    # else:
+                    #     print(f"[{idx}]***** position == buffer length")
+                    #print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {self.bufferOverrunSamples[idx]} ({self.averageMsBetweenClocks})")
+                    #print(f"[{idx}] offset before: {self.bufferSampleOffsets[idx]}")
                     self.bufferSampleOffsets[idx] = self.bufferSampleOffsets[idx] - self.bufferOverrunSamples[idx]
-                    print(f"[{idx}] offset after: {self.bufferSampleOffsets[idx]}")
+                    #print(f"[{idx}] offset after: {self.bufferSampleOffsets[idx]}")
+
+                else:
+                    self.bufferSampleOffsets[idx] = 0
 
                 
                 # Set the target number of samples for the next cycle, factoring in any previous overruns
                 #self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - self.bufferOverrunSamples[idx])
                 self.slewBufferSampleNum[idx] = ((self.slewResolution * self.outputDivisions[idx]) - self.bufferSampleOffsets[idx])
+                print(f"[{idx}] Target buffer size: {self.slewBufferSampleNum[idx]}. Adjusted by {self.bufferSampleOffsets[idx]}")
 
                 # if overrun > 1:
                 #     print(f"[{idx}] [{self.outputDivisions[idx]}] Over-run: {overrun} ({self.averageMsBetweenClocks})")
@@ -502,6 +509,7 @@ class EgressusMelodium(EuroPiScript):
             if self.unClockedMode:
                 # Set LFO speed
                 self.averageMsBetweenClocks = self.minLfoCycleMs + (self.currentK2Reading * 5)
+                self.slewResolution = int(self.averageMsBetweenClocks / 15) + 1
             else:
                 # Set pattern length
                 self.patternLength = int((self.maxStepLength / 100) * (self.currentK2Reading-1)) + 1
@@ -742,7 +750,7 @@ class EgressusMelodium(EuroPiScript):
 
         if self.unClockedMode:
 
-            if self.msBetweenClocks != 0:
+            if self.averageMsBetweenClocks != 0:
                 oled.text(f"Cycle: {self.averageMsBetweenClocks * 2}ms", 24, 1, 1)
         
         else:
