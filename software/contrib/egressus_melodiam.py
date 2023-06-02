@@ -131,7 +131,7 @@ class EgressusMelodium(EuroPiScript):
                     self.inputClockDiffs[self.clockStep % self.inputClockDiffListLength] = newDiffBetweenClocks
 
                 # Attempt to BPM change and sync to it
-                if self.clockStep >= 4:
+                if self.clockStep >= self.inputClockDiffListLength:
                     newBpm = self.calculateBpm(self.inputClockDiffs)
                     # Resync If BPM difference is >= 2
                     if abs(newBpm - self.bpm) >= 2:
@@ -389,7 +389,7 @@ class EgressusMelodium(EuroPiScript):
                 self.outputVoltageFlipFlops[idx] = not self.outputVoltageFlipFlops[idx]
 
                 # Catch buffer over-runs by detecting that not all samples were used in the last cycle
-                if self.clockStep > 10:
+                if self.clockStep > self.inputClockDiffListLength:
                     self.bufferOverrunSamples[idx] = (self.slewBufferPosition[idx] - self.slewBufferSampleNum[idx])
                     if self.slewBufferPosition[idx] > self.slewBufferSampleNum[idx]:
                         print(f"[{idx}]***** position > buffer length")
@@ -522,8 +522,8 @@ class EgressusMelodium(EuroPiScript):
             self.outputDivisions[self.selectedOutput] = (k1.read_position(self.maxOutputDivision) + 1)
             self.screenRefreshNeeded = True
             self.lastK1Reading = self.currentK1Reading
-            for n in range(6):
-                self.bufferSampleOffsets[n] = 0
+            # for n in range(6):
+            #     self.bufferSampleOffsets[n] = 0
             self.saveState()
 
     # '''Get the cycle mode from k1'''
