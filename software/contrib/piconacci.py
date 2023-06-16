@@ -109,7 +109,7 @@ class Piconacci(EuroPiScript):
 
     def main(self):
         # Reset all outputs
-        [cv.off() for cv in cvs]
+        turn_off_all_cvs()
         while True:
             # If the state has changed, update display
             if self.display_update_required:

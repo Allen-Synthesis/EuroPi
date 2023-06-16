@@ -92,12 +92,21 @@ def clamp(value, low, high):
     return max(min(value, high), low)
 
 
+def turn_off_all_cvs():
+    """Calls cv.off() for every cv in cvs. This is done commonly enough in
+    contrib scripts that a function seems useful.
+    """
+    for cv in cvs:
+        cv.off()
+
+
 def reset_state():
     """Return device to initial state with all components off and handlers reset."""
     if not TEST_ENV:
         oled.fill(0)
-    [cv.off() for cv in cvs]
-    [d.reset_handler() for d in (b1, b2, din)]
+    turn_off_all_cvs()
+    for d in (b1, b2, din):
+        d.reset_handler()
 
 
 def bootsplash():
