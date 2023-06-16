@@ -32,7 +32,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
 ### Installing the firmware
-1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.19.1`.
+1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.20.0`.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
 
     ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
@@ -170,4 +170,3 @@ As with all hardware, the EuroPi has certain limitations. Some are more obvious 
 ### In Depth Limitations
 - Clock pulses shorter than approximately 0.01s (10ms) will not be reliably detected (this depends on clock speed too)
 - Reading any analogue source, either the analogue input or knobs, will result in a slight delay of the script (this can be reduced by using fewer samples, at the cost of accuracy)
-
