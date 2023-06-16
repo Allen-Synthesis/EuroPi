@@ -29,6 +29,7 @@ EUROPI_SCRIPTS = [
     "contrib.logic.Logic",
     "contrib.master_clock.MasterClock",
     "contrib.noddy_holder.NoddyHolder",
+    "contrib.pams.PamsWorkout",
     "contrib.piconacci.Piconacci",
     "contrib.polyrhythmic_sequencer.PolyrhythmSeq",
     "contrib.poly_square.PolySquare",
