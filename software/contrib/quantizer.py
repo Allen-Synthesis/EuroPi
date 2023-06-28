@@ -37,7 +37,7 @@ class ScreensaverScreen(Screensaver):
     not necessary for now
     """
     def __init__(self, quantizer):
-        super().__init__(self)
+        super().__init__()
         self.quantizer = quantizer
 
     def on_button1(self):
