@@ -20,7 +20,7 @@ B1, B2, and DIN are not used
 from europi import *
 from europi_script import EuroPiScript
 
-class Kompari(EuriPiScript):
+class Kompari(EuroPiScript):
     """The main Kompari script.  See module comment for usage
     """
     HIGH_VOLTAGE = 5.0
