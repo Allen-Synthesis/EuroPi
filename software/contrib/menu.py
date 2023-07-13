@@ -26,6 +26,7 @@ EUROPI_SCRIPTS = [
     "contrib.harmonic_lfos.HarmonicLFOs",
     "contrib.hello_world.HelloWorld",
     "contrib.knob_playground.KnobPlayground",
+    "contrib.kompari.Kompari",
     "contrib.logic.Logic",
     "contrib.master_clock.MasterClock",
     "contrib.noddy_holder.NoddyHolder",

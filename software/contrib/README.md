@@ -61,6 +61,14 @@ The division of the master clock that each LFO runs at, as well as each of their
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: LFO</i>
 
+### Kompari \[ [documentation](/software/contrib/kompari.md) | [script](/software/contrib/kompari.py) \]
+
+Compares `AIN` to `K1` and `K2`, outputting 5V digital signals on `CV1`-`CV5`, and an analogue output signal based on
+comparing all 3 sources.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: logic, gates, binary operators</i>
+
 ### Logic \[ [documentation](/software/contrib/logic.md) | [script](/software/contrib/logic.py) \]
 
 Treats both inputs as digital on/off signals and outputs the results of binary AND, OR, XOR, NAND, NOR, and XNOR operations on outputs 1-6.
