@@ -77,6 +77,19 @@ Use the exact same process as for the ssd1306 library to install the europi libr
 3. Click 'Install'.
 4. You will now see several new files, including 'europi.py' alongside the 'ssd1306.py' inside the 'lib' folder.
 
+### (Optional) Installing the EuroPi Contrib library
+
+The EuroPi Contrib library will make user-contributed software available when using the [Menu](/software/contrib/menu.md) software. To install it, follow the same steps as the previous libraries on Thonny:
+
+1. Type 'micropython-europi-contrib' into the search box and click 'Search on PyPi'
+2. Click the result named 'micropython-europi-contrib'.
+
+    ![Screenshot from 2023-07-14 03-02-02](https://github.com/Allen-Synthesis/EuroPi/assets/5189714/6690e1e3-56e1-49d6-8701-6f5912d10ba1)
+   
+4. Click 'Install'.
+5. You will now see a 'contrib' folder inside the 'lib' folder which contains several software options with the extension `.py`.
+
+
 ## Next Steps
 
 Now that you have installed the europi.py and ssd1306 libraries, you are ready to take the next step with the module.  
@@ -118,8 +131,9 @@ Now you have access to the inputs and outputs using easy methods, which you can 
   
 ### Install the contrib scripts and setup the menu
 
-1. Complete all of the steps for [Option 2](#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
-2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically.
+1. Make sure you've [Installed the EuroPi Contrib library](#optional-installing-the-europi-contrib-library).
+2. Complete all of the steps for [Option 2](#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
+3. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically.
 
 One of the scripts that is installed with the menu system is named '~ Calibrate', and it requires you to send precise voltages to the module to calibrate it for the future, allowing you to input and output precise values from your module.  
 This is entirely optional and it will work with a usable degree of accuracy without calibration, however if you do want to then move to the ['Calibrate the module'](#calibrate-the-module) step.
