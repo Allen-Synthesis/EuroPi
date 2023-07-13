@@ -79,7 +79,7 @@ Use the exact same process as for the ssd1306 library to install the europi libr
 
 ### (Optional) Installing the EuroPi Contrib library
 
-The EuroPi Contrib library will make user-contributed software available when using the [Menu](/software/contrib/menu.md) software. To install it, follow the same steps as the previous libraries on Thonny:
+The EuroPi Contrib library will make user-contributed software available on your EuroPi when using the [Menu](/software/contrib/menu.md) software. To install it, follow the same steps as the previous libraries on Thonny:
 
 1. Type 'micropython-europi-contrib' into the search box and click 'Search on PyPi'
 1. Click the result named 'micropython-europi-contrib'.
