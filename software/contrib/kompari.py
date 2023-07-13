@@ -7,8 +7,8 @@ Outputs:
 - CV1: +5V if K1 < AIN, otherwise 0
 - CV2: +5V if AIN < K2, otherwise 0
 - CV3: +5V if K1 < AIN < K2, otherwise 0
-- CV4: The inverse of CV1
-- CV5: The inverse of CV2
+- CV4: max( K1, AIN )
+- CV5: min( AIN, K2 )
 - CV6: max( K1, min( AIN, K2 ) ) )
 
 B1, B2, and DIN are not used
@@ -43,23 +43,21 @@ class Kompari(EuroPiScript):
 
             if lower_bound < x:
                 cv1.voltage(self.HIGH_VOLTAGE)
-                cv4.voltage(self.LOW_VOLTAGE)
             else:
                 cv1.voltage(self.LOW_VOLTAGE)
-                cv4.voltage(self.HIGH_VOLTAGE)
 
             if x < upper_bound:
                 cv2.voltage(self.HIGH_VOLTAGE)
-                cv5.voltage(self.LOW_VOLTAGE)
             else:
                 cv2.voltage(self.LOW_VOLTAGE)
-                cv5.voltage(self.HIGH_VOLTAGE)
 
             if lower_bound < x and x < upper_bound:
                 cv3.voltage(self.HIGH_VOLTAGE)
             else:
                 cv3.voltage(self.LOW_VOLTAGE)
 
+            cv4.voltage(max(lower_bound, x) * MAX_OUTPUT_VOLTAGE)
+            cv5.voltage(min(x, upper_bound) * MAX_OUTPUT_VOLTAGE)
             cv6.voltage(max(lower_bound, min(x, upper_bound)) * MAX_OUTPUT_VOLTAGE)
 
             oled.fill(0)

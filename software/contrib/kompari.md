@@ -11,6 +11,6 @@ Outputs:
 - `CV1` +5V if `K1` < `AIN`, otherwise 0
 - `CV2` +5V if `AIN` < `K2`, otherwise 0
 - `CV3` +5V if `K1` < `AIN` < `K2`, otherwise 0
-- `CV4` +5V if `K1` >= `AIN`, otherwise 0 (inverse of `CV1`)
-- `CV5` +5V if `AIN` >= `K2`, otherwise 0 (inverse of `CV2`)
+- `CV4` `max(K1, AIN)`
+- `CV5` `min(AIN, K2)`
 - `CV6` `max(K1, min(AIN, K2))`
