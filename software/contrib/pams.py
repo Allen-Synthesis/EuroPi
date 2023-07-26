@@ -528,6 +528,16 @@ class PamsOutput:
         ## Probability that we skip an output [0-100]
         self.skip = Setting("Skip%", "skip", list(range(101)), list(range(101)), default_value=0)
 
+        ## Swing percentage
+        #
+        #  50% -> even, no swing
+        #  <50% -> short-long-short-long-...
+        #  >50% -> long-short-long-short-...
+        self.swing = Setting("Swing%", "swing", list(range(101)), list(range(101)), default_value=50)
+
+        ## Counter that increases every time we finish a full wave form
+        self.wave_counter = 0
+
         ## The position we're currently playing inside playback_pattern
         #
         #  This increments once every tick
@@ -570,7 +580,8 @@ class PamsOutput:
             "phase"     : self.phase.to_dict(),
             "amplitude" : self.amplitude.to_dict(),
             "width"     : self.width.to_dict(),
-            "quantizer" : self.quantizer.to_dict()
+            "quantizer" : self.quantizer.to_dict(),
+            "swing"     : self.swing.to_dict()
         }
 
     def load_settings(self, settings):
@@ -598,6 +609,8 @@ class PamsOutput:
             self.width.load(settings["width"])
         if "quantizer" in settings.keys():
             self.quantizer.load(settings["quantizer"])
+        if "swing" in settings.keys():
+            self.swing.load(settings["swing"])
 
         self.change_e_length()
 
@@ -691,6 +704,7 @@ class PamsOutput:
             self.next_e_pattern = None
 
         self.sample_position = 0
+        self.wave_counter = 0
 
     def tick(self):
         """Advance the current pattern one tick and calculate the output voltage
@@ -712,7 +726,13 @@ class PamsOutput:
             # reset waves are always low; the clock's stop() function handles triggering them
             out_volts = 0.0
         else:
-            ticks_per_note = round(MasterClock.PPQN / self.clock_mod.get_value())
+            if self.wave_counter % 2 == 0:
+                # first half of the swing; if swing < 50% this is short, otherwise long
+                swing_amt = swlf.swing.get_value() / 100.0
+            else:
+                # second half of the swing; if swing < 50% this is long, otherwise short
+                swing_amt = (100 - self.swing.get_value()) / 100.0
+            ticks_per_note = round(2 * MasterClock.PPQN / self.clock_mod.get_value() * swing_amt)
             e_step = self.e_pattern[self.e_position]
             wave_position = self.sample_position
             # are we starting a new repeat of the pattern?
@@ -720,6 +740,7 @@ class PamsOutput:
             # determine if we should skip this sample playback
             if rising_edge:
                 self.skip_this_step = random.randint(0, 100) < self.skip.get_value()
+                self.wave_counter += 1
 
             wave_sample = int(e_step) * int (not self.skip_this_step)
             if self.wave_shape.get_value() == WAVE_RANDOM:
@@ -898,6 +919,7 @@ class PamsMenu:
                 SettingChooser(prefix, ch.e_step),
                 SettingChooser(prefix, ch.e_trig),
                 SettingChooser(prefix, ch.e_rot),
+                SettingChooser(prefix, ch.swing),
                 SettingChooser(prefix, ch.quantizer)
             ]))
         for ch in CV_INS.keys():

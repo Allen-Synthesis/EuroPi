@@ -109,12 +109,14 @@ The submenu for each CV output has the following options:
 
 - `Wave` -- the wave shape to output. Square/Triangle/Sine/Random/AIN
   - ![Square Wave](./pams-docs/wave_square.png) Square: square/pulse wave with adjustable width
-  - ![Triangle Wave](./pams-docs/wave_triangle.png) Triangle: triangle wave with adjustable symmetry (saw to symmetrical triangle to ramp)
+  - ![Triangle Wave](./pams-docs/wave_triangle.png) Triangle: triangle wave with adjustable symmetry (saw to symmetrical
+    triangle to ramp)
   - ![Sine Wave](./pams-docs/wave_sine.png) Sine: bog-standard sine wave
-  - ![Random Wave](./pams-docs/wave_random.png) Random: outputs a random voltage at the start of every euclidean pulse, holding that voltage until the next pulse
-    (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
-  - ![AIN](./pams-docs/wave_ain.png) AIN: acts as a sample & hold of `ain`, with a sample taken at the start of every euclidean pulse
-    (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
+  - ![Random Wave](./pams-docs/wave_random.png) Random: outputs a random voltage at the start of every euclidean pulse,
+    holding that voltage until the next pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean
+    pulse)
+  - ![AIN](./pams-docs/wave_ain.png) AIN: acts as a sample & hold of `ain`, with a sample taken at the start of every
+    euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
 - `Width` -- width of the resulting wave. See below for the effects of width adjustment on different wave shapes
 - `Phase` -- the phase offset of the wave. Starting a triangle at 50% would start it midway through
 - `Ampl.` -- the maximum amplitude of the output as a percentage of the 12V hardware maximum
@@ -122,6 +124,8 @@ The submenu for each CV output has the following options:
 - `EStep` -- the number of steps in the euclidean rhythm. If zero, the euclidean generator is disabled
 - `ETrig` -- the number of pulses in the euclidean rhythm
 - `ERot` -- rotation of the euclidean rhythm
+- `Swing%` -- percentage division between pairs of consecutive notes. 50% results in no swing. Less than 50% results in
+  a short-long-short-long-... pattern of notes. Greater than 50% results in a long-short-long-short-... pattern of notes
 - `Quant` -- quantization scale
 
 ### Phase Offsets
@@ -147,6 +151,32 @@ x1, phase = 25
   |    |    |    |    |    |    |    |
   |    |    |    |    |    |    |    |
 __|    |____|    |____|    |____|    |__
+```
+
+### Swing
+
+The following ascii art shows the effects of chaning the swing parameter on a simple square wave.  Note that the duty
+cycle of the wave is preserved within each step, and each 2-note cycle takes the same amount of time. Only the timing
+between the first and second notes of each pair is affected.
+
+```
+Swing = 50%
+ ____      ____      ____      ____
+|    |    |    |    |    |    |    |
+|    |    |    |    |    |    |    |
+|    |____|    |____|    |____|    |____
+
+Swing = 25%
+ __    ______        __    ______
+|  |  |      |      |  |  |      |
+|  |  |      |      |  |  |      |
+|  |__|      |______|  |__|      |______
+
+Swing = 75%
+ ______        __    ______        __
+|      |      |  |  |      |      |  |
+|      |      |  |  |      |      |  |
+|      |______|  |__|      |______|  |__
 ```
 
 ### `AIN` and `Random` Waves
