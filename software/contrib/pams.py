@@ -207,6 +207,16 @@ DIN_MODES = [
     DIN_MODE_RESET
 ]
 
+MUTE_MODES = [
+    False,
+    True
+]
+
+MUTE_LABELS = [
+    "N",
+    "Y"
+]
+
 class Setting:
     """A single setting that can be loaded, saved, or dynamically read from an analog input
     """
@@ -535,6 +545,11 @@ class PamsOutput:
         #  >50% -> long-short-long-short-...
         self.swing = Setting("Swing%", "swing", list(range(101)), list(range(101)), default_value=50)
 
+        ## Allows muting a channel during runtime
+        #
+        #  A muted channel can still be edited
+        self.mute = Setting("Mute", "mute", MUTE_LABELS, MUTE_MODES, False)
+
         ## Counter that increases every time we finish a full wave form
         self.wave_counter = 0
 
@@ -581,7 +596,8 @@ class PamsOutput:
             "amplitude" : self.amplitude.to_dict(),
             "width"     : self.width.to_dict(),
             "quantizer" : self.quantizer.to_dict(),
-            "swing"     : self.swing.to_dict()
+            "swing"     : self.swing.to_dict(),
+            "mute"      : self.mute.to_dict()
         }
 
     def load_settings(self, settings):
@@ -611,6 +627,8 @@ class PamsOutput:
             self.quantizer.load(settings["quantizer"])
         if "swing" in settings.keys():
             self.swing.load(settings["swing"])
+        if "mute" in settings.keys():
+            self.mute.load(settings["mute"])
 
         self.change_e_length()
 
@@ -793,8 +811,13 @@ class PamsOutput:
 
     def apply(self):
         """Apply the calculated voltage to the output channel
+
+        If the channel is muted this will set the output to zero, regardless of anything else
         """
-        self.cv_out.voltage(self.out_volts)
+        if self.mute.get_value():
+            self.cv_out.voltage(0)
+        else:
+            self.cv_out.voltage(self.out_volts)
 
 class SettingChooser:
     """Menu UI element for displaying a Setting object and the options associated with it
@@ -920,7 +943,8 @@ class PamsMenu:
                 SettingChooser(prefix, ch.e_trig),
                 SettingChooser(prefix, ch.e_rot),
                 SettingChooser(prefix, ch.swing),
-                SettingChooser(prefix, ch.quantizer)
+                SettingChooser(prefix, ch.quantizer),
+                SettingChooser(prefix, ch.mute)
             ]))
         for ch in CV_INS.keys():
             self.items.append(SettingChooser(ch, CV_INS[ch].gain, None, [

@@ -57,6 +57,7 @@ CV1
  |    +-- Euclidean Rotation*
  |    +-- Swing Percentage*
  |    +-- Quantization Scale*
+ |    +-- Mute
  |
 CV2 to 6
  +-- Same as CV1
@@ -128,6 +129,7 @@ The submenu for each CV output has the following options:
 - `Swing%` -- percentage division between pairs of consecutive notes. 50% results in no swing. Less than 50% results in
   a short-long-short-long-... pattern of notes. Greater than 50% results in a long-short-long-short-... pattern of notes
 - `Quant` -- quantization scale
+- `Mute` -- if a channel is muted its output will always be zero. A muted channel can still be edited.
 
 ### Phase Offsets
 
