@@ -746,7 +746,7 @@ class PamsOutput:
         else:
             if self.wave_counter % 2 == 0:
                 # first half of the swing; if swing < 50% this is short, otherwise long
-                swing_amt = swlf.swing.get_value() / 100.0
+                swing_amt = self.swing.get_value() / 100.0
             else:
                 # second half of the swing; if swing < 50% this is long, otherwise short
                 swing_amt = (100 - self.swing.get_value()) / 100.0
