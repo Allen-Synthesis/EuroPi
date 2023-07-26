@@ -92,21 +92,27 @@ Each of the 6 CV output channels has the following options:
   Multipliers (`xN`) will output `N` waveforms every beat.  Divisions (`/N`) will output a waveform every `N`
   beats.
 
-The clock modifer is ignored if the wave is `Start`, `Reset` or `Run`, as these waves change only when the clock
-itself starts/stops and are not controlled by the BPM.
+3 additional special-purpose clock mods are available:
+- ![Reset](./pams-docs/wave_reset.png) Reset: a trigger that fires when the clock stops (can be used to trigger other
+  modules to reset, e.g. sequencers sequential switches, other euclidean generators). The fired trigger is 10ms in
+  duration at 12V times the channel's amplitude. e.g. at 50% the trigger will be 6V.
+- ![Start](./pams-docs/wave_start.png) Start: a trigger that fires when the clock starts (can be used to trigger other
+  modules, or reset on-start). The trigger is at least 10ms long, but is based on the clock speed and may be longer.
+  Trigger voltage is 12V times the channel's amplitude. e.g. at 50% the trigger will be 6V
+- ![Run](./pams-docs/wave_run.png) Run: a gate that is high when the clock is running and low when the clock is stopped.
+  As long as the clock is running the gate will remain high.  Gate voltage is 12V times channel's amplitude.
+  e.g. at 50% the gate is 6V.
+
+See below for details on setting the channels' amplitude parameters
 
 The submenu for each CV output has the following options:
 
-- `Wave` -- the wave shape to output. Square/Triangle/Sine/Random/Reset/Start/Run
+- `Wave` -- the wave shape to output. Square/Triangle/Sine/Random/AIN
   - ![Square Wave](./pams-docs/wave_square.png) Square: square/pulse wave with adjustable width
   - ![Triangle Wave](./pams-docs/wave_triangle.png) Triangle: triangle wave with adjustable symmetry (saw to symmetrical triangle to ramp)
   - ![Sine Wave](./pams-docs/wave_sine.png) Sine: bog-standard sine wave
   - ![Random Wave](./pams-docs/wave_random.png) Random: outputs a random voltage at the start of every euclidean pulse, holding that voltage until the next pulse
     (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
-  - ![Reset Wave](./pams-docs/wave_reset.png) Reset: a trigger that fires when the clock stops (can be used to trigger other modules to reset, e.g. sequencers
-    sequential switches, other euclidean generators)
-  - ![Start Wave](./pams-docs/wave_start.png) Start: a trigger that fires when the clock starts (can be used to trigger other modules)
-  - ![Run Wave](./pams-docs/wave_run.png) Run: a gate that is high when the clock is running and low when the clock is stopped
   - ![AIN](./pams-docs/wave_ain.png) AIN: acts as a sample & hold of `ain`, with a sample taken at the start of every euclidean pulse
     (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
 - `Width` -- width of the resulting wave. See below for the effects of width adjustment on different wave shapes
@@ -177,21 +183,18 @@ _____|         |____|         |__________
   100% results in a ramp
 - Sine: ignored
 - Random: offset voltage as a percentage of the maximum output
-- Reset: ignored
-- Start: ignored
-- Run: ignored
 - AIN: ignored
 
-### Reset and Run Waves
+### Reset and Start Triggers
 
-The Reset wave fires only when the clock is stopped and can be used to help synchronize
+The Reset trigger fires only when the clock is stopped and can be used to help synchronize
 external modules (e.g. other sequencers, sequential switches, etc...)
 
-The Run wave fires once when the clock is started. The duration of the trigger is at least
+The Start trigger fires once when the clock is started. The duration of the trigger is at least
 10ms, but may be longer depending on the BPM. This allows you to start other modules at the
 same time as Pam's Workout on the EuroPi.
 
-The duration of the `Run` trigger is based on the BPM of the master clock and the static PPQN of 48.
+The duration of the `Start` trigger is based on the BPM of the master clock and the static PPQN of 48.
 The trigger turns on immediately and stays on for each PPQN pulse until it's stayed on for at least
 10ms. The table below shows approximate trigger times for some common BPM settings:
 
@@ -207,11 +210,6 @@ The trigger turns on immediately and stays on for each PPQN pulse until it's sta
 
 Most modules that use an external start trigger signal respond to the rising edge of the wave, so
 the variablility of the trigger width shouldn't cause any harmful effects in most cases.
-
-Note: Some modules, like the original Pamela's "NEW" Workout, use a gate signal to indicate
-on/off, turning on when the gate is high and off when it is low. To create an output of this nature,
-set an output channel to use a square wave and set the width to 100%. Ensure that skip and euclidean
-steps are both zero to make sure the signal stays high. Make sure the amplitude is at least 50%.
 
 ### Quantization
 

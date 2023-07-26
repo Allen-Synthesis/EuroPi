@@ -474,7 +474,7 @@ class PamsOutput:
     #  resolution is only so good.
     MAX_EUCLID_LENGTH = 64
 
-    ## Minimum duration of a WAVE_START trigger
+    ## Minimum duration of a CLOCK_MOD_START trigger
     #
     #  The actual length depends on clock rate and PPQN, and may be longer than this
     TRIGGER_LENGTH_MS = 10
