@@ -63,6 +63,16 @@ QUANTIZERS = OrderedDict([
 ## Sorted list of names for the quantizers to display
 QUANTIZER_LABELS = list(QUANTIZERS.keys())
 
+## Always-on gate when the clock is running
+CLOCK_MOD_RUN = 100
+
+## Short trigger on clock start
+CLOCK_MOD_START = 102
+
+## Short trigger on clock stop
+CLOCK_MOD_RESET = 103
+
+
 ## Available clock modifiers
 CLOCK_MODS = OrderedDict([
     ["/16" , 1/16.0],
@@ -79,11 +89,36 @@ CLOCK_MODS = OrderedDict([
     ["x6" , 6.0],
     ["x8" , 8.0],
     ["x12", 12.0],
-    ["x16", 16.0]
+    ["x16", 16.0],
+    ["run", CLOCK_MOD_RUN],
+    ["start", CLOCK_MOD_START],
+    ["reset", CLOCK_MOD_RESET]
 ])
 
-## Sorted list of labels for the clock modifers to display
+## Sorted list of string representations of the clock mods
 CLOCK_MOD_LABELS = list(CLOCK_MODS.keys())
+
+## Some clock mods have graphics instead of text
+CLOCK_MOD_IMGS = OrderedDict([
+    [1/16.0, None],  # /16
+    [1/12.0, None],  # /12
+    [1/8.0, None],  # /8
+    [1/6.0, None],  # /6
+    [1/4.0, None],  # /4
+    [1/3.0, None],  # /3
+    [1/2.0, None],  # /2
+    [1.0, None],  # x1
+    [2.0, None],  # x2
+    [3.0, None],  # x3
+    [4.0, None],  # x4
+    [6.0, None],  # x6
+    [8.0, None],  # x8
+    [12.0, None],  # x12
+    [16.0, None],  # x16
+    [CLOCK_MOD_RUN, bytearray(b'\xff\xf0\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00')],    # run gate
+    [CLOCK_MOD_START, bytearray(b'\xe0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xbf\xf0')],  # start trigger
+    [CLOCK_MOD_RESET, bytearray(b'\x03\xf0\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\xfe\x00')]   # reset trigger
+])
 
 ## Standard pulse/square wave with PWM
 WAVE_SQUARE = 0
@@ -105,25 +140,11 @@ WAVE_SIN = 2
 #  Width is ignored
 WAVE_RANDOM = 3
 
-## Reset gate
-#
-#  Turns on when the clock stops
-WAVE_RESET = 4
-
-## Start trigger
-#
-#  Turns on once when the clock starts
-WAVE_START = 5
-
-## Gate, on while the clock is running and
-#  off when the clock stops
-WAVE_RUN = 6
-
 ## Use raw AIN as the direct input
 #
 #  This lets you effectively use Pam's as a quantizer for
 #  the AIN signal
-WAVE_AIN = 7
+WAVE_AIN = 4
 
 ## Available wave shapes
 WAVE_SHAPES = [
@@ -131,9 +152,6 @@ WAVE_SHAPES = [
     WAVE_TRIANGLE,
     WAVE_SIN,
     WAVE_RANDOM,
-    WAVE_RESET,
-    WAVE_START,
-    WAVE_RUN,
     WAVE_AIN
 ]
 
@@ -143,9 +161,6 @@ WAVE_SHAPE_LABELS = [
     "Triangle",
     "Sine",
     "Random",
-    "Reset",
-    "Start",
-    "Run",
     "AIN"
 ]
 
@@ -161,9 +176,6 @@ WAVE_SHAPE_IMGS = [
     bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'),
     bytearray(b'\x10\x00(\x00D\x00D\x00\x82\x00\x82\x00\x82\x10\x82\x10\x01\x10\x01\x10\x00\xa0\x00@'),
     bytearray(b'\x00\x00\x08\x00\x08\x00\x14\x00\x16\x80\x16\xa0\x11\xa0Q\xf0Pp`P@\x10\x80\x00'),
-    bytearray(b'\x03\xf0\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\xfe\x00'),
-    bytearray(b'\xe0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xbf\xf0'),
-    bytearray(b'\xff\xf0\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00'),
     bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00')
 ]
 
@@ -419,17 +431,17 @@ class MasterClock:
             self.is_running = False
             self.timer.deinit()
 
-            # Fire a reset trigger on any channels that have the WAVE_RESET mode set
+            # Fire a reset trigger on any channels that have the CLOCK_MOD_RESET mode set
             # This trigger lasts 10ms
             # Turn all other channels off so we don't leave hot wires
             for ch in self.channels:
-                if ch.wave_shape == WAVE_RESET:
+                if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
                     ch.cv_out.voltage(MAX_OUTPUT_VOLTAGE * ch.amplitude / 100.0)
                 else:
                     ch.cv_out.voltage(0.0)
             time.sleep(0.01)   # time.sleep works in SECONDS not ms
             for ch in self.channels:
-                if ch.wave_shape == WAVE_RESET:
+                if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
                     ch.cv_out.voltage(0)
 
     def running_time(self):
@@ -488,7 +500,7 @@ class PamsOutput:
         #  - 1.0 is the same as the main clock's BPM
         #  - <1.0 will tick slower than the BPM (e.g. 0.5 will tick once every 2 beats)
         #  - >1.0 will tick faster than the BPM (e.g. 3.0 will tick 3 times per beat)
-        self.clock_mod = Setting("Mod", "clock_mod", CLOCK_MOD_LABELS, CLOCK_MOD_LABELS, value_dict=CLOCK_MODS, default_value="x1")
+        self.clock_mod = Setting("Mod", "clock_mod", CLOCK_MOD_LABELS, CLOCK_MOD_LABELS, value_dict=CLOCK_MODS, default_value="x1", allow_cv_in=False)
 
         ## What shape of wave are we generating?
         #
@@ -686,7 +698,7 @@ class PamsOutput:
         Call apply() to actually send the voltage. This lets us calculate all output channels and THEN set the
         outputs after so they're more synchronized
         """
-        if self.wave_shape.get_value() == WAVE_START:
+        if self.clock_mod.get_value() == CLOCK_MOD_START:
             # start waves are weird; they're only on during the first 10ms or 1 PPQN (whichever is longer)
             # and are otherwise always off
             gate_len = self.clock.running_time()
@@ -694,9 +706,9 @@ class PamsOutput:
                 out_volts = MAX_OUTPUT_VOLTAGE * self.amplitude.get_value() / 100.0
             else:
                 out_volts = 0.0
-        elif self.wave_shape.get_value() == WAVE_RUN:
+        elif self.clock_mod.get_value() == CLOCK_MOD_RUN:
             out_volts = MAX_OUTPUT_VOLTAGE * self.amplitude.get_value() / 100.0
-        elif self.wave_shape.get_value() == WAVE_RESET:
+        elif self.clock_mod.get_value() == CLOCK_MOD_RESET:
             # reset waves are always low; the clock's stop() function handles triggering them
             out_volts = 0.0
         else:
@@ -818,15 +830,23 @@ class SettingChooser:
             oled.text(str(self.setting), title_left, 1, 0)
 
         if self.option_gfx is not None:
-            # draw the option thumbnail to the screen
-            text_left = 14
+            # draw the option thumbnail to the screen if it exists
+            img = None
             if self.is_writable:
-                img = k2.choice(self.option_gfx)
+                if type(self.option_gfx) is dict or\
+                   type(self.option_gfx) is OrderedDict:
+                    key = k2.choice(list(self.option_gfx.keys()))
+                    img = self.option_gfx[key]
+                else:
+                    img = k2.choice(self.option_gfx)
             else:
                 key = self.setting.get_value()
                 img = self.option_gfx[key]
-            imgFB = FrameBuffer(img, 12, 12, MONO_HLSB)
-            oled.blit(imgFB, 0, SELECT_OPTION_Y)
+
+            if img is not None:
+                text_left = 14
+                imgFB = FrameBuffer(img, 12, 12, MONO_HLSB)
+                oled.blit(imgFB, 0, SELECT_OPTION_Y)
 
 
         if self.is_writable:
@@ -869,7 +889,7 @@ class PamsMenu:
         for i in range(len(script.channels)):
             prefix = f"CV{i+1}"
             ch = script.channels[i]
-            self.items.append(SettingChooser(prefix, ch.clock_mod, None, [
+            self.items.append(SettingChooser(prefix, ch.clock_mod, CLOCK_MOD_IMGS, [
                 SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS),
                 SettingChooser(prefix, ch.width),
                 SettingChooser(prefix, ch.phase),
@@ -940,6 +960,7 @@ class SplashScreen:
 class PamsWorkout(EuroPiScript):
     """The main script for the Pam's Workout implementation
     """
+
     def __init__(self):
         super().__init__()
 
