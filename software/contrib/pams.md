@@ -55,6 +55,7 @@ CV1
  |    +-- Euclidean Steps*
  |    +-- Euclidean Triggers*
  |    +-- Euclidean Rotation*
+ |    +-- Swing Percentage*
  |    +-- Quantization Scale*
  |
 CV2 to 6
