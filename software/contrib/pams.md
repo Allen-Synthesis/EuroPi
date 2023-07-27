@@ -184,6 +184,10 @@ Swing = 75%
 |      |______|  |__|      |______|  |__
 ```
 
+Setting the swing too high or too low, especially at higher clock speeds, can compress the shorter note so much that
+it ceases to exist. In that case the 0-length note is skipped entirely. This can lead to some interesting interactions
+with Euclidean patterns, as every second step is skipped whether it's on or off.
+
 ### `AIN` and `Random` Waves
 
 `AIN` and `Random` wave modes are treated like a sample-hand-hold of the incoming signal, with the sample taken on the
