@@ -201,18 +201,21 @@ DIN_MODE_TRIGGER = 'Trig'
 ## Reset on a rising edge, but don't start/stop the clock
 DIN_MODE_RESET = 'Reset'
 
+## Sorted list of DIN modes for display
 DIN_MODES = [
     DIN_MODE_GATE,
     DIN_MODE_TRIGGER,
     DIN_MODE_RESET
 ]
 
-MUTE_MODES = [
+## True/False for yes/no settings (e.g. mute)
+YES_NO_MODES = [
     False,
     True
 ]
 
-MUTE_LABELS = [
+## True/False labels for yes/no settings (e.g. mute)
+YES_NO_LABELS = [
     "N",
     "Y"
 ]
@@ -220,11 +223,25 @@ MUTE_LABELS = [
 class Setting:
     """A single setting that can be loaded, saved, or dynamically read from an analog input
     """
-    def __init__(self, display_name, storage_name, display_options, options, allow_cv_in=True, on_change_fn=None, value_dict=None, default_value=None):
+    def __init__(self, display_name, storage_name, display_options, options, allow_cv_in=True, value_dict=None, default_value=None, on_change_fn=None, callback_arg=None):
+        """Create a new setting
+
+        @param display_name     The name displayed on the screen as the setting's title
+        @param storage_name     The name used in the storage dictionary to identify this setting's persistent values
+        @param display_options  The list of options we display to the user to choose from
+        @param options          The raw options we choose from
+        @param allow_cv_in      If true, we appent AIN to the options & display options
+        @param value_dict       A dictionary that can convert between the list items in options & any other type
+        @param default_value    This setting's default value
+        @param on_change_fn     A callback function to call when this setting changes. The function must accept 1-2 args:
+                                a reference to this Setting instance, and (optionally) the value passed to callback_arg
+        @param callback_arg     An optional argument to passed as the 2nd argument to on_change_fn when it is called
+        """
         self.display_name = display_name
         self.display_options = [o for o in display_options]
 
         self.on_change_fn = on_change_fn
+        self.callback_arg = callback_arg
 
         self.storage_name = storage_name
         self.options = [o for o in options]
@@ -236,8 +253,9 @@ class Setting:
                 self.options.append(CV_INS[cv])
 
         self.value_dict = value_dict
-        if default_value is not None:
-            self.choice = self.options.index(default_value)
+        self.default_value = default_value
+        if self.default_value is not None:
+            self.choice = self.options.index(self.default_value)
         else:
             self.choice = 0
 
@@ -297,7 +315,18 @@ class Setting:
         is_changing = self.choice != index
         self.choice = index
         if is_changing and self.on_change_fn:
-            self.on_change_fn()
+            if self.callback_arg is not None:
+                self.on_change_fn(self, self.callback_arg)
+            else:
+                self.on_change_fn(self)
+
+    def reset_to_default(self):
+        """Reset this setting to its default value
+        """
+        index = 0
+        if self.default_value is not None:
+            index = self.options.index(self.default_value)
+        self.choose(index)
 
 class AnalogInReader:
     """A wrapper for `ain` that can be shared across multiple Settings
@@ -463,10 +492,12 @@ class MasterClock:
         else:
             return 0
 
-    def recalculate_timer_hz(self):
+    def recalculate_timer_hz(self, bpm=None):
         """Recalculate the frequency of the inner timer
 
         If the timer is currently running deinitialize it and reset it to use the correct BPM
+
+        @param bpm  The BPM setting when this is called as an on-change callback
         """
         self.tick_hz = self.bpm.get_value() / 60.0 * self.PPQN
 
@@ -548,7 +579,23 @@ class PamsOutput:
         ## Allows muting a channel during runtime
         #
         #  A muted channel can still be edited
-        self.mute = Setting("Mute", "mute", MUTE_LABELS, MUTE_MODES, False)
+        self.mute = Setting("Mute", "mute", YES_NO_LABELS, YES_NO_MODES, False)
+
+        ## All settings in an array so we can iterate through them in reset_settings(self)
+        self.all_settings = [
+            self.quantizer,
+            self.clock_mod,
+            self.wave_shape,
+            self.phase,
+            self.amplitude,
+            self.width,
+            self.e_step,
+            self.e_trig,
+            self.e_rot,
+            self.skip,
+            self.swing,
+            self.mute
+        ]
 
         ## Counter that increases every time we finish a full wave form
         self.wave_counter = 0
@@ -632,12 +679,12 @@ class PamsOutput:
 
         self.change_e_length()
 
-    def change_e_length(self):
+    def change_e_length(self, setting=None):
         self.e_trig.update_options(list(range(self.e_step.get_value()+1)), list(range(self.e_step.get_value()+1)))
         self.e_rot.update_options(list(range(self.e_step.get_value()+1)), list(range(self.e_step.get_value()+1)))
         self.recalculate_e_pattern()
 
-    def recalculate_e_pattern(self):
+    def recalculate_e_pattern(self, setting=None):
         """Recalulate the euclidean pattern this channel outputs
         """
         # always assume we're doing some kind of euclidean pattern
@@ -723,6 +770,12 @@ class PamsOutput:
 
         self.sample_position = 0
         self.wave_counter = 0
+
+    def reset_settings(self):
+        """Reset all settings to their default values
+        """
+        for s in self.all_settings:
+            s.reset_to_default()
 
     def tick(self):
         """Advance the current pattern one tick and calculate the output voltage
@@ -944,7 +997,9 @@ class PamsMenu:
                 SettingChooser(prefix, ch.e_rot),
                 SettingChooser(prefix, ch.swing),
                 SettingChooser(prefix, ch.quantizer),
-                SettingChooser(prefix, ch.mute)
+                SettingChooser(prefix, ch.mute),
+                SettingChooser(prefix, Setting("Reset", "reset", YES_NO_LABELS, YES_NO_MODES, allow_cv_in=False,
+                    on_change_fn=self.reset_channel, callback_arg=ch))
             ]))
         for ch in CV_INS.keys():
             self.items.append(SettingChooser(ch, CV_INS[ch].gain, None, [
@@ -974,6 +1029,20 @@ class PamsMenu:
             self.visible_item = self.pams_workout.k1_bank.current.choice(self.active_items)
 
         self.visible_item.draw()
+
+    def reset_channel(self, reset_setting, channel):
+        """Reset the given channel if the reset_setting is True
+
+        @param reset_setting  A Setting instance that calls this function as a callback
+        @param channel        The channel to reset
+        """
+
+        if reset_setting.get_value():
+            # reset the given channel to default...
+            channel.reset_settings()
+            # ...then reset this setting back to N so we can reset again later
+            reset_setting.reset_to_default()
+
 
 class SplashScreen:
     """A splash screen we show during startup
