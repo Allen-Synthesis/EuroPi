@@ -804,6 +804,14 @@ class PamsOutput:
                 # second half of the swing; if swing < 50% this is long, otherwise short
                 swing_amt = (100 - self.swing.get_value()) / 100.0
             ticks_per_note = round(2 * MasterClock.PPQN / self.clock_mod.get_value() * swing_amt)
+            if ticks_per_note == 0:
+                # we're swinging SO HARD that one beat is squashed out of existence!
+                # move immediately to the other beat
+                self.e_position = self.e_position + 1
+                if self.e_position >= len(self.e_pattern):
+                    self.e_position = 0
+                ticks_per_note = round(2 * MasterClock.PPQN / self.clock_mod.get_value())
+
             e_step = self.e_pattern[self.e_position]
             wave_position = self.sample_position
             # are we starting a new repeat of the pattern?
