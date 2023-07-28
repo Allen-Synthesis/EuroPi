@@ -12,7 +12,7 @@ from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
 from experimental.knobs import KnobBank
-from experimental.quantizer import CommonScales, Quantizer
+from experimental.quantizer import CommonScales, Quantizer, SEMITONE_LABELS, SEMITONES_PER_OCTAVE
 from experimental.screensaver import Screensaver
 
 from collections import OrderedDict
@@ -536,6 +536,9 @@ class PamsOutput:
         #  See contrib.pams.QUANTIZERS
         self.quantizer = Setting("Quant.", "quantizer", QUANTIZER_LABELS, QUANTIZER_LABELS, value_dict=QUANTIZERS)
 
+        ## The root of the quantized scale (ignored if quantizer is None)
+        self.root = Setting("Q Root", "root", SEMITONE_LABELS, list(range(SEMITONES_PER_OCTAVE)))
+
         ## The clock modifier for this channel
         #
         #  - 1.0 is the same as the main clock's BPM
@@ -584,6 +587,7 @@ class PamsOutput:
         ## All settings in an array so we can iterate through them in reset_settings(self)
         self.all_settings = [
             self.quantizer,
+            self.root,
             self.clock_mod,
             self.wave_shape,
             self.phase,
@@ -643,6 +647,7 @@ class PamsOutput:
             "amplitude" : self.amplitude.to_dict(),
             "width"     : self.width.to_dict(),
             "quantizer" : self.quantizer.to_dict(),
+            "root"      : self.root.to_dict(),
             "swing"     : self.swing.to_dict(),
             "mute"      : self.mute.to_dict()
         }
@@ -672,6 +677,8 @@ class PamsOutput:
             self.width.load(settings["width"])
         if "quantizer" in settings.keys():
             self.quantizer.load(settings["quantizer"])
+        if "root" in settings.keys():
+            self.root.load(settings["root"])
         if "swing" in settings.keys():
             self.swing.load(settings["swing"])
         if "mute" in settings.keys():
@@ -843,7 +850,7 @@ class PamsOutput:
             out_volts = wave_sample * MAX_OUTPUT_VOLTAGE
 
             if self.quantizer.get_value() is not None:
-                (out_volts, note) = self.quantizer.get_value().quantize(out_volts)
+                (out_volts, note) = self.quantizer.get_value().quantize(out_volts, self.root.get_value())
 
             # increment the position within each playback pattern
             # if we've queued a new euclidean pattern apply it now so we
@@ -1005,6 +1012,7 @@ class PamsMenu:
                 SettingChooser(prefix, ch.e_rot),
                 SettingChooser(prefix, ch.swing),
                 SettingChooser(prefix, ch.quantizer),
+                SettingChooser(prefix, ch.root),
                 SettingChooser(prefix, ch.mute),
                 SettingChooser(prefix, Setting("Reset", "reset", YES_NO_LABELS, YES_NO_MODES, allow_cv_in=False,
                     on_change_fn=self.reset_channel, callback_arg=ch))
