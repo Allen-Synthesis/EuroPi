@@ -19,6 +19,7 @@ VOLTS_PER_SEMITONE = float(VOLTS_PER_OCTAVE) / float(SEMITONES_PER_OCTAVE)
 ## Labels for the 12 semitones (using sharps, not flats)
 SEMITONE_LABELS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
+
 class Quantizer:
     """Represents a set of semitones we can quantize input voltages to
 
