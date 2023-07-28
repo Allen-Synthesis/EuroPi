@@ -254,9 +254,9 @@ the variablility of the trigger width shouldn't cause any harmful effects in mos
 
 ### Quantization
 
-All quantizers are tuned to treat the root note of their respective scales as C.  There is no
-support for transposition; you will need to either combine outputs through a mixer or tune your
-oscillator to a different base frequency to transpose the output.
+All quantizers are tuned to treat the root note of their respective scales as C by default, with the
+quantizer root transposing this by the number of semitones above C. For example if the root is C# the
+transposed output will be shifted up by 1 semitone.
 
 The following scales are available:
 
