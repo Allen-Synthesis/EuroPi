@@ -57,6 +57,7 @@ CV1
  |    +-- Euclidean Rotation*
  |    +-- Swing Percentage*
  |    +-- Quantization Scale*
+ |    +-- Quantizer Root*
  |    +-- Mute
  |    +-- Reset
  |
@@ -130,6 +131,7 @@ The submenu for each CV output has the following options:
 - `Swing%` -- percentage division between pairs of consecutive notes. 50% results in no swing. Less than 50% results in
   a short-long-short-long-... pattern of notes. Greater than 50% results in a long-short-long-short-... pattern of notes
 - `Quant` -- quantization scale
+- `Q Root` -- quantizer root: transposes the quantized output up by the number of semitones above C.
 - `Mute` -- if a channel is muted its output will always be zero. A muted channel can still be edited.
 - `Reset` -- if set to `Y` all channel settings are reset to their defaults
 
