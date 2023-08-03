@@ -216,8 +216,8 @@ YES_NO_MODES = [
 
 ## True/False labels for yes/no settings (e.g. mute)
 YES_NO_LABELS = [
-    "N",
-    "Y"
+    "Cancel",
+    "OK"
 ]
 
 class Setting:
@@ -292,7 +292,8 @@ class Setting:
 
     def get_value(self):
         if type(self.options[self.choice]) is AnalogInReader:
-            n = round(self.options[self.choice].get_value() / MAX_INPUT_VOLTAGE * len(self.options) - len(CV_INS)) # remo
+            # Remove the CV inputs from the set of choices, since otherwise that would lead to weird recursion!
+            n = round(self.options[self.choice].get_value() / MAX_INPUT_VOLTAGE * len(self.options) - len(CV_INS))
             if n < 0:
                 n = 0
             elif n >= len(self.options) - len(CV_INS):
@@ -361,7 +362,7 @@ class AnalogInReader:
 
         @return The voltage read from the analog input multiplied by self.gain
         """
-        self.last_voltage = self.cv_in.read_voltage(self.precision.get_value()) * self.gain.get_value() / 100.0
+        self.last_voltage = self.cv_in.percent(self.precision.get_value()) * MAX_INPUT_VOLTAGE * self.gain.get_value() / 100.0
         return self.last_voltage
 
     def get_value(self):
@@ -369,6 +370,7 @@ class AnalogInReader:
 
 ## Wrapped copies of all CV inputs so we can iterate through them
 CV_INS = {
+    "KNOB": AnalogInReader(k1),
     "AIN": AnalogInReader(ain)
 }
 
@@ -401,7 +403,7 @@ class MasterClock:
         self.is_running = False
 
         self.bpm = Setting("BPM", "bpm", list(range(self.MIN_BPM, self.MAX_BPM+1)), list(range(self.MIN_BPM, self.MAX_BPM+1)), on_change_fn=self.recalculate_timer_hz, default_value=60)
-        self.reset_on_start = Setting("Stop-Rst", "reset_on_start", ["On", "Off"], [True, False], False)
+        self.reset_on_start = Setting("Stop-Rst", "reset_on_start", ["Off", "On"], [False, True], default_value=True, allow_cv_in=False)
 
         self.tick_hz = 1.0
         self.timer = Timer()
@@ -1025,7 +1027,7 @@ class PamsMenu:
         self.active_items = self.items
 
         ## The item we're actually drawing to the screen _right_now_
-        self.visible_item = self.pams_workout.k1_bank.current.choice(self.active_items)
+        self.visible_item = self.pams_workout.k2_bank.current.choice(self.active_items)
 
     def on_long_press(self):
         # return the active item to the read-only state
@@ -1042,7 +1044,7 @@ class PamsMenu:
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = self.pams_workout.k1_bank.current.choice(self.active_items)
+            self.visible_item = self.pams_workout.k2_bank.current.choice(self.active_items)
 
         self.visible_item.draw()
 
@@ -1097,8 +1099,8 @@ class PamsWorkout(EuroPiScript):
 
         self.din_mode = Setting("DIN Mode", "din", DIN_MODES, DIN_MODES, False)
 
-        self.k1_bank = (
-            KnobBank.builder(k1)
+        self.k2_bank = (
+            KnobBank.builder(k2)
             .with_unlocked_knob("lvl_1")
             .with_locked_knob("lvl_2", initial_percentage_value=0)
             .build()
@@ -1182,7 +1184,7 @@ class PamsWorkout(EuroPiScript):
                 if time.ticks_diff(now, b2.last_pressed()) > LONG_PRESS_MS:
                     # long press
                     # change between the main & sub menus
-                    self.k1_bank.next()
+                    self.k2_bank.next()
                     self.main_menu.on_long_press()
                 else:
                     # short press

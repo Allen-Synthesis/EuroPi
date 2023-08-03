@@ -17,26 +17,40 @@ clock multiplier or divider, chosen from the following:
 
 | I/O           | Usage
 |---------------|-------------------------------------------------------------------|
-| `din`         | External start/stop input                                         |
+| `din`         | External control input (see below)                                |
 | `ain`         | Routable CV input to control other parameters                     |
 | `b1`          | Start/Stop input                                                  |
 | `b2`          | Press to enter/exit edit mode. Long-press to enter/leave sub-menu |
-| `k1`          | Scroll through the settings in the current menu                   |
-| `k2`          | Scroll through allowed values for the current setting             |
+| `k1`          | Routable CV input to control other parameters                     |
+| `k2`          | Menu navigation                                                   |
 | `cv1` - `cv6` | Output signals. Configuration is explained below                  |
 
 If you accidentally press `b2` and enter edit mode, you can long-press `b2` to change
 menu levels and cancel the current operation, without modifying the setting you had
 selected.
 
+`din` can be configured to operate in multiple modes:
+- start/stop trigger
+- run gate
+- reset trigger
+
 ## Menu Navigation
 
-Rotate `k1` to scroll through the current menu. Pressing and holding `b2` for 0.5s will
+Rotate `k2` to scroll through the current menu. Pressing and holding `b2` for 0.5s will
 enter a sub-menu. Pressing and holding `b2` again will return to the parent menu.
 
 On any given setting, pressing `b2` (without holding) will enter edit mode for that
 item. Rotate `k2` to choose the desired value for the item, and press `b2` again
 to apply it.
+
+`k2` uses the LockedKnob class; when moving between menu levels the knob's value may appear
+locked. This is normal; simply rotate the knob back to its previous position to unlock it.
+
+e.g. You are configuring the wave shape for `CV1`.  The knob is initially in its fully anticlockwise
+position. You press `B2` to choose a wave shape, and scroll to `Triangle` and press `B2` again to confirm
+the selection. The menu is now locked on `Wave Shape` and will not scroll until you turn the knob all the
+way back toi the `Wave Shape` position.  This can take a little getting used to, but the author finds
+that it does simplify menu navigation once you get used to it.
 
 The menu layout is as follows:
 
@@ -50,6 +64,7 @@ CV1
  +-- Mod.*
  |    +-- Wave Shape**
  |    +-- Wave Width (PWM/Symmetry)*
+ |    +-- Phase*
  |    +-- Wave Amplitude*
  |    +-- Skip Probability*
  |    +-- Euclidean Steps*
@@ -99,13 +114,13 @@ Each of the 6 CV output channels has the following options:
 3 additional special-purpose clock mods are available:
 - ![Reset](./pams-docs/wave_reset.png) Reset: a trigger that fires when the clock stops (can be used to trigger other
   modules to reset, e.g. sequencers sequential switches, other euclidean generators). The fired trigger is 10ms in
-  duration at 12V times the channel's amplitude. e.g. at 50% the trigger will be 6V.
+  duration at 10V times the channel's amplitude. e.g. at 50% the trigger will be 5V.
 - ![Start](./pams-docs/wave_start.png) Start: a trigger that fires when the clock starts (can be used to trigger other
   modules, or reset on-start). The trigger is at least 10ms long, but is based on the clock speed and may be longer.
-  Trigger voltage is 12V times the channel's amplitude. e.g. at 50% the trigger will be 6V
+  Trigger voltage is 10V times the channel's amplitude. e.g. at 50% the trigger will be 5V
 - ![Run](./pams-docs/wave_run.png) Run: a gate that is high when the clock is running and low when the clock is stopped.
-  As long as the clock is running the gate will remain high.  Gate voltage is 12V times channel's amplitude.
-  e.g. at 50% the gate is 6V.
+  As long as the clock is running the gate will remain high.  Gate voltage is 10V times channel's amplitude.
+  e.g. at 50% the gate is 5V.
 
 See below for details on setting the channels' amplitude parameters
 
@@ -123,7 +138,7 @@ The submenu for each CV output has the following options:
     euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
 - `Width` -- width of the resulting wave. See below for the effects of width adjustment on different wave shapes
 - `Phase` -- the phase offset of the wave. Starting a triangle at 50% would start it midway through
-- `Ampl.` -- the maximum amplitude of the output as a percentage of the 12V hardware maximum
+- `Ampl.` -- the maximum amplitude of the output as a percentage of the 10V hardware maximum
 - `Skip%` -- the probability that a square pulse or euclidean trigger will be skipped
 - `EStep` -- the number of steps in the euclidean rhythm. If zero, the euclidean generator is disabled
 - `ETrig` -- the number of pulses in the euclidean rhythm
@@ -281,11 +296,14 @@ The following scales are available:
 
 The 1/3/5 (+6|7) modes were inspired by the Doepfer A-156 quantizer.
 
-## External CV Routing
+## External CV Routing & Knob Input
 
-The input signal to `ain` can be configured to control many parameters of the system.
-A value of 0V is the equivalent of choosing the first item from the available menu
-and 12V is the equivalent of choosing the last item in the menu.
+Both `k1` and `ain` can be configured to control many parameters of the system as CV inputs.
+
+A value of 0V (or `k1` fully anticlockwise) is equivalent to choosing the first item from the
+available menu, and 12V (or `k1` fully clockwise) is equivalent to choosing the last item
+from the menu.  `AIN` and `KNOB` are omitted from this choice, even though they appear as
+menu items when scrolling.
 
 NOTE: the `Wave Shape` parameter of the CV outputs works differently. Instead of dynamically
 choosing the output wave shape, the CV output acts as a sample & hold of the signal coming into
@@ -293,13 +311,13 @@ choosing the output wave shape, the CV output acts as a sample & hold of the sig
 The `Amplitude` parameter acts as a secondary virtual attenuator, and the `Width` parameter acts
 as an offset voltage.
 
-There is digital attenuation/gain via the `AIN > Gain` setting.  This sets the percentage
-of the input signal that is passed to settings listenting to `ain`.
+There is digital attenuation/gain via the `AIN > Gain` or `KNOB > Gain` settings.  This sets the
+percentage of the input signal that is passed to settings listenting to these inputs.
 
 For example, if your modulation source can only output up to 5V you should set the gain to
 `12.0 / 5.0 * 100.0 = 240%`.  This will allow the modulation source to fully sweep the
 range of options available.
 
-The `AIN > Precision` setting allows control over the number of samples taken when reading
-the input.  Higher precision can result in slower processing, which may introduce errors
-when running at high clock speeds
+The `AIN > Precision` and `KNOB > Precision` settings allow control over the number of samples
+taken when reading the input.  Higher precision can result in slower processing, which may introduce
+errors when running at high clock speeds
