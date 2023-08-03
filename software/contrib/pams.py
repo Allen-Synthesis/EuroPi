@@ -224,9 +224,13 @@ YES_NO_MODES = [
 ]
 
 ## True/False labels for yes/no settings (e.g. mute)
-YES_NO_LABELS = [
+OK_CANCEL_LABELS = [
     "Cancel",
     "OK"
+]
+YES_NO_LABELS = [
+    "N",
+    "Y"
 ]
 
 class Setting:
@@ -1030,7 +1034,7 @@ class PamsMenu:
                 SettingChooser(prefix, ch.quantizer),
                 SettingChooser(prefix, ch.root),
                 SettingChooser(prefix, ch.mute),
-                SettingChooser(prefix, Setting("Reset", "reset", YES_NO_LABELS, YES_NO_MODES, allow_cv_in=False,
+                SettingChooser(prefix, Setting("Reset", "reset", OK_CANCEL_LABELS, YES_NO_MODES, allow_cv_in=False,
                     on_change_fn=self.reset_channel, callback_arg=ch))
             ]))
         for ch in CV_INS.keys():
