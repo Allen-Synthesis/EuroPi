@@ -136,6 +136,8 @@ The submenu for each CV output has the following options:
     pulse)
   - ![AIN](./pams-docs/wave_ain.png) AIN: acts as a sample & hold of `ain`, with a sample taken at the start of every
     euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
+  - ![KNOB](./pams-docs/wave_knob.png) KNOB: acts as a sample & hold of `k1`, with a sample taken at the start of every
+    euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
 - `Width` -- width of the resulting wave. See below for the effects of width adjustment on different wave shapes
 - `Phase` -- the phase offset of the wave. Starting a triangle at 50% would start it midway through
 - `Ampl.` -- the maximum amplitude of the output as a percentage of the 10V hardware maximum

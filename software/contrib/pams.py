@@ -146,13 +146,20 @@ WAVE_RANDOM = 3
 #  the AIN signal
 WAVE_AIN = 4
 
+## Using K1 as the direct input
+#
+#  This lets you "play" K1 as a manual LFO, flat voltage,
+#  etc...
+WAVE_KNOB = 5
+
 ## Available wave shapes
 WAVE_SHAPES = [
     WAVE_SQUARE,
     WAVE_TRIANGLE,
     WAVE_SIN,
     WAVE_RANDOM,
-    WAVE_AIN
+    WAVE_AIN,
+    WAVE_KNOB
 ]
 
 ## Ordered list of labels for the wave shape chooser menu
@@ -161,7 +168,8 @@ WAVE_SHAPE_LABELS = [
     "Triangle",
     "Sine",
     "Random",
-    "AIN"
+    "AIN",
+    "KNOB"
 ]
 
 ## Sorted list of wave shapes to display
@@ -176,7 +184,8 @@ WAVE_SHAPE_IMGS = [
     bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'),
     bytearray(b'\x10\x00(\x00D\x00D\x00\x82\x00\x82\x00\x82\x10\x82\x10\x01\x10\x01\x10\x00\xa0\x00@'),
     bytearray(b'\x00\x00\x08\x00\x08\x00\x14\x00\x16\x80\x16\xa0\x11\xa0Q\xf0Pp`P@\x10\x80\x00'),
-    bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00')
+    bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00'),
+    bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00')
 ]
 
 STATUS_IMG_LOCK = bytearray(b'\x06\x00\x19\x80\x19\x80`@`@`@\xff\xf0\xf9\xf0\xf9\xf0\xfd\xf0\xff\xf0\xff\xf0')
@@ -838,7 +847,12 @@ class PamsOutput:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.get_value() == WAVE_AIN:
                 if rising_edge and not self.skip_this_step:
-                    wave_sample = CV_INS["AIN"].get_value() / MAX_OUTPUT_VOLTAGE
+                    wave_sample = CV_INS["AIN"].get_value() / MAX_INPUT_VOLTAGE
+                else:
+                    wave_sample = self.previous_wave_sample
+            elif self.wave_shape.get_value() == WAVE_KNOB:
+                if rising_edge and not self.skip_this_step:
+                    wave_sample = CV_INS["KNOB"].get_value() / MAX_INPUT_VOLTAGE
                 else:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.get_value() == WAVE_SQUARE:
