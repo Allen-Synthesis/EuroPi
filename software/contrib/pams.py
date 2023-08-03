@@ -11,7 +11,6 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
-from experimental.knobs import KnobBank
 from experimental.quantizer import CommonScales, Quantizer, SEMITONE_LABELS, SEMITONES_PER_OCTAVE
 from experimental.screensaver import Screensaver
 
@@ -1045,7 +1044,7 @@ class PamsMenu:
         self.active_items = self.items
 
         ## The item we're actually drawing to the screen _right_now_
-        self.visible_item = self.pams_workout.k2_bank.current.choice(self.active_items)
+        self.visible_item = k2.choice(self.active_items)
 
     def on_long_press(self):
         # return the active item to the read-only state
@@ -1062,7 +1061,7 @@ class PamsMenu:
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = self.pams_workout.k2_bank.current.choice(self.active_items)
+            self.visible_item = k2.choice(self.active_items)
 
         self.visible_item.draw()
 
@@ -1116,13 +1115,6 @@ class PamsWorkout(EuroPiScript):
         super().__init__()
 
         self.din_mode = Setting("DIN Mode", "din", DIN_MODES, DIN_MODES, False)
-
-        self.k2_bank = (
-            KnobBank.builder(k2)
-            .with_unlocked_knob("lvl_1")
-            .with_locked_knob("lvl_2", initial_percentage_value=0)
-            .build()
-        )
 
         self.clock = MasterClock(120)
         self.channels = [
@@ -1202,7 +1194,6 @@ class PamsWorkout(EuroPiScript):
                 if time.ticks_diff(now, b2.last_pressed()) > LONG_PRESS_MS:
                     # long press
                     # change between the main & sub menus
-                    self.k2_bank.next()
                     self.main_menu.on_long_press()
                 else:
                     # short press

@@ -43,15 +43,6 @@ On any given setting, pressing `b2` (without holding) will enter edit mode for t
 item. Rotate `k2` to choose the desired value for the item, and press `b2` again
 to apply it.
 
-`k2` uses the LockedKnob class; when moving between menu levels the knob's value may appear
-locked. This is normal; simply rotate the knob back to its previous position to unlock it.
-
-e.g. You are configuring the wave shape for `CV1`.  The knob is initially in its fully anticlockwise
-position. You press `B2` to choose a wave shape, and scroll to `Triangle` and press `B2` again to confirm
-the selection. The menu is now locked on `Wave Shape` and will not scroll until you turn the knob all the
-way back toi the `Wave Shape` position.  This can take a little getting used to, but the author finds
-that it does simplify menu navigation once you get used to it.
-
 The menu layout is as follows:
 
 ```
