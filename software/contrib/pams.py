@@ -11,6 +11,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
+from experimental.knobs import KnobBank
 from experimental.quantizer import CommonScales, Quantizer, SEMITONE_LABELS, SEMITONES_PER_OCTAVE
 from experimental.screensaver import Screensaver
 
@@ -20,6 +21,18 @@ from machine import Timer
 import math
 import time
 import random
+
+## Lockable knob bank for K2 to make menu navigation a little easier
+#
+#  Note that this does mean _sometimes_ you'll need to sweep the knob all the way left/right
+#  to unlock it
+k2_bank = (
+    KnobBank.builder(k2)
+    .with_unlocked_knob("main_menu")
+    .with_locked_knob("submenu", initial_percentage_value=0)
+    .with_locked_knob("choice", initial_percentage_value=0)
+    .build()
+)
 
 ## Vertical screen offset for placing user input
 SELECT_OPTION_Y = 16
@@ -966,10 +979,10 @@ class SettingChooser:
             if self.is_writable:
                 if type(self.option_gfx) is dict or\
                    type(self.option_gfx) is OrderedDict:
-                    key = k2.choice(list(self.option_gfx.keys()))
+                    key = k2_bank.current.choice(list(self.option_gfx.keys()))
                     img = self.option_gfx[key]
                 else:
-                    img = k2.choice(self.option_gfx)
+                    img = k2_bank.current.choice(self.option_gfx)
             else:
                 key = self.setting.get_value()
                 img = self.option_gfx[key]
@@ -982,7 +995,7 @@ class SettingChooser:
 
         if self.is_writable:
             # draw the selection in inverted text
-            selected_item = k2.choice(self.setting.display_options)
+            selected_item = k2_bank.current.choice(self.setting.display_options)
             choice_text = f"{selected_item}"
             text_width = len(choice_text)*CHAR_WIDTH
 
@@ -997,7 +1010,7 @@ class SettingChooser:
     def on_click(self):
         if self.is_writable:
             self.set_editable(False)
-            selected_index = k2.choice(list(range(len(self.setting))))
+            selected_index = k2_bank.current.choice(list(range(len(self.setting))))
             self.setting.choose(selected_index)
         else:
             self.set_editable(True)
@@ -1044,7 +1057,7 @@ class PamsMenu:
         self.active_items = self.items
 
         ## The item we're actually drawing to the screen _right_now_
-        self.visible_item = k2.choice(self.active_items)
+        self.visible_item = k2_bank.current.choice(self.active_items)
 
     def on_long_press(self):
         # return the active item to the read-only state
@@ -1053,15 +1066,23 @@ class PamsMenu:
         # toggle between the two menu levels
         if self.active_items == self.items:
             self.active_items = self.visible_item.submenu
+            k2_bank.set_current("submenu")
         else:
             self.active_items = self.items
+            k2_bank.set_current("main_menu")
 
     def on_click(self):
         self.visible_item.on_click()
+        if self.visible_item.is_writable:
+            k2_bank.set_current("choice")
+        elif self.active_items == self.items:
+            k2_bank.set_current("main_menu")
+        else:
+            k2_bank.set_current("submenu")
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = k2.choice(self.active_items)
+            self.visible_item = k2_bank.current.choice(self.active_items)
 
         self.visible_item.draw()
 
