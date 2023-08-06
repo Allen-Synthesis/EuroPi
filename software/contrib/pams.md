@@ -57,6 +57,10 @@ CV1
  |    +-- Wave Width (PWM/Symmetry)*
  |    +-- Phase*
  |    +-- Wave Amplitude*
+ |    +-- Attack*
+ |    +-- Decay*
+ |    +-- Sustain*
+ |    +-- Release*
  |    +-- Skip Probability*
  |    +-- Euclidean Steps*
  |    +-- Euclidean Triggers*
@@ -78,6 +82,9 @@ AIN
 `*` These settings can be automatically selected using voltage coming into `ain`.
 
 `**` This setting can be set up to work as a sample & hold for the signal coming into `ain`.
+
+Some settings (e.g. ADSR envelope parameters, quantization root) are hidden from the menu if they would be ignored
+by the current configuration for that channel.
 
 ## Main Clock Options
 
