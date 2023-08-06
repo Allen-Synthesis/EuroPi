@@ -122,6 +122,7 @@ The submenu for each CV output has the following options:
   - ![Triangle Wave](./pams-docs/wave_triangle.png) Triangle: triangle wave with adjustable symmetry (saw to symmetrical
     triangle to ramp)
   - ![Sine Wave](./pams-docs/wave_sine.png) Sine: bog-standard sine wave
+  - ![ADSR Envelope](./pams-docs/wave_adsr.png) ADSR: an Attack/Decay/Sustain/Release envelope
   - ![Random Wave](./pams-docs/wave_random.png) Random: outputs a random voltage at the start of every euclidean pulse,
     holding that voltage until the next pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean
     pulse)
@@ -132,6 +133,11 @@ The submenu for each CV output has the following options:
 - `Width` -- width of the resulting wave. See below for the effects of width adjustment on different wave shapes
 - `Phase` -- the phase offset of the wave. Starting a triangle at 50% would start it midway through
 - `Ampl.` -- the maximum amplitude of the output as a percentage of the 10V hardware maximum
+- `Attack` -- the percentage of the cycle time dedicated to the attack phase of an ADSR envelope
+- `Decay` -- the percentage of the cycle time minus attack time dedicated to the decay phase of an ADSR envelope
+- `Sustain` -- the percentage level of the sustain phase of an ADSR envelope
+- `Release` -- the percentage of of the cyle time minus the attack & decay phases dedicated to the release phase of
+  an ADSR envelope
 - `Skip%` -- the probability that a square pulse or euclidean trigger will be skipped
 - `EStep` -- the number of steps in the euclidean rhythm. If zero, the euclidean generator is disabled
 - `ETrig` -- the number of pulses in the euclidean rhythm
@@ -142,6 +148,41 @@ The submenu for each CV output has the following options:
 - `Q Root` -- quantizer root: transposes the quantized output up by the number of semitones above C.
 - `Mute` -- if a channel is muted its output will always be zero. A muted channel can still be edited.
 - `Reset` -- if set to `Y` all channel settings are reset to their defaults
+
+The values of the `Attack`, `Decay`, `Sustain`, and `Release` settings are ignored if the wave whape is not set to
+`ADSR`
+
+### ADSR Envelope
+
+The ADSR envelope is affected by the `Width`, `Amplitude` and `Phase` parameters:
+- `Phase` will shift the timing of the envelope
+- `Width` adjusts the total duration of the envelope. The envelope always starts at the beginning of the phase,
+  but may end early, outputting 0.0V after the end of the release
+- the `Amplitude` setting adjusts the overall height of the wave. The attack phase always reaches peak amplitude,
+  and the sutain phase is calculated relative to the `Amplitude` setting.
+
+The following diagram shows the breakdown of the ADSR envelope:
+
+```
+   Total cycle time T
+(based on clock modifer)
+|----------------------|
+|                      | ___
+|    /\                | Peak amplitude = Amplitude%
+|   /  \               |
+|  /    \_______       | ___
+| /             \      |  |  S = Amplitude% * Sustain%
+|/               \_____| _|_
+|--A-|D|---S---|R|--0--|
+
+|A| + |D| + |S| + |R| = T * Width%
+
+T' = T * Width%
+|A| = T' * Attack%
+|D| = (T' - |A|) * Decay%
+|R| = (T' - |A| - |D|) * Release%
+|S| = T' - |A| - |D| - |R|
+```
 
 ### Phase Offsets
 

@@ -164,11 +164,15 @@ WAVE_AIN = 4
 #  etc...
 WAVE_KNOB = 5
 
+## A configurable ADSR envelope
+WAVE_ADSR = 6
+
 ## Available wave shapes
 WAVE_SHAPES = [
     WAVE_SQUARE,
     WAVE_TRIANGLE,
     WAVE_SIN,
+    WAVE_ADSR,
     WAVE_RANDOM,
     WAVE_AIN,
     WAVE_KNOB
@@ -179,6 +183,7 @@ WAVE_SHAPE_LABELS = [
     "Square",
     "Triangle",
     "Sine",
+    "ADSR",
     "Random",
     "AIN",
     "KNOB"
@@ -191,14 +196,15 @@ WAVE_SHAPE_LABELS = [
 #  These are 12x12 bitmaps. See:
 #  - https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md
 #  - https://github.com/novaspirit/img2bytearray
-WAVE_SHAPE_IMGS = [
-    bytearray(b'\xfe\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x83\xf0'),
-    bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'),
-    bytearray(b'\x10\x00(\x00D\x00D\x00\x82\x00\x82\x00\x82\x10\x82\x10\x01\x10\x01\x10\x00\xa0\x00@'),
-    bytearray(b'\x00\x00\x08\x00\x08\x00\x14\x00\x16\x80\x16\xa0\x11\xa0Q\xf0Pp`P@\x10\x80\x00'),
-    bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00'),
-    bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00')
-]
+WAVE_SHAPE_IMGS = {
+    WAVE_SQUARE   : bytearray(b'\xfe\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x83\xf0'),
+    WAVE_TRIANGLE : bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'),
+    WAVE_SIN      : bytearray(b'\x10\x00(\x00D\x00D\x00\x82\x00\x82\x00\x82\x10\x82\x10\x01\x10\x01\x10\x00\xa0\x00@'),
+    WAVE_ADSR     : bytearray(b' \x00 \x000\x000\x00H\x00H\x00G\xc0@@\x80 \x80 \x80\x10\x80\x10'),
+    WAVE_RANDOM   : bytearray(b'\x00\x00\x08\x00\x08\x00\x14\x00\x16\x80\x16\xa0\x11\xa0Q\xf0Pp`P@\x10\x80\x00'),
+    WAVE_AIN      : bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00'),
+    WAVE_KNOB     : bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00')
+}
 
 STATUS_IMG_LOCK = bytearray(b'\x06\x00\x19\x80\x19\x80`@`@`@\xff\xf0\xf9\xf0\xf9\xf0\xfd\xf0\xff\xf0\xff\xf0')
 STATUS_IMG_PLAY = bytearray(b'\x00\x00\x18\x00\x18\x00\x1c\x00\x1c\x00\x1e\x00\x1f\x80\x1e\x00\x1e\x00\x1c\x00\x18\x00\x18\x00')
@@ -245,10 +251,14 @@ YES_NO_LABELS = [
     "Y"
 ]
 
+## Integers 0-100 for choosing a percentage value
+PERCENT_RANGE = list(range(101))
+
 class Setting:
     """A single setting that can be loaded, saved, or dynamically read from an analog input
     """
-    def __init__(self, display_name, storage_name, display_options, options, allow_cv_in=True, value_dict=None, default_value=None, on_change_fn=None, callback_arg=None):
+    def __init__(self, display_name, storage_name, display_options, options, \
+                 allow_cv_in=True, value_dict=None, default_value=None, on_change_fn=None, callback_arg=None):
         """Create a new setting
 
         @param display_name     The name displayed on the screen as the setting's title
@@ -579,13 +589,13 @@ class PamsOutput:
         self.wave_shape = Setting("Wave", "wave", WAVE_SHAPE_LABELS, WAVE_SHAPES, default_value=WAVE_SQUARE, allow_cv_in=False)
 
         ## The phase offset of the output as a [0, 100] percentage
-        self.phase = Setting("Phase", "phase", list(range(101)), list(range(101)), default_value=0)
+        self.phase = Setting("Phase", "phase", PERCENT_RANGE, PERCENT_RANGE, default_value=0)
 
         ## The amplitude of the output as a [0, 100] percentage
-        self.amplitude = Setting("Ampl.", "ampl", list(range(101)), list(range(101)), default_value=50)
+        self.amplitude = Setting("Ampl.", "ampl", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
 
         ## Wave width
-        self.width = Setting("Width", "width", list(range(101)), list(range(101)), default_value=50)
+        self.width = Setting("Width", "width", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
 
         ## Euclidean -- number of steps in the pattern (0 = disabled)
         self.e_step = Setting("EStep", "e_step", list(range(self.MAX_EUCLID_LENGTH+1)), list(range(self.MAX_EUCLID_LENGTH)), on_change_fn=self.change_e_length, default_value=0)
@@ -597,14 +607,20 @@ class PamsOutput:
         self.e_rot = Setting("ERot", "e_rot", list(range(self.MAX_EUCLID_LENGTH+1)), list(range(self.MAX_EUCLID_LENGTH)), on_change_fn=self.recalculate_e_pattern, default_value=0)
 
         ## Probability that we skip an output [0-100]
-        self.skip = Setting("Skip%", "skip", list(range(101)), list(range(101)), default_value=0)
+        self.skip = Setting("Skip%", "skip", PERCENT_RANGE, PERCENT_RANGE, default_value=0)
+
+        # ADSR settings
+        self.attack = Setting("Attack", "attack", PERCENT_RANGE, PERCENT_RANGE, default_value=10)
+        self.decay = Setting("Decay", "decay", PERCENT_RANGE, PERCENT_RANGE, default_value=10)
+        self.sustain = Setting("Sustain", "sustain", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
+        self.release = Setting("Release", "release", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
 
         ## Swing percentage
         #
         #  50% -> even, no swing
         #  <50% -> short-long-short-long-...
         #  >50% -> long-short-long-short-...
-        self.swing = Setting("Swing%", "swing", list(range(101)), list(range(101)), default_value=50)
+        self.swing = Setting("Swing%", "swing", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
 
         ## Allows muting a channel during runtime
         #
@@ -625,7 +641,11 @@ class PamsOutput:
             self.e_rot,
             self.skip,
             self.swing,
-            self.mute
+            self.mute,
+            self.attack,
+            self.decay,
+            self.sustain,
+            self.release
         ]
 
         ## Counter that increases every time we finish a full wave form
@@ -676,7 +696,11 @@ class PamsOutput:
             "quantizer" : self.quantizer.to_dict(),
             "root"      : self.root.to_dict(),
             "swing"     : self.swing.to_dict(),
-            "mute"      : self.mute.to_dict()
+            "mute"      : self.mute.to_dict(),
+            "attack"    : self.attack.to_dict(),
+            "decay"     : self.decay.to_dict(),
+            "sustain"   : self.sustain.to_dict(),
+            "release"   : self.release.to_dict(),
         }
 
     def load_settings(self, settings):
@@ -710,6 +734,14 @@ class PamsOutput:
             self.swing.load(settings["swing"])
         if "mute" in settings.keys():
             self.mute.load(settings["mute"])
+        if "attack" in settings.keys():
+            self.attack.load(settings["attack"])
+        if "decay" in settings.keys():
+            self.decay.load(settings["decay"])
+        if "sustain" in settings.keys():
+            self.sustain.load(settings["sustain"])
+        if "release" in settings.keys():
+            self.release.load(settings["release"])
 
         self.change_e_length()
 
@@ -794,6 +826,49 @@ class PamsOutput:
         s_theta = (math.sin(theta) + 1) / 2   # (sin(x) + 1)/2 since we can't output negative voltages
         return s_theta
 
+    def adsr_wave(self, tick, n_ticks):
+        """Calculate the [0, 1] level of an ADSR envelope
+
+        Attack is the % of the total time that covers the attack phase, moving from 0 to 1 linearly
+
+        Decay is the % of the remaining time that covers the decay phase, moving from 1 to X linearly
+
+        Sustain is the % level to sustain at, defining X for the decay phase
+
+        Release is the % of the remaining time that covers the release phase, moving from X to 0 linearly
+
+           /\
+          /  \______
+         /          \
+        /            \
+        -A--D---S---R-
+        ---n_ticks----
+        """
+
+        n_ticks = int(n_ticks * self.width.get_value() / 100.0)
+
+        attack_ticks = int(n_ticks * self.attack.get_value() / 100.0)
+        decay_ticks = int((n_ticks - attack_ticks) * self.decay.get_value() / 100.0)
+        release_ticks = int((n_ticks - decay_ticks - attack_ticks) * self.release.get_value() / 100.0)
+        sustain_ticks = n_ticks - attack_ticks - decay_ticks - release_ticks
+        sustain_level = self.sustain.get_value() / 100.0
+
+        if tick < attack_ticks:
+            # attack phase
+            slope = 1.0 / attack_ticks
+            return tick * slope
+        elif tick < attack_ticks + decay_ticks:
+            # decay phase
+            slope = (1 - sustain_level) / decay_ticks
+            return 1 - slope * (tick - attack_ticks)
+        elif tick < attack_ticks + decay_ticks + sustain_ticks:
+            # sustain phase
+            return sustain_level
+        else:
+            # release phase
+            slope = sustain_level / release_ticks
+            return sustain_level - slope * (tick - attack_ticks - decay_ticks - sustain_ticks)
+
     def reset(self):
         """Reset the current output to the beginning
         """
@@ -877,6 +952,10 @@ class PamsOutput:
                 wave_sample = wave_sample * self.triangle_wave(wave_position, ticks_per_note) * (self.amplitude.get_value() / 100.0)
             elif self.wave_shape.get_value() == WAVE_SIN:
                 wave_sample = wave_sample * self.sine_wave(wave_position, ticks_per_note) * (self.amplitude.get_value() / 100.0)
+            elif self.wave_shape.get_value() == WAVE_ADSR:
+                wave_sample = wave_sample * self.adsr_wave(wave_position, ticks_per_note) * (self.amplitude.get_value() / 100.0)
+            else:
+                wave_sample = 0.0
 
             self.previous_wave_sample = wave_sample
             out_volts = wave_sample * MAX_OUTPUT_VOLTAGE
@@ -1038,6 +1117,10 @@ class PamsMenu:
                 SettingChooser(prefix, ch.width),
                 SettingChooser(prefix, ch.phase),
                 SettingChooser(prefix, ch.amplitude),
+                SettingChooser(prefix, ch.attack),
+                SettingChooser(prefix, ch.decay),
+                SettingChooser(prefix, ch.sustain),
+                SettingChooser(prefix, ch.release),
                 SettingChooser(prefix, ch.skip),
                 SettingChooser(prefix, ch.e_step),
                 SettingChooser(prefix, ch.e_trig),
@@ -1099,34 +1182,6 @@ class PamsMenu:
             # ...then reset this setting back to N so we can reset again later
             reset_setting.reset_to_default()
 
-
-class SplashScreen:
-    """A splash screen we show during startup
-    """
-    def draw(self):
-        """Draw the splash screen to the OLED
-
-        Layout looks like this, where % indicates the EuroPi logo:
-        ```
-        +-------------------+
-        | %%% Pam's Workout |
-        | %%%               |
-        +-------------------+
-        ```
-        """
-        logo = bytearray(b"\x00\x01\xf0\x00\x00\x02\x08\x00\x00\x04\x04\x00\x03\xc4\x04\x00\x0c$\x02\x00\x10\x14\x01\x00\x10\x0b\xc0\x80 \x04\x00\x80A\x8a|\x80FJC\xc0H\x898\x00S\x08\x87\x00d\x08\x00\xc0X\x08p #\x88H L\xb8& \x91P\x11 \xa6\x91\x08\xa0\xc9\x12\x84`\x12\x12C\x00$\x11 \x80H\x0c\x90\x80@\x12\x88\x80 \x12F\x80\x10\x10A\x00\x10  \x00\x08  \x00\x04@@\x00\x02\x00\x80\x00\x01\x01\x00\x00\x00\xc6\x00\x00\x008\x00\x00")
-        LOGO_WIDTH = 27
-        LOGO_HEIGHT = 32
-
-        # clear the screen
-        oled.fill(0)
-
-        # put the EuroPi leaf graphic on the side
-        imgFB = FrameBuffer(logo, LOGO_WIDTH, LOGO_HEIGHT, MONO_HLSB)
-        oled.blit(imgFB, 0, 0)
-
-        oled.text("Pam's Workout", LOGO_WIDTH+2, 8)
-        oled.show()
 
 class PamsWorkout(EuroPiScript):
     """The main script for the Pam's Workout implementation
@@ -1246,8 +1301,8 @@ class PamsWorkout(EuroPiScript):
             for i in range(len(ain_cfg)):
                 CV_INS[cv_keys[i]].load_settings(ain_cfg[i])
 
-        except:
-            print("[ERR ] Error loading saved configuration for PamsWorkout")
+        except Exception as err:
+            print(f"[ERR ] Error loading saved configuration for PamsWorkout: {err}")
             print("[ERR ] Please delete the storage file and restart the module")
 
     def save(self):
@@ -1271,11 +1326,7 @@ class PamsWorkout(EuroPiScript):
         return "Pam's Workout"
 
     def main(self):
-        SplashScreen().draw()
-
         self.load()
-
-        time.sleep(1.5)
 
         while True:
             now = time.ticks_ms()
