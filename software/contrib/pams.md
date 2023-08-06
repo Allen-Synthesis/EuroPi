@@ -337,7 +337,7 @@ The following scales are available:
 - `AIN` -- CV control to select one of the preceding options
 - `KNOB` -- Direct control over the preceding options by turning K1
 
-* These options are inspired by the Doepfer A-156 quantizer.
+`*` These options are inspired by the Doepfer A-156 quantizer.
 
 ## External CV Routing & Knob Input
 
