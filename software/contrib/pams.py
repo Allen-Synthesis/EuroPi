@@ -258,7 +258,8 @@ class Setting:
     """A single setting that can be loaded, saved, or dynamically read from an analog input
     """
     def __init__(self, display_name, storage_name, display_options, options, \
-                 allow_cv_in=True, value_dict=None, default_value=None, on_change_fn=None, callback_arg=None):
+                 allow_cv_in=True, value_dict=None, default_value=None, on_change_fn=None, callback_arg=None,
+                 is_visible=True):
         """Create a new setting
 
         @param display_name     The name displayed on the screen as the setting's title
@@ -271,6 +272,7 @@ class Setting:
         @param on_change_fn     A callback function to call when this setting changes. The function must accept 1-2 args:
                                 a reference to this Setting instance, and (optionally) the value passed to callback_arg
         @param callback_arg     An optional argument to passed as the 2nd argument to on_change_fn when it is called
+        @param is_visible       Used to indicate whether or not this setting should be visible in the GUI
         """
         self.display_name = display_name
         self.display_options = [o for o in display_options]
@@ -293,6 +295,8 @@ class Setting:
             self.choice = self.options.index(self.default_value)
         else:
             self.choice = 0
+
+        self.is_visible = is_visible
 
     def __str__(self):
         return self.display_name
@@ -376,7 +380,8 @@ class AnalogInReader:
         self.last_voltage = 0.0
 
         self.gain = Setting("Gain", "gain", list(range(301)), list(range(301)), allow_cv_in=False, default_value=100)
-        self.precision = Setting("Precision", "precision", ["Low", "Med", "High"], [int(DEFAULT_SAMPLES/2), DEFAULT_SAMPLES, int(DEFAULT_SAMPLES*2)], allow_cv_in=False, default_value=DEFAULT_SAMPLES)
+        self.precision = Setting("Precision", "precision", ["Low", "Med", "High"], \
+            [int(DEFAULT_SAMPLES/2), DEFAULT_SAMPLES, int(DEFAULT_SAMPLES*2)], allow_cv_in=False, default_value=DEFAULT_SAMPLES)
 
     def to_dict(self):
         return {
@@ -571,7 +576,8 @@ class PamsOutput:
         ## What quantization are we using?
         #
         #  See contrib.pams.QUANTIZERS
-        self.quantizer = Setting("Quant.", "quantizer", QUANTIZER_LABELS, QUANTIZER_LABELS, value_dict=QUANTIZERS)
+        self.quantizer = Setting("Quant.", "quantizer", QUANTIZER_LABELS, QUANTIZER_LABELS, value_dict=QUANTIZERS, \
+            on_change_fn=self.update_menu_visibility)
 
         ## The root of the quantized scale (ignored if quantizer is None)
         self.root = Setting("Q Root", "root", SEMITONE_LABELS, list(range(SEMITONES_PER_OCTAVE)))
@@ -581,12 +587,14 @@ class PamsOutput:
         #  - 1.0 is the same as the main clock's BPM
         #  - <1.0 will tick slower than the BPM (e.g. 0.5 will tick once every 2 beats)
         #  - >1.0 will tick faster than the BPM (e.g. 3.0 will tick 3 times per beat)
-        self.clock_mod = Setting("Mod", "clock_mod", CLOCK_MOD_LABELS, CLOCK_MOD_LABELS, value_dict=CLOCK_MODS, default_value="x1", allow_cv_in=False)
+        self.clock_mod = Setting("Mod", "clock_mod", CLOCK_MOD_LABELS, CLOCK_MOD_LABELS, value_dict=CLOCK_MODS, \
+            default_value="x1", allow_cv_in=False)
 
         ## What shape of wave are we generating?
         #
         #  For now, stick to square waves for triggers & gates
-        self.wave_shape = Setting("Wave", "wave", WAVE_SHAPE_LABELS, WAVE_SHAPES, default_value=WAVE_SQUARE, allow_cv_in=False)
+        self.wave_shape = Setting("Wave", "wave", WAVE_SHAPE_LABELS, WAVE_SHAPES, default_value=WAVE_SQUARE, \
+            allow_cv_in=False, on_change_fn=self.update_menu_visibility)
 
         ## The phase offset of the output as a [0, 100] percentage
         self.phase = Setting("Phase", "phase", PERCENT_RANGE, PERCENT_RANGE, default_value=0)
@@ -598,13 +606,17 @@ class PamsOutput:
         self.width = Setting("Width", "width", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
 
         ## Euclidean -- number of steps in the pattern (0 = disabled)
-        self.e_step = Setting("EStep", "e_step", list(range(self.MAX_EUCLID_LENGTH+1)), list(range(self.MAX_EUCLID_LENGTH)), on_change_fn=self.change_e_length, default_value=0)
+        euclid_choices = list(range(self.MAX_EUCLID_LENGTH+1))
+        self.e_step = Setting("EStep", "e_step", euclid_choices, euclid_choices, \
+            on_change_fn=self.change_e_length, default_value=0)
 
         ## Euclidean -- number of triggers in the pattern
-        self.e_trig = Setting("ETrig", "e_trig", list(range(self.MAX_EUCLID_LENGTH+1)), list(range(self.MAX_EUCLID_LENGTH)), on_change_fn=self.recalculate_e_pattern, default_value=0)
+        self.e_trig = Setting("ETrig", "e_trig", euclid_choices, euclid_choices, \
+            on_change_fn=self.recalculate_e_pattern, default_value=0)
 
         ## Euclidean -- rotation of the pattern
-        self.e_rot = Setting("ERot", "e_rot", list(range(self.MAX_EUCLID_LENGTH+1)), list(range(self.MAX_EUCLID_LENGTH)), on_change_fn=self.recalculate_e_pattern, default_value=0)
+        self.e_rot = Setting("ERot", "e_rot", euclid_choices, euclid_choices, \
+            on_change_fn=self.recalculate_e_pattern, default_value=0)
 
         ## Probability that we skip an output [0-100]
         self.skip = Setting("Skip%", "skip", PERCENT_RANGE, PERCENT_RANGE, default_value=0)
@@ -680,6 +692,31 @@ class PamsOutput:
 
         self.change_e_length()
 
+        self.update_menu_visibility()
+
+    def update_menu_visibility(self, sender=None, args=None):
+        """Callback function for changing the visibility of menu items
+
+        @param sender  The Setting object that called this function
+        @param args    The callback arguments passed from the Setting
+        """
+
+        # hide the ADSR settings if we're not in ADSR mode
+        wave_shape = self.wave_shape.get_value()
+        show_adsr = wave_shape == WAVE_ADSR
+        self.attack.is_visible = show_adsr
+        self.decay.is_visible = show_adsr
+        self.sustain.is_visible = show_adsr
+        self.release.is_visible = show_adsr
+
+        # hide the quantization root if we're not quantizing
+        show_root = self.quantizer.get_value() is not None
+        self.root.is_visible = show_root
+
+        # hide the width parameter if we're reading from AIN or KNOB, or outputting a sine wave
+        show_width = wave_shape != WAVE_AIN and wave_shape != WAVE_KNOB and wave_shape != WAVE_SIN
+        self.width.is_visible = show_width
+
     def to_dict(self):
         """Return a dictionary with all the configurable settings to write to disk
         """
@@ -744,6 +781,7 @@ class PamsOutput:
             self.release.load(settings["release"])
 
         self.change_e_length()
+        self.update_menu_visibility()
 
     def change_e_length(self, setting=None):
         self.e_trig.update_options(list(range(self.e_step.get_value()+1)), list(range(self.e_step.get_value()+1)))
@@ -1140,7 +1178,14 @@ class PamsMenu:
         self.active_items = self.items
 
         ## The item we're actually drawing to the screen _right_now_
-        self.visible_item = k2_bank.current.choice(self.active_items)
+        self.visible_item = k2_bank.current.choice(self.get_active_items())
+
+    def get_active_items(self):
+        """Return a list of the visible items in the active_items for this menu layer
+        """
+        return [
+            item for item in self.active_items if item.setting.is_visible
+        ]
 
     def on_long_press(self):
         # return the active item to the read-only state
@@ -1165,7 +1210,7 @@ class PamsMenu:
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = k2_bank.current.choice(self.active_items)
+            self.visible_item = k2_bank.current.choice(self.get_active_items())
 
         self.visible_item.draw()
 

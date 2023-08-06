@@ -274,6 +274,7 @@ _____|         |____|         |__________
 - Sine: ignored
 - Random: offset voltage as a percentage of the maximum output
 - AIN: ignored
+- KNOB: ignored
 
 ### Reset and Start Triggers
 
