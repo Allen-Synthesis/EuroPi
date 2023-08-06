@@ -321,22 +321,23 @@ The following scales are available:
 - `Chromatic` -- all 12 semitones can be output
 - `Nat Maj` -- natural major scale (C D E F G A B)
 - `Har Maj` -- harmonic major scale (C D E F G A# B#)
-- `Maj 135` -- natural major triad (C E G)
-- `Maj 1356` -- natural major triad + 6th (C E G A)
-- `Maj 1357` -- natural major triad + 7th (C E G B)
+- `Maj 135`* -- natural major triad (C E G)
+- `Maj 1356`* -- natural major triad + 6th (C E G A)
+- `Maj 1357`* -- natural major triad + 7th (C E G B)
 - `Nat Min` -- natural minor scale (C D Eb F G Ab Bb)
 - `Har Min` -- harmonoc minor scale (C D Eb F G Ab B)
-- `Min 135` -- natural minor triad (C Eb G)
-- `Min 1356` -- natural minor triad + 6th (C Eb G Ab)
-- `Min 1357` -- natural minor triad + 7th (C Eb G Bb)
+- `Min 135`* -- natural minor triad (C Eb G)
+- `Min 1356`* -- natural minor triad + 6th (C Eb G Ab)
+- `Min 1357`* -- natural minor triad + 7th (C Eb G Bb)
 - `Maj Blues` -- major blues scale (C D Eb E G A)
 - `Min Blues` -- minor blues scale (C Eb F Gb G Bb)
 - `Whole` -- whole tone scale (C D E F# G# A#)
 - `Penta` -- pentatonic scale (C D E G A)
 - `Dom 7` -- dominant 7th chord (C E G Bb)
 - `AIN` -- CV control to select one of the preceding options
+- `KNOB` -- Direct control over the preceding options by turning K1
 
-The 1/3/5 (+6|7) modes were inspired by the Doepfer A-156 quantizer.
+* These options are inspired by the Doepfer A-156 quantizer.
 
 ## External CV Routing & Knob Input
 
