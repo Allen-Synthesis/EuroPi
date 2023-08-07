@@ -206,7 +206,6 @@ WAVE_SHAPE_IMGS = [
     bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00')                                    # KNOB
 ]
 
-STATUS_IMG_LOCK = bytearray(b'\x06\x00\x19\x80\x19\x80`@`@`@\xff\xf0\xf9\xf0\xf9\xf0\xfd\xf0\xff\xf0\xff\xf0')
 STATUS_IMG_PLAY = bytearray(b'\x00\x00\x18\x00\x18\x00\x1c\x00\x1c\x00\x1e\x00\x1f\x80\x1e\x00\x1e\x00\x1c\x00\x18\x00\x18\x00')
 STATUS_IMG_PAUSE = bytearray(b'\x00\x00y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0')
 
@@ -317,12 +316,12 @@ class Setting:
         if self.choice >= len(options):
             self.choice = len(options)-1
 
-        self.display_options = []
-        for o in display_options:
-            self.display_options.append(o)
-        self.options = []
-        for o in options:
-            self.options.append(o)
+        self.display_options = [
+            o for o in display_options
+        ]
+        self.options = [
+            o for o in options
+        ]
 
         if self.allow_cv_in:
             for cv in CV_INS.keys():
@@ -883,6 +882,10 @@ class PamsOutput:
         ---n_ticks----
         """
 
+        # apply the phase offset
+        tick = int(tick + self.phase.get_value() * n_ticks / 100.0) % n_ticks
+
+        # the ADSR envelope only lasts for n_ticks * width%, so reduce the size of the window for further calculations
         n_ticks = int(n_ticks * self.width.get_value() / 100.0)
 
         attack_ticks = int(n_ticks * self.attack.get_value() / 100.0)
@@ -902,10 +905,13 @@ class PamsOutput:
         elif tick < attack_ticks + decay_ticks + sustain_ticks:
             # sustain phase
             return sustain_level
-        else:
+        elif tick < attack_ticks + decay_ticks + sustain_ticks + release_ticks:
             # release phase
             slope = sustain_level / release_ticks
             return sustain_level - slope * (tick - attack_ticks - decay_ticks - sustain_ticks)
+        else:
+            # outside of the ADSR
+            return 0.0
 
     def reset(self):
         """Reset the current output to the beginning
@@ -1355,14 +1361,14 @@ class PamsWorkout(EuroPiScript):
         """
         state = {
             "clock": self.clock.to_dict(),
-            "channels": [],
+            "channels": [
+                self.channels[i].to_dict() for i in range(len(self.channels))
+            ],
             "din": self.din_mode.to_dict(),
-            "ain": []
+            "ain": [
+                CV_INS[cv].to_dict() for cv in CV_INS.keys()
+            ]
         }
-        for i in range(len(self.channels)):
-            state["channels"].append(self.channels[i].to_dict())
-        for cv in CV_INS.keys():
-            state["ain"].append(CV_INS[cv].to_dict())
 
         self.save_state_json(state)
 
