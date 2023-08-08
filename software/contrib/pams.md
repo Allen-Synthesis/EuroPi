@@ -159,6 +159,28 @@ The submenu for each CV output has the following options:
 The values of the `Attack`, `Decay`, `Sustain`, and `Release` settings are ignored if the wave whape is not set to
 `ADSR`
 
+### Changing Settings While Clock is Running
+
+Changing some settings while the clock is running may have undesirable side-effects, including clicks, out-of-time
+triggers, and the like.  Generally-speaking it is best to make changes while the clock is stopped.
+
+Applies immediately, can be safely changed at any time:
+- Mute
+- Skip
+
+Applies immediately, but may result in rapid output level changes, clicks, and similar effects:
+- Wave shape
+- Attack, Decay, Sustain, Release
+- Width
+- Phase
+- Swing
+- Quantizer mode
+- Quantizer root
+
+Can be changed safely at any time, but the effect is delayed until the current wave shape completes its cycle:
+- Clock Mod
+- Euclidean length, triggers, rotation
+
 ### ADSR Envelope
 
 The ADSR envelope is affected by the `Width`, `Amplitude` and `Phase` parameters:

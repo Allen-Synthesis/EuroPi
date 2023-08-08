@@ -304,13 +304,13 @@ class Setting:
         return len(self.options)
 
     def load(self, settings):
-        if "value" in settings.keys():
+        if type(settings) is dict and "value" in settings.keys():
             self.choice = settings["value"]
+        else:
+            self.choice = settings
 
     def to_dict(self):
-        return {
-            "value": self.choice
-        }
+        return self.choice
 
     def update_options(self, display_options, options):
         if self.choice >= len(options):
@@ -561,13 +561,14 @@ class PamsOutput:
     #  The actual length depends on clock rate and PPQN, and may be longer than this
     TRIGGER_LENGTH_MS = 10
 
-    def __init__(self, cv_out, clock):
+    def __init__(self, cv_out, clock, n):
         """Create a new output to control a single cv output
 
         @param cv_out  One of the six output jacks
         @param clock  The MasterClock that controls the timing of this output
         """
 
+        self.cv_n = n
         self.out_volts = 0.0
         self.cv_out = cv_out
         self.clock = clock
@@ -587,7 +588,15 @@ class PamsOutput:
         #  - <1.0 will tick slower than the BPM (e.g. 0.5 will tick once every 2 beats)
         #  - >1.0 will tick faster than the BPM (e.g. 3.0 will tick 3 times per beat)
         self.clock_mod = Setting("Mod", "clock_mod", CLOCK_MOD_LABELS, CLOCK_MOD_LABELS, value_dict=CLOCK_MODS, \
-            default_value="x1", allow_cv_in=False)
+            default_value="x1", allow_cv_in=False, on_change_fn=self.request_clock_mod)
+
+        ## To prevent phase misalignment we use this as the active clock modifier
+        #
+        #  If clock_mod is changed, we apply it to this when it is safe to do so
+        self.real_clock_mod = self.clock_mod.get_value()
+
+        ## Indicates if clock_mod and real_clock_mod are the same or not
+        self.clock_mod_dirty = False
 
         ## What shape of wave are we generating?
         #
@@ -693,6 +702,9 @@ class PamsOutput:
 
         self.update_menu_visibility()
 
+    def __str__(self):
+        return f"out_cv{self.cv_n}"
+
     def update_menu_visibility(self, sender=None, args=None):
         """Callback function for changing the visibility of menu items
 
@@ -781,11 +793,19 @@ class PamsOutput:
 
         self.change_e_length()
         self.update_menu_visibility()
+        self.real_clock_mod = self.clock_mod.get_value()
 
     def change_e_length(self, setting=None):
         self.e_trig.update_options(list(range(self.e_step.get_value()+1)), list(range(self.e_step.get_value()+1)))
         self.e_rot.update_options(list(range(self.e_step.get_value()+1)), list(range(self.e_step.get_value()+1)))
         self.recalculate_e_pattern()
+
+    def request_clock_mod(self, setting=None):
+        self.clock_mod_dirty = True
+
+    def change_clock_mod(self):
+        self.real_clock_mod = self.clock_mod.get_value()
+        self.clock_mod_dirty = False
 
     def recalculate_e_pattern(self, setting=None):
         """Recalulate the euclidean pattern this channel outputs
@@ -923,6 +943,7 @@ class PamsOutput:
 
         self.sample_position = 0
         self.wave_counter = 0
+        self.change_clock_mod()
 
     def reset_settings(self):
         """Reset all settings to their default values
@@ -936,7 +957,8 @@ class PamsOutput:
         Call apply() to actually send the voltage. This lets us calculate all output channels and THEN set the
         outputs after so they're more synchronized
         """
-        if self.clock_mod.get_value() == CLOCK_MOD_START:
+
+        if self.real_clock_mod == CLOCK_MOD_START:
             # start waves are weird; they're only on during the first 10ms or 1 PPQN (whichever is longer)
             # and are otherwise always off
             gate_len = self.clock.running_time()
@@ -944,9 +966,9 @@ class PamsOutput:
                 out_volts = MAX_OUTPUT_VOLTAGE * self.amplitude.get_value() / 100.0
             else:
                 out_volts = 0.0
-        elif self.clock_mod.get_value() == CLOCK_MOD_RUN:
+        elif self.real_clock_mod == CLOCK_MOD_RUN:
             out_volts = MAX_OUTPUT_VOLTAGE * self.amplitude.get_value() / 100.0
-        elif self.clock_mod.get_value() == CLOCK_MOD_RESET:
+        elif self.real_clock_mod == CLOCK_MOD_RESET:
             # reset waves are always low; the clock's stop() function handles triggering them
             out_volts = 0.0
         else:
@@ -956,19 +978,19 @@ class PamsOutput:
             else:
                 # second half of the swing; if swing < 50% this is long, otherwise short
                 swing_amt = (100 - self.swing.get_value()) / 100.0
-            ticks_per_note = round(2 * MasterClock.PPQN / self.clock_mod.get_value() * swing_amt)
+            ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod * swing_amt)
             if ticks_per_note == 0:
                 # we're swinging SO HARD that one beat is squashed out of existence!
                 # move immediately to the other beat
                 self.e_position = self.e_position + 1
                 if self.e_position >= len(self.e_pattern):
                     self.e_position = 0
-                ticks_per_note = round(2 * MasterClock.PPQN / self.clock_mod.get_value())
+                ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod)
 
             e_step = self.e_pattern[self.e_position]
             wave_position = self.sample_position
             # are we starting a new repeat of the pattern?
-            rising_edge = wave_position == int(self.phase.get_value() * ticks_per_note / 100.0) and e_step
+            rising_edge = (wave_position == int(self.phase.get_value() * ticks_per_note / 100.0)) and e_step
             # determine if we should skip this sample playback
             if rising_edge:
                 self.skip_this_step = random.randint(0, 100) < self.skip.get_value()
@@ -1013,6 +1035,10 @@ class PamsOutput:
             self.sample_position = self.sample_position +1
             if self.sample_position >= ticks_per_note:
                 self.sample_position = 0
+
+                # If the clock modifier was changed, apply the new value now
+                if self.clock_mod_dirty:
+                    self.change_clock_mod()
 
                 if self.next_e_pattern:
                     # if we just finished a waveform and we have a new euclidean pattern, start it
@@ -1245,12 +1271,12 @@ class PamsWorkout(EuroPiScript):
 
         self.clock = MasterClock(120)
         self.channels = [
-            PamsOutput(cv1, self.clock),
-            PamsOutput(cv2, self.clock),
-            PamsOutput(cv3, self.clock),
-            PamsOutput(cv4, self.clock),
-            PamsOutput(cv5, self.clock),
-            PamsOutput(cv6, self.clock),
+            PamsOutput(cv1, self.clock, 1),
+            PamsOutput(cv2, self.clock, 2),
+            PamsOutput(cv3, self.clock, 3),
+            PamsOutput(cv4, self.clock, 4),
+            PamsOutput(cv5, self.clock, 5),
+            PamsOutput(cv6, self.clock, 6),
         ]
         self.clock.add_channels(self.channels)
 
