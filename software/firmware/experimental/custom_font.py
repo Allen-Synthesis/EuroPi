@@ -5,6 +5,7 @@ from machine import Pin
 from ssd1306 import SSD1306_I2C
 
 from europi import OLED_WIDTH, I2C_FREQUENCY, OLED_HEIGHT, I2C_CHANNEL, TEST_ENV, CHAR_HEIGHT
+from europi import Display as BasicDisplay
 
 
 # TODO: add a method to select the font to use by default
@@ -58,7 +59,7 @@ class CustomFontWriter:
         return char_width
 
 
-class Display(SSD1306_I2C):
+class Display(BasicDisplay):
     """A class for drawing graphics and text to the OLED.
 
     The OLED Display works by collecting all the applied commands and only
@@ -75,25 +76,11 @@ class Display(SSD1306_I2C):
 
     def __init__(
             self,
-            sda,
-            scl,
-            width=OLED_WIDTH,
-            height=OLED_HEIGHT,
-            channel=I2C_CHANNEL,
-            freq=I2C_FREQUENCY,
             default_font=None  # by default will use the monospaced 8x8 font
     ):
-        i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
-        self.width = width
-        self.height = height
         self.writers = {}  # re-usable large font writer instances
         self.default_font = default_font
-        if len(i2c.scan()) == 0:
-            if not TEST_ENV:
-                raise Exception(
-                    "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
-                )
-        super().__init__(self.width, self.height, i2c)
+        super().__init__(0, 1)
 
     def _writer(self, font):
         """Returns the large font writer for the specified font."""
@@ -170,4 +157,4 @@ class Display(SSD1306_I2C):
 
         self.show()
         
-oled = Display(0, 1)
+oled = Display()

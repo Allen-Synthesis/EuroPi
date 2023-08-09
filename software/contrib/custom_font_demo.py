@@ -17,7 +17,7 @@ from experimental import freesans17
 from experimental import freesans20
 from experimental import freesans24
 
-oled = custom_font.Display(sda=0, scl=1)
+oled = custom_font.Display()
 
 
 class CustomFontDemo(EuroPiScript):
