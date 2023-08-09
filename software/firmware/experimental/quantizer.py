@@ -16,6 +16,9 @@ SEMITONES_PER_OCTAVE = 12
 ## How many volts per semitone
 VOLTS_PER_SEMITONE = float(VOLTS_PER_OCTAVE) / float(SEMITONES_PER_OCTAVE)
 
+## Labels for the 12 semitones (using sharps, not flats)
+SEMITONE_LABELS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
 
 class Quantizer:
     """Represents a set of semitones we can quantize input voltages to
@@ -55,15 +58,20 @@ class Quantizer:
     def __len__(self):
         return len(self.notes)
 
-    def quantize(self, analog_in):
+    def quantize(self, analog_in, root=0):
         """Take an analog input voltage and round it to the nearest note on our scale
 
         @param analog_in  The input voltage to quantize, as a float
+        @param root       An integer in the range [0, 12) indicating the number of semitones up to transpose
+                          the quantized scale
 
         @return A tuple of the form (voltage, note) where voltage is
                 the raw voltage to output, and note is a value from
                 0-11 indicating the semitone
         """
+        # offset the input voltage by the root to transpose down
+        analog_in = analog_in - VOLTS_PER_SEMITONE * root
+
         # first get the closest chromatic voltage to the input
         nearest_chromatic_volt = round(analog_in / VOLTS_PER_SEMITONE) * VOLTS_PER_SEMITONE
 
@@ -81,7 +89,8 @@ class Quantizer:
                     nearest_on_scale = note
                     best_delta = delta
 
-        volts = base_volts + nearest_on_scale * VOLTS_PER_SEMITONE
+        # re-apply the root to transpose back up
+        volts = base_volts + nearest_on_scale * VOLTS_PER_SEMITONE + root * VOLTS_PER_SEMITONE
 
         return (volts, nearest_on_scale)
 

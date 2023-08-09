@@ -12,7 +12,7 @@ from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
 from experimental.knobs import KnobBank
-from experimental.quantizer import CommonScales, Quantizer
+from experimental.quantizer import CommonScales, Quantizer, SEMITONE_LABELS, SEMITONES_PER_OCTAVE
 from experimental.screensaver import Screensaver
 
 from collections import OrderedDict
@@ -21,6 +21,18 @@ from machine import Timer
 import math
 import time
 import random
+
+## Lockable knob bank for K2 to make menu navigation a little easier
+#
+#  Note that this does mean _sometimes_ you'll need to sweep the knob all the way left/right
+#  to unlock it
+k2_bank = (
+    KnobBank.builder(k2)
+    .with_unlocked_knob("main_menu")
+    .with_locked_knob("submenu", initial_percentage_value=0)
+    .with_locked_knob("choice", initial_percentage_value=0)
+    .build()
+)
 
 ## Vertical screen offset for placing user input
 SELECT_OPTION_Y = 16
@@ -63,6 +75,16 @@ QUANTIZERS = OrderedDict([
 ## Sorted list of names for the quantizers to display
 QUANTIZER_LABELS = list(QUANTIZERS.keys())
 
+## Always-on gate when the clock is running
+CLOCK_MOD_RUN = 100
+
+## Short trigger on clock start
+CLOCK_MOD_START = 102
+
+## Short trigger on clock stop
+CLOCK_MOD_RESET = 103
+
+
 ## Available clock modifiers
 CLOCK_MODS = OrderedDict([
     ["/16" , 1/16.0],
@@ -79,11 +101,36 @@ CLOCK_MODS = OrderedDict([
     ["x6" , 6.0],
     ["x8" , 8.0],
     ["x12", 12.0],
-    ["x16", 16.0]
+    ["x16", 16.0],
+    ["run", CLOCK_MOD_RUN],
+    ["start", CLOCK_MOD_START],
+    ["reset", CLOCK_MOD_RESET]
 ])
 
-## Sorted list of labels for the clock modifers to display
+## Sorted list of string representations of the clock mods
 CLOCK_MOD_LABELS = list(CLOCK_MODS.keys())
+
+## Some clock mods have graphics instead of text
+CLOCK_MOD_IMGS = OrderedDict([
+    [1/16.0, None],  # /16
+    [1/12.0, None],  # /12
+    [1/8.0, None],  # /8
+    [1/6.0, None],  # /6
+    [1/4.0, None],  # /4
+    [1/3.0, None],  # /3
+    [1/2.0, None],  # /2
+    [1.0, None],  # x1
+    [2.0, None],  # x2
+    [3.0, None],  # x3
+    [4.0, None],  # x4
+    [6.0, None],  # x6
+    [8.0, None],  # x8
+    [12.0, None],  # x12
+    [16.0, None],  # x16
+    [CLOCK_MOD_RUN, bytearray(b'\xff\xf0\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00')],    # run gate
+    [CLOCK_MOD_START, bytearray(b'\xe0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xbf\xf0')],  # start trigger
+    [CLOCK_MOD_RESET, bytearray(b'\x03\xf0\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\xfe\x00')]   # reset trigger
+])
 
 ## Standard pulse/square wave with PWM
 WAVE_SQUARE = 0
@@ -100,41 +147,35 @@ WAVE_TRIANGLE = 1
 #  Width is ignored
 WAVE_SIN = 2
 
+## A configurable ADSR envelope
+WAVE_ADSR = 3
+
 ## Random wave
 #
 #  Width is ignored
-WAVE_RANDOM = 3
-
-## Reset gate
-#
-#  Turns on when the clock stops
-WAVE_RESET = 4
-
-## Start trigger
-#
-#  Turns on once when the clock starts
-WAVE_START = 5
-
-## Gate, on while the clock is running and
-#  off when the clock stops
-WAVE_RUN = 6
+WAVE_RANDOM = 4
 
 ## Use raw AIN as the direct input
 #
 #  This lets you effectively use Pam's as a quantizer for
 #  the AIN signal
-WAVE_AIN = 7
+WAVE_AIN = 5
+
+## Using K1 as the direct input
+#
+#  This lets you "play" K1 as a manual LFO, flat voltage,
+#  etc...
+WAVE_KNOB = 6
 
 ## Available wave shapes
 WAVE_SHAPES = [
     WAVE_SQUARE,
     WAVE_TRIANGLE,
     WAVE_SIN,
+    WAVE_ADSR,
     WAVE_RANDOM,
-    WAVE_RESET,
-    WAVE_START,
-    WAVE_RUN,
-    WAVE_AIN
+    WAVE_AIN,
+    WAVE_KNOB
 ]
 
 ## Ordered list of labels for the wave shape chooser menu
@@ -142,11 +183,10 @@ WAVE_SHAPE_LABELS = [
     "Square",
     "Triangle",
     "Sine",
+    "ADSR",
     "Random",
-    "Reset",
-    "Start",
-    "Run",
-    "AIN"
+    "AIN",
+    "KNOB"
 ]
 
 ## Sorted list of wave shapes to display
@@ -157,17 +197,15 @@ WAVE_SHAPE_LABELS = [
 #  - https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md
 #  - https://github.com/novaspirit/img2bytearray
 WAVE_SHAPE_IMGS = [
-    bytearray(b'\xfe\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x83\xf0'),
-    bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'),
-    bytearray(b'\x10\x00(\x00D\x00D\x00\x82\x00\x82\x00\x82\x10\x82\x10\x01\x10\x01\x10\x00\xa0\x00@'),
-    bytearray(b'\x00\x00\x08\x00\x08\x00\x14\x00\x16\x80\x16\xa0\x11\xa0Q\xf0Pp`P@\x10\x80\x00'),
-    bytearray(b'\x03\xf0\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\x02\x00\xfe\x00'),
-    bytearray(b'\xe0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xa0\x00\xbf\xf0'),
-    bytearray(b'\xff\xf0\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00\x80\x00'),
-    bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00')
+    bytearray(b'\xfe\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x82\x00\x83\xf0'),  # SQUARE
+    bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'),                              # TRIANGLE
+    bytearray(b'\x10\x00(\x00D\x00D\x00\x82\x00\x82\x00\x82\x10\x82\x10\x01\x10\x01\x10\x00\xa0\x00@'),              # SINE
+    bytearray(b' \x00 \x000\x000\x00H\x00H\x00G\xc0@@\x80 \x80 \x80\x10\x80\x10'),                                   # ADSR
+    bytearray(b'\x00\x00\x08\x00\x08\x00\x14\x00\x16\x80\x16\xa0\x11\xa0Q\xf0Pp`P@\x10\x80\x00'),                    # RANDOM
+    bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00'),                    # AIN
+    bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00')                                    # KNOB
 ]
 
-STATUS_IMG_LOCK = bytearray(b'\x06\x00\x19\x80\x19\x80`@`@`@\xff\xf0\xf9\xf0\xf9\xf0\xfd\xf0\xff\xf0\xff\xf0')
 STATUS_IMG_PLAY = bytearray(b'\x00\x00\x18\x00\x18\x00\x1c\x00\x1c\x00\x1e\x00\x1f\x80\x1e\x00\x1e\x00\x1c\x00\x18\x00\x18\x00')
 STATUS_IMG_PAUSE = bytearray(b'\x00\x00y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0')
 
@@ -189,20 +227,57 @@ DIN_MODE_TRIGGER = 'Trig'
 ## Reset on a rising edge, but don't start/stop the clock
 DIN_MODE_RESET = 'Reset'
 
+## Sorted list of DIN modes for display
 DIN_MODES = [
     DIN_MODE_GATE,
     DIN_MODE_TRIGGER,
     DIN_MODE_RESET
 ]
 
+## True/False for yes/no settings (e.g. mute)
+YES_NO_MODES = [
+    False,
+    True
+]
+
+## True/False labels for yes/no settings (e.g. mute)
+OK_CANCEL_LABELS = [
+    "Cancel",
+    "OK"
+]
+YES_NO_LABELS = [
+    "N",
+    "Y"
+]
+
+## Integers 0-100 for choosing a percentage value
+PERCENT_RANGE = list(range(101))
+
 class Setting:
     """A single setting that can be loaded, saved, or dynamically read from an analog input
     """
-    def __init__(self, display_name, storage_name, display_options, options, allow_cv_in=True, on_change_fn=None, value_dict=None, default_value=None):
+    def __init__(self, display_name, storage_name, display_options, options, \
+                 allow_cv_in=True, value_dict=None, default_value=None, on_change_fn=None, callback_arg=None,
+                 is_visible=True):
+        """Create a new setting
+
+        @param display_name     The name displayed on the screen as the setting's title
+        @param storage_name     The name used in the storage dictionary to identify this setting's persistent values
+        @param display_options  The list of options we display to the user to choose from
+        @param options          The raw options we choose from
+        @param allow_cv_in      If true, we appent AIN to the options & display options
+        @param value_dict       A dictionary that can convert between the list items in options & any other type
+        @param default_value    This setting's default value
+        @param on_change_fn     A callback function to call when this setting changes. The function must accept 1-2 args:
+                                a reference to this Setting instance, and (optionally) the value passed to callback_arg
+        @param callback_arg     An optional argument to passed as the 2nd argument to on_change_fn when it is called
+        @param is_visible       Used to indicate whether or not this setting should be visible in the GUI
+        """
         self.display_name = display_name
         self.display_options = [o for o in display_options]
 
         self.on_change_fn = on_change_fn
+        self.callback_arg = callback_arg
 
         self.storage_name = storage_name
         self.options = [o for o in options]
@@ -214,10 +289,13 @@ class Setting:
                 self.options.append(CV_INS[cv])
 
         self.value_dict = value_dict
-        if default_value is not None:
-            self.choice = self.options.index(default_value)
+        self.default_value = default_value
+        if self.default_value is not None:
+            self.choice = self.options.index(self.default_value)
         else:
             self.choice = 0
+
+        self.is_visible = is_visible
 
     def __str__(self):
         return self.display_name
@@ -226,24 +304,24 @@ class Setting:
         return len(self.options)
 
     def load(self, settings):
-        if "value" in settings.keys():
+        if type(settings) is dict and "value" in settings.keys():
             self.choice = settings["value"]
+        else:
+            self.choice = settings
 
     def to_dict(self):
-        return {
-            "value": self.choice
-        }
+        return self.choice
 
     def update_options(self, display_options, options):
         if self.choice >= len(options):
             self.choice = len(options)-1
 
-        self.display_options = []
-        for o in display_options:
-            self.display_options.append(o)
-        self.options = []
-        for o in options:
-            self.options.append(o)
+        self.display_options = [
+            o for o in display_options
+        ]
+        self.options = [
+            o for o in options
+        ]
 
         if self.allow_cv_in:
             for cv in CV_INS.keys():
@@ -252,7 +330,8 @@ class Setting:
 
     def get_value(self):
         if type(self.options[self.choice]) is AnalogInReader:
-            n = round(self.options[self.choice].get_value() / MAX_INPUT_VOLTAGE * len(self.options) - len(CV_INS)) # remo
+            # Remove the CV inputs from the set of choices, since otherwise that would lead to weird recursion!
+            n = round(self.options[self.choice].get_value() / MAX_INPUT_VOLTAGE * len(self.options) - len(CV_INS))
             if n < 0:
                 n = 0
             elif n >= len(self.options) - len(CV_INS):
@@ -275,7 +354,18 @@ class Setting:
         is_changing = self.choice != index
         self.choice = index
         if is_changing and self.on_change_fn:
-            self.on_change_fn()
+            if self.callback_arg is not None:
+                self.on_change_fn(self, self.callback_arg)
+            else:
+                self.on_change_fn(self)
+
+    def reset_to_default(self):
+        """Reset this setting to its default value
+        """
+        index = 0
+        if self.default_value is not None:
+            index = self.options.index(self.default_value)
+        self.choose(index)
 
 class AnalogInReader:
     """A wrapper for `ain` that can be shared across multiple Settings
@@ -289,7 +379,8 @@ class AnalogInReader:
         self.last_voltage = 0.0
 
         self.gain = Setting("Gain", "gain", list(range(301)), list(range(301)), allow_cv_in=False, default_value=100)
-        self.precision = Setting("Precision", "precision", ["Low", "Med", "High"], [int(DEFAULT_SAMPLES/2), DEFAULT_SAMPLES, int(DEFAULT_SAMPLES*2)], allow_cv_in=False, default_value=DEFAULT_SAMPLES)
+        self.precision = Setting("Precision", "precision", ["Low", "Med", "High"], \
+            [int(DEFAULT_SAMPLES/2), DEFAULT_SAMPLES, int(DEFAULT_SAMPLES*2)], allow_cv_in=False, default_value=DEFAULT_SAMPLES)
 
     def to_dict(self):
         return {
@@ -310,7 +401,7 @@ class AnalogInReader:
 
         @return The voltage read from the analog input multiplied by self.gain
         """
-        self.last_voltage = self.cv_in.read_voltage(self.precision.get_value()) * self.gain.get_value() / 100.0
+        self.last_voltage = self.cv_in.percent(self.precision.get_value()) * MAX_INPUT_VOLTAGE * self.gain.get_value() / 100.0
         return self.last_voltage
 
     def get_value(self):
@@ -318,6 +409,7 @@ class AnalogInReader:
 
 ## Wrapped copies of all CV inputs so we can iterate through them
 CV_INS = {
+    "KNOB": AnalogInReader(k1),
     "AIN": AnalogInReader(ain)
 }
 
@@ -350,7 +442,7 @@ class MasterClock:
         self.is_running = False
 
         self.bpm = Setting("BPM", "bpm", list(range(self.MIN_BPM, self.MAX_BPM+1)), list(range(self.MIN_BPM, self.MAX_BPM+1)), on_change_fn=self.recalculate_timer_hz, default_value=60)
-        self.reset_on_start = Setting("Stop-Rst", "reset_on_start", ["On", "Off"], [True, False], False)
+        self.reset_on_start = Setting("Stop-Rst", "reset_on_start", ["Off", "On"], [False, True], default_value=True, allow_cv_in=False)
 
         self.tick_hz = 1.0
         self.timer = Timer()
@@ -404,9 +496,9 @@ class MasterClock:
         if not self.is_running:
             self.is_running = True
             self.start_time = time.ticks_ms()
-            self.elapsed_pulses = 0
 
             if self.reset_on_start.get_value():
+                self.elapsed_pulses = 0
                 for ch in self.channels:
                     ch.reset()
 
@@ -419,17 +511,17 @@ class MasterClock:
             self.is_running = False
             self.timer.deinit()
 
-            # Fire a reset trigger on any channels that have the WAVE_RESET mode set
+            # Fire a reset trigger on any channels that have the CLOCK_MOD_RESET mode set
             # This trigger lasts 10ms
             # Turn all other channels off so we don't leave hot wires
             for ch in self.channels:
-                if ch.wave_shape == WAVE_RESET:
+                if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
                     ch.cv_out.voltage(MAX_OUTPUT_VOLTAGE * ch.amplitude / 100.0)
                 else:
                     ch.cv_out.voltage(0.0)
             time.sleep(0.01)   # time.sleep works in SECONDS not ms
             for ch in self.channels:
-                if ch.wave_shape == WAVE_RESET:
+                if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
                     ch.cv_out.voltage(0)
 
     def running_time(self):
@@ -441,10 +533,12 @@ class MasterClock:
         else:
             return 0
 
-    def recalculate_timer_hz(self):
+    def recalculate_timer_hz(self, bpm=None):
         """Recalculate the frequency of the inner timer
 
         If the timer is currently running deinitialize it and reset it to use the correct BPM
+
+        @param bpm  The BPM setting when this is called as an on-change callback
         """
         self.tick_hz = self.bpm.get_value() / 60.0 * self.PPQN
 
@@ -462,18 +556,19 @@ class PamsOutput:
     #  resolution is only so good.
     MAX_EUCLID_LENGTH = 64
 
-    ## Minimum duration of a WAVE_START trigger
+    ## Minimum duration of a CLOCK_MOD_START trigger
     #
     #  The actual length depends on clock rate and PPQN, and may be longer than this
     TRIGGER_LENGTH_MS = 10
 
-    def __init__(self, cv_out, clock):
+    def __init__(self, cv_out, clock, n):
         """Create a new output to control a single cv output
 
         @param cv_out  One of the six output jacks
         @param clock  The MasterClock that controls the timing of this output
         """
 
+        self.cv_n = n
         self.out_volts = 0.0
         self.cv_out = cv_out
         self.clock = clock
@@ -481,47 +576,100 @@ class PamsOutput:
         ## What quantization are we using?
         #
         #  See contrib.pams.QUANTIZERS
-        self.quantizer = Setting("Quant.", "quantizer", QUANTIZER_LABELS, QUANTIZER_LABELS, value_dict=QUANTIZERS)
+        self.quantizer = Setting("Quant.", "quantizer", QUANTIZER_LABELS, QUANTIZER_LABELS, value_dict=QUANTIZERS, \
+            on_change_fn=self.update_menu_visibility)
+
+        ## The root of the quantized scale (ignored if quantizer is None)
+        self.root = Setting("Q Root", "root", SEMITONE_LABELS, list(range(SEMITONES_PER_OCTAVE)))
 
         ## The clock modifier for this channel
         #
         #  - 1.0 is the same as the main clock's BPM
         #  - <1.0 will tick slower than the BPM (e.g. 0.5 will tick once every 2 beats)
         #  - >1.0 will tick faster than the BPM (e.g. 3.0 will tick 3 times per beat)
-        self.clock_mod = Setting("Mod", "clock_mod", CLOCK_MOD_LABELS, CLOCK_MOD_LABELS, value_dict=CLOCK_MODS, default_value="x1")
+        self.clock_mod = Setting("Mod", "clock_mod", CLOCK_MOD_LABELS, CLOCK_MOD_LABELS, value_dict=CLOCK_MODS, \
+            default_value="x1", allow_cv_in=False, on_change_fn=self.request_clock_mod)
+
+        ## To prevent phase misalignment we use this as the active clock modifier
+        #
+        #  If clock_mod is changed, we apply it to this when it is safe to do so
+        self.real_clock_mod = self.clock_mod.get_value()
+
+        ## Indicates if clock_mod and real_clock_mod are the same or not
+        self.clock_mod_dirty = False
 
         ## What shape of wave are we generating?
         #
         #  For now, stick to square waves for triggers & gates
-        self.wave_shape = Setting("Wave", "wave", WAVE_SHAPE_LABELS, WAVE_SHAPES, default_value=WAVE_SQUARE, allow_cv_in=False)
+        self.wave_shape = Setting("Wave", "wave", WAVE_SHAPE_LABELS, WAVE_SHAPES, default_value=WAVE_SQUARE, \
+            allow_cv_in=False, on_change_fn=self.update_menu_visibility)
 
         ## The phase offset of the output as a [0, 100] percentage
-        self.phase = Setting("Phase", "phase", list(range(101)), list(range(101)), default_value=0)
+        self.phase = Setting("Phase", "phase", PERCENT_RANGE, PERCENT_RANGE, default_value=0)
 
         ## The amplitude of the output as a [0, 100] percentage
-        self.amplitude = Setting("Ampl.", "ampl", list(range(101)), list(range(101)), default_value=50)
+        self.amplitude = Setting("Ampl.", "ampl", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
 
         ## Wave width
-        self.width = Setting("Width", "width", list(range(101)), list(range(101)), default_value=50)
+        self.width = Setting("Width", "width", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
 
         ## Euclidean -- number of steps in the pattern (0 = disabled)
-        self.e_step = Setting("EStep", "e_step", list(range(self.MAX_EUCLID_LENGTH+1)), list(range(self.MAX_EUCLID_LENGTH)), on_change_fn=self.change_e_length, default_value=0)
+        euclid_choices = list(range(self.MAX_EUCLID_LENGTH+1))
+        self.e_step = Setting("EStep", "e_step", euclid_choices, euclid_choices, \
+            on_change_fn=self.change_e_length, default_value=0)
 
         ## Euclidean -- number of triggers in the pattern
-        self.e_trig = Setting("ETrig", "e_trig", list(range(self.MAX_EUCLID_LENGTH+1)), list(range(self.MAX_EUCLID_LENGTH)), on_change_fn=self.recalculate_e_pattern, default_value=0)
+        self.e_trig = Setting("ETrig", "e_trig", euclid_choices, euclid_choices, \
+            on_change_fn=self.recalculate_e_pattern, default_value=0)
 
         ## Euclidean -- rotation of the pattern
-        self.e_rot = Setting("ERot", "e_rot", list(range(self.MAX_EUCLID_LENGTH+1)), list(range(self.MAX_EUCLID_LENGTH)), on_change_fn=self.recalculate_e_pattern, default_value=0)
+        self.e_rot = Setting("ERot", "e_rot", euclid_choices, euclid_choices, \
+            on_change_fn=self.recalculate_e_pattern, default_value=0)
 
         ## Probability that we skip an output [0-100]
-        self.skip = Setting("Skip%", "skip", list(range(101)), list(range(101)), default_value=0)
+        self.skip = Setting("Skip%", "skip", PERCENT_RANGE, PERCENT_RANGE, default_value=0)
 
-        ## The position we're currently playing inside playback_pattern
+        # ADSR settings
+        self.attack = Setting("Attack", "attack", PERCENT_RANGE, PERCENT_RANGE, default_value=10)
+        self.decay = Setting("Decay", "decay", PERCENT_RANGE, PERCENT_RANGE, default_value=10)
+        self.sustain = Setting("Sustain", "sustain", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
+        self.release = Setting("Release", "release", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
+
+        ## Swing percentage
         #
-        #  This increments once every tick
-        #  In prior revisions we pre-calculated the entire waveform, but that resulted in too much RAM overhead
-        #  so instead we dynamically calculate the waveshape
-        self.sample_position = 0
+        #  50% -> even, no swing
+        #  <50% -> short-long-short-long-...
+        #  >50% -> long-short-long-short-...
+        self.swing = Setting("Swing%", "swing", PERCENT_RANGE, PERCENT_RANGE, default_value=50)
+
+        ## Allows muting a channel during runtime
+        #
+        #  A muted channel can still be edited
+        self.mute = Setting("Mute", "mute", YES_NO_LABELS, YES_NO_MODES, False)
+
+        ## All settings in an array so we can iterate through them in reset_settings(self)
+        self.all_settings = [
+            self.quantizer,
+            self.root,
+            self.clock_mod,
+            self.wave_shape,
+            self.phase,
+            self.amplitude,
+            self.width,
+            self.e_step,
+            self.e_trig,
+            self.e_rot,
+            self.skip,
+            self.swing,
+            self.mute,
+            self.attack,
+            self.decay,
+            self.sustain,
+            self.release
+        ]
+
+        ## Counter that increases every time we finish a full wave form
+        self.wave_counter = 0
 
         ## The euclidean pattern we step through
         self.e_pattern = [1]
@@ -545,6 +693,34 @@ class PamsOutput:
 
         self.change_e_length()
 
+        self.update_menu_visibility()
+
+    def __str__(self):
+        return f"out_cv{self.cv_n}"
+
+    def update_menu_visibility(self, sender=None, args=None):
+        """Callback function for changing the visibility of menu items
+
+        @param sender  The Setting object that called this function
+        @param args    The callback arguments passed from the Setting
+        """
+
+        # hide the ADSR settings if we're not in ADSR mode
+        wave_shape = self.wave_shape.get_value()
+        show_adsr = wave_shape == WAVE_ADSR
+        self.attack.is_visible = show_adsr
+        self.decay.is_visible = show_adsr
+        self.sustain.is_visible = show_adsr
+        self.release.is_visible = show_adsr
+
+        # hide the quantization root if we're not quantizing
+        show_root = self.quantizer.get_value() is not None
+        self.root.is_visible = show_root
+
+        # hide the width parameter if we're reading from AIN or KNOB, or outputting a sine wave
+        show_width = wave_shape != WAVE_AIN and wave_shape != WAVE_KNOB and wave_shape != WAVE_SIN
+        self.width.is_visible = show_width
+
     def to_dict(self):
         """Return a dictionary with all the configurable settings to write to disk
         """
@@ -558,7 +734,14 @@ class PamsOutput:
             "phase"     : self.phase.to_dict(),
             "amplitude" : self.amplitude.to_dict(),
             "width"     : self.width.to_dict(),
-            "quantizer" : self.quantizer.to_dict()
+            "quantizer" : self.quantizer.to_dict(),
+            "root"      : self.root.to_dict(),
+            "swing"     : self.swing.to_dict(),
+            "mute"      : self.mute.to_dict(),
+            "attack"    : self.attack.to_dict(),
+            "decay"     : self.decay.to_dict(),
+            "sustain"   : self.sustain.to_dict(),
+            "release"   : self.release.to_dict(),
         }
 
     def load_settings(self, settings):
@@ -586,15 +769,38 @@ class PamsOutput:
             self.width.load(settings["width"])
         if "quantizer" in settings.keys():
             self.quantizer.load(settings["quantizer"])
+        if "root" in settings.keys():
+            self.root.load(settings["root"])
+        if "swing" in settings.keys():
+            self.swing.load(settings["swing"])
+        if "mute" in settings.keys():
+            self.mute.load(settings["mute"])
+        if "attack" in settings.keys():
+            self.attack.load(settings["attack"])
+        if "decay" in settings.keys():
+            self.decay.load(settings["decay"])
+        if "sustain" in settings.keys():
+            self.sustain.load(settings["sustain"])
+        if "release" in settings.keys():
+            self.release.load(settings["release"])
 
         self.change_e_length()
+        self.update_menu_visibility()
+        self.real_clock_mod = self.clock_mod.get_value()
 
-    def change_e_length(self):
+    def change_e_length(self, setting=None):
         self.e_trig.update_options(list(range(self.e_step.get_value()+1)), list(range(self.e_step.get_value()+1)))
         self.e_rot.update_options(list(range(self.e_step.get_value()+1)), list(range(self.e_step.get_value()+1)))
         self.recalculate_e_pattern()
 
-    def recalculate_e_pattern(self):
+    def request_clock_mod(self, setting=None):
+        self.clock_mod_dirty = True
+
+    def change_clock_mod(self):
+        self.real_clock_mod = self.clock_mod.get_value()
+        self.clock_mod_dirty = False
+
+    def recalculate_e_pattern(self, setting=None):
         """Recalulate the euclidean pattern this channel outputs
         """
         # always assume we're doing some kind of euclidean pattern
@@ -670,6 +876,56 @@ class PamsOutput:
         s_theta = (math.sin(theta) + 1) / 2   # (sin(x) + 1)/2 since we can't output negative voltages
         return s_theta
 
+    def adsr_wave(self, tick, n_ticks):
+        """Calculate the [0, 1] level of an ADSR envelope
+
+        Attack is the % of the total time that covers the attack phase, moving from 0 to 1 linearly
+
+        Decay is the % of the remaining time that covers the decay phase, moving from 1 to X linearly
+
+        Sustain is the % level to sustain at, defining X for the decay phase
+
+        Release is the % of the remaining time that covers the release phase, moving from X to 0 linearly
+
+           /\
+          /  \______
+         /          \
+        /            \
+        -A--D---S---R-
+        ---n_ticks----
+        """
+
+        # apply the phase offset
+        tick = int(tick + self.phase.get_value() * n_ticks / 100.0) % n_ticks
+
+        # the ADSR envelope only lasts for n_ticks * width%, so reduce the size of the window for further calculations
+        n_ticks = int(n_ticks * self.width.get_value() / 100.0)
+
+        attack_ticks = int(n_ticks * self.attack.get_value() / 100.0)
+        decay_ticks = int((n_ticks - attack_ticks) * self.decay.get_value() / 100.0)
+        release_ticks = int((n_ticks - decay_ticks - attack_ticks) * self.release.get_value() / 100.0)
+        sustain_ticks = n_ticks - attack_ticks - decay_ticks - release_ticks
+        sustain_level = self.sustain.get_value() / 100.0
+
+        if tick < attack_ticks:
+            # attack phase
+            slope = 1.0 / attack_ticks
+            return tick * slope
+        elif tick < attack_ticks + decay_ticks:
+            # decay phase
+            slope = (1 - sustain_level) / decay_ticks
+            return 1 - slope * (tick - attack_ticks)
+        elif tick < attack_ticks + decay_ticks + sustain_ticks:
+            # sustain phase
+            return sustain_level
+        elif tick < attack_ticks + decay_ticks + sustain_ticks + release_ticks:
+            # release phase
+            slope = sustain_level / release_ticks
+            return sustain_level - slope * (tick - attack_ticks - decay_ticks - sustain_ticks)
+        else:
+            # outside of the ADSR
+            return 0.0
+
     def reset(self):
         """Reset the current output to the beginning
         """
@@ -678,7 +934,14 @@ class PamsOutput:
             self.e_pattern = self.next_e_pattern
             self.next_e_pattern = None
 
-        self.sample_position = 0
+        self.wave_counter = 0
+        self.change_clock_mod()
+
+    def reset_settings(self):
+        """Reset all settings to their default values
+        """
+        for s in self.all_settings:
+            s.reset_to_default()
 
     def tick(self):
         """Advance the current pattern one tick and calculate the output voltage
@@ -686,7 +949,8 @@ class PamsOutput:
         Call apply() to actually send the voltage. This lets us calculate all output channels and THEN set the
         outputs after so they're more synchronized
         """
-        if self.wave_shape.get_value() == WAVE_START:
+
+        if self.real_clock_mod == CLOCK_MOD_START:
             # start waves are weird; they're only on during the first 10ms or 1 PPQN (whichever is longer)
             # and are otherwise always off
             gate_len = self.clock.running_time()
@@ -694,20 +958,35 @@ class PamsOutput:
                 out_volts = MAX_OUTPUT_VOLTAGE * self.amplitude.get_value() / 100.0
             else:
                 out_volts = 0.0
-        elif self.wave_shape.get_value() == WAVE_RUN:
+        elif self.real_clock_mod == CLOCK_MOD_RUN:
             out_volts = MAX_OUTPUT_VOLTAGE * self.amplitude.get_value() / 100.0
-        elif self.wave_shape.get_value() == WAVE_RESET:
+        elif self.real_clock_mod == CLOCK_MOD_RESET:
             # reset waves are always low; the clock's stop() function handles triggering them
             out_volts = 0.0
         else:
-            ticks_per_note = round(MasterClock.PPQN / self.clock_mod.get_value())
+            if self.wave_counter % 2 == 0:
+                # first half of the swing; if swing < 50% this is short, otherwise long
+                swing_amt = self.swing.get_value() / 100.0
+            else:
+                # second half of the swing; if swing < 50% this is long, otherwise short
+                swing_amt = (100 - self.swing.get_value()) / 100.0
+            ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod * swing_amt)
+            if ticks_per_note == 0:
+                # we're swinging SO HARD that one beat is squashed out of existence!
+                # move immediately to the other beat
+                self.e_position = self.e_position + 1
+                if self.e_position >= len(self.e_pattern):
+                    self.e_position = 0
+                ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod)
+
             e_step = self.e_pattern[self.e_position]
-            wave_position = self.sample_position
+            wave_position = self.clock.elapsed_pulses % ticks_per_note
             # are we starting a new repeat of the pattern?
-            rising_edge = wave_position == int(self.phase.get_value() * ticks_per_note / 100.0) and e_step
+            rising_edge = (wave_position == int(self.phase.get_value() * ticks_per_note / 100.0)) and e_step
             # determine if we should skip this sample playback
             if rising_edge:
                 self.skip_this_step = random.randint(0, 100) < self.skip.get_value()
+                self.wave_counter += 1
 
             wave_sample = int(e_step) * int (not self.skip_this_step)
             if self.wave_shape.get_value() == WAVE_RANDOM:
@@ -717,7 +996,12 @@ class PamsOutput:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.get_value() == WAVE_AIN:
                 if rising_edge and not self.skip_this_step:
-                    wave_sample = CV_INS["AIN"].get_value() / MAX_OUTPUT_VOLTAGE
+                    wave_sample = CV_INS["AIN"].get_value() / MAX_INPUT_VOLTAGE
+                else:
+                    wave_sample = self.previous_wave_sample
+            elif self.wave_shape.get_value() == WAVE_KNOB:
+                if rising_edge and not self.skip_this_step:
+                    wave_sample = CV_INS["KNOB"].get_value() / MAX_INPUT_VOLTAGE
                 else:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.get_value() == WAVE_SQUARE:
@@ -726,20 +1010,18 @@ class PamsOutput:
                 wave_sample = wave_sample * self.triangle_wave(wave_position, ticks_per_note) * (self.amplitude.get_value() / 100.0)
             elif self.wave_shape.get_value() == WAVE_SIN:
                 wave_sample = wave_sample * self.sine_wave(wave_position, ticks_per_note) * (self.amplitude.get_value() / 100.0)
+            elif self.wave_shape.get_value() == WAVE_ADSR:
+                wave_sample = wave_sample * self.adsr_wave(wave_position, ticks_per_note) * (self.amplitude.get_value() / 100.0)
+            else:
+                wave_sample = 0.0
 
             self.previous_wave_sample = wave_sample
             out_volts = wave_sample * MAX_OUTPUT_VOLTAGE
 
             if self.quantizer.get_value() is not None:
-                (out_volts, note) = self.quantizer.get_value().quantize(out_volts)
+                (out_volts, note) = self.quantizer.get_value().quantize(out_volts, self.root.get_value())
 
-            # increment the position within each playback pattern
-            # if we've queued a new euclidean pattern apply it now so we
-            # can start playing them on the next tick
-            self.sample_position = self.sample_position +1
-            if self.sample_position >= ticks_per_note:
-                self.sample_position = 0
-
+            if wave_position == ticks_per_note - 1:
                 if self.next_e_pattern:
                     # if we just finished a waveform and we have a new euclidean pattern, start it
                     # this will always line up with the current beat, but may be rotated relative to
@@ -756,12 +1038,21 @@ class PamsOutput:
                     if self.e_position >= len(self.e_pattern):
                         self.e_position = 0
 
+        # If the clock modifier was changed, apply the new value now
+        if self.clock_mod_dirty:
+            self.change_clock_mod()
+
         self.out_volts = out_volts
 
     def apply(self):
         """Apply the calculated voltage to the output channel
+
+        If the channel is muted this will set the output to zero, regardless of anything else
         """
-        self.cv_out.voltage(self.out_volts)
+        if self.mute.get_value():
+            self.cv_out.voltage(0)
+        else:
+            self.cv_out.voltage(self.out_volts)
 
 class SettingChooser:
     """Menu UI element for displaying a Setting object and the options associated with it
@@ -818,20 +1109,28 @@ class SettingChooser:
             oled.text(str(self.setting), title_left, 1, 0)
 
         if self.option_gfx is not None:
-            # draw the option thumbnail to the screen
-            text_left = 14
+            # draw the option thumbnail to the screen if it exists
+            img = None
             if self.is_writable:
-                img = k2.choice(self.option_gfx)
+                if type(self.option_gfx) is dict or\
+                   type(self.option_gfx) is OrderedDict:
+                    key = k2_bank.current.choice(list(self.option_gfx.keys()))
+                    img = self.option_gfx[key]
+                else:
+                    img = k2_bank.current.choice(self.option_gfx)
             else:
                 key = self.setting.get_value()
                 img = self.option_gfx[key]
-            imgFB = FrameBuffer(img, 12, 12, MONO_HLSB)
-            oled.blit(imgFB, 0, SELECT_OPTION_Y)
+
+            if img is not None:
+                text_left = 14
+                imgFB = FrameBuffer(img, 12, 12, MONO_HLSB)
+                oled.blit(imgFB, 0, SELECT_OPTION_Y)
 
 
         if self.is_writable:
             # draw the selection in inverted text
-            selected_item = k2.choice(self.setting.display_options)
+            selected_item = k2_bank.current.choice(self.setting.display_options)
             choice_text = f"{selected_item}"
             text_width = len(choice_text)*CHAR_WIDTH
 
@@ -846,7 +1145,7 @@ class SettingChooser:
     def on_click(self):
         if self.is_writable:
             self.set_editable(False)
-            selected_index = k2.choice(list(range(len(self.setting))))
+            selected_index = k2_bank.current.choice(list(range(len(self.setting))))
             self.setting.choose(selected_index)
         else:
             self.set_editable(True)
@@ -869,16 +1168,25 @@ class PamsMenu:
         for i in range(len(script.channels)):
             prefix = f"CV{i+1}"
             ch = script.channels[i]
-            self.items.append(SettingChooser(prefix, ch.clock_mod, None, [
+            self.items.append(SettingChooser(prefix, ch.clock_mod, CLOCK_MOD_IMGS, [
                 SettingChooser(prefix, ch.wave_shape, WAVE_SHAPE_IMGS),
                 SettingChooser(prefix, ch.width),
                 SettingChooser(prefix, ch.phase),
                 SettingChooser(prefix, ch.amplitude),
+                SettingChooser(prefix, ch.attack),
+                SettingChooser(prefix, ch.decay),
+                SettingChooser(prefix, ch.sustain),
+                SettingChooser(prefix, ch.release),
                 SettingChooser(prefix, ch.skip),
                 SettingChooser(prefix, ch.e_step),
                 SettingChooser(prefix, ch.e_trig),
                 SettingChooser(prefix, ch.e_rot),
-                SettingChooser(prefix, ch.quantizer)
+                SettingChooser(prefix, ch.swing),
+                SettingChooser(prefix, ch.quantizer),
+                SettingChooser(prefix, ch.root),
+                SettingChooser(prefix, ch.mute),
+                SettingChooser(prefix, Setting("Reset", "reset", OK_CANCEL_LABELS, YES_NO_MODES, allow_cv_in=False,
+                    on_change_fn=self.reset_channel, callback_arg=ch))
             ]))
         for ch in CV_INS.keys():
             self.items.append(SettingChooser(ch, CV_INS[ch].gain, None, [
@@ -888,7 +1196,14 @@ class PamsMenu:
         self.active_items = self.items
 
         ## The item we're actually drawing to the screen _right_now_
-        self.visible_item = self.pams_workout.k1_bank.current.choice(self.active_items)
+        self.visible_item = k2_bank.current.choice(self.get_active_items())
+
+    def get_active_items(self):
+        """Return a list of the visible items in the active_items for this menu layer
+        """
+        return [
+            item for item in self.active_items if item.setting.is_visible
+        ]
 
     def on_long_press(self):
         # return the active item to the read-only state
@@ -897,69 +1212,57 @@ class PamsMenu:
         # toggle between the two menu levels
         if self.active_items == self.items:
             self.active_items = self.visible_item.submenu
+            k2_bank.set_current("submenu")
         else:
             self.active_items = self.items
+            k2_bank.set_current("main_menu")
 
     def on_click(self):
         self.visible_item.on_click()
+        if self.visible_item.is_writable:
+            k2_bank.set_current("choice")
+        elif self.active_items == self.items:
+            k2_bank.set_current("main_menu")
+        else:
+            k2_bank.set_current("submenu")
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = self.pams_workout.k1_bank.current.choice(self.active_items)
+            self.visible_item = k2_bank.current.choice(self.get_active_items())
 
         self.visible_item.draw()
 
-class SplashScreen:
-    """A splash screen we show during startup
-    """
-    def draw(self):
-        """Draw the splash screen to the OLED
+    def reset_channel(self, reset_setting, channel):
+        """Reset the given channel if the reset_setting is True
 
-        Layout looks like this, where % indicates the EuroPi logo:
-        ```
-        +-------------------+
-        | %%% Pam's Workout |
-        | %%%               |
-        +-------------------+
-        ```
+        @param reset_setting  A Setting instance that calls this function as a callback
+        @param channel        The channel to reset
         """
-        logo = bytearray(b"\x00\x01\xf0\x00\x00\x02\x08\x00\x00\x04\x04\x00\x03\xc4\x04\x00\x0c$\x02\x00\x10\x14\x01\x00\x10\x0b\xc0\x80 \x04\x00\x80A\x8a|\x80FJC\xc0H\x898\x00S\x08\x87\x00d\x08\x00\xc0X\x08p #\x88H L\xb8& \x91P\x11 \xa6\x91\x08\xa0\xc9\x12\x84`\x12\x12C\x00$\x11 \x80H\x0c\x90\x80@\x12\x88\x80 \x12F\x80\x10\x10A\x00\x10  \x00\x08  \x00\x04@@\x00\x02\x00\x80\x00\x01\x01\x00\x00\x00\xc6\x00\x00\x008\x00\x00")
-        LOGO_WIDTH = 27
-        LOGO_HEIGHT = 32
 
-        # clear the screen
-        oled.fill(0)
+        if reset_setting.get_value():
+            # reset the given channel to default...
+            channel.reset_settings()
+            # ...then reset this setting back to N so we can reset again later
+            reset_setting.reset_to_default()
 
-        # put the EuroPi leaf graphic on the side
-        imgFB = FrameBuffer(logo, LOGO_WIDTH, LOGO_HEIGHT, MONO_HLSB)
-        oled.blit(imgFB, 0, 0)
-
-        oled.text("Pam's Workout", LOGO_WIDTH+2, 8)
-        oled.show()
 
 class PamsWorkout(EuroPiScript):
     """The main script for the Pam's Workout implementation
     """
+
     def __init__(self):
         super().__init__()
 
         self.din_mode = Setting("DIN Mode", "din", DIN_MODES, DIN_MODES, False)
 
-        self.k1_bank = (
-            KnobBank.builder(k1)
-            .with_unlocked_knob("lvl_1")
-            .with_locked_knob("lvl_2", initial_percentage_value=0)
-            .build()
-        )
-
         self.clock = MasterClock(120)
         self.channels = [
-            PamsOutput(cv1, self.clock),
-            PamsOutput(cv2, self.clock),
-            PamsOutput(cv3, self.clock),
-            PamsOutput(cv4, self.clock),
-            PamsOutput(cv5, self.clock),
-            PamsOutput(cv6, self.clock),
+            PamsOutput(cv1, self.clock, 1),
+            PamsOutput(cv2, self.clock, 2),
+            PamsOutput(cv3, self.clock, 3),
+            PamsOutput(cv4, self.clock, 4),
+            PamsOutput(cv5, self.clock, 5),
+            PamsOutput(cv6, self.clock, 6),
         ]
         self.clock.add_channels(self.channels)
 
@@ -1030,7 +1333,6 @@ class PamsWorkout(EuroPiScript):
                 if time.ticks_diff(now, b2.last_pressed()) > LONG_PRESS_MS:
                     # long press
                     # change between the main & sub menus
-                    self.k1_bank.next()
                     self.main_menu.on_long_press()
                 else:
                     # short press
@@ -1062,8 +1364,8 @@ class PamsWorkout(EuroPiScript):
             for i in range(len(ain_cfg)):
                 CV_INS[cv_keys[i]].load_settings(ain_cfg[i])
 
-        except:
-            print("[ERR ] Error loading saved configuration for PamsWorkout")
+        except Exception as err:
+            print(f"[ERR ] Error loading saved configuration for PamsWorkout: {err}")
             print("[ERR ] Please delete the storage file and restart the module")
 
     def save(self):
@@ -1071,14 +1373,14 @@ class PamsWorkout(EuroPiScript):
         """
         state = {
             "clock": self.clock.to_dict(),
-            "channels": [],
+            "channels": [
+                self.channels[i].to_dict() for i in range(len(self.channels))
+            ],
             "din": self.din_mode.to_dict(),
-            "ain": []
+            "ain": [
+                CV_INS[cv].to_dict() for cv in CV_INS.keys()
+            ]
         }
-        for i in range(len(self.channels)):
-            state["channels"].append(self.channels[i].to_dict())
-        for cv in CV_INS.keys():
-            state["ain"].append(CV_INS[cv].to_dict())
 
         self.save_state_json(state)
 
@@ -1087,11 +1389,7 @@ class PamsWorkout(EuroPiScript):
         return "Pam's Workout"
 
     def main(self):
-        SplashScreen().draw()
-
         self.load()
-
-        time.sleep(1.5)
 
         while True:
             now = time.ticks_ms()

@@ -189,6 +189,20 @@ class KnobBank:
         self.index = (self.index + 1) % len(self.knobs)
         self.current.request_unlock()
 
+    def set_current(self, name):
+        """Set the currently-unlocked knob to the one whose name matches the argument
+
+        @param name  The name of the knob to set as the current one
+        """
+        try:
+            index = self.names.index(name)
+            self.current.lock()
+            self.index = index
+            self.current.request_unlock()
+        except ValueError:
+            # if the name isn't found, just silently trap the exception
+            pass
+
     class Builder:
         """A convenient interface for creating a :class:`KnobBank` with consistent initial state."""
 
