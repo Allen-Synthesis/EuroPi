@@ -10,8 +10,8 @@ from europi import Display as BasicDisplay
 
 # TODO: add a method to select the font to use by default
 
-class CustomFontWriter:
 
+class CustomFontWriter:
     def __init__(self, device, font):
         """Initialize the Writer.
 
@@ -38,7 +38,7 @@ class CustomFontWriter:
             buf = bytearray(glyph)
             if c != 1:
                 for i, v in enumerate(buf):
-                    buf[i] = 0xFF & ~ v
+                    buf[i] = 0xFF & ~v
             fbc = framebuf.FrameBuffer(buf, char_width, char_height, self.map)
             self.device.blit(fbc, x, y)
             x += char_width
@@ -74,10 +74,7 @@ class Display(BasicDisplay):
     `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
     """
 
-    def __init__(
-            self,
-            default_font=None  # by default will use the monospaced 8x8 font
-    ):
+    def __init__(self, default_font=None):  # by default will use the monospaced 8x8 font
         self.writers = {}  # re-usable large font writer instances
         self.default_font = default_font
         super().__init__(0, 1)
@@ -98,10 +95,10 @@ class Display(BasicDisplay):
 
     def text_height(self, s=None, font=None):
         """Returns the height of the font s in pixels.
-           The name text_height() is to be coherent with the text_width() method above.
-           The string s is optional and ignored if present. The parameter is
-           there for a future version which could return a more precise value based on
-           the supplied text.
+        The name text_height() is to be coherent with the text_width() method above.
+        The string s is optional and ignored if present. The parameter is
+        there for a future version which could return a more precise value based on
+        the supplied text.
         """
         if font:
             return font.height()
@@ -111,8 +108,7 @@ class Display(BasicDisplay):
             return CHAR_HEIGHT
 
     def text(self, s, x, y, c=1, font=None):
-        """Display the string s using the x, y coordinates as the upper-left corner of the text.
-        """
+        """Display the string s using the x, y coordinates as the upper-left corner of the text."""
         if font or self.default_font:
             self._writer(font or self.default_font).print(s, x, y, c)
         else:
@@ -156,5 +152,6 @@ class Display(BasicDisplay):
                 self.text(content, x_offset, y_offset)
 
         self.show()
-        
+
+
 oled = Display()
