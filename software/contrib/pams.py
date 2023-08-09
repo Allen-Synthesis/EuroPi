@@ -1038,9 +1038,9 @@ class PamsOutput:
                     if self.e_position >= len(self.e_pattern):
                         self.e_position = 0
 
-            # If the clock modifier was changed, apply the new value now
-            if self.clock_mod_dirty:
-                self.change_clock_mod()
+        # If the clock modifier was changed, apply the new value now
+        if self.clock_mod_dirty:
+            self.change_clock_mod()
 
         self.out_volts = out_volts
 
