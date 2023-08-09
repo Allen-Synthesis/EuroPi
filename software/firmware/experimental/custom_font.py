@@ -95,7 +95,7 @@ class Display(SSD1306_I2C):
                 )
         super().__init__(self.width, self.height, i2c)
 
-    def writer(self, font):
+    def _writer(self, font):
         """Returns the large font writer for the specified font."""
         n = font.__name__
         if n not in self.writers:
@@ -105,7 +105,7 @@ class Display(SSD1306_I2C):
     def text_width(self, s, font=None):
         """Returns the length of the string s in pixels."""
         if font or self.default_font:
-            return self.writer(font or self.default_font).string_len(s)
+            return self._writer(font or self.default_font).string_len(s)
         else:
             return len(s) * CHAR_HEIGHT
 
@@ -127,7 +127,7 @@ class Display(SSD1306_I2C):
         """Display the string s using the x, y coordinates as the upper-left corner of the text.
         """
         if font or self.default_font:
-            self.writer(font or self.default_font).print(s, x, y, c)
+            self._writer(font or self.default_font).print(s, x, y, c)
         else:
             super().text(s, x, y, c)
 
