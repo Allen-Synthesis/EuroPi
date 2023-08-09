@@ -169,3 +169,5 @@ class Display(SSD1306_I2C):
                 self.text(content, x_offset, y_offset)
 
         self.show()
+        
+oled = Display(0, 1)
