@@ -496,9 +496,9 @@ class MasterClock:
         if not self.is_running:
             self.is_running = True
             self.start_time = time.ticks_ms()
-            self.elapsed_pulses = 0
 
             if self.reset_on_start.get_value():
+                self.elapsed_pulses = 0
                 for ch in self.channels:
                     ch.reset()
 
@@ -670,13 +670,6 @@ class PamsOutput:
 
         ## Counter that increases every time we finish a full wave form
         self.wave_counter = 0
-
-        ## The position we're currently playing inside playback_pattern
-        #
-        #  This increments once every tick
-        #  In prior revisions we pre-calculated the entire waveform, but that resulted in too much RAM overhead
-        #  so instead we dynamically calculate the waveshape
-        self.sample_position = 0
 
         ## The euclidean pattern we step through
         self.e_pattern = [1]
@@ -941,7 +934,6 @@ class PamsOutput:
             self.e_pattern = self.next_e_pattern
             self.next_e_pattern = None
 
-        self.sample_position = 0
         self.wave_counter = 0
         self.change_clock_mod()
 
@@ -988,7 +980,7 @@ class PamsOutput:
                 ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod)
 
             e_step = self.e_pattern[self.e_position]
-            wave_position = self.sample_position
+            wave_position = self.clock.elapsed_pulses % ticks_per_note
             # are we starting a new repeat of the pattern?
             rising_edge = (wave_position == int(self.phase.get_value() * ticks_per_note / 100.0)) and e_step
             # determine if we should skip this sample playback
@@ -1029,17 +1021,7 @@ class PamsOutput:
             if self.quantizer.get_value() is not None:
                 (out_volts, note) = self.quantizer.get_value().quantize(out_volts, self.root.get_value())
 
-            # increment the position within each playback pattern
-            # if we've queued a new euclidean pattern apply it now so we
-            # can start playing them on the next tick
-            self.sample_position = self.sample_position +1
-            if self.sample_position >= ticks_per_note:
-                self.sample_position = 0
-
-                # If the clock modifier was changed, apply the new value now
-                if self.clock_mod_dirty:
-                    self.change_clock_mod()
-
+            if wave_position == ticks_per_note - 1:
                 if self.next_e_pattern:
                     # if we just finished a waveform and we have a new euclidean pattern, start it
                     # this will always line up with the current beat, but may be rotated relative to
@@ -1055,6 +1037,10 @@ class PamsOutput:
                     self.e_position = self.e_position + 1
                     if self.e_position >= len(self.e_pattern):
                         self.e_position = 0
+
+            # If the clock modifier was changed, apply the new value now
+            if self.clock_mod_dirty:
+                self.change_clock_mod()
 
         self.out_volts = out_volts
 

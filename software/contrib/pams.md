@@ -176,9 +176,9 @@ Applies immediately, but may result in rapid output level changes, clicks, and s
 - Swing
 - Quantizer mode
 - Quantizer root
+- Clock Mod
 
 Can be changed safely at any time, but the effect is delayed until the current wave shape completes its cycle:
-- Clock Mod
 - Euclidean length, triggers, rotation
 
 ### ADSR Envelope
