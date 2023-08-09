@@ -107,7 +107,7 @@ class Display(SSD1306_I2C):
         if font or self.default_font:
             return self._writer(font or self.default_font).string_len(s)
         else:
-            return len(s) * CHAR_HEIGHT
+            return len(s) * CHAR_WIDTH
 
     def text_height(self, s=None, font=None):
         """Returns the height of the font s in pixels.
