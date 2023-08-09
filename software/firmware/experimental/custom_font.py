@@ -15,7 +15,7 @@ class CustomFontWriter:
         """Initialize the Writer.
 
         device: the OLED display instance
-        font: a font module created with the script referenced above.
+        font: a font module
         """
         self.device = device
         self.font = font
