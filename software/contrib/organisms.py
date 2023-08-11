@@ -34,18 +34,29 @@ class Organism:
     def choose_new_destination(self):
         self.destination = self.generate_random_coordinates()
         self.walking = True
-        print(self.destination)
 
     def alter_speed(self, amount):
         self.speed = clamp((self.speed + amount), 1, 10)
         
     def display(self):
         int_x, int_y = int(self.x), int(self.y)
-        oled.pixel(int_x - 1, int_y, 1)
         oled.pixel(int_x, int_y, 1)
-        oled.pixel(int_x + 1, int_y, 1)
-        oled.pixel(int_x, int_y - 1, 1)
-        oled.pixel(int_x, int_y + 1, 1)
+        
+        if self.speed >= 2:
+            oled.pixel(int_x - 1, int_y, 1)
+            oled.pixel(int_x + 1, int_y, 1)
+            oled.pixel(int_x, int_y - 1, 1)
+            oled.pixel(int_x, int_y + 1, 1)
+        if self.speed >= 4:
+            oled.pixel(int_x - 1, int_y - 1, 1)
+            oled.pixel(int_x + 1, int_y - 1, 1)
+            oled.pixel(int_x - 1, int_y + 1, 1)
+            oled.pixel(int_x + 1, int_y + 1, 1)
+        if self.speed >= 6:
+            oled.pixel(int_x, int_y - 2, 1)
+            oled.pixel(int_x, int_y + 2, 1)
+            oled.pixel(int_x - 2, int_y, 1)
+            oled.pixel(int_x + 2, int_y, 1)
 
     def tick(self):
         self.calculate_boredom()
