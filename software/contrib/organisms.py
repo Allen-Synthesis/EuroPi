@@ -109,7 +109,9 @@ class Organisms(EuroPiScript):
                     if (
                         abs(organism_1.x - organism_2.x) <= self.fight_radius
                         and abs(organism_1.y - organism_2.y) <= self.fight_radius
+                        and organism_1 != organism_2
                     ):  # If the organisms are close enough to fight
+                        oled.rect(0, 0, OLED_WIDTH - 1, OLED_HEIGHT - 1, 1)
                         if randint(0, 1) == 1:
                             organism_1.alter_speed(1)
                             organism_2.alter_speed(-1)
