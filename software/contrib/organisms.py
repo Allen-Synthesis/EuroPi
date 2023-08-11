@@ -119,7 +119,7 @@ class Organisms(EuroPiScript):
 
             oled.show()
 
-            sleep(0.1)
+            sleep(1 - k1.percent())
 
 
 if __name__ == "__main__":
