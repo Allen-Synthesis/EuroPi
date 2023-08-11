@@ -17,7 +17,7 @@ class Organism:
         self.cv_out = cv_out
 
     def generate_random_coordinates(self):
-        return (randint(0, OLED_WIDTH - 1), randint(0, OLED_HEIGHT - 1))
+        return (randint(10, OLED_WIDTH - 11), randint(6, OLED_HEIGHT - 7))
 
     def calculate_boredom(self):
         if self.walking == False:  # If the organism is not walking it will get increasingly bored
@@ -34,9 +34,18 @@ class Organism:
     def choose_new_destination(self):
         self.destination = self.generate_random_coordinates()
         self.walking = True
+        print(self.destination)
 
     def alter_speed(self, amount):
         self.speed = clamp((self.speed + amount), 1, 10)
+        
+    def display(self):
+        int_x, int_y = int(self.x), int(self.y)
+        oled.pixel(int_x - 1, int_y, 1)
+        oled.pixel(int_x, int_y, 1)
+        oled.pixel(int_x + 1, int_y, 1)
+        oled.pixel(int_x, int_y - 1, 1)
+        oled.pixel(int_x, int_y + 1, 1)
 
     def tick(self):
         self.calculate_boredom()
@@ -49,7 +58,10 @@ class Organism:
         if self.walking:  # If the organism is walking
             adjacent = self.destination[0] - self.x
             opposite = self.destination[1] - self.y
-            angle = abs(atan(opposite / adjacent))
+            try:
+                angle = abs(atan(opposite / adjacent))
+            except ZeroDivisionError:
+                angle = 0
 
             total_distance_remaining = self.calculate_hypotenuse(adjacent, opposite)
             if (
@@ -80,10 +92,17 @@ class Organisms(EuroPiScript):
         self.organisms = self.generate_organisms()
 
         self.fight_radius = 5
+        
+        self.running = True
+        
+        b1.handler(self.start_stop)
 
     @classmethod
     def display_name(cls):
         return "Life"
+    
+    def start_stop(self):
+        self.running = not self.running
 
     def generate_organisms(self, start_population=6):
         organisms = []
@@ -96,32 +115,33 @@ class Organisms(EuroPiScript):
 
     def main(self):
         while True:
-            self.tick += 1
+            if self.running:
+                self.tick += 1
 
-            oled.fill(0)
+                oled.fill(0)
 
-            for organism in self.organisms:
-                organism.tick()
-                oled.pixel(int(organism.x), int(organism.y), 1)
+                for organism in self.organisms:
+                    organism.tick()
+                    organism.display()
 
-            for index_1, organism_1 in enumerate(self.organisms):
-                for index_2, organism_2 in enumerate(self.organisms):
-                    if (
-                        abs(organism_1.x - organism_2.x) <= self.fight_radius
-                        and abs(organism_1.y - organism_2.y) <= self.fight_radius
-                        and organism_1 != organism_2
-                    ):  # If the organisms are close enough to fight
-                        oled.rect(0, 0, OLED_WIDTH - 1, OLED_HEIGHT - 1, 1)
-                        if randint(0, 1) == 1:
-                            organism_1.alter_speed(1)
-                            organism_2.alter_speed(-1)
-                        else:
-                            organism_1.alter_speed(-1)
-                            organism_2.alter_speed(1)
+                for index_1, organism_1 in enumerate(self.organisms):
+                    for index_2, organism_2 in enumerate(self.organisms):
+                        if (
+                            abs(organism_1.x - organism_2.x) <= self.fight_radius
+                            and abs(organism_1.y - organism_2.y) <= self.fight_radius
+                            and organism_1 != organism_2
+                        ):  # If the organisms are close enough to fight
+                            oled.rect(0, 0, OLED_WIDTH - 1, OLED_HEIGHT - 1, 1)
+                            if randint(0, 1) == 1:
+                                organism_1.alter_speed(1)
+                                organism_2.alter_speed(-1)
+                            else:
+                                organism_1.alter_speed(-1)
+                                organism_2.alter_speed(1)
 
-            oled.show()
+                oled.show()
 
-            sleep(1 - k1.percent())
+                sleep(1 - k1.percent())
 
 
 if __name__ == "__main__":
