@@ -24,6 +24,11 @@ MODE_PINGPONG=2
 ## Pick a random output, which can be the same as the one we're currently using
 MODE_RANDOM=3
 
+## Instead of a traditional sequential switch, treat the outputs like a s&h shift register
+#
+#  CV1 will contain the latest s&h reading, with CV2-6 outputting increasingly old readings
+MODE_SHIFT=4
+
 ## How many milliseconds of idleness do we need before we trigger the screensaver?
 #
 #  =20 minutes
@@ -36,7 +41,7 @@ class ScreensaverScreen(Screensaver):
     """
 
     def __init__(self, parent):
-        super().__init__(self)
+        super().__init__()
         self.parent = parent
 
     def on_button1(self):
@@ -57,24 +62,30 @@ class SwitchScreen:
     def draw(self):
         oled.fill(0)
 
-        # Show all 6 outputs as a string on 2 lines to mirror the panel
-        switches = ""
-        for i in range(2):
-            for j in range(3):
-                out_no = i*3 + j
-                if out_no < self.parent.num_outputs:
-                    # output is enabled; is it hot?
-                    if self.parent.current_output == out_no:
-                        switches = switches + " [*] "
+        if self.parent.mode == MODE_SHIFT:
+            BAR_WIDTH = OLED_WIDTH // 6
+            for i in range(self.parent.num_outputs):
+                h = max(1, int(self.parent.shift_register[i] / MAX_OUTPUT_VOLTAGE * OLED_HEIGHT))
+                oled.fill_rect(BAR_WIDTH * i + 1, OLED_HEIGHT - h, BAR_WIDTH-2, h, 1)
+        else:
+            # Show all 6 outputs as a string on 2 lines to mirror the panel
+            switches = ""
+            for i in range(2):
+                for j in range(3):
+                    out_no = i*3 + j
+                    if out_no < self.parent.num_outputs:
+                        # output is enabled; is it hot?
+                        if self.parent.current_output == out_no:
+                            switches = switches + " [*] "
+                        else:
+                            switches = switches + " [ ] "
                     else:
-                        switches = switches + " [ ] "
-                else:
-                    # output is disabled; mark it with .
-                    switches = switches + "  .  "
+                        # output is disabled; mark it with .
+                        switches = switches + "  .  "
 
-            switches = switches + "\n"
+                switches = switches + "\n"
 
-        oled.centre_text(switches)
+            oled.centre_text(switches)
 
         oled.show()
 
@@ -128,7 +139,8 @@ class ModeChooser:
             "Seq.",
             "Rev.",
             "P-P",
-            "Rand."
+            "Rand.",
+            "Shift"
         ]
 
     def read_mode(self):
@@ -183,6 +195,9 @@ class SequentialSwitch(EuroPiScript):
 
         self.load()
 
+        ## The shift register we use as s&h in MODE_SHIFT
+        self.shift_register = [0] * len(cvs)
+
     def load(self):
         """Load the persistent settings from storage and apply them
         """
@@ -236,6 +251,10 @@ class SequentialSwitch(EuroPiScript):
 
         self.current_output = next_out
 
+        if self.mode == MODE_SHIFT:
+            self.shift_register.pop(-1)
+            self.shift_register.insert(0, ain.read_voltage())
+
     def main(self):
         """The main loop
 
@@ -271,14 +290,23 @@ class SequentialSwitch(EuroPiScript):
             if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
                 self.active_screen = self.screensaver
 
-            # read the input and send it to the current output
-            # all other outputs should be zero
-            input_volts = ain.read_voltage()
-            for i in range(len(cvs)):
-                if i == self.current_output:
-                    cvs[i].voltage(input_volts)
-                else:
+            if self.mode == MODE_SHIFT:
+                # CV1 gets the most-recent s&h output, all the others get older values
+                for i in range(self.num_outputs):
+                    cvs[i].voltage(self.shift_register[i])
+
+                # turn off any unused outputs
+                for i in range(self.num_outputs, len(cvs)):
                     cvs[i].voltage(0)
+            else:
+                # read the input and send it to the current output
+                # all other outputs should be zero
+                input_volts = ain.read_voltage()
+                for i in range(len(cvs)):
+                    if i == self.current_output:
+                        cvs[i].voltage(input_volts)
+                    else:
+                        cvs[i].voltage(0)
 
             self.active_screen.draw()
 
