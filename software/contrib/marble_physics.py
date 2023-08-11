@@ -70,6 +70,7 @@ class Particle:
             self.y = 0
             self.dy = -self.dy * elasticity
 
+        self.last_update_at = now
         return (hit_apogee, hit_ground)
 
 class MarblePhysics(EuroPiScript):
@@ -98,6 +99,8 @@ class MarblePhysics(EuroPiScript):
 
         self.particle = Particle()
 
+        self.alt_knobs = False
+
         @din.handler
         def on_din_rising():
             self.release()
@@ -108,11 +111,13 @@ class MarblePhysics(EuroPiScript):
 
         @b2.handler
         def on_b2_press():
+            self.alt_knobs = True
             self.k1_bank.next()
             self.k2_bank.next()
 
         @b2.handler_falling
         def on_b2_release():
+            self.alt_knobs = False
             self.k1_bank.next()
             self.k2_bank.next()
 
@@ -132,6 +137,22 @@ class MarblePhysics(EuroPiScript):
 
     def release(self):
         self.particle.set_initial_position(self.release_height, self.initial_velocity)
+
+    def draw(self):
+        oled.fill(0)
+        row_1_color = 1
+        row_2_color = 2
+        if self.alt_knobs:
+            oled.fill_rect(0, CHAR_HEIGHT+1, OLED_WIDTH, CHAR_HEIGHT+1, 1)
+            row_2_color = 0
+        else:
+            oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT+1, 1)
+            row_1_color = 0
+
+
+        oled.text(f"h: {self.release_height:0.2f}  e:{self.elasticity:0.2f}", 0, 0, row_1_color)
+        oled.text(f"g: {self.gravity:0.2f}  v:{self.initial_velocity:0.2f}", 0, CHAR_HEIGHT+1, row_2_color)
+        oled.show()
 
     def main(self):
         while True:
@@ -163,10 +184,7 @@ class MarblePhysics(EuroPiScript):
                 self.elasticity = e
                 self.save()
 
-            oled.fill(0)
-            oled.text(f"h: {h:0.2f}  e:{e:0.2f}", 0, 0, 1)
-            oled.text(f"g: {g:0.2f}  v:{v:0.2f}", 0, CHAR_HEIGHT+1, 1)
-            oled.show()
+            self.draw()
 
             (hit_apogee, hit_ground) = self.particle.update(self.gravity, self.elasticity)
 
