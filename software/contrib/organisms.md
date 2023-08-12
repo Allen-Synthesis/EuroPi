@@ -33,7 +33,7 @@ They are truly generative, as their attributes (speed for example) have a real e
     digital in: n/a
     analogue in: n/a
     knob 1: simulation speed
-    knob 2: n/a
+    knob 2: boredom multiplier
     button 1: n/a
     button 2: n/a
     cv1: organism 1's position

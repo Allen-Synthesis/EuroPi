@@ -8,6 +8,9 @@ from framebuf import FrameBuffer, MONO_HLSB
 circle_bytearray = bytearray(b'\x07\x00\x18\xc0  @\x10@\x10\x80\x08\x80\x08\x80\x08@\x10@\x10  \x18\xc0\x07\x00')
 circle_buffer = FrameBuffer(circle_bytearray,13,13, MONO_HLSB)
 
+frantic_bytearray = bytearray(b'\xecIw0\x8a\xad"@\xcc\xeb"@\x8a\xa9\'0')
+frantic_buffer = FrameBuffer(frantic_bytearray,28,4, MONO_HLSB)
+
 class Organism:
     def __init__(self, cv_out, starting_speed=1):
         self.x, self.y = self.generate_random_coordinates()
@@ -133,18 +136,22 @@ class Organisms(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        self.tick = 0
-
         self.organisms = self.generate_organisms()
 
         self.fight_radius = 5
         
         self.running = True
         
+        self.frantic = False
+        
         self.boredom_multipliers = [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1, 1.5, 2, 4, 8, 10]
         self.boredom_multiplier = self.get_boredom_multiplier()
         
         b1.handler(self.start_stop)
+        b2.handler(self.frantic_on)
+        b2.handler_falling(self.frantic_off)
+        din.handler(self.frantic_on)
+        din.handler_falling(self.frantic_off)
 
     @classmethod
     def display_name(cls):
@@ -152,6 +159,18 @@ class Organisms(EuroPiScript):
     
     def get_boredom_multiplier(self):
         return k2.choice(self.boredom_multipliers)
+    
+    def frantic_text_clear(self):
+        oled.fill_rect(48, 12, 30, 6, 0)
+    
+    def frantic_on(self):
+        self.frantic = True
+        
+    def frantic_off(self):
+        if din.value() == 0 and b1.value() == 0:
+            self.frantic = False
+            self.frantic_text_clear()
+            oled.show()
     
     def start_stop(self):
         self.running = not self.running
@@ -207,10 +226,6 @@ class Organisms(EuroPiScript):
         
         while True:
             if self.running:
-                self.tick += 1
-                
-                self.boredom_multiplier = self.get_boredom_multiplier()
-
                 oled.fill(0)
 
                 for index_1, organism_1 in enumerate(self.organisms):
@@ -237,11 +252,16 @@ class Organisms(EuroPiScript):
                                         
                 for organism in self.organisms:
                     organism.tick(self.boredom_multiplier)
+                    
+                if self.frantic:
+                    self.boredom_multiplier = self.boredom_multipliers[-1]
+                    self.frantic_text_clear()
+                    oled.blit(frantic_buffer, 50, 14)
+                else:
+                    sleep(1 - k1.percent())
+                    self.boredom_multiplier = self.get_boredom_multiplier()
 
                 oled.show()
-
-                sleep(1 - k1.percent())
-
 
 if __name__ == "__main__":
     Organisms().main()
