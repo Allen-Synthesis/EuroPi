@@ -3,18 +3,29 @@ from random import randint
 from math import degrees, sin, cos, tan, atan, sqrt
 from europi import *
 from europi_script import EuroPiScript
+from framebuf import FrameBuffer, MONO_HLSB
 
+circle_bytearray = bytearray(b'\x07\x00\x18\xc0  @\x10@\x10\x80\x08\x80\x08\x80\x08@\x10@\x10  \x18\xc0\x07\x00')
+circle_buffer = FrameBuffer(circle_bytearray,13,13, MONO_HLSB)
 
 class Organism:
-    def __init__(self, cv_out):
+    def __init__(self, cv_out, starting_speed=1):
         self.x, self.y = self.generate_random_coordinates()
         self.destination = (self.x, self.y)
         self.size = 1
         self.walking = False
         self.boredom = 0
-        self.speed = 1
+        self.speed = starting_speed
+        self.maximum_speed = 6
+        self.fighting = False
+        self.last_opponent = None
 
         self.cv_out = cv_out
+        
+    def set_fighting(self, value, opponent=None):
+        self.fighting = value
+        if opponent != None:
+            self.last_opponent = opponent
 
     def generate_random_coordinates(self):
         return (randint(10, OLED_WIDTH - 11), randint(6, OLED_HEIGHT - 7))
@@ -36,7 +47,7 @@ class Organism:
         self.walking = True
 
     def alter_speed(self, amount):
-        self.speed = clamp((self.speed + amount), 1, 10)
+        self.speed = clamp((self.speed + amount), 1, self.maximum_speed)
         
     def display(self):
         int_x, int_y = int(self.x), int(self.y)
@@ -47,16 +58,30 @@ class Organism:
             oled.pixel(int_x + 1, int_y, 1)
             oled.pixel(int_x, int_y - 1, 1)
             oled.pixel(int_x, int_y + 1, 1)
-        if self.speed >= 4:
+        if self.speed >= 3:
             oled.pixel(int_x - 1, int_y - 1, 1)
             oled.pixel(int_x + 1, int_y - 1, 1)
             oled.pixel(int_x - 1, int_y + 1, 1)
             oled.pixel(int_x + 1, int_y + 1, 1)
-        if self.speed >= 6:
+        if self.speed >= 4:
             oled.pixel(int_x, int_y - 2, 1)
             oled.pixel(int_x, int_y + 2, 1)
             oled.pixel(int_x - 2, int_y, 1)
             oled.pixel(int_x + 2, int_y, 1)
+        if self.speed >= 5:
+            oled.pixel(int_x - 2, int_y + 1, 1)
+            oled.pixel(int_x + 1, int_y + 2, 1)
+            oled.pixel(int_x + 2, int_y - 1, 1)
+            oled.pixel(int_x - 1, int_y - 2, 1)
+        if self.speed >= 6:
+            oled.pixel(int_x - 2, int_y - 1, 1)
+            oled.pixel(int_x - 1, int_y + 2, 1)
+            oled.pixel(int_x + 2, int_y + 1, 1)
+            oled.pixel(int_x + 1, int_y - 2, 1)
+            oled.pixel(int_x, int_y + 3, 1)
+            oled.pixel(int_x, int_y - 3, 1)
+            oled.pixel(int_x + 3, int_y, 1)
+            oled.pixel(int_x - 3, int_y, 1)
 
     def tick(self):
         self.calculate_boredom()
@@ -92,6 +117,8 @@ class Organism:
         )  # The total 'value' of the organism's location between 0 and square root of 2
         organism_location_voltage = organism_location_value * 7.07
         self.cv_out.voltage(organism_location_voltage)
+        
+        self.fighting = False
 
 
 class Organisms(EuroPiScript):
@@ -119,7 +146,7 @@ class Organisms(EuroPiScript):
         organisms = []
         for organism_index in range(start_population):
             cv_out = cvs[organism_index]
-            new_organism = Organism(cv_out)
+            new_organism = Organism(cv_out, organism_index+1)
             organisms.append(new_organism)
 
         return organisms
@@ -131,24 +158,31 @@ class Organisms(EuroPiScript):
 
                 oled.fill(0)
 
+                for index_1, organism_1 in enumerate(self.organisms):
+                    if organism_1.fighting == False:	#If the organism is already fighting, reduce calculation effort by skipping fight calculations
+                        for index_2, organism_2 in enumerate(self.organisms):
+                            if organism_2.fighting == False and organism_2.last_opponent != organism_1:
+                                if (
+                                    abs(organism_1.x - organism_2.x) <= self.fight_radius
+                                    and abs(organism_1.y - organism_2.y) <= self.fight_radius
+                                    and organism_1 != organism_2
+                                ):  # If the organisms are close enough to fight
+                                    organism_1.set_fighting(True, organism_2)
+                                    organism_2.set_fighting(True, organism_1)
+                                    midpoint = (int(organism_1.x + ((organism_2.x - organism_1.x) / 2)), int(organism_1.y + ((organism_2.y - organism_1.y) / 2)))
+                                    oled.blit(circle_buffer, midpoint[0]-6, midpoint[1]-6)
+                                    if randint(0, 1) == 1 and organism_2.speed > 1 and organism_1.speed < 6:	#As all energy must be reserved, organism_2 must have a speed of at least 2 to be able to 'give' 1 to organism_1
+                                        organism_1.alter_speed(1)
+                                        organism_2.alter_speed(-1)
+                                    elif organism_1.speed > 1 and organism_2.speed < 6:
+                                        organism_1.alter_speed(-1)
+                                        organism_2.alter_speed(1)
+                                    else:
+                                        None	#Neither organism has any speed to 'give' so nothing happens
+                                        
                 for organism in self.organisms:
                     organism.tick()
                     organism.display()
-
-                for index_1, organism_1 in enumerate(self.organisms):
-                    for index_2, organism_2 in enumerate(self.organisms):
-                        if (
-                            abs(organism_1.x - organism_2.x) <= self.fight_radius
-                            and abs(organism_1.y - organism_2.y) <= self.fight_radius
-                            and organism_1 != organism_2
-                        ):  # If the organisms are close enough to fight
-                            oled.rect(0, 0, OLED_WIDTH - 1, OLED_HEIGHT - 1, 1)
-                            if randint(0, 1) == 1:
-                                organism_1.alter_speed(1)
-                                organism_2.alter_speed(-1)
-                            else:
-                                organism_1.alter_speed(-1)
-                                organism_2.alter_speed(1)
 
                 oled.show()
 
