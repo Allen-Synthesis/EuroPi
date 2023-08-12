@@ -88,7 +88,7 @@ class Particle:
         self.y = new_y
         self.last_update_at = now
 
-class MarblePhysics(EuroPiScript):
+class ParticlePhysics(EuroPiScript):
     def __init__(self):
         settings = self.load_state_json()
 
@@ -141,7 +141,7 @@ class MarblePhysics(EuroPiScript):
 
     @classmethod
     def display_name(cls):
-        return "MarblePhysics"
+        return "ParticlePhysics"
 
     def save(self):
         state = {
@@ -239,4 +239,4 @@ class MarblePhysics(EuroPiScript):
 
 
 if __name__ == "__main__":
-    MarblePhysics().main()
+    ParticlePhysics().main()
