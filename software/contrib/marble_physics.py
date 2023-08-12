@@ -14,16 +14,19 @@ import time
 
 EARTH_GRAVITY = 9.8
 MIN_GRAVITY = 0.1
-MAX_GRAVITY = 10*EARTH_GRAVITY
+MAX_GRAVITY = 20
 
 MIN_HEIGHT = 0.1
-MAX_HEIGHT = 20.0
+MAX_HEIGHT = 10.0
 
-MIN_SPEED = -10.0
-MAX_SPEED = 10.0
+MIN_SPEED = -5.0
+MAX_SPEED = 5.0
 
-MIN_ELASTICITY = 0.01
-MAX_ELASTICITY = 1.0
+MIN_ELASTICITY = 0.0
+MAX_ELASTICITY = 0.9
+
+## If a bounce reaches no higher than this, assume we've come to rest
+ASSUME_STOP_PEAK = 0.002
 
 def rescale(x, old_min, old_max, new_min, new_max):
     if x <= old_min:
@@ -33,6 +36,7 @@ def rescale(x, old_min, old_max, new_min, new_max):
     else:
         return (x - old_min) / (old_max - old_min) * (new_max - new_min) + new_min
 
+
 class Particle:
     def __init__(self):
         self.y = 0.0
@@ -40,38 +44,49 @@ class Particle:
 
         self.last_update_at = time.ticks_ms()
 
+        self.hit_ground = False
+        self.reached_apogee = False
+        self.stopped = True
+
+        self.peak_height = 0.0
+
     def set_initial_position(self, height, velocity):
+        self.peak_height = height
         self.y = height
         self.dy = velocity
         self.last_update_at = time.ticks_ms()
 
     def update(self, g, elasticity):
         """Update the particle position based on the ambient gravity & elasticy of the particle
-
-        @return A tuple of the form (hit_apogee, hit_ground) indicating whether the particle has
-                its maximum height and/or the ground
         """
-        hit_ground = False
-        hit_apogee = False
-
         now = time.ticks_ms()
         delta_t = time.ticks_diff(now, self.last_update_at) / 1000.0
 
         new_dy = self.dy - delta_t * g
+        new_y = self.y + self.dy * delta_t
 
-        if new_dy < 0 and self.dy >= 0:
-            hit_apogee = True
+        # if we were going up, but now we're going down we've reached apogee
+        self.reached_apogee = new_dy <= 0 and self.dy >= 0
+
+        if self.reached_apogee:
+            self.peak_height = self.y
+
+        # if the vertical position is zero or negative, we've hit the ground
+        self.hit_ground = new_y <= 0
+
+        if self.hit_ground:
+            #new_y = 0
+            new_dy = abs(self.dy * elasticity)  # bounce upwards, reduding the velocity by our elasticity modifier
+
+        self.stopped = self.peak_height <= ASSUME_STOP_PEAK
+
+        if self.stopped:
+            new_y = 0
+            new_dy = 0
 
         self.dy = new_dy
-        self.y += self.dy * delta_t
-
-        if self.y < 0:
-            hit_ground = True
-            self.y = 0
-            self.dy = -self.dy * elasticity
-
+        self.y = new_y
         self.last_update_at = now
-        return (hit_apogee, hit_ground)
 
 class MarblePhysics(EuroPiScript):
     def __init__(self):
@@ -84,14 +99,14 @@ class MarblePhysics(EuroPiScript):
 
         self.k1_bank =  (
             KnobBank.builder(k1)
-            .with_locked_knob("height", initial_percentage_value=rescale(self.initial_velocity, MIN_HEIGHT, MAX_HEIGHT, 0, 1))
+            .with_locked_knob("height", initial_percentage_value=rescale(self.release_height, MIN_HEIGHT, MAX_HEIGHT, 0, 1))
             .with_locked_knob("gravity", initial_percentage_value=rescale(self.gravity, MIN_GRAVITY, MAX_GRAVITY, 0, 1))
             .build()
         )
 
         self.k2_bank =  (
             KnobBank.builder(k2)
-            .with_locked_knob("elasticity", initial_percentage_value=rescale(self.gravity, MIN_ELASTICITY, MAX_ELASTICITY, 0, 1))
+            .with_locked_knob("elasticity", initial_percentage_value=rescale(self.elasticity, MIN_ELASTICITY, MAX_ELASTICITY, 0, 1))
             .with_locked_knob("speed", initial_percentage_value=rescale(self.initial_velocity, MIN_SPEED, MAX_SPEED, 0, 1))
 
             .build()
@@ -99,15 +114,17 @@ class MarblePhysics(EuroPiScript):
 
         self.particle = Particle()
 
+        self.release_before_next_update = False
+
         self.alt_knobs = False
 
         @din.handler
         def on_din_rising():
-            self.release()
+            self.reset()
 
         @b1.handler
         def on_b1_press():
-            self.release()
+            self.reset()
 
         @b2.handler
         def on_b2_press():
@@ -135,8 +152,8 @@ class MarblePhysics(EuroPiScript):
         }
         self.save_state_json(state)
 
-    def release(self):
-        self.particle.set_initial_position(self.release_height, self.initial_velocity)
+    def reset(self):
+        self.release_before_next_update = True
 
     def draw(self):
         oled.fill(0)
@@ -150,16 +167,17 @@ class MarblePhysics(EuroPiScript):
             row_1_color = 0
 
 
-        oled.text(f"h: {self.release_height:0.2f}  e:{self.elasticity:0.2f}", 0, 0, row_1_color)
-        oled.text(f"g: {self.gravity:0.2f}  v:{self.initial_velocity:0.2f}", 0, CHAR_HEIGHT+1, row_2_color)
+        oled.text(f"h: {self.release_height:0.2f}  e: {self.elasticity:0.2f}", 0, 0, row_1_color)
+        oled.text(f"g: {self.gravity:0.2f}  v: {self.initial_velocity:0.2f}", 0, CHAR_HEIGHT+1, row_2_color)
+        oled.text(f"y: {self.particle.y:0.2f} dy: {self.particle.dy:0.2f}", 0, 2*CHAR_HEIGHT+2, 1)
         oled.show()
 
     def main(self):
         while True:
-            g = rescale(self.k1_bank["gravity"].percent(), 0, 1, MIN_GRAVITY, MAX_GRAVITY)
-            h = rescale(self.k1_bank["height"].percent(), 0, 1, MIN_HEIGHT, MAX_HEIGHT)
-            v = rescale(self.k2_bank["speed"].percent(), 0, 1, MIN_SPEED, MAX_SPEED)
-            e = rescale(self.k2_bank["elasticity"].percent(), 0, 1, MIN_ELASTICITY, MAX_ELASTICITY)
+            g = round(rescale(self.k1_bank["gravity"].percent(), 0, 1, MIN_GRAVITY, MAX_GRAVITY), 2)
+            h = round(rescale(self.k1_bank["height"].percent(), 0, 1, MIN_HEIGHT, MAX_HEIGHT), 2)
+            v = round(rescale(self.k2_bank["speed"].percent(), 0, 1, MIN_SPEED, MAX_SPEED), 2)
+            e = round(rescale(self.k2_bank["elasticity"].percent(), 0, 1, MIN_ELASTICITY, MAX_ELASTICITY), 2)
 
             # the maximum veliocity we can attain, given the current parameters
             # d = 1/2 aT^2 -> T = sqrt(2d/a)
@@ -186,29 +204,37 @@ class MarblePhysics(EuroPiScript):
 
             self.draw()
 
-            (hit_apogee, hit_ground) = self.particle.update(self.gravity, self.elasticity)
+            if self.release_before_next_update:
+                self.particle.set_initial_position(self.release_height, self.initial_velocity)
+                self.release_before_next_update = False
 
-            # CV 1 outputs a trigger whenever we hit the ground
-            if hit_ground:
+            self.particle.update(self.gravity, self.elasticity)
+
+            # CV 1 outputs a gate whenever we hit the ground
+            if self.particle.hit_ground:
                 cv1.voltage(5)
             else:
                 cv1.voltage(0)
 
-            # CV 4 outputs a trigger whenever we reach peak altitude and start falling again
-            if hit_apogee:
-                cv4.voltage(5)
+            # CV 2 outputs a trigger whenever we reach peak altitude and start falling again
+            if self.particle.reached_apogee:
+                cv2.voltage(5)
             else:
-                cv4.voltage(0)
+                cv2.voltage(0)
 
-            # CV 2 outputs control voltage based on the height of the particle
-            cv2.voltage(rescale(self.particle.y, 0, MAX_HEIGHT, 0, MAX_OUTPUT_VOLTAGE))
+            # CV 3 outputs a gate when the particle comes to rest
+            if self.particle.stopped:
+                cv3.voltage(5)
+            else:
+                cv3.voltage(0)
 
-            # CV 3 outputs control voltage based on the speed of the particle
-            cv3.voltage(rescale(abs(self.particle.dy), -max_v, max_v, 0, MAX_OUTPUT_VOLTAGE))
+            # CV 4 outputs control voltage based on the height of the particle
+            cv4.voltage(rescale(self.particle.y, 0, MAX_HEIGHT, 0, MAX_OUTPUT_VOLTAGE))
 
-            # TODO: we've got to be able to figure out _something_ to do with these, I'm just out of ideas
-            # right now
-            cv5.off()
+            # CV 5 outputs control voltage based on the speed of the particle
+            cv5.voltage(rescale(abs(self.particle.dy), 0, max_v, 0, MAX_OUTPUT_VOLTAGE))
+
+            # TODO: I don't know what to use CV6 for. But hopefully I'll think of something
             cv6.off()
 
 
