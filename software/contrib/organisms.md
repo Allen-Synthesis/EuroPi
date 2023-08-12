@@ -30,12 +30,12 @@ The resulting 6 CV outputs are essentially LFOs with a slight stepping nature, a
 They are truly generative, as their attributes (speed for example) have a real effect on their future (a faster organism is more likely to fight often and therefore affect its own speed)
 
 
-    digital in: n/a
+    digital in: frantic mode (gate)
     analogue in: n/a
     knob 1: simulation speed
     knob 2: boredom multiplier
-    button 1: n/a
-    button 2: n/a
+    button 1: start/stop
+    button 2: frantic mode (hold down)
     cv1: organism 1's position
     cv2: organism 2's position
     cv3: organism 3's position
