@@ -19,6 +19,7 @@ class Organism:
         self.maximum_speed = 6
         self.fighting = False
         self.last_opponent = None
+        self.display_active = False
 
         self.cv_out = cv_out
         
@@ -26,6 +27,9 @@ class Organism:
         self.fighting = value
         if opponent != None:
             self.last_opponent = opponent
+            
+    def set_display_active(self, value):
+        self.display_active = value
 
     def generate_random_coordinates(self):
         return (randint(10, OLED_WIDTH - 11), randint(6, OLED_HEIGHT - 7))
@@ -116,6 +120,10 @@ class Organism:
             (self.x / OLED_WIDTH), (self.y / OLED_HEIGHT)
         )  # The total 'value' of the organism's location between 0 and square root of 2
         organism_location_voltage = organism_location_value * 7.07
+        
+        if self.display_active:
+            self.display()
+        
         self.cv_out.voltage(organism_location_voltage)
         
         self.fighting = False
@@ -161,20 +169,25 @@ class Organisms(EuroPiScript):
         start_x = OLED_WIDTH
 
         for offset_index, offset in enumerate(x_offsets):
-            if offset_index == 10:
-                self.organisms[0].display()
-            elif offset_index == 20:
-                self.organisms[1].display()
-            elif offset_index == 30:
-                self.organisms[2].display()
-            elif offset_index == 40:
-                self.organisms[3].display()
-            elif offset_index == 50:
-                self.organisms[4].display()
-            elif offset_index == 60:
-                self.organisms[5].display()
+            oled.fill(0)
             
-            oled.fill_rect(0, 13, max((start_x - letters[-1][1]) + (8 * 18), 0), 9, 0)
+            if offset_index == 10:
+                self.organisms[0].set_display_active(True)
+            elif offset_index == 20:
+                self.organisms[1].set_display_active(True)
+            elif offset_index == 30:
+                self.organisms[2].set_display_active(True)
+            elif offset_index == 40:
+                self.organisms[3].set_display_active(True)
+            elif offset_index == 50:
+                self.organisms[4].set_display_active(True)
+            elif offset_index == 60:
+                self.organisms[5].set_display_active(True)
+                
+            for organism in self.organisms:
+                organism.tick()
+            
+            oled.fill_rect(0, 12, max((start_x - letters[-1][1]) + (8 * 18), 0), 10, 0)
             
             for letter_index, letter in enumerate(letters):
                 letter[1] += offset
@@ -216,7 +229,6 @@ class Organisms(EuroPiScript):
                                         
                 for organism in self.organisms:
                     organism.tick()
-                    organism.display()
 
                 oled.show()
 
