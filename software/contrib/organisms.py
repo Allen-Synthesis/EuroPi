@@ -157,7 +157,7 @@ class Organisms(EuroPiScript):
         letters = []
         for letter in text:
             letters.append([letter,0])
-        x_offsets = [8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+        x_offsets = [8, 8, 8, 8, 6, 6, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
         start_x = OLED_WIDTH
 
         for offset_index, offset in enumerate(x_offsets):
@@ -180,6 +180,7 @@ class Organisms(EuroPiScript):
                 letter[1] += offset
                 oled.text(letter[0], int((start_x - letter[1]) + (8 * letter_index)), 14)
             oled.show()
+            sleep(0.01)
 
     def main(self):
         
