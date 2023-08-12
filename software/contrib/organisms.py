@@ -150,8 +150,41 @@ class Organisms(EuroPiScript):
             organisms.append(new_organism)
 
         return organisms
+    
+    
+    def begin_simulation(self):
+        text = 'birthing organisms'
+        letters = []
+        for letter in text:
+            letters.append([letter,0])
+        x_offsets = [8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+        start_x = OLED_WIDTH
+
+        for offset_index, offset in enumerate(x_offsets):
+            if offset_index == 10:
+                self.organisms[0].display()
+            elif offset_index == 20:
+                self.organisms[1].display()
+            elif offset_index == 30:
+                self.organisms[2].display()
+            elif offset_index == 40:
+                self.organisms[3].display()
+            elif offset_index == 50:
+                self.organisms[4].display()
+            elif offset_index == 60:
+                self.organisms[5].display()
+            
+            oled.fill_rect(0, 13, max((start_x - letters[-1][1]) + (8 * 18), 0), 9, 0)
+            
+            for letter_index, letter in enumerate(letters):
+                letter[1] += offset
+                oled.text(letter[0], int((start_x - letter[1]) + (8 * letter_index)), 14)
+            oled.show()
 
     def main(self):
+        
+        self.begin_simulation()
+        
         while True:
             if self.running:
                 self.tick += 1
