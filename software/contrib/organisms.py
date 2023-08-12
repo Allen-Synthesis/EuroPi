@@ -87,10 +87,10 @@ class Organism:
             oled.pixel(int_x + 3, int_y, 1)
             oled.pixel(int_x - 3, int_y, 1)
 
-    def tick(self):
+    def tick(self, boredom_multiplier):
         self.calculate_boredom()
 
-        if self.boredom > randint(
+        if (self.boredom * boredom_multiplier) > randint(
             0, 99
         ):  # The organism gets so bored that it chooses a new destination and begins walking
             self.choose_new_destination()
@@ -141,11 +141,17 @@ class Organisms(EuroPiScript):
         
         self.running = True
         
+        self.boredom_multipliers = [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1, 1.5, 2, 4, 8, 10]
+        self.boredom_multiplier = self.get_boredom_multiplier()
+        
         b1.handler(self.start_stop)
 
     @classmethod
     def display_name(cls):
         return "Life"
+    
+    def get_boredom_multiplier(self):
+        return k2.choice(self.boredom_multipliers)
     
     def start_stop(self):
         self.running = not self.running
@@ -185,13 +191,13 @@ class Organisms(EuroPiScript):
                 self.organisms[5].set_display_active(True)
                 
             for organism in self.organisms:
-                organism.tick()
+                organism.tick(self.boredom_multiplier)
             
-            oled.fill_rect(0, 12, max((start_x - letters[-1][1]) + (8 * 18), 0), 10, 0)
+            oled.fill_rect(0, 10, max((start_x - letters[-1][1]) + (8 * 18), 0), 11, 0)
             
             for letter_index, letter in enumerate(letters):
                 letter[1] += offset
-                oled.text(letter[0], int((start_x - letter[1]) + (8 * letter_index)), 14)
+                oled.text(letter[0], int((start_x - letter[1]) + (8 * letter_index)), 12)
             oled.show()
             sleep(0.01)
 
@@ -202,6 +208,8 @@ class Organisms(EuroPiScript):
         while True:
             if self.running:
                 self.tick += 1
+                
+                self.boredom_multiplier = self.get_boredom_multiplier()
 
                 oled.fill(0)
 
@@ -228,7 +236,7 @@ class Organisms(EuroPiScript):
                                         None	#Neither organism has any speed to 'give' so nothing happens
                                         
                 for organism in self.organisms:
-                    organism.tick()
+                    organism.tick(self.boredom_multiplier)
 
                 oled.show()
 
