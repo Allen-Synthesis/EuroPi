@@ -169,7 +169,10 @@ class ParticlePhysics(EuroPiScript):
 
         oled.text(f"h: {self.release_height:0.2f}  e: {self.elasticity:0.2f}", 0, 0, row_1_color)
         oled.text(f"g: {self.gravity:0.2f}  v: {self.initial_velocity:0.2f}", 0, CHAR_HEIGHT+1, row_2_color)
-        oled.text(f"y: {self.particle.y:0.2f} dy: {self.particle.dy:0.2f}", 0, 2*CHAR_HEIGHT+2, 1)
+
+        # a horizontal representation of the particle bouncing off the left edge of the screen
+        oled.pixel(int(rescale(self.particle.y, 0, self.release_height, 0, OLED_WIDTH)), 3 * CHAR_HEIGHT, 1)
+
         oled.show()
 
     def main(self):
