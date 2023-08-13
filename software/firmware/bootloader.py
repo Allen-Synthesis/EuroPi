@@ -142,7 +142,7 @@ class BootloaderMenu(EuroPiScript):
                 old_selected = self.menu.selected
                 self.menu.draw_menu()
             time.sleep(0.1)
-        return self.scripts[self.run_request]
+        return self.run_request
 
     def main(self):
         script_class_name = self.load_state_str()
