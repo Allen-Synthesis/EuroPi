@@ -15,7 +15,6 @@ class Organism:
     def __init__(self, cv_out, starting_speed=1):
         self.x, self.y = self.generate_random_coordinates()
         self.destination = (self.x, self.y)
-        self.size = 1
         self.walking = False
         self.boredom = 0
         self.speed = starting_speed
@@ -41,7 +40,7 @@ class Organism:
         if self.walking == False:  # If the organism is not walking it will get increasingly bored
             self.boredom += 1
         else:
-            self.boredom -= 2  # If it is walking it will very quickly become not bored
+            self.boredom -= 1  # If it is walking it will very quickly become not bored
         self.boredom = clamp(
             self.boredom, 0, 100
         )  # Boredom is a percentage so cannot go below 0 or above 100
@@ -138,7 +137,7 @@ class Organisms(EuroPiScript):
 
         self.organisms = self.generate_organisms()
 
-        self.fight_radius = 5
+        self.fight_radius = 3
         
         self.running = True
         
@@ -159,6 +158,9 @@ class Organisms(EuroPiScript):
     
     def get_boredom_multiplier(self):
         return k2.choice(self.boredom_multipliers)
+    
+    def get_sleep_amount(self):
+        return 1 - k1.percent()
     
     def frantic_text_clear(self):
         oled.fill_rect(48, 12, 30, 6, 0)
@@ -229,24 +231,30 @@ class Organisms(EuroPiScript):
                 for index_1, organism_1 in enumerate(self.organisms):
                     if organism_1.fighting == False:	#If the organism is already fighting, reduce calculation effort by skipping fight calculations
                         for index_2, organism_2 in enumerate(self.organisms):
-                            if organism_2.fighting == False and organism_2.last_opponent != organism_1:
+                            if organism_2.fighting == False and organism_2.last_opponent != organism_1:	#If the two organisms did not fight each other the most recently - prevents rapid back and forth fighting
                                 if (
-                                    abs(organism_1.x - organism_2.x) <= self.fight_radius
-                                    and abs(organism_1.y - organism_2.y) <= self.fight_radius
-                                    and organism_1 != organism_2
-                                ):  # If the organisms are close enough to fight
+                                    abs(organism_1.x - organism_2.x) <= self.fight_radius	#If the organisms are close enough on the x axis
+                                    and abs(organism_1.y - organism_2.y) <= self.fight_radius	#And close enough on the y axis
+                                    and organism_1 != organism_2	#And the organisms are not the same
+                                ):  # Then the organisms are set to fight
                                     organism_1.set_fighting(True, organism_2)
                                     organism_2.set_fighting(True, organism_1)
-                                    midpoint = (int(organism_1.x + ((organism_2.x - organism_1.x) / 2)), int(organism_1.y + ((organism_2.y - organism_1.y) / 2)))
-                                    oled.blit(circle_buffer, midpoint[0]-6, midpoint[1]-6)
+                                    
+                                    show_fight_circle = False
                                     if randint(0, 1) == 1 and organism_2.speed > 1 and organism_1.speed < 6:	#As all energy must be reserved, organism_2 must have a speed of at least 2 to be able to 'give' 1 to organism_1
                                         organism_1.alter_speed(1)
                                         organism_2.alter_speed(-1)
+                                        show_fight_circle = True
                                     elif organism_1.speed > 1 and organism_2.speed < 6:
                                         organism_1.alter_speed(-1)
                                         organism_2.alter_speed(1)
+                                        show_fight_circle = True
                                     else:
                                         None	#Neither organism has any speed to 'give' so nothing happens
+                                        
+                                    if show_fight_circle:
+                                        midpoint = (int(organism_1.x + ((organism_2.x - organism_1.x) / 2)), int(organism_1.y + ((organism_2.y - organism_1.y) / 2)))	#The midpoint of the two organisms is calculated
+                                        oled.blit(circle_buffer, midpoint[0]-6, midpoint[1]-6)	#The fight circle is displayed around the two organisms
                                         
                 for organism in self.organisms:
                     organism.tick(self.boredom_multiplier)
@@ -256,7 +264,7 @@ class Organisms(EuroPiScript):
                     self.frantic_text_clear()
                     oled.blit(frantic_buffer, 50, 14)
                 else:
-                    sleep(1 - k1.percent())
+                    sleep(self.get_sleep_amount())
                     self.boredom_multiplier = self.get_boredom_multiplier()
 
                 oled.show()
