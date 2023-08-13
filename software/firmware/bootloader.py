@@ -59,6 +59,11 @@ class BootloaderMenu(EuroPiScript):
     """
 
     def __init__(self, scripts):
+        """Create the bootloader menu
+
+        @param scripts  Dictionary where the keys are the display names of the classes to include in the menu and the
+                        values are the fully-qualified names of the EuroPiScript classes that we launch
+        """
         self.scripts = scripts
         self.run_request = None
 
@@ -79,28 +84,42 @@ class BootloaderMenu(EuroPiScript):
             return None
 
     @classmethod
-    def load_script_classes(cls, scripts) -> "dict(str, type)":
-        classes = {}
-        for i, script in enumerate(scripts):
-            with PrintMemoryUse(script):
-                clazz = cls.get_class_for_name(script)
-            if clazz:
-                classes[script] = clazz
-            cls.show_progress(i / len(scripts))
-        return classes
-
-    @classmethod
     def _is_europi_script(cls, c):
         return issubclass(c, EuroPiScript)
 
-    @staticmethod
-    def _build_scripts_mapping(classes):
-        return OrderedDict(
-            [(cls.display_name(), cls) for cls in classes if BootloaderMenu._is_europi_script(cls)]
-        )
+    @classmethod
+    def show_error(self, title, message, duration=1):
+        """Show a brief error message on-screen saying we can't launch the requested script
+
+        @param title    The title of the error
+        @param message  The body of the error message
+        @param duration The number of seconds the message should show. If negative the message is shown forever
+        """
+        oled.fill(0)
+        oled.centre_text(f"--{title}--\n{message}")
+        oled.show()
+
+        if duration > 0:
+            time.sleep(duration)
+        else:
+            while True:
+                time.sleep(1)
 
     def launch(self, selected_item):
-        self.run_request = selected_item
+        """Callback function for when the user chooses a menu item to launch
+
+        Checks that the selected item is a valid EuroPiScript and then sets self.run_request to
+        that class.
+
+        If the selected item is not valid, show an error message
+        """
+
+        class_name = self.scripts[selected_item]
+        clazz = self.get_class_for_name(class_name)
+        if self._is_europi_script(clazz):
+            self.run_request = clazz
+        else:
+            self.show_error("Launch Err", "Invalid script class")
 
     def exit_to_menu(self):
         self.remove_state()
@@ -109,11 +128,8 @@ class BootloaderMenu(EuroPiScript):
         machine.reset()  # why doesn't machine.soft_reset() work anymore?
 
     def run_menu(self) -> type:
-        # load menu classes
-        script_classes = self.load_script_classes(self.scripts)
-        scripts_mapping = BootloaderMenu._build_scripts_mapping(script_classes.values())
         self.menu = Menu(
-            items=list(sorted(scripts_mapping.keys())),
+            items=list(sorted(self.scripts.keys())),
             select_func=self.launch,
             select_knob=europi.k2,
             choice_buttons=[europi.b1, europi.b2],
@@ -126,7 +142,7 @@ class BootloaderMenu(EuroPiScript):
                 old_selected = self.menu.selected
                 self.menu.draw_menu()
             time.sleep(0.1)
-        return scripts_mapping[self.run_request]
+        return self.scripts[self.run_request]
 
     def main(self):
         script_class_name = self.load_state_str()
@@ -144,4 +160,7 @@ class BootloaderMenu(EuroPiScript):
             europi.b1._handler_both(europi.b2, self.exit_to_menu)
             europi.b2._handler_both(europi.b1, self.exit_to_menu)
 
-            script_class().main()
+            try:
+                script_class().main()
+            except:
+                self.show_error("Crash", "Script died")
