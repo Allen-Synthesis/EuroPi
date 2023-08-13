@@ -1,10 +1,10 @@
-import gc
-import time
-from collections import OrderedDict
-
-import machine
-
 import europi
+import gc
+import machine
+import time
+import traceback
+
+from collections import OrderedDict
 from europi import (
     reset_state,
     OLED_HEIGHT,
@@ -12,7 +12,6 @@ from europi import (
     oled,
 )
 from europi_script import EuroPiScript
-
 from ui import Menu
 
 SCRIPT_DIR = "/lib/contrib/"
@@ -162,5 +161,9 @@ class BootloaderMenu(EuroPiScript):
 
             try:
                 script_class().main()
-            except:
-                self.show_error("Crash", "Script died")
+            except Exception as err:
+                # in case we have the USB cable connected, print the stack trace for debugging
+                # otherwise, just halt and show the error message
+                print(F"[ERR ] Failed to run script: {err}")
+                traceback.print_exc()
+                self.show_error("Crash", f"Script died\n{err}", -1)
