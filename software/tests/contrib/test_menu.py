@@ -17,5 +17,5 @@ def test_menu_imports(mock_time_module):
     bootloader = BootloaderMenu(EUROPI_SCRIPTS)
     for display_name in EUROPI_SCRIPTS.keys():
         class_name = EUROPI_SCRIPTS[display_name]
-        clazz = self.get_class_for_name(class_name)
+        clazz = bootloader.get_class_for_name(class_name)
         assert bootloader._is_europi_script(clazz), f"{class_name} is not a EuroPiScript"
