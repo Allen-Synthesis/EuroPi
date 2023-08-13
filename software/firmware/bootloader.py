@@ -161,9 +161,9 @@ class BootloaderMenu(EuroPiScript):
 
             try:
                 script_class().main()
-            except Exception as err:
+            except Exception:
                 # in case we have the USB cable connected, print the stack trace for debugging
                 # otherwise, just halt and show the error message
                 print(F"[ERR ] Failed to run script: {err}")
                 traceback.print_exc()
-                self.show_error("Crash", f"Script died\n{err}", -1)
+                self.show_error("Crash", F"Script died\n{type(err)}", -1)
