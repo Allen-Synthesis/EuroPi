@@ -141,6 +141,7 @@ class BootloaderMenu(EuroPiScript):
                 if not self._is_europi_script(launch_class):
                     self.show_error("Launch Err", "Invalid script class")
                     launch_class = None
+                    self.run_request = None
             else:
                 if old_selected != self.menu.selected:
                     old_selected = self.menu.selected
