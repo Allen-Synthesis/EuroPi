@@ -20,9 +20,11 @@ class Screensaver:
     Alternatively draw_blank() will simply clear the screen
     """
 
-    ## The EuroPi logo as a 14x16 image
-    LOGO = bytearray(b'\x00p\x18\x88&\x84AX1 E\x18\x99DiT\x1a(%\x10H\x88AD"$\x10X\x0c\x80\x03\x00')
-    LOGO_WIDTH = 14
+    ## The EuroPi logo as a 16x16 image
+    LOGO = bytearray(
+        b"\x01\xc0\x03p;\x18n1\xc0c\xf8\xc6\x0c\x93\r\xb9\x19-\xf37\xc6\x12\x0c\x98\x19\xc83L\x1el\x0c8"
+    )
+    LOGO_WIDTH = 16
     LOGO_HEIGHT = 16
 
     def draw(self, force=False):
