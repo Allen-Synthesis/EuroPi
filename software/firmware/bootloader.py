@@ -1,8 +1,8 @@
 import europi
 import gc
 import machine
+import sys
 import time
-import traceback
 
 from collections import OrderedDict
 from europi import (
@@ -53,8 +53,6 @@ class BootloaderMenu(EuroPiScript):
     In a program that was launched from the menu:
 
     * Hold both buttons for at least 0.5s and release to return to the menu.
-
-    :param scripts: a list of qualified class names of Classes implementing EuroPiScript to be included in the menu
     """
 
     def __init__(self, scripts):
@@ -87,7 +85,7 @@ class BootloaderMenu(EuroPiScript):
         return issubclass(c, EuroPiScript)
 
     @classmethod
-    def show_error(self, title, message, duration=1):
+    def show_error(cls, title, message, duration=1):
         """Show a brief error message on-screen saying we can't launch the requested script
 
         @param title    The title of the error
@@ -107,18 +105,10 @@ class BootloaderMenu(EuroPiScript):
     def launch(self, selected_item):
         """Callback function for when the user chooses a menu item to launch
 
-        Checks that the selected item is a valid EuroPiScript and then sets self.run_request to
-        that class.
-
-        If the selected item is not valid, show an error message
+        Sets run_request to the name of the class to launch.  No validation is done here to keep this
+        callback small
         """
-
-        class_name = self.scripts[selected_item]
-        clazz = self.get_class_for_name(class_name)
-        if self._is_europi_script(clazz):
-            self.run_request = clazz
-        else:
-            self.show_error("Launch Err", "Invalid script class")
+        self.run_request = self.scripts[selected_item]
 
     def exit_to_menu(self):
         self.remove_state()
@@ -127,6 +117,12 @@ class BootloaderMenu(EuroPiScript):
         machine.reset()  # why doesn't machine.soft_reset() work anymore?
 
     def run_menu(self) -> type:
+        """Prompt the user to select a EuroPiScript class from the menu and return it
+
+        If the class is not a valid EuroPiScript an error message is shown and selection continues
+
+        @return The type corresponding to self.run_request as set by the self.launch callback
+        """
         self.menu = Menu(
             items=list(sorted(self.scripts.keys())),
             select_func=self.launch,
@@ -135,13 +131,23 @@ class BootloaderMenu(EuroPiScript):
         )
 
         # let the user make a selection
+        # the menu selection returns the desired class name but doesn't validate it
+        # that validation is handled here
+        launch_class = None
         old_selected = -1
-        while not self.run_request:
-            if old_selected != self.menu.selected:
-                old_selected = self.menu.selected
-                self.menu.draw_menu()
-            time.sleep(0.1)
-        return self.run_request
+        while launch_class is None:
+            if self.run_request:
+                launch_class = self.get_class_for_name(self.run_request)
+                if not self._is_europi_script(launch_class):
+                    self.show_error("Launch Err", "Invalid script class")
+                    launch_class = None
+            else:
+                if old_selected != self.menu.selected:
+                    old_selected = self.menu.selected
+                    self.menu.draw_menu()
+                time.sleep(0.1)
+
+        return launch_class
 
     def main(self):
         script_class_name = self.load_state_str()
@@ -165,5 +171,5 @@ class BootloaderMenu(EuroPiScript):
                 # in case we have the USB cable connected, print the stack trace for debugging
                 # otherwise, just halt and show the error message
                 print(f"[ERR ] Failed to run script: {err}")
-                traceback.print_exc()
+                sys.print_exception(err)
                 self.show_error("Crash", f"Script died\n{type(err)}", -1)
