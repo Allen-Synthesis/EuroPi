@@ -74,6 +74,7 @@ class Sequencer(EuroPiScript):
             FrameBuffer(bytearray(b'\x00\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB)
             ]
 
+        self.image_blank = FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00'), 3, 9, MONO_HLSB)
         self.step_image_selected = FrameBuffer(bytearray(b'\xa0@\xa0@\xa0@\xa0@\xa0'), 3, 9, MONO_HLSB)
         self.position_image = FrameBuffer(bytearray(b'\xe0'), 3, 2, MONO_HLSB)
         
@@ -180,18 +181,30 @@ class Sequencer(EuroPiScript):
             #oled.blit(self.position_image, (sequence.position * 4), (index * 12))
             
             # If not in any edit mode, display the sequence images
-            for step in range(sequence.steps):
-                x = step * 4
-                y = (index * 10)
-                if (self.editing_step == False and step == self.currently_selected_step - 1) and (sequence == self.sequence):
-                    image = self.step_image_selected
-                else:
-                    if (self.editing_step and step == self.selected_step) and (sequence == self.sequence):
-                        step_image_index = int(k2.read_position(len(NOTES)) / 6.7)
+            if self.editing_sequence and sequence == self.sequence:
+                for step in range(32):
+                    x = step * 4
+                    y = (index * 10)
+                    
+                    if step < self.currently_selected_step:
+                        image = self.step_image_selected
                     else:
-                        step_image_index = int(NOTES.index(sequence.sequence[step]) / 6.7)
-                    image = self.step_images[step_image_index]
-                oled.blit(image, x, y)
+                        image = self.image_blank
+                    oled.blit(image, x, y)
+            else:
+                for step in range(sequence.steps):
+                    x = step * 4
+                    y = (index * 10)
+                    
+                    if (self.editing_step == False and step == self.currently_selected_step - 1) and (sequence == self.sequence):
+                        image = self.step_image_selected
+                    else:
+                        if (self.editing_step and step == self.selected_step) and (sequence == self.sequence):
+                            step_image_index = int(k2.read_position(len(NOTES)) / 6.7)
+                        else:
+                            step_image_index = int(NOTES.index(sequence.sequence[step]) / 6.7)
+                        image = self.step_images[step_image_index]
+                    oled.blit(image, x, y)
             
         # Draw the left and right text
         oled.text(left_text, 0, 23, 1)
