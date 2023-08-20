@@ -62,9 +62,20 @@ class Sequencer(EuroPiScript):
         self.sequences = [self.sequence_1, self.sequence_2]
         self.sequence = self.sequences[0]
         
-        self.step_image = FrameBuffer(bytearray(b'`\x90\x90\x90\x90`'), 4, 6, MONO_HLSB)
-        self.step_image_selected = FrameBuffer(bytearray(b'`\xf0\xf0\xf0\xf0`'), 4, 6, MONO_HLSB)
-        self.position_image = FrameBuffer(bytearray(b'\xf0\x00'), 4, 2, MONO_HLSB)
+        self.step_images = [
+            FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\xe0'), 3, 9, MONO_HLSB),
+            FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\x00\xe0\xe0'), 3, 9, MONO_HLSB),
+            FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\xe0\xe0\xe0'), 3, 9, MONO_HLSB),
+            FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB),
+            FrameBuffer(bytearray(b'\x00\x00\x00\x00\xe0\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB),
+            FrameBuffer(bytearray(b'\x00\x00\x00\xe0\xe0\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB),
+            FrameBuffer(bytearray(b'\x00\x00\xe0\xe0\xe0\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB),
+            FrameBuffer(bytearray(b'\x00\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB),
+            FrameBuffer(bytearray(b'\x00\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB)
+            ]
+
+        self.step_image_selected = FrameBuffer(bytearray(b'\xa0@\xa0@\xa0@\xa0@\xa0'), 3, 9, MONO_HLSB)
+        self.position_image = FrameBuffer(bytearray(b'\xe0'), 3, 2, MONO_HLSB)
         
         self.displaying_sequences = False
         self.selected_step = 0
@@ -72,7 +83,7 @@ class Sequencer(EuroPiScript):
         self.editing_sequence = False
         self.update_sequence_ui = False
         
-        self.long_press_amount = 200
+        self.long_press_amount = 400
         
         self.position = 0
         
@@ -139,43 +150,47 @@ class Sequencer(EuroPiScript):
     def display_ui(self):
         if self.displaying_sequences:
             self.currently_selected_step = k2.read_position(len(self.sequences))
-            left_text = f'Edit Sequence'
+            left_text = f'EDIT SEQUENCE'
             right_text = f'{self.currently_selected_step + 1}'
         elif self.editing_step:
             self.currently_selected_step = k2.read_position(len(NOTES))
-            left_text = f'Step {self.selected_step + 1}'
+            left_text = f'STEP {self.selected_step + 1}'
             right_text = NOTES[self.currently_selected_step]
         elif self.editing_sequence:
             self.currently_selected_step = k2.read_position(32) + 1
-            left_text = f'Length: {self.currently_selected_step}'
+            left_text = f'LENGTH: {self.currently_selected_step}'
             right_text = ""
         else:
             self.currently_selected_step = k2.read_position(self.sequence.steps + 1)
             if self.currently_selected_step != 0:
-                left_text = f'Step {self.currently_selected_step}'
+                left_text = f'STEP {self.currently_selected_step}'
                 right_text = self.sequence.sequence[self.currently_selected_step - 1]
             else:
-                left_text = 'Edit Length'
+                left_text = 'EDIT LENGTH'
                 right_text = ''
         
         # If the sequence length has changed then cover up the old sequence images, otherwise only cover up the text at the bottom
-        oled.fill_rect(0, 0 if self.update_sequence_ui else 22, OLED_WIDTH, OLED_HEIGHT, 0)
+        oled.fill_rect(0, 0 if self.update_sequence_ui else 23, OLED_WIDTH, OLED_HEIGHT, 0)
         self.update_sequence_ui = False
         
         for index, sequence in enumerate(self.sequences):
             # Draw the indicator of the current position
-            position_indicator_offset = index * 10
-            oled.fill_rect(0, position_indicator_offset, OLED_WIDTH, position_indicator_offset + 2, 0)
-            oled.blit(self.position_image, (sequence.position * 4), (index * 10))
+            #position_indicator_offset = index * 12
+            #oled.fill_rect(0, position_indicator_offset, OLED_WIDTH, position_indicator_offset + 2, 0)
+            #oled.blit(self.position_image, (sequence.position * 4), (index * 12))
             
             # If not in any edit mode, display the sequence images
             for step in range(sequence.steps):
                 x = step * 4
-                y = (index * 10) + 2
-                if ((step == self.currently_selected_step - 1) or (self.editing_step == True and step == self.selected_step)) and (sequence == self.sequence):
+                y = (index * 10)
+                if (self.editing_step == False and step == self.currently_selected_step - 1) and (sequence == self.sequence):
                     image = self.step_image_selected
                 else:
-                    image = self.step_image
+                    if (self.editing_step and step == self.selected_step) and (sequence == self.sequence):
+                        step_image_index = int(k2.read_position(len(NOTES)) / 6.7)
+                    else:
+                        step_image_index = int(NOTES.index(sequence.sequence[step]) / 6.7)
+                    image = self.step_images[step_image_index]
                 oled.blit(image, x, y)
             
         # Draw the left and right text
