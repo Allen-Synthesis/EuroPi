@@ -2,10 +2,11 @@ from time import sleep, ticks_ms, ticks_diff
 from europi import *
 from europi_script import EuroPiScript
 from framebuf import FrameBuffer, MONO_HLSB
+from math import ceil
 
 from contrib.polyrhythmic_sequencer import NOTES, VOLT_PER_OCT
 
-NOTES[0] = "OFF"
+NOTES = ["OFF"] + NOTES
 KNOB_SAMPLES = 512
 
 class Sequence:
@@ -41,7 +42,7 @@ class Sequence:
         self.update_position(self.position)
         
     def update_pitch_voltage(self):
-        self.pitch_output.voltage(NOTES.index(self.sequence[self.position]) * VOLT_PER_OCT)
+        self.pitch_output.voltage((NOTES.index(self.sequence[self.position]) - 1) * VOLT_PER_OCT)
         if self.pitch_output.voltage() != 0:
             self.clock_output.on()
             
@@ -63,7 +64,12 @@ class Sequencer(EuroPiScript):
         self.sequences = [self.sequence_1, self.sequence_2]
         self.sequence = self.sequences[0]
         
+        self.image_blank = FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00'), 3, 9, MONO_HLSB)
+        self.step_image_selected = FrameBuffer(bytearray(b'\xa0@\xa0@\xa0@\xa0@\xa0'), 3, 9, MONO_HLSB)
+        self.position_image = FrameBuffer(bytearray(b'\xe0'), 3, 2, MONO_HLSB)
+        
         self.step_images = [
+            self.image_blank,
             FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\xe0'), 3, 9, MONO_HLSB),
             FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\x00\xe0\xe0'), 3, 9, MONO_HLSB),
             FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\xe0\xe0\xe0'), 3, 9, MONO_HLSB),
@@ -74,10 +80,6 @@ class Sequencer(EuroPiScript):
             FrameBuffer(bytearray(b'\x00\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB),
             FrameBuffer(bytearray(b'\x00\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0'), 3, 9, MONO_HLSB)
             ]
-
-        self.image_blank = FrameBuffer(bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00'), 3, 9, MONO_HLSB)
-        self.step_image_selected = FrameBuffer(bytearray(b'\xa0@\xa0@\xa0@\xa0@\xa0'), 3, 9, MONO_HLSB)
-        self.position_image = FrameBuffer(bytearray(b'\xe0'), 3, 2, MONO_HLSB)
         
         self.displaying_sequences = False
         self.selected_step = 0
@@ -128,7 +130,7 @@ class Sequencer(EuroPiScript):
             self.editing_step = False
             
         if self.displaying_sequences:	# If displaying sequences, then the user has just chosen the sequence to edit
-            self.sequence = self.sequences[k2.read_position(len(self.sequences)), KNOB_SAMPLES]
+            self.sequence = self.sequences[k2.read_position(len(self.sequences), KNOB_SAMPLES)]
             if not self.long_pressed:
                 self.displaying_sequences = False
             else:
@@ -205,10 +207,12 @@ class Sequencer(EuroPiScript):
                     if (self.editing_step == False and step == self.currently_selected_step - 1) and (sequence == self.sequence):
                         image = self.step_image_selected
                     else:
-                        if (self.editing_step and step == self.selected_step) and (sequence == self.sequence):
-                            step_image_index = int(k2.read_position(len(NOTES), KNOB_SAMPLES) / 6.7)
-                        else:
+                        if self.editing_step and step == self.selected_step and sequence == self.sequence:
+                            step_image_index = ceil(k2.read_position(len(NOTES), KNOB_SAMPLES) / 6.7)
+                        elif sequence.sequence[step] != "OFF":
                             step_image_index = int(NOTES.index(sequence.sequence[step]) / 6.7)
+                        else:
+                            step_image_index = 0
                         image = self.step_images[step_image_index]
                     oled.blit(image, x, y)
             
