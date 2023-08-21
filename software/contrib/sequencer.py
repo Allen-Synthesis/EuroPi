@@ -177,10 +177,9 @@ class Sequencer(EuroPiScript):
         
     def draw_position_indicator(self):
         for index, sequence in enumerate(self.sequences):
-            # Draw the indicator of the current position
-            position_indicator_y_offset = 10 + index
-            oled.fill_rect(0, position_indicator_y_offset, OLED_WIDTH, 2, 0)
-            oled.blit(self.position_image, (sequence.position * 3), position_indicator_y_offset)
+            position_indicator_y_offset = (index * 11) + 1
+            
+            oled.vline((sequence.position * 4), position_indicator_y_offset, 8, 1)
         
     def display_ui(self):
         left_text, right_text = self.calculate_ui_elements()
@@ -204,7 +203,7 @@ class Sequencer(EuroPiScript):
             else:
                 for step in range(sequence.steps):
                     x = step * 4
-                    y = (index * 12)
+                    y = (index * 11)
                     
                     if (self.editing_step == False and step == self.currently_selected_step - 1) and (sequence == self.sequence):
                         image = self.step_image_selected
