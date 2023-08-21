@@ -175,6 +175,13 @@ class Sequencer(EuroPiScript):
                 
         return left_text, right_text
         
+    def draw_position_indicator(self):
+        for index, sequence in enumerate(self.sequences):
+            # Draw the indicator of the current position
+            position_indicator_y_offset = 10 + index
+            oled.fill_rect(0, position_indicator_y_offset, OLED_WIDTH, 2, 0)
+            oled.blit(self.position_image, (sequence.position * 3), position_indicator_y_offset)
+        
     def display_ui(self):
         left_text, right_text = self.calculate_ui_elements()
         
@@ -183,11 +190,6 @@ class Sequencer(EuroPiScript):
         self.update_sequence_ui = False
         
         for index, sequence in enumerate(self.sequences):
-            # Draw the indicator of the current position
-            #position_indicator_offset = index * 12
-            #oled.fill_rect(0, position_indicator_offset, OLED_WIDTH, position_indicator_offset + 2, 0)
-            #oled.blit(self.position_image, (sequence.position * 4), (index * 12))
-            
             # If not in any edit mode, display the sequence images
             if self.editing_sequence and sequence == self.sequence:
                 for step in range(32):
@@ -202,7 +204,7 @@ class Sequencer(EuroPiScript):
             else:
                 for step in range(sequence.steps):
                     x = step * 4
-                    y = (index * 10)
+                    y = (index * 12)
                     
                     if (self.editing_step == False and step == self.currently_selected_step - 1) and (sequence == self.sequence):
                         image = self.step_image_selected
@@ -217,9 +219,11 @@ class Sequencer(EuroPiScript):
                     oled.blit(image, x, y)
             
         # Draw the left and right text
-        oled.text(left_text, 0, 23, 1)
-        oled.fill_rect(OLED_WIDTH - 24, OLED_HEIGHT - 10, 24, 10, 1 if self.editing_step else 0)
-        oled.text(right_text, OLED_WIDTH - (len(right_text) * 8), 23, 0 if self.editing_step else 1)
+        oled.text(left_text, 0, 24, 1)
+        oled.fill_rect(OLED_WIDTH - 24, OLED_HEIGHT - 9, 24, 10, 1 if self.editing_step else 0)
+        oled.text(right_text, OLED_WIDTH - (len(right_text) * 8), 24, 0 if self.editing_step else 1)
+        
+        self.draw_position_indicator()
         
         oled.show()
 
