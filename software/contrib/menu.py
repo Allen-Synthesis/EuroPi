@@ -37,6 +37,7 @@ EUROPI_SCRIPTS = [
     "contrib.probapoly.Probapoly",
     "contrib.quantizer.QuantizerScript",
     "contrib.radio_scanner.RadioScanner",
+    "contrib.sequencer.Sequencer",
     "contrib.scope.Scope",
     "contrib.sequential_switch.SequentialSwitch",
     "contrib.smooth_random_voltages.SmoothRandomVoltages",
