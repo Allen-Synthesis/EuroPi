@@ -6,6 +6,7 @@ from framebuf import FrameBuffer, MONO_HLSB
 from contrib.polyrhythmic_sequencer import NOTES, VOLT_PER_OCT
 
 NOTES[0] = "OFF"
+KNOB_SAMPLES = 512
 
 class Sequence:
     def __init__(self, sequence, steps, clock_output, pitch_output):
@@ -127,7 +128,7 @@ class Sequencer(EuroPiScript):
             self.editing_step = False
             
         if self.displaying_sequences:	# If displaying sequences, then the user has just chosen the sequence to edit
-            self.sequence = self.sequences[k2.read_position(len(self.sequences))]
+            self.sequence = self.sequences[k2.read_position(len(self.sequences)), KNOB_SAMPLES]
             if not self.long_pressed:
                 self.displaying_sequences = False
             else:
@@ -148,27 +149,32 @@ class Sequencer(EuroPiScript):
 
         self.save_state()
         
-    def display_ui(self):
+    def calculate_ui_elements(self):
         if self.displaying_sequences:
             self.currently_selected_step = k2.read_position(len(self.sequences))
             left_text = f'EDIT SEQUENCE'
             right_text = f'{self.currently_selected_step + 1}'
         elif self.editing_step:
-            self.currently_selected_step = k2.read_position(len(NOTES))
+            self.currently_selected_step = k2.read_position(len(NOTES), KNOB_SAMPLES)
             left_text = f'STEP {self.selected_step + 1}'
             right_text = NOTES[self.currently_selected_step]
         elif self.editing_sequence:
-            self.currently_selected_step = k2.read_position(32) + 1
+            self.currently_selected_step = k2.read_position(32, KNOB_SAMPLES) + 1
             left_text = f'LENGTH: {self.currently_selected_step}'
             right_text = ""
         else:
-            self.currently_selected_step = k2.read_position(self.sequence.steps + 1)
+            self.currently_selected_step = k2.read_position(self.sequence.steps + 1, KNOB_SAMPLES)
             if self.currently_selected_step != 0:
                 left_text = f'STEP {self.currently_selected_step}'
                 right_text = self.sequence.sequence[self.currently_selected_step - 1]
             else:
                 left_text = 'EDIT LENGTH'
                 right_text = ''
+                
+        return left_text, right_text
+        
+    def display_ui(self):
+        left_text, right_text = self.calculate_ui_elements()
         
         # If the sequence length has changed then cover up the old sequence images, otherwise only cover up the text at the bottom
         oled.fill_rect(0, 0 if self.update_sequence_ui else 23, OLED_WIDTH, OLED_HEIGHT, 0)
@@ -200,7 +206,7 @@ class Sequencer(EuroPiScript):
                         image = self.step_image_selected
                     else:
                         if (self.editing_step and step == self.selected_step) and (sequence == self.sequence):
-                            step_image_index = int(k2.read_position(len(NOTES)) / 6.7)
+                            step_image_index = int(k2.read_position(len(NOTES), KNOB_SAMPLES) / 6.7)
                         else:
                             step_image_index = int(NOTES.index(sequence.sequence[step]) / 6.7)
                         image = self.step_images[step_image_index]
