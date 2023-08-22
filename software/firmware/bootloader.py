@@ -149,11 +149,11 @@ class BootloaderMenu(EuroPiScript):
                 script_class().main()
             except Exception as e:
                 log_file = open("error_log.log", "a")
-                log_file.write(f'\n\n{time.ticks_ms()}: {e}')
+                log_file.write(f"\n\n{time.ticks_ms()}: {e}")
                 log_file.close()
-                
+
                 oled.centre_text("CRASH\nLOGGED\nSUCCESSFULLY")
                 time.sleep(1)
                 os.remove("saved_state_BootloaderMenu.txt")
-                
+
                 machine.reset()
