@@ -3,6 +3,7 @@ import time
 from collections import OrderedDict
 
 import machine
+import os
 
 import europi
 from europi import (
@@ -144,4 +145,15 @@ class BootloaderMenu(EuroPiScript):
             europi.b1._handler_both(europi.b2, self.exit_to_menu)
             europi.b2._handler_both(europi.b1, self.exit_to_menu)
 
-            script_class().main()
+            try:
+                script_class().main()
+            except Exception as e:
+                log_file = open("error_log.log", "a")
+                log_file.write(f'\n\n{time.ticks_ms()}: {e}')
+                log_file.close()
+                
+                oled.centre_text("CRASH\nLOGGED\nSUCCESSFULLY")
+                time.sleep(1)
+                os.remove("saved_state_BootloaderMenu.txt")
+                
+                machine.reset()
