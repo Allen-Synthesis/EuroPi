@@ -176,7 +176,7 @@ class BootloaderMenu(EuroPiScript):
 
                 # show the type & first portion of the exception on the OLED
                 # we can only fit so many characters, so truncate as needed
-                MAX_CHARS = OLED_WIDTH//CHAR_WIDTH
+                MAX_CHARS = OLED_WIDTH // CHAR_WIDTH
                 self.show_error(
                     "Crash", f"{str(type(err))[0:MAX_CHARS]}\n{str(err)[0:MAX_CHARS]}", -1
                 )
