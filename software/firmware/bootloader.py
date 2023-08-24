@@ -167,8 +167,7 @@ class BootloaderMenu(EuroPiScript):
                 script_class().main()
             except Exception as err:
                 # set all outputs to zero for safety
-                for cv in europi.cvs:
-                    cv.off()
+                europi.turn_off_all_cvs()
 
                 # in case we have the USB cable connected, print the stack trace for debugging
                 # otherwise, just halt and show the error message
