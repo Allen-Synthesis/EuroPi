@@ -98,9 +98,6 @@ class BootloaderMenu(EuroPiScript):
 
         if duration > 0:
             time.sleep(duration)
-        else:
-            while True:
-                time.sleep(1)
 
     def launch(self, selected_item):
         """Callback function for when the user chooses a menu item to launch
@@ -168,9 +165,17 @@ class BootloaderMenu(EuroPiScript):
 
             try:
                 script_class().main()
-            except Exception:
+            except Exception as err:
+                # set all outputs to zero for safety
+                for cv in europi.cvs:
+                    cv.off()
+
                 # in case we have the USB cable connected, print the stack trace for debugging
                 # otherwise, just halt and show the error message
                 print(f"[ERR ] Failed to run script: {err}")
                 sys.print_exception(err)
-                self.show_error("Crash", f"Script died\n{type(err)}", -1)
+
+                # show the type & first portion of the exception on the OLED
+                # we can only fit so many characters, so truncate as needed
+                MAX_CHARS = OLED_WIDTH//CHAR_WIDTH
+                self.show_error("Crash", f"{str(type(err))[0:MAX_CHARS]}\n{str(err)[0:MAX_CHARS]}", -1)
