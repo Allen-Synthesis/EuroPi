@@ -4,7 +4,9 @@ author: roryjamesallen
 
 date: 25/08/2023
 
-labels: Clock, Trigger, Gate, Random, Manual Gatre
+labels: Clock, Trigger, Gate, Random, Manual Gate
+
+![Example screen](walking-docs/example_screen.png)
 
 A character walks along a scrolling landscape as long as an external clock causes the system to 'tick'. Every tick, the character will step forwards (the landscape will scroll), and a number of things can happen:
 - There is a random chance, set by `knob 1` that a new plant will spawn on the right hand side of the screen
