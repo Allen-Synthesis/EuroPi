@@ -82,7 +82,7 @@ class Walking(EuroPiScript):
             ]
         
         self.clouds = []
-        self.cloud_chance = 2
+        self.cloud_chance = 5
         
         self.plant_images = [
             bytearray_to_framebuffer(b'\x08\x14\x14P\xa4*(\x10\x10', 7, 9),
@@ -231,9 +231,9 @@ class Walking(EuroPiScript):
             
             try:
                 if (OLED_WIDTH - self.clouds[-1][1]) > 14:
-                    self.clouds.append([new_cloud_image, OLED_WIDTH, randint(9, 14), (new_cloud_speed / len(self.cloud_images))])
+                    self.clouds.append([new_cloud_image, OLED_WIDTH, randint(9, 16), (new_cloud_speed / len(self.cloud_images))])
             except IndexError:
-                self.clouds.append([new_cloud_image, OLED_WIDTH, randint(9, 14), (new_cloud_speed / len(self.cloud_images))])
+                self.clouds.append([new_cloud_image, OLED_WIDTH, randint(9, 16), (new_cloud_speed / len(self.cloud_images))])
     
     def increment_earth(self):
         self.earth = self.earth[self.increment_amount:]
@@ -253,8 +253,8 @@ class Walking(EuroPiScript):
     def increment_variables(self):
         self.increment_earth()
         self.increment_plants()
-        self.increment_walking()
         self.increment_clouds()
+        self.increment_walking()
         
     def display_extras(self):
         oled.blit(self.plant_text, 0, 0)
