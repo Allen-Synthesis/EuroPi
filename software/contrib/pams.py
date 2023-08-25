@@ -1280,9 +1280,9 @@ class PamsWorkout(EuroPiScript):
 
         @din.handler
         def on_din_rising():
-            if self.din_mode == DIN_MODE_GATE:
+            if self.din_mode.get_value() == DIN_MODE_GATE:
                 self.clock.start()
-            elif self.din_mode == DIN_MODE_RESET:
+            elif self.din_mode.get_value() == DIN_MODE_RESET:
                 for ch in self.channels:
                     ch.reset()
             else:
@@ -1293,7 +1293,7 @@ class PamsWorkout(EuroPiScript):
 
         @din.handler_falling
         def on_din_falling():
-            if self.din_mode == DIN_MODE_GATE:
+            if self.din_mode.get_value() == DIN_MODE_GATE:
                 self.clock.stop()
 
         @b1.handler
