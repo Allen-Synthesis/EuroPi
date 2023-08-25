@@ -16,6 +16,7 @@ A character walks along a scrolling landscape as long as an external clock cause
 - If the character was already jumping, the gate output from `cv6` will remain high
 - `cv4` matches the position of `knob 1` and `cv5` matches the position of `k2`
 
+```
     digital in: External clock
     analogue in: n/a
     knob 1: Random chance of a plant spawning on each tick
@@ -28,3 +29,4 @@ A character walks along a scrolling landscape as long as an external clock cause
     cv4: `knob 1` position
     cv5: `knob 2` positon
     cv6: Jump gate
+```
