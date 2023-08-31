@@ -25,6 +25,8 @@ Version History (with lots missing from the early days!):
                         Remove screen1 as it is not as important now an external clock is supported
                         Fix inability to edit pulse width
                         Removed some bugs in the notes above
+1.3 - Updates by @nik:  All divisions now output on step one and count from there. (e.g. /4 was: 4,8,12; now: 1,5,9)
+                        Improve BPM calculations when using an external clock
 '''
 
 class MasterClockInner(EuroPiScript):
@@ -35,7 +37,7 @@ class MasterClockInner(EuroPiScript):
         self.clockInputNum = 1
         self.completedCycles = 0
         self.running = True
-        self.resetTimeout = 2000
+        self.resetTimeout = 3000
         self.previousStepTime = 0
         self.configMode = False
         self.k2Unlocked = False
@@ -126,13 +128,9 @@ class MasterClockInner(EuroPiScript):
                     self.clockTrigger()
                     if self.clockInputNum > 1: # Ignore the first entry as it has no reference
                         self.mSBetweenClockCycles = time.ticks_diff(ticks_ms(), self.previousClockTime)
-                        # Cap the BPM calcs at at 240 BPM to avoid steam coming out of the pico's ears
-                        if self.mSBetweenClockCycles < 250:
-                            self.inputClockDiffs.append(self.mSBetweenClockCycles)
-                        else:
-                            self.inputClockDiffs.append(250)
-                        # Only keep 20 values in the buffer
-                        if len(self.inputClockDiffs) == 20:
+                        self.inputClockDiffs.append(self.mSBetweenClockCycles)
+                        # Only keep n values in the buffer
+                        if len(self.inputClockDiffs) == 10:
                             del self.inputClockDiffs[0]
 
                         if self.clockInputNum > 3: # Only calculate is there are > 3 entries
@@ -178,7 +176,7 @@ class MasterClockInner(EuroPiScript):
         return self.bpmFromMs(self.averageDiff)
 
     def average(self, list):
-        return sum(list) / len(list)
+        return int(sum(list) / len(list))
 
     '''main screen'''
     def showScreen(self):
@@ -304,7 +302,7 @@ class MasterClockInner(EuroPiScript):
 
         for idx, output in enumerate(self.outputDivisions):
             if output != 'r':
-                if self.step % output == 0:
+                if (self.step - 1) % output == 0:
                     if self.tasks[idx] != 0 and not self.tasks[idx].done() and self.DEBUG:
                         print(f'Task: {idx} is not done')
                     if self.DEBUG:
@@ -402,5 +400,6 @@ class MasterClock(EuroPiScript):
 if __name__ == '__main__':
     m = MasterClock()
     m.main()
+
 
 
