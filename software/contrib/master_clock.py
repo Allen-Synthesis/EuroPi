@@ -25,6 +25,7 @@ Version History (with lots missing from the early days!):
                         Remove screen1 as it is not as important now an external clock is supported
                         Fix inability to edit pulse width
                         Removed some bugs in the notes above
+1.3 - Updates by @nik:  All divisions now output on step one and count from there. (e.g. /4 was: 4,8,12; now: 1,5,9)
 '''
 
 class MasterClockInner(EuroPiScript):
@@ -304,7 +305,7 @@ class MasterClockInner(EuroPiScript):
 
         for idx, output in enumerate(self.outputDivisions):
             if output != 'r':
-                if self.step % output == 0:
+                if (self.step - 1) % output == 0:
                     if self.tasks[idx] != 0 and not self.tasks[idx].done() and self.DEBUG:
                         print(f'Task: {idx} is not done')
                     if self.DEBUG:
