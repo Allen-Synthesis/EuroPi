@@ -180,5 +180,5 @@ class BootloaderMenu(EuroPiScript):
                 # we can only fit so many characters, so truncate as needed
                 MAX_CHARS = OLED_WIDTH // CHAR_WIDTH
                 self.show_error(
-                    "Crash", f"{str(type(err))[0:MAX_CHARS]}\n{str(err)[0:MAX_CHARS]}", -1
+                    "Crash", f"{err.__class__.__name__[0:MAX_CHARS]}\n{str(err)[0:MAX_CHARS]}", -1
                 )
