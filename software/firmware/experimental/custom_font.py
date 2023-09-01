@@ -59,7 +59,7 @@ class CustomFontWriter:
         return char_width
 
 
-class Display(BasicDisplay):
+class CustomFontDisplay(BasicDisplay):
     """A class for adding custom font capability to the OLED display.
 
     This class can be used identically to the parent class, with the added
@@ -139,4 +139,4 @@ class Display(BasicDisplay):
         self.show()
 
 
-oled = Display()
+oled = CustomFontDisplay()
