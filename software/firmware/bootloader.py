@@ -5,14 +5,7 @@ import sys
 import time
 
 from collections import OrderedDict
-from europi import (
-    reset_state,
-    OLED_HEIGHT,
-    OLED_WIDTH,
-    oled,
-    CHAR_HEIGHT,
-    CHAR_WIDTH
-)
+from europi import oled, OLED_HEIGHT, OLED_WIDTH, CHAR_HEIGHT, CHAR_WIDTH, reset_state
 from europi_script import EuroPiScript
 from ui import Menu
 
