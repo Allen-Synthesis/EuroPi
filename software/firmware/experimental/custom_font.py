@@ -117,14 +117,14 @@ class Display(BasicDisplay):
     def centre_text(self, text, font=None):
         """Split the provided text across 3 lines of display."""
 
-        self.fill(0)
-
         # Default font is 8x8 pixel monospaced font which can be split to a
         # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
         # for readability.
 
         if font or self.default_font:
             # f = font or self.default_font
+
+            self.fill(0)
 
             lines = str(text).split("\n")
             maximum_lines = self.height // self.text_height(font=font)
@@ -141,15 +141,7 @@ class Display(BasicDisplay):
                 self.text(content, x_offset, y_offset, font=font)
 
         else:
-            lines = str(text).split("\n")
-            maximum_lines = round(self.height / CHAR_HEIGHT)
-            if len(lines) > maximum_lines:
-                raise Exception("Provided text exceeds available space on oled display.")
-            padding_top = (self.height - (len(lines) * 9)) / 2
-            for index, content in enumerate(lines):
-                x_offset = int((self.width - ((len(content) + 1) * 7)) / 2) - 1
-                y_offset = int((index * 9) + padding_top) - 1
-                self.text(content, x_offset, y_offset)
+            super().centre_text(text)
 
         self.show()
 
