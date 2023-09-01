@@ -60,18 +60,11 @@ class CustomFontWriter:
 
 
 class Display(BasicDisplay):
-    """A class for drawing graphics and text to the OLED.
+    """A class for adding custom font capability to the OLED display.
 
-    The OLED Display works by collecting all the applied commands and only
-    updates the physical display when ``oled.show()`` is called. This allows
-    you to perform more complicated graphics without slowing your program, or
-    to perform the calculations for other functions, but only update the
-    display every few steps to prevent lag.
-
-    To clear the display, simply fill the display with the colour black by using ``oled.fill(0)``
-
-    More explanations and tips about the display can be found in the oled_tips file
-    `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
+    This class can be used identically to the parent class, with the added
+    parameter of 'font' which can be passed when using any of the methods to
+    specify an alternative to the default 8x8 pixel font
     """
 
     def __init__(self, default_font=None):  # by default will use the monospaced 8x8 font
