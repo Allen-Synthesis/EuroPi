@@ -10,6 +10,8 @@ from europi import (
     OLED_HEIGHT,
     OLED_WIDTH,
     oled,
+    CHAR_HEIGHT,
+    CHAR_WIDTH
 )
 from europi_script import EuroPiScript
 from ui import Menu
