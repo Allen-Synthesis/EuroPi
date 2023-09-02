@@ -5,7 +5,7 @@ The `CustomFontWriter` class is adapted from https://github.com/peterhinch/micro
 
 A child class to the one found in `europi.py`, named `Display`, is created and named `CustomFontDisplay`.  
 
-To use custom/large fonts, oled must be redefined as a `CustomFontDisplay` rather than a plain `Display`, but this is done for you as soon as you import `custom_font.py`.
+To use custom/large fonts, `oled` must be imported from `custom_font` instead of from `europi`, or if you've already used `from europi import *` then it must be imported from `custom_font` afterwards.
 
 How to generate custom fonts :
 ------------------------------
@@ -21,14 +21,14 @@ The commands are :
     python3 font_to_py.py FreeSans.ttf 20 freesans20.py -x
     python3 font_to_py.py FreeSans.ttf 24 freesans24.py -x
 
-The -x option is important to have the font horizontally mapped.
+The `-x` option is important to have the font horizontally mapped.
 
-How to use the CustomFontWriter class :
+How to use the `CustomFontWriter` class :
 ---------------------------------------
 
 See `software/contrib/custom_font_demo.py` for usage examples.
 
-To test the CustomFontWriter in your code you can simply replace :
+To test the `CustomFontWriter` in your code you can simply replace :
 
     from europi import oled
 
@@ -36,13 +36,13 @@ with :
 
     from experimental.custom_font import oled
 
-By default, custom_font.Display will use the 8x8 pixel monospaced font.
+By default, `custom_font.Display` will use the 8x8 pixel monospaced font.
 
 To use custom fonts, import them : 
 
     from experimental import freesans20
 
-and pass them as the font argument to any custom_font.Display methods :
+and pass them as the font argument to any `custom_font.Display` methods :
 
     oled.centre_text("20", font=freesans20)
 
