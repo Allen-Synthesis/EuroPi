@@ -203,6 +203,17 @@ class KnobBank:
             # if the name isn't found, just silently trap the exception
             pass
 
+    def __getitem__(self, name):
+        """Get the LockableKnob in this bank with the given name
+
+        @param name  The name of the knob to return, or None if the name isn't found
+        """
+        try:
+            index = self.names.index(name)
+            return self.knobs[index]
+        except ValueError:
+            return None
+
     class Builder:
         """A convenient interface for creating a :class:`KnobBank` with consistent initial state."""
 
