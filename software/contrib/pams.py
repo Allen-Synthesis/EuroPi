@@ -516,7 +516,7 @@ class MasterClock:
             # Turn all other channels off so we don't leave hot wires
             for ch in self.channels:
                 if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
-                    ch.cv_out.voltage(MAX_OUTPUT_VOLTAGE * ch.amplitude / 100.0)
+                    ch.cv_out.voltage(MAX_OUTPUT_VOLTAGE * ch.amplitude.get_value() / 100.0)
                 else:
                     ch.cv_out.voltage(0.0)
             time.sleep(0.01)   # time.sleep works in SECONDS not ms
