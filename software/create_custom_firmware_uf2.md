@@ -26,7 +26,7 @@ $ sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essenti
 
 # get micropython source from github repo
 # choose latest stable version instead of the master branch
-$ git clone -b v1.19.1 https://github.com/micropython/micropython.git
+$ git clone -b v1.20.0 https://github.com/micropython/micropython.git
 
 # fetch submodules
 $ cd micropython
