@@ -172,6 +172,9 @@ class GatesAndTriggers(EuroPiScript):
             cb_falling=lambda: self.channel2.on_fall)
 
     def main(self):
+        # blank the screen since it's not needed
+        oled.fill(0)
+        oled.show()
         while(True):
             self.ain_wrapper.update()
             self.channel1.tick()
