@@ -169,7 +169,7 @@ class GatesAndTriggers(EuroPiScript):
 
         self.ain_wrapper = A2D_Wrapper(ain, \
             cb_rising=lambda: self.channel2.on_rise(), \
-            cb_falling=lambda: self.channel2.on_fall)
+            cb_falling=lambda: self.channel2.on_fall())
 
     def main(self):
         # blank the screen since it's not needed
