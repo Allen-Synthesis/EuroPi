@@ -43,6 +43,13 @@ Euclidean rhythm generator. Each channel can generate an independent euclidean r
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: sequencer, gates, triggers, euclidean</i>
 
+### Gates and Triggers \[ [documentation](/software/contrib/gates_and_triggers.md) | [script](/software/contrib/gates_and_triggers.py) \]
+Convert incoming triggers to gates or gates to triggers.  Buttons allow manually creating gates/triggers, knobs control
+the duration of the output signals.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: gates, triggers</i>
+
 ### Hamlet \[ [documentation](/software/contrib/hamlet.md) | [script](/software/contrib/hamlet.py) \]
 A variation of the Consequencer script specifically geared towards driving voices
 
