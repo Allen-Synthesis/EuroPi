@@ -83,6 +83,20 @@ CHAR_HEIGHT = 8
 HIGH = 1
 LOW = 0
 
+# Pin assignments
+PIN_DIN = 22
+PIN_AIN = 26
+PIN_K1 = 27
+PIN_K2 = 28
+PIN_B1 = 4
+PIN_B2 = 5
+PIN_CV1 = 21
+PIN_CV2 = 20
+PIN_CV3 = 16
+PIN_CV4 = 17
+PIN_CV5 = 18
+PIN_CV6 = 19
+PIN_USB_CONNECTED = 24
 
 # Helper functions.
 
@@ -577,23 +591,23 @@ class Output:
 europi_config = load_europi_config()
 
 # Define all the I/O using the appropriate class and with the pins used
-din = DigitalInput(22)
-ain = AnalogueInput(26)
-k1 = Knob(27)
-k2 = Knob(28)
-b1 = Button(4)
-b2 = Button(5)
+din = DigitalInput(PIN_DIN)
+ain = AnalogueInput(PIN_AIN)
+k1 = Knob(PIN_K1)
+k2 = Knob(PIN_K2)
+b1 = Button(PIN_B1)
+b2 = Button(PIN_B2)
 
 oled = Display(0, 1)
-cv1 = Output(21)
-cv2 = Output(20)
-cv3 = Output(16)
-cv4 = Output(17)
-cv5 = Output(18)
-cv6 = Output(19)
+cv1 = Output(PIN_CV1)
+cv2 = Output(PIN_CV2)
+cv3 = Output(PIN_CV3)
+cv4 = Output(PIN_CV4)
+cv5 = Output(PIN_CV5)
+cv6 = Output(PIN_CV6)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
-usb_connected = DigitalReader(24, 0)
+usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
 
 # Overclock the Pico for improved performance.
 freq(europi_config["cpu_freq"])
