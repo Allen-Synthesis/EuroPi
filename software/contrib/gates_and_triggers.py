@@ -148,6 +148,9 @@ class GatesAndTriggers(EuroPiScript):
         return 199 * sqrt(x) + 10
 
     def main(self):
+        # blank the screen since it's not needed
+        oled.fill(0)
+        oled.show()
         while(True):
             self.tick()
 
