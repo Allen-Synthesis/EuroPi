@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Convert incoming triggers to gates or gates to triggers
 
-Buttons allow manually creating gates/triggers, knobs control the duration of the output signals.
+Buttons allow manually creating gates/triggers, knobs control the duration of the output signals.  Both AIN and DIN
+are used as digital inputs for incoming gates/triggers.
+
+@author Chris Iverach-Brereton <ve4cib@gmail.com>
+@year   2023
 """
 
 import time
@@ -130,10 +134,10 @@ class GtWorker:
     def quadratic_knob(self, x):
         """Some magic math to give us a quadratic response on the knob percentage
 
-        This gives us 10ms @ 0% and 1000ms @ 100% with greater precision at the higher end
+        This gives us 10ms @ 0% and 2000ms @ 100% with greater precision at the higher end
         where the differences will be more noticeable
         """
-        return 90 * sqrt(x) + 10
+        return 199 * sqrt(x) + 10
 
 
 class GatesAndTriggers(EuroPiScript):

@@ -20,6 +20,6 @@ module.  The program treats `din` and `ain` both as digital inputs and outputs t
 | `cv5`         | Trigger output for the rising edge of `ain`/`b2`                  |
 | `cv6`         | Trigger output for the falling edge of `ain`/`b2`                 |
 
-The gate duration goes from 10ms to 1s, depending on the position of `k1`/`k2`.  The knob response is non-linear, so
+The gate duration goes from 10ms to 2s, depending on the position of `k1`/`k2`.  The knob response is non-linear, so
 there's more precision at the longer-end of the range.  Trigger outputs are always 10ms long.  All output signals are
 5V.
