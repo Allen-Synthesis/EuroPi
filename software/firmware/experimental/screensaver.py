@@ -27,6 +27,12 @@ class Screensaver:
     LOGO_WIDTH = 16
     LOGO_HEIGHT = 16
 
+    ## Standard duration before we activate the screensaver
+    ACTIVATE_TIMEOUT_MS = 1000 * 60 * 5
+
+    ## Standard duration before we blank the screen
+    BLANK_TIMEOUT_MS = 1000 * 60 * 20
+
     def draw(self, force=False):
         """Draw the logo to a random position on the screen
 

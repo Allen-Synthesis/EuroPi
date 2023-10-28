@@ -14,6 +14,8 @@ from europi import *
 from europi_script import EuroPiScript
 from math import sqrt
 
+from experimental.screensaver import Screensaver
+
 ## All digital output signals are 5V
 OUTPUT_VOLTAGE = 5.0
 
@@ -24,10 +26,15 @@ class GatesAndTriggers(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        self.on_incoming_rise_start_time = 0
-        self.on_incoming_fall_start_time = 0
-        self.on_gate_fall_start_time = 0
-        self.on_toggle_fall_start_time = 0
+        self.ss = Screensaver()
+
+        now = time.ticks_ms()
+
+        self.on_incoming_rise_start_time = now
+        self.on_incoming_fall_start_time = now
+        self.on_gate_fall_start_time = now
+        self.on_toggle_fall_start_time = now
+        self.last_interaction_time = now
 
         # assign each of the CV outputs to specific duties
         self.gate_out = cv1
@@ -55,6 +62,7 @@ class GatesAndTriggers(EuroPiScript):
         @b1.handler
         def on_b1_press():
             self.on_rise()
+            self.last_interaction_time = time.ticks_ms()
 
         @b1.handler_falling
         def on_b1_release():
@@ -63,6 +71,7 @@ class GatesAndTriggers(EuroPiScript):
         @b2.handler
         def on_b2_press():
             self.on_toggle()
+            self.last_interaction_time = time.ticks_ms()
 
     def on_rise(self):
         """Handle the rising edge of the input signal
@@ -96,10 +105,10 @@ class GatesAndTriggers(EuroPiScript):
         """
         now = time.ticks_ms()
         knob_lvl = k1.percent()*100
-        cv_lvl = ain.percent() * k2.percent() * 2 * 100
-        gate_duration = self.quadratic_knob(cv_lvl + knob_lvl)
+        cv_lvl = ain.percent() * (k2.percent() * 2 - 1)
+        self.gate_duration = max(self.quadratic_knob(knob_lvl) + cv_lvl * 2000, TRIGGER_DURATION_MS)
 
-        if self.gate_on and time.ticks_diff(now, self.on_incoming_rise_start_time) > gate_duration:
+        if self.gate_on and time.ticks_diff(now, self.on_incoming_rise_start_time) > self.gate_duration:
             self.gate_on = False
             self.gate_out.voltage(0)
             self.gate_fall_out.voltage(OUTPUT_VOLTAGE)
@@ -128,11 +137,18 @@ class GatesAndTriggers(EuroPiScript):
         return 199 * sqrt(x) + 10
 
     def main(self):
-        # blank the screen since it's not needed
-        oled.fill(0)
-        oled.show()
         while(True):
             self.tick()
+            now = time.ticks_ms()
+
+            if time.ticks_diff(now, self.last_interaction_time) > self.ss.BLANK_TIMEOUT_MS:
+                self.ss.draw_blank()
+            elif time.ticks_diff(now, self.last_interaction_time) > self.ss.ACTIVATE_TIMEOUT_MS:
+                self.ss.draw()
+            else:
+                oled.fill(0)
+                oled.text(f"Gate: {self.gate_duration:0.0f}ms", 0, 1)
+                oled.show()
 
 
 if __name__=="__main__":

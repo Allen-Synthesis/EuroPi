@@ -212,12 +212,6 @@ STATUS_IMG_PAUSE = bytearray(b'\x00\x00y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y
 STATUS_IMG_WIDTH = 12
 STATUS_IMG_HEIGHT = 12
 
-## Duration before we activate the screensaver
-SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 5
-
-## Duration before we blank the screen
-BLANK_TIMEOUT_MS = 1000 * 60 * 20
-
 ## Do we use gate input on din to turn the module on/off
 DIN_MODE_GATE = 'Gate'
 
@@ -1329,7 +1323,7 @@ class PamsWorkout(EuroPiScript):
             the actual button click/long-press
             """
             now = time.ticks_ms()
-            if time.ticks_diff(now, self.last_interaction_time) <= SCREENSAVER_TIMEOUT_MS:
+            if time.ticks_diff(now, self.last_interaction_time) <= self.screensaver.ACTIVATE_TIMEOUT_MS:
                 if time.ticks_diff(now, b2.last_pressed()) > LONG_PRESS_MS:
                     # long press
                     # change between the main & sub menus
@@ -1398,9 +1392,9 @@ class PamsWorkout(EuroPiScript):
                 cv.update()
 
             elapsed_time = time.ticks_diff(now, self.last_interaction_time)
-            if elapsed_time > BLANK_TIMEOUT_MS:
+            if elapsed_time > self.screensaver.BLANK_TIMEOUT_MS:
                 self.screensaver.draw_blank()
-            elif elapsed_time > SCREENSAVER_TIMEOUT_MS:
+            elif elapsed_time > self.screensaver.ACTIVATE_TIMEOUT_MS:
                 self.screensaver.draw()
             else:
                 oled.fill(0)

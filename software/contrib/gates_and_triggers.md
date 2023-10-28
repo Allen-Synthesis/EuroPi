@@ -13,7 +13,7 @@ rising/falling edge triggers.
 | `b1`          | Manual input equivalent to `din`                                  |
 | `b2`          | Manual toggle input (see below)                                   |
 | `k1`          | Primary gate duration control                                     |
-| `k2`          | Attenuator for CV input on `ain`                                  |
+| `k2`          | Attenuverter for CV input on `ain`                                |
 | `cv1`         | Gate output for `din`/`b1`                                        |
 | `cv2`         | Trigger output for the rising edge of `din`/`b1`                  |
 | `cv3`         | Trigger output for the falling edge of `din`/`b1`                 |
@@ -24,7 +24,7 @@ rising/falling edge triggers.
 The gate output on `cv1` has a normal range of 10ms to 2s, depending on the position of `k1`.  CV input to `ain` can
 increase this duration.
 
-`ain` expects an input range of 0-10V.  `k2` acts as an attenuator for this input signal.
+`ain` expects an input range of 0-10V.  `k2` acts as an attenuverter for this input signal.
 
 `cv5` and `cv6` change state every time an incoming gate/trigger starts on `din` or when `b1` or `b2` is pressed.
 Pressing `b2` will ONLY change the state of `cv5` and `cv6`, while `b1` will also output gate and trigger signals on
