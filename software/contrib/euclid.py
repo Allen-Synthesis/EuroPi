@@ -18,9 +18,6 @@ from experimental.screensaver import Screensaver
 import random
 import time
 
-## Duration before we blank the screen
-SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
-
 
 class EuclidGenerator:
     """Generates the euclidean rhythm for a single output
@@ -383,7 +380,7 @@ class EuclideanRhythms(EuroPiScript):
         while True:
             # check if we've been idle for long enough to trigger the screensaver
             now = time.ticks_ms()
-            if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
+            if time.ticks_diff(now, self.last_interaction_time) > self.screensaver.ACTIVATE_TIMEOUT_MS:
                 self.active_screen = self.screensaver
 
             self.active_screen.draw()
