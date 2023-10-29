@@ -53,6 +53,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Seq. Switch",       "contrib.sequential_switch.SequentialSwitch"],
     ["Smooth Rnd Volts",  "contrib.smooth_random_voltages.SmoothRandomVoltages"],
     ["StrangeAttractor",  "contrib.strange_attractor.StrangeAttractor"],
+    ["Traffic",           "contrib.traffic.Traffic"],
     ["Turing Machine",    "contrib.turing_machine.EuroPiTuringMachine"],
 
     ["_Calibrate",        "calibrate.Calibrate"],              # this one should always be second to last!
