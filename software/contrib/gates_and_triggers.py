@@ -154,7 +154,7 @@ class GatesAndTriggers(EuroPiScript):
             self.tick()
 
             ssoled.fill(0)
-            ssoled.text(f"Gate: {self.gate_duration:0.0f}ms", 0, 1)
+            ssoled.centre_text(f"Gate: {self.gate_duration:0.0f}ms")
             ssoled.show()
 
 
