@@ -41,7 +41,7 @@ class HelloWorld(EuroPiScript):
 
     def main(self):
         while True:
-            oled.centre_text(f"Hello world\n{self.counter}")
+            oled.centre_text(f"Hello world\n{self.counter}", auto_show=True)
             sleep(1)
 
 if __name__ == "__main__":
