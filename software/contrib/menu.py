@@ -31,7 +31,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["CVecorder",         "contrib.cvecorder.CVecorder"],
     ["Diagnostic",        "contrib.diagnostic.Diagnostic"],
     ["EnvelopeGen",       "contrib.envelope_generator.EnvelopeGenerator"],
-    #["Euclid",            "contrib.euclid.EuclideanRhythms"],
+    ["Euclid",            "contrib.euclid.EuclideanRhythms"],
     ["G & T",             "contrib.gates_and_triggers.GatesAndTriggers"],
     ["Hamlet",            "contrib.hamlet.Hamlet"],
     ["HarmonicLFOs",      "contrib.harmonic_lfos.HarmonicLFOs"],
