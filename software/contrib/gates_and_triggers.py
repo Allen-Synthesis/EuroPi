@@ -111,7 +111,7 @@ class GatesAndTriggers(EuroPiScript):
         k2_percent = int(k2.percent() * 100)
 
         # if the user moved the knobs by more than 1% deactivate the screensaver
-        if abs(self.k1_percent - k1_percent) > 1 or abs(self.k2_percent - k2_percent) > 1:
+        if abs(self.k1_percent - k1_percent) > 0 or abs(self.k2_percent - k2_percent) > 0:
             ssoled.notify_user_interaction()
 
         knob_lvl = k1_percent
