@@ -5,7 +5,7 @@
 """
 
 import random
-import utime as time
+import utime
 
 from europi import *
 
@@ -45,7 +45,7 @@ class Screensaver:
         """
         LOGO_UPDATE_INTERVAL = 2000
 
-        ms = time.ticks_ms()
+        ms = utime.ticks_ms()
         if force or ms % LOGO_UPDATE_INTERVAL == 0:
             x = random.randint(0, OLED_WIDTH - self.LOGO_WIDTH)
             y = random.randint(0, OLED_HEIGHT - self.LOGO_HEIGHT)
@@ -84,7 +84,7 @@ class OledWithScreensaver:
         self.show_screensaver = False
         self.show_blank = False
 
-        self.last_user_interaction_at = time.ticks_ms()
+        self.last_user_interaction_at = utime.ticks_ms()
 
     def is_screenaver(self):
         """Is the screensaver currently showing?"""
@@ -98,13 +98,13 @@ class OledWithScreensaver:
         """Notifies the screensaver subsystem that the user has physically interacted with the module
         and that the screensaver should defer/shutdown as appropriate
         """
-        self.last_user_interaction_at = time.ticks_ms()
+        self.last_user_interaction_at = utime.ticks_ms()
 
     def show(self):
-        now = time.ticks_ms()
+        now = utime.ticks_ms()
         if (
             self.enable_blank
-            and time.ticks_diff(now, self.last_user_interaction_at)
+            and utime.ticks_diff(now, self.last_user_interaction_at)
             > self.screensaver.BLANK_TIMEOUT_MS
         ):
             self.show_blank = True
@@ -112,7 +112,7 @@ class OledWithScreensaver:
             self.screensaver.draw_blank()
         elif (
             self.enable_screensaver
-            and time.ticks_diff(now, self.last_user_interaction_at)
+            and utime.ticks_diff(now, self.last_user_interaction_at)
             > self.screensaver.ACTIVATE_TIMEOUT_MS
         ):
             self.show_screensaver = True
