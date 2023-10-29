@@ -87,13 +87,11 @@ class OledWithScreensaver:
         self.last_user_interaction_at = time.ticks_ms()
 
     def is_screenaver(self):
-        """Is the screensaver currently showing?
-        """
+        """Is the screensaver currently showing?"""
         return self.show_screensaver
 
     def is_blank(self):
-        """Is the screen blanked due to inactivity?
-        """
+        """Is the screen blanked due to inactivity?"""
         return self.show_blank
 
     def notify_user_interaction(self):
@@ -104,11 +102,17 @@ class OledWithScreensaver:
 
     def show(self):
         now = time.ticks_ms()
-        if self.enable_blank and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.BLANK_TIMEOUT_MS:
+        if (
+            self.enable_blank
+            and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.BLANK_TIMEOUT_MS
+        ):
             self.show_blank = True
             self.show_screensaver = False
             self.screensaver.draw_blank()
-        elif self.enable_screensaver and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.ACTIVATE_TIMEOUT_MS:
+        elif (
+            self.enable_screensaver
+            and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.ACTIVATE_TIMEOUT_MS
+        ):
             self.show_screensaver = True
             self.show_blank = False
             self.screensaver.draw()
