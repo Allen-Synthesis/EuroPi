@@ -46,6 +46,9 @@ class GatesAndTriggers(EuroPiScript):
         self.gate_on = False
         self.toggle_on = False
 
+        self.k1_percent = int(k1.percent() * 100)
+        self.k2_percent = int(k2.percent() * 100)
+
         # turn off all outputs initially
         for cv in cvs:
             cv.voltage(0)
@@ -103,8 +106,16 @@ class GatesAndTriggers(EuroPiScript):
         """Advance the clock and set the outputs high/low as needed
         """
         now = time.ticks_ms()
-        knob_lvl = k1.percent()*100
-        cv_lvl = ain.percent() * (k2.percent() * 2 - 1)
+
+        k1_percent = int(k1.percent() * 100)
+        k2_percent = int(k2.percent() * 100)
+
+        # if the user moved the knobs by more than 1% deactivate the screensaver
+        if abs(self.k1_percent - k1_percent) > 1 or abs(self.k2_percent - k2_percent) > 1:
+            ssoled.notify_user_interaction()
+
+        knob_lvl = k1_percent
+        cv_lvl = ain.percent() * (k2_percent * 0.02 - 1)
         self.gate_duration = max(self.quadratic_knob(knob_lvl) + cv_lvl * 2000, TRIGGER_DURATION_MS)
 
         if self.gate_on and time.ticks_diff(now, self.on_incoming_rise_start_time) > self.gate_duration:
@@ -124,6 +135,9 @@ class GatesAndTriggers(EuroPiScript):
 
         if time.ticks_diff(now, self.on_toggle_fall_start_time) > TRIGGER_DURATION_MS:
             self.toggle_fall_out.voltage(0)
+
+        self.k1_percent = k1_percent
+        self.k2_percent = k2_percent
 
     def quadratic_knob(self, x):
         """Some magic math to give us a quadratic response on the knob percentage

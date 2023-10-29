@@ -7,7 +7,7 @@
 import random
 import time
 
-from europi import oled, OLED_WIDTH, OLED_HEIGHT
+from europi import *
 from framebuf import FrameBuffer
 
 
@@ -120,25 +120,25 @@ class OledWithScreensaver:
     def clear(self):
         oled.clear()
 
-    def text(self, string, x, y, color):
+    def text(self, string, x, y, color=1):
         oled.text(string, x, y, color)
 
     def centre_text(self, text):
         oled.centre_text(text)
 
-    def line(self, x1, y1, x2, y2, color):
+    def line(self, x1, y1, x2, y2, color=1):
         oled.line(x1, y1, x2, y2, color)
 
-    def hline(self, x, y, length, color):
+    def hline(self, x, y, length, color=1):
         oled.hline(x, y, length, color)
 
-    def vline(self, x, y, length, color):
+    def vline(self, x, y, length, color=1):
         oled.vline(x, y, length, color)
 
-    def rect(self, x, y, width, height, color):
+    def rect(self, x, y, width, height, color=1):
         oled.rect(x, y, width, height, color)
 
-    def fill_rect(self, x, y, width, height, color):
+    def fill_rect(self, x, y, width, height, color=1):
         oled.fill_rect(x, y, width, height, color)
 
     def blit(self, buffer, x, y):
@@ -147,7 +147,7 @@ class OledWithScreensaver:
     def scroll(self, x, y):
         oled.scroll(x, y)
 
-    def invert(self, color):
+    def invert(self, color=1):
         oled.invert(color)
 
     def contrast(self, contrast):
