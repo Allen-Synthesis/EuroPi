@@ -519,7 +519,7 @@ class Display(SSD1306_I2C):
         self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
         self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
 
-    def centre_text(self, text, clear_first=True, auto_show=False):
+    def centre_text(self, text, clear_first=True, auto_show=True):
         """Split the provided text across 3 lines of display.
 
         @param text  The text to display, containing at most 3 lines
