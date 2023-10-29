@@ -9,13 +9,14 @@ This script contains code released under the MIT license, as
 noted below
 """
 
+import random
+import time
+
 from europi import *
 from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
 from experimental.screensaver import OledWithScreensaver
-
-import random
 
 ssoled = OledWithScreensaver()
 
