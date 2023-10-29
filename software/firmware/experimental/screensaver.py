@@ -5,7 +5,7 @@
 """
 
 import random
-import time
+import utime as time
 
 from europi import *
 
