@@ -10,7 +10,6 @@ noted below
 """
 
 import random
-import time
 
 from europi import *
 from europi_script import EuroPiScript
