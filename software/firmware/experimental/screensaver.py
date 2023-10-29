@@ -4,9 +4,11 @@
 @year   2023
 """
 
-from europi import *
 import random
 import time
+
+from europi import oled, OLED_WIDTH, OLED_HEIGHT
+from framebuf import FrameBuffer
 
 
 class Screensaver:
@@ -58,3 +60,95 @@ class Screensaver:
         """Blank the screen completely"""
         oled.fill(0)
         oled.show()
+
+
+class OledWithScreensaver:
+    """A wrapper for europi.oled that provides automatic screensaver & blank if enabled
+
+    The notify_user_interaction() method should be called in the ISR for any events that should interrupt or
+    defer the screensaver/blank
+
+    Set .enable_screensaver or .enable_blank to False to disable the screensaver/blanking activation completely
+    (though if you do that, just use europi.oled instead of this class)
+    """
+
+    def __init__(self, enable_screensaver=True, enable_blank=True):
+        """Constructor
+
+        @param enable_screensaver  If true, the screensaver will activate when needed
+        @param enable_blank        If true, the screen will blank after the screensaver has been active for a while
+        """
+        self.screensaver = Screensaver()
+        self.enable_screensaver = enable_screensaver
+        self.enable_blank = enable_blank
+
+        self.last_user_interaction_at = time.ticks_ms()
+
+    def is_screenaver(self):
+        """Is the screensaver currently showing?
+        """
+        now = time.ticks_ms()
+        return self.enable_screensaver and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.ACTIVATE_TIMEOUT_MS
+
+    def is_blank(self):
+        """Is the screen blanked due to inactivity?
+        """
+        now = time.ticks_ms()
+        return self.enable_blank and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.BLANK_TIMEOUT_MS
+
+    def notify_user_interaction(self):
+        """Notifies the screensaver subsystem that the user has physically interacted with the module
+        and that the screensaver should defer/shutdown as appropriate
+        """
+        self.last_user_interaction_at = time.ticks_ms()
+
+    def show(self):
+        now = time.ticks_ms()
+        if self.enable_blank and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.BLANK_TIMEOUT_MS:
+            self.screensaver.draw_blank()
+        elif self.enable_screensaver and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.ACTIVATE_TIMEOUT_MS:
+            self.screensaver.draw()
+        else:
+            oled.show()
+
+    # The following are just wrappers for the functions in the Display class to allow 1:1 access
+    # See europi.Display for documentation details
+
+    def fill(self, color):
+        oled.fill(color)
+
+    def clear(self):
+        oled.clear()
+
+    def text(self, string, x, y, color):
+        oled.text(string, x, y, color)
+
+    def centre_text(self, text):
+        oled.centre_text(text)
+
+    def line(self, x1, y1, x2, y2, color):
+        oled.line(x1, y1, x2, y2, color)
+
+    def hline(self, x, y, length, color):
+        oled.hline(x, y, length, color)
+
+    def vline(self, x, y, length, color):
+        oled.vline(x, y, length, color)
+
+    def rect(self, x, y, width, height, color):
+        oled.rect(x, y, width, height, color)
+
+    def fill_rect(self, x, y, width, height, color):
+        oled.fill_rect(x, y, width, height, color)
+
+    def blit(self, buffer, x, y):
+        oled.blit(buffer, x, y)
+
+    def scroll(self, x, y):
+        oled.scroll(x, y)
+
+    def invert(self, color):
+        oled.invert(color)
+
+    def contrast(self, contrast):
+        oled.contrast(contrast)

@@ -14,7 +14,9 @@ from europi import *
 from europi_script import EuroPiScript
 from math import sqrt
 
-from experimental.screensaver import Screensaver
+from experimental.screensaver import OledWithScreensaver
+
+ssoled = OledWithScreensaver()
 
 ## All digital output signals are 5V
 OUTPUT_VOLTAGE = 5.0
@@ -26,15 +28,12 @@ class GatesAndTriggers(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        self.ss = Screensaver()
-
         now = time.ticks_ms()
 
         self.on_incoming_rise_start_time = now
         self.on_incoming_fall_start_time = now
         self.on_gate_fall_start_time = now
         self.on_toggle_fall_start_time = now
-        self.last_interaction_time = now
 
         # assign each of the CV outputs to specific duties
         self.gate_out = cv1
@@ -62,7 +61,7 @@ class GatesAndTriggers(EuroPiScript):
         @b1.handler
         def on_b1_press():
             self.on_rise()
-            self.last_interaction_time = time.ticks_ms()
+            ssoled.notify_user_interaction()
 
         @b1.handler_falling
         def on_b1_release():
@@ -71,7 +70,7 @@ class GatesAndTriggers(EuroPiScript):
         @b2.handler
         def on_b2_press():
             self.on_toggle()
-            self.last_interaction_time = time.ticks_ms()
+            ssoled.notify_user_interaction()
 
     def on_rise(self):
         """Handle the rising edge of the input signal
@@ -139,16 +138,10 @@ class GatesAndTriggers(EuroPiScript):
     def main(self):
         while(True):
             self.tick()
-            now = time.ticks_ms()
 
-            if time.ticks_diff(now, self.last_interaction_time) > self.ss.BLANK_TIMEOUT_MS:
-                self.ss.draw_blank()
-            elif time.ticks_diff(now, self.last_interaction_time) > self.ss.ACTIVATE_TIMEOUT_MS:
-                self.ss.draw()
-            else:
-                oled.fill(0)
-                oled.text(f"Gate: {self.gate_duration:0.0f}ms", 0, 1)
-                oled.show()
+            ssoled.fill(0)
+            ssoled.text(f"Gate: {self.gate_duration:0.0f}ms", 0, 1)
+            ssoled.show()
 
 
 if __name__=="__main__":
