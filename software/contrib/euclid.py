@@ -16,7 +16,6 @@ from experimental.euclid import generate_euclidean_pattern
 from experimental.screensaver import OledWithScreensaver
 
 import random
-import time
 
 ssoled = OledWithScreensaver()
 

@@ -104,14 +104,16 @@ class OledWithScreensaver:
         now = time.ticks_ms()
         if (
             self.enable_blank
-            and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.BLANK_TIMEOUT_MS
+            and time.ticks_diff(now, self.last_user_interaction_at)
+            > self.screensaver.BLANK_TIMEOUT_MS
         ):
             self.show_blank = True
             self.show_screensaver = False
             self.screensaver.draw_blank()
         elif (
             self.enable_screensaver
-            and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.ACTIVATE_TIMEOUT_MS
+            and time.ticks_diff(now, self.last_user_interaction_at)
+            > self.screensaver.ACTIVATE_TIMEOUT_MS
         ):
             self.show_screensaver = True
             self.show_blank = False
