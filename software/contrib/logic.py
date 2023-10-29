@@ -77,7 +77,7 @@ class Logic(EuroPiScript):
                 x_xnor_y
             )
 
-            ssoled.centre_text(display_txt, auto_show=True)
+            ssoled.centre_text(display_txt)
 
 if __name__ == "__main__":
     Logic().main()

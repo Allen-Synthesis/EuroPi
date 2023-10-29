@@ -278,7 +278,7 @@ class PolySquare(EuroPiScript):
     # Draws the default UI
     def draw_main_ui(self):
         oled.centre_text(self.modes[self.current_mode].name +
-            "\nmax. detune: " + str(self.max_detune), auto_show=True)
+            "\nmax. detune: " + str(self.max_detune))
 
     def numbers_are_close(self, current, other, allowed_error):
         if current == None or other == None:
