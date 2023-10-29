@@ -301,9 +301,7 @@ class EuclideanRhythms(EuroPiScript):
             """
             ssoled.notify_user_interaction()
 
-            if self.active_screen == self.screensaver:
-                self.active_screen = self.channel_menu
-            elif self.active_screen == self.channel_menu:
+            if self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.settings_menu.apply_setting()
@@ -315,9 +313,7 @@ class EuclideanRhythms(EuroPiScript):
             """
             ssoled.notify_user_interaction()
 
-            if self.active_screen == self.screensaver:
-                self.active_screen = self.channel_menu
-            elif self.active_screen == self.channel_menu:
+            if self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.activate_channel_menu()
