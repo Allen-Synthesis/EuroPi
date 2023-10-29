@@ -155,7 +155,6 @@ class GatesAndTriggers(EuroPiScript):
 
             ssoled.fill(0)
             ssoled.centre_text(f"Gate: {self.gate_duration:0.0f}ms")
-            ssoled.show()
 
 
 if __name__=="__main__":

@@ -25,17 +25,17 @@ class Calibrate(EuroPiScript):
         def wait_for_voltage(voltage):
             wait_for_b1(0)
             if voltage != 0:
-                oled.centre_text(f"Plug in {voltage}V\n\nDone: Button 1", auto_show=True)
+                oled.centre_text(f"Plug in {voltage}V\n\nDone: Button 1")
                 wait_for_b1(1)
             else:
-                oled.centre_text(f"Unplug all\n\nDone: Button 1", auto_show=True)
+                oled.centre_text(f"Unplug all\n\nDone: Button 1")
                 wait_for_b1(1)
-            oled.centre_text("Calibrating...", auto_show=True)
+            oled.centre_text("Calibrating...")
             sleep(1.5)
             return sample()
 
         def text_wait(text, wait):
-            oled.centre_text(text, auto_show=True)
+            oled.centre_text(text)
             sleep(wait)
 
         def fill_show(colour):
@@ -63,13 +63,13 @@ class Calibrate(EuroPiScript):
         # Calibration start
 
         if usb.value() == 1:
-            oled.centre_text("Make sure rack\npower is on\nDone: Button 1", auto_show=True)
+            oled.centre_text("Make sure rack\npower is on\nDone: Button 1")
             wait_for_b1(1)
             wait_for_b1(0)
 
         text_wait("Calibration\nMode", 3)
 
-        oled.centre_text("Choose Process\n\n1:LOW    2:HIGH", auto_show=True)
+        oled.centre_text("Choose Process\n\n1:LOW    2:HIGH")
         while True:
             if b1.value() == 1:
                 chosen_process = 1
@@ -94,9 +94,9 @@ class Calibrate(EuroPiScript):
 
         # Output Calibration
 
-        oled.centre_text(f"Plug CV1 into\nanalogue in\nDone: Button 1", auto_show=True)
+        oled.centre_text(f"Plug CV1 into\nanalogue in\nDone: Button 1")
         wait_for_b1(1)
-        oled.centre_text("Calibrating...", auto_show=True)
+        oled.centre_text("Calibrating...")
 
         if chosen_process == 1:
             new_readings = [readings[0]]
@@ -117,13 +117,13 @@ class Calibrate(EuroPiScript):
                 duty += 10
                 reading = sample()
             output_duties.append(duty)
-            oled.centre_text(f"Calibrating...\n{index+1}V", auto_show=True)
+            oled.centre_text(f"Calibrating...\n{index+1}V")
 
         with open(f"lib/calibration_values.py", "a+") as file:
             values = ", ".join(map(str, output_duties))
             file.write(f"\nOUTPUT_CALIBRATION_VALUES=[{values}]")
 
-        oled.centre_text("Calibration\nComplete!", auto_show=True)
+        oled.centre_text("Calibration\nComplete!")
 
 
 if __name__ == "__main__":

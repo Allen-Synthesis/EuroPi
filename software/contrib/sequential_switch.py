@@ -85,7 +85,7 @@ class SwitchScreen:
 
                 switches = switches + "\n"
 
-            oled.centre_text(switches)
+            oled.centre_text(switches, auto_show=False)
 
         oled.show()
 

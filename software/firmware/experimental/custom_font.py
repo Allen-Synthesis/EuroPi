@@ -107,7 +107,7 @@ class CustomFontDisplay(BasicDisplay):
         else:
             super().text(s, x, y, c)
 
-    def centre_text(self, text, clear_first=True, auto_show=False, font=None):
+    def centre_text(self, text, clear_first=True, auto_show=True, font=None):
         """Split the provided text across 3 lines of display."""
 
         # Default font is 8x8 pixel monospaced font which can be split to a
@@ -135,7 +135,7 @@ class CustomFontDisplay(BasicDisplay):
                 self.text(content, x_offset, y_offset, font=font)
 
         else:
-            super().centre_text(text)
+            super().centre_text(text, clear_first=clear_first, auto_show=auto_show)
 
         if auto_show:
             self.show()

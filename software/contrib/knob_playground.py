@@ -63,7 +63,7 @@ class KnobPlayground(EuroPiScript):
                 + f"{p2} {int(round(self.kb1.p2.percent(), 2)*100):3}%  {p4} {self.kb2.p4.choice(choice_p4):5}\n"
                 + f"{p3} {self.kb1.p3.read_position():4}  {p5} {self.kb2.p5.choice(choice_p5):5}"
             )
-            oled.centre_text(text, auto_show=True)
+            oled.centre_text(text)
 
 
 if __name__ == "__main__":

@@ -89,7 +89,6 @@ class BootloaderMenu(EuroPiScript):
         """
         oled.fill(0)
         oled.centre_text(f"--{title}--\n{message}")
-        oled.show()
 
         if duration > 0:
             time.sleep(duration)

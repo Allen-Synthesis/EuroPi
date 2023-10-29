@@ -135,7 +135,7 @@ class OledWithScreensaver:
     def text(self, string, x, y, color=1):
         oled.text(string, x, y, color)
 
-    def centre_text(self, text, clear_first=True, auto_show=False):
+    def centre_text(self, text, clear_first=True, auto_show=True):
         oled.centre_text(text, clear_first=clear_first, auto_show=False)
         if auto_show:
             self.show()
