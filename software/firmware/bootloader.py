@@ -88,7 +88,8 @@ class BootloaderMenu(EuroPiScript):
         @param duration The number of seconds the message should show. If negative the message is shown forever
         """
         oled.fill(0)
-        oled.centre_text(f"--{title}--\n{message}", auto_show=True)
+        oled.centre_text(f"--{title}--\n{message}")
+        oled.show()
 
         if duration > 0:
             time.sleep(duration)
