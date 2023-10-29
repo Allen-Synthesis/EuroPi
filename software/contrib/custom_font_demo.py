@@ -33,15 +33,15 @@ class CustomFontDemo(EuroPiScript):
     def update_demo(self):
         self.demo = (self.demo + 1) % 11
         if self.demo == 0:
-            oled.centre_text("size 8")
+            oled.centre_text("size 8", auto_show=True)
         elif self.demo == 1:
-            oled.centre_text("size 14", font=freesans14)
+            oled.centre_text("size 14", font=freesans14, auto_show=True)
         elif self.demo == 2:
-            oled.centre_text("size 17", font=freesans17)
+            oled.centre_text("size 17", font=freesans17, auto_show=True)
         elif self.demo == 3:
-            oled.centre_text("size 20", font=freesans20)
+            oled.centre_text("size 20", font=freesans20, auto_show=True)
         elif self.demo == 4:
-            oled.centre_text("size 24", font=freesans24)
+            oled.centre_text("size 24", font=freesans24, auto_show=True)
         elif self.demo == 5:
             oled.fill(0)
             oled.text("8", 2, 20)
@@ -51,13 +51,13 @@ class CustomFontDemo(EuroPiScript):
             oled.text("24", 96, 6, font=freesans24)
             oled.show()
         elif self.demo == 6:
-            oled.centre_text("Default\n8x8 font\ncentered")
+            oled.centre_text("Default\n8x8 font\ncentered", auto_show=True)
         elif self.demo == 7:
-            oled.centre_text("FreeSans 14\nline 2", font=freesans14)
+            oled.centre_text("FreeSans 14\nline 2", font=freesans14, auto_show=True)
         elif self.demo == 8:
-            oled.centre_text("FreeSans 17", font=freesans17)
+            oled.centre_text("FreeSans 17", font=freesans17, auto_show=True)
         elif self.demo == 9:
-            oled.centre_text("FreeSans 24", font=freesans24)
+            oled.centre_text("FreeSans 24", font=freesans24, auto_show=True)
         elif self.demo == 10:
             oled.fill(0)
             oled.text("Fonts can", 0, 0)

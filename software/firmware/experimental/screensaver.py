@@ -8,7 +8,6 @@ import random
 import time
 
 from europi import *
-from framebuf import FrameBuffer
 
 
 class Screensaver:
@@ -82,19 +81,20 @@ class OledWithScreensaver:
         self.enable_screensaver = enable_screensaver
         self.enable_blank = enable_blank
 
+        self.show_screensaver = False
+        self.show_blank = False
+
         self.last_user_interaction_at = time.ticks_ms()
 
     def is_screenaver(self):
         """Is the screensaver currently showing?
         """
-        now = time.ticks_ms()
-        return self.enable_screensaver and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.ACTIVATE_TIMEOUT_MS
+        return self.show_screensaver
 
     def is_blank(self):
         """Is the screen blanked due to inactivity?
         """
-        now = time.ticks_ms()
-        return self.enable_blank and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.BLANK_TIMEOUT_MS
+        return self.show_blank
 
     def notify_user_interaction(self):
         """Notifies the screensaver subsystem that the user has physically interacted with the module
@@ -105,10 +105,16 @@ class OledWithScreensaver:
     def show(self):
         now = time.ticks_ms()
         if self.enable_blank and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.BLANK_TIMEOUT_MS:
+            self.show_blank = True
+            self.show_screensaver = False
             self.screensaver.draw_blank()
         elif self.enable_screensaver and time.ticks_diff(now, self.last_user_interaction_at) > self.screensaver.ACTIVATE_TIMEOUT_MS:
+            self.show_screensaver = True
+            self.show_blank = False
             self.screensaver.draw()
         else:
+            self.show_blank = False
+            self.show_screensaver = False
             oled.show()
 
     # The following are just wrappers for the functions in the Display class to allow 1:1 access
@@ -123,8 +129,10 @@ class OledWithScreensaver:
     def text(self, string, x, y, color=1):
         oled.text(string, x, y, color)
 
-    def centre_text(self, text):
-        oled.centre_text(text)
+    def centre_text(self, text, clear_first=True, auto_show=False):
+        oled.centre_text(text, clear_first=clear_first, auto_show=False)
+        if auto_show:
+            self.show()
 
     def line(self, x1, y1, x2, y2, color=1):
         oled.line(x1, y1, x2, y2, color)

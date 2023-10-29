@@ -6,7 +6,7 @@ from europi_script import EuroPiScript
 from experimental.knobs import KnobBank
 
 """
-An example program showing the use of a KnobBank or LockableKnobs. This script is not meant to be merged into main, 
+An example program showing the use of a KnobBank or LockableKnobs. This script is not meant to be merged into main,
 it only exists so that PR reviewers can try out a LockableKnob in physical hardware easily.
 """
 
@@ -63,7 +63,7 @@ class KnobPlayground(EuroPiScript):
                 + f"{p2} {int(round(self.kb1.p2.percent(), 2)*100):3}%  {p4} {self.kb2.p4.choice(choice_p4):5}\n"
                 + f"{p3} {self.kb1.p3.read_position():4}  {p5} {self.kb2.p5.choice(choice_p5):5}"
             )
-            oled.centre_text(text)
+            oled.centre_text(text, auto_show=True)
 
 
 if __name__ == "__main__":
