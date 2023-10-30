@@ -29,3 +29,46 @@ increase this duration.
 `cv5` and `cv6` change state every time an incoming gate/trigger starts on `din` or when `b1` or `b2` is pressed.
 Pressing `b2` will ONLY change the state of `cv5` and `cv6`, while `b1` will also output gate and trigger signals on
 `cv1`-`cv4`.
+
+
+## Timing Diagram
+
+The following diagram shows the input and output states of the module.  The height of the input to `din` or `b1` is
+irrelevant, as long as it is enough to trigger the rising-edge interrupt service handler on the module (approx. 0.8V
+minimum).
+
+```
+DIN or B1
+         __________          __________
+________|          |________|          |______________
+        .          .        .          .
+        .          .        .          .
+CV1     .          .        .          .
+        .______    .        .__________________
+________|      |____________|          .       |______
+        .  L1  .   .        .       L2 .       .
+        .      .   .        .          .       .
+CV2     .      .   .        .          .       .
+        ._     .   .        ._         .       .
+________| |_________________| |_______________________
+        .      .   .        .          .       .
+        .      .   .        .          .       .
+CV3     .      .   .        .          .       .
+        .      .   ._       .           _      .
+___________________| |_________________| |___________
+        .      .   .        .                  .
+CV4     .      .   .        .                  .
+        .      ._  .        .                  ._
+_______________| |_____________________________| |___
+        .          .        .
+CV5     .          .        .
+        .___________________
+________|                   |_________________________
+                            .
+CV6                         .
+                            ._
+____________________________| |_______________________
+```
+
+We assume that between the first and second pulses, the combined CV input via `k1`, `k2`, and `ain` has changed,
+resulting in different gate lengths (`L1` and `L2`, above)
