@@ -123,14 +123,14 @@ class Traffic(EuroPiScript):
         while True:
             self.din2.update()
 
-            gain_a1 = self.k1_bank["channel_a"].percent()
-            gain_a2 = self.k2_bank["channel_a"].percent()
+            gain_a1 = round(self.k1_bank["channel_a"].percent(), 2)
+            gain_a2 = round(self.k2_bank["channel_a"].percent(), 2)
 
-            gain_b1 = self.k1_bank["channel_b"].percent()
-            gain_b2 = self.k2_bank["channel_b"].percent()
+            gain_b1 = round(self.k1_bank["channel_b"].percent(), 2)
+            gain_b2 = round(self.k2_bank["channel_b"].percent(), 2)
 
-            gain_c1 = self.k1_bank["channel_c"].percent()
-            gain_c2 = self.k2_bank["channel_c"].percent()
+            gain_c1 = round(self.k1_bank["channel_c"].percent(), 2)
+            gain_c2 = round(self.k2_bank["channel_c"].percent(), 2)
 
             # calculate the outputs, multiplied by half the max output voltage
             # this gives us 0-10V, depending on the gains and input values
