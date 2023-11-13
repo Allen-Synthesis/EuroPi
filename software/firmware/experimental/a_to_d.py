@@ -3,10 +3,10 @@ from europi import HIGH, LOW
 import utime
 
 class AnalogReaderDigitalWrapper:
-    """Wraps an AnalogReader to allow it to simulate a DigitalReader
-    """
-    def __init__(self, ain, debounce=1, high_low_cutoff=0.8, \
-                 cb_rising=lambda: None, cb_falling=lambda: None):
+    """Wraps an AnalogReader to allow it to simulate a DigitalReader"""
+    def __init__(
+        self, ain, debounce=1, high_low_cutoff=0.8, cb_rising=lambda: None, cb_falling=lambda: None
+    ):
         """Constructor
 
         @param ain  The AnalogReader we're wrapping
@@ -31,18 +31,17 @@ class AnalogReaderDigitalWrapper:
         self.cb_falling = cb_falling
 
     def value(self):
-        """Returns europi.HIGH or europi.LOW depending on the state of the input
-        """
+        """Returns europi.HIGH or europi.LOW depending on the state of the input"""
         return HIGH if self.state else LOW
 
     def update(self):
-        """Reads the current value of the analogue input and updates the internal state
-        """
+        """Reads the current value of the analogue input and updates the internal state"""
         volts = self.ain.read_voltage()
 
         # count how many opposite-voltage readings we have
-        if (self.state and volts < self.high_low_cutoff) or \
-           (not self.state and volts >= self.high_low_cutoff):
+        if (self.state and volts < self.high_low_cutoff) or (
+            not self.state and volts >= self.high_low_cutoff
+        ):
             self.debounce_counter += 1
 
         # change state if we've reached the debounce threshold
