@@ -2,6 +2,7 @@ from europi import HIGH, LOW
 
 import utime
 
+
 class AnalogReaderDigitalWrapper:
     """Wraps an AnalogReader to allow it to simulate a DigitalReader"""
 
