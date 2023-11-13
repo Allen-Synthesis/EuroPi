@@ -4,6 +4,7 @@ import utime
 
 class AnalogReaderDigitalWrapper:
     """Wraps an AnalogReader to allow it to simulate a DigitalReader"""
+
     def __init__(
         self, ain, debounce=1, high_low_cutoff=0.8, cb_rising=lambda: None, cb_falling=lambda: None
     ):
