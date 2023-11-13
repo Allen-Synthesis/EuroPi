@@ -18,6 +18,8 @@ class Traffic(EuroPiScript):
     def __init__(self):
         super().__init__()
 
+        state = self.load_state_json()
+
         @b1.handler
         def b1_rising():
             """Activate channel b controls while b1 is held
@@ -49,6 +51,7 @@ class Traffic(EuroPiScript):
             self.channel_markers[0] = '>'
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
+            self.save_state()
 
         @b2.handler_falling
         def b2_falling():
@@ -59,6 +62,7 @@ class Traffic(EuroPiScript):
             self.channel_markers[0] = '>'
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
+            self.save_state()
 
         @din.handler
         def din1_rising():
@@ -79,16 +83,16 @@ class Traffic(EuroPiScript):
         self.k1_bank = (
             KnobBank.builder(k1) \
             .with_unlocked_knob("channel_a") \
-            .with_locked_knob("channel_b", initial_percentage_value=0.5) \
-            .with_locked_knob("channel_c", initial_percentage_value=0.5) \
+            .with_locked_knob("channel_b", initial_percentage_value=state.get("gain_b1", 0.5)) \
+            .with_locked_knob("channel_c", initial_percentage_value=state.get("gain_c1", 0.5)) \
             .build()
         )
 
         self.k2_bank = (
             KnobBank.builder(k2) \
             .with_unlocked_knob("channel_a") \
-            .with_locked_knob("channel_b", initial_percentage_value=0.5) \
-            .with_locked_knob("channel_c", initial_percentage_value=0.5) \
+            .with_locked_knob("channel_b", initial_percentage_value=state.get("gain_b2", 0.5)) \
+            .with_locked_knob("channel_c", initial_percentage_value=state.get("gain_c2", 0.5)) \
             .build()
         )
 
@@ -102,6 +106,15 @@ class Traffic(EuroPiScript):
         self.last_trigger_at = time.ticks_ms()
 
         self.channel_markers = ['>', ' ', ' ']
+
+    def save_state(self):
+        state = {
+            "gain_b1": self.k1_bank["channel_b"].percent(),
+            "gain_b2": self.k2_bank["channel_b"].percent(),
+            "gain_c1": self.k1_bank["channel_c"].percent(),
+            "gain_c2": self.k2_bank["channel_c"].percent()
+        }
+        self.save_state_json(state)
 
     def main(self):
         TRIGGER_DURATION = 10   # 10ms triggers every time we get a rising edge on either input channel
