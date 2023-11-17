@@ -13,7 +13,7 @@ from europi_script import EuroPiScript
 from experimental.euclid import generate_euclidean_pattern
 from experimental.knobs import KnobBank
 from experimental.quantizer import CommonScales, Quantizer, SEMITONE_LABELS, SEMITONES_PER_OCTAVE
-from experimental.screensaver import Screensaver
+from experimental.screensaver import OledWithScreensaver
 
 from collections import OrderedDict
 from machine import Timer
@@ -21,6 +21,9 @@ from machine import Timer
 import math
 import time
 import random
+
+## Screensaver-enabled display
+ssoled = OledWithScreensaver()
 
 ## Lockable knob bank for K2 to make menu navigation a little easier
 #
@@ -211,12 +214,6 @@ STATUS_IMG_PAUSE = bytearray(b'\x00\x00y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y\xc0y
 
 STATUS_IMG_WIDTH = 12
 STATUS_IMG_HEIGHT = 12
-
-## Duration before we activate the screensaver
-SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 5
-
-## Duration before we blank the screen
-BLANK_TIMEOUT_MS = 1000 * 60 * 20
 
 ## Do we use gate input on din to turn the module on/off
 DIN_MODE_GATE = 'Gate'
@@ -1088,7 +1085,7 @@ class SettingChooser:
     def draw(self):
         """Draw the menu to the screen
 
-        The OLED must be cleared before calling this function. You must call oled.show() after
+        The OLED must be cleared before calling this function. You must call ssoled.show() after
         calling this function
         """
 
@@ -1100,13 +1097,13 @@ class SettingChooser:
         # If we're in a top-level menu the submenu is non-empty. In that case, the prefix in inverted text
         # Otherwise, the title in inverted text to indicate we're in the sub-menu
         if len(self.submenu) != 0:
-            oled.fill_rect(prefix_left-1, 0, prefix_right+1, CHAR_HEIGHT+2, 1)
-            oled.text(self.prefix, prefix_left, 1, 0)
-            oled.text(str(self.setting), title_left, 1, 1)
+            ssoled.fill_rect(prefix_left-1, 0, prefix_right+1, CHAR_HEIGHT+2, 1)
+            ssoled.text(self.prefix, prefix_left, 1, 0)
+            ssoled.text(str(self.setting), title_left, 1, 1)
         else:
-            oled.fill_rect(title_left-1, 0, len(str(self.setting))*CHAR_WIDTH+2, CHAR_HEIGHT+2, 1)
-            oled.text(self.prefix, prefix_left, 1, 1)
-            oled.text(str(self.setting), title_left, 1, 0)
+            ssoled.fill_rect(title_left-1, 0, len(str(self.setting))*CHAR_WIDTH+2, CHAR_HEIGHT+2, 1)
+            ssoled.text(self.prefix, prefix_left, 1, 1)
+            ssoled.text(str(self.setting), title_left, 1, 0)
 
         if self.option_gfx is not None:
             # draw the option thumbnail to the screen if it exists
@@ -1125,7 +1122,7 @@ class SettingChooser:
             if img is not None:
                 text_left = 14
                 imgFB = FrameBuffer(img, 12, 12, MONO_HLSB)
-                oled.blit(imgFB, 0, SELECT_OPTION_Y)
+                ssoled.blit(imgFB, 0, SELECT_OPTION_Y)
 
 
         if self.is_writable:
@@ -1134,12 +1131,12 @@ class SettingChooser:
             choice_text = f"{selected_item}"
             text_width = len(choice_text)*CHAR_WIDTH
 
-            oled.fill_rect(text_left, SELECT_OPTION_Y, text_left+text_width+3, CHAR_HEIGHT+4, 1)
-            oled.text(choice_text, text_left+1, SELECT_OPTION_Y+2, 0)
+            ssoled.fill_rect(text_left, SELECT_OPTION_Y, text_left+text_width+3, CHAR_HEIGHT+4, 1)
+            ssoled.text(choice_text, text_left+1, SELECT_OPTION_Y+2, 0)
         else:
             # draw the selection in normal text
             choice_text = f"{self.setting.get_display_value()}"
-            oled.text(choice_text, text_left+1, SELECT_OPTION_Y+2, 1)
+            ssoled.text(choice_text, text_left+1, SELECT_OPTION_Y+2, 1)
 
 
     def on_click(self):
@@ -1269,15 +1266,6 @@ class PamsWorkout(EuroPiScript):
         ## The master top-level menu
         self.main_menu = PamsMenu(self)
 
-        ## The screensaver
-        self.screensaver = Screensaver()
-
-        ## How long ago was _either_ button pressed?
-        #
-        #  This is used to wake the screensaver up and suppress the normal
-        #  button operations while doing so
-        self.last_interaction_time = time.ticks_ms()
-
         @din.handler
         def on_din_rising():
             if self.din_mode.get_value() == DIN_MODE_GATE:
@@ -1314,7 +1302,7 @@ class PamsWorkout(EuroPiScript):
             Wake up the display if it's asleep.  We do this on release to keep the
             wake up behavior the same for both buttons
             """
-            self.last_interaction_time = time.ticks_ms()
+            ssoled.notify_user_interaction()
 
 
         @b2.handler_falling
@@ -1329,7 +1317,7 @@ class PamsWorkout(EuroPiScript):
             the actual button click/long-press
             """
             now = time.ticks_ms()
-            if time.ticks_diff(now, self.last_interaction_time) <= SCREENSAVER_TIMEOUT_MS:
+            if not ssoled.is_screenaver() and not ssoled.is_blank():
                 if time.ticks_diff(now, b2.last_pressed()) > LONG_PRESS_MS:
                     # long press
                     # change between the main & sub menus
@@ -1339,7 +1327,7 @@ class PamsWorkout(EuroPiScript):
                     self.main_menu.on_click()
                     self.save()
 
-            self.last_interaction_time = now
+            ssoled.notify_user_interaction()
 
     def load(self):
         """Load parameters from persistent storage and apply them
@@ -1397,23 +1385,17 @@ class PamsWorkout(EuroPiScript):
             for cv in CV_INS.values():
                 cv.update()
 
-            elapsed_time = time.ticks_diff(now, self.last_interaction_time)
-            if elapsed_time > BLANK_TIMEOUT_MS:
-                self.screensaver.draw_blank()
-            elif elapsed_time > SCREENSAVER_TIMEOUT_MS:
-                self.screensaver.draw()
+            ssoled.fill(0)
+            self.main_menu.draw()
+
+            # draw a simple header to indicate status
+            if self.clock.is_running:
+                imgFB = FrameBuffer(STATUS_IMG_PLAY, STATUS_IMG_WIDTH, STATUS_IMG_HEIGHT, MONO_HLSB)
             else:
-                oled.fill(0)
-                self.main_menu.draw()
+                imgFB = FrameBuffer(STATUS_IMG_PAUSE, STATUS_IMG_WIDTH, STATUS_IMG_HEIGHT, MONO_HLSB)
+            ssoled.blit(imgFB, OLED_WIDTH - STATUS_IMG_WIDTH, 0)
 
-                # draw a simple header to indicate status
-                if self.clock.is_running:
-                    imgFB = FrameBuffer(STATUS_IMG_PLAY, STATUS_IMG_WIDTH, STATUS_IMG_HEIGHT, MONO_HLSB)
-                else:
-                    imgFB = FrameBuffer(STATUS_IMG_PAUSE, STATUS_IMG_WIDTH, STATUS_IMG_HEIGHT, MONO_HLSB)
-                oled.blit(imgFB, OLED_WIDTH - STATUS_IMG_WIDTH, 0)
-
-                oled.show()
+            ssoled.show()
 
 if __name__=="__main__":
     PamsWorkout().main()
