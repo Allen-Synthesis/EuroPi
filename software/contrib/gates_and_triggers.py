@@ -49,9 +49,7 @@ class GatesAndTriggers(EuroPiScript):
         self.k1_percent = int(k1.percent() * 100)
         self.k2_percent = int(k2.percent() * 100)
 
-        # turn off all outputs initially
-        for cv in cvs:
-            cv.voltage(0)
+        turn_off_all_cvs()
 
         @din.handler
         def on_din_rising():
