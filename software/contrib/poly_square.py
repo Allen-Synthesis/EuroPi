@@ -34,11 +34,11 @@ output_6: oscillator 6
 '''
 
 # Assembly code program for the PIO square oscillator
-# Thanks to Ben Everard at HackSpace for the basis of this program:
+# Thanks to Ben Everard at HackSpace for the basis of this program: 
 # https://hackspace.raspberrypi.com/articles/raspberry-pi-picos-pio-for-mere-mortals-part-3-sound
 @asm_pio(sideset_init=PIO.OUT_LOW)
 def square_prog():
-    # Initialize x & y variables - these are used to count down the
+    # Initialize x & y variables - these are used to count down the 
     # loops which set the length of the square wave's cycle
     label("restart")
     pull(noblock) .side(0)
@@ -52,7 +52,7 @@ def square_prog():
     nop()         .side(1)
     jmp("down")
     label("skip_up")
-    jmp(y_dec, "up_loop")
+    jmp(y_dec, "up_loop")    
     # Mirror the above loop, but with the pin high to form the second
     # half of the square wave
     label("down")
@@ -68,8 +68,8 @@ def square_prog():
 class PolyphonyMode:
     def __init__(self, name, voltage_offsets):
         self.name = name
-        self.voltage_offsets = voltage_offsets
-
+        self.voltage_offsets = voltage_offsets   
+    
 # Class for managing a state machine running the PIO oscillator program
 class SquareOscillator:
     def __init__(self, sm_id, pin, max_count, count_freq):
@@ -88,7 +88,7 @@ class SquareOscillator:
         # produces a narrow pulse
         value = clamp(value, -1, self._max_count)
         self._sm.put(value)
-
+            
     # Converts Hertz to the value the state machine running the PIO
     # program needs
     def get_pitch(self, hertz):
@@ -103,7 +103,7 @@ class KnobState:
 class PolySquare(EuroPiScript):
     def __init__(self):
         k1.set_samples(256)
-        k2.set_samples(256)
+        k2.set_samples(256)        
         # PIO settings
         max_count = 1_000_000
         count_freq = 50_000_000
@@ -182,47 +182,47 @@ class PolySquare(EuroPiScript):
                 self.max_detune = 1
             self.ui_update_requested = True
             self.save_state_requested = True
-
+        
     # Converts V/oct signal to Hertz, with 0V = C0
     def get_hertz(self, voltage):
         # Start with A0 because it's a nice, rational number
         a0 = 27.5
         # Subtract 3/4 from the voltage value so that 0V = C0
         return a0 * 2 ** (voltage - 3/4)
-
+    
     # Returns the linear step distance between elements such that all are
     # equally spaced. Ex, for 6 elements between 0 and 100 (inclusive), the
     # step would be 20 (the elements would then be 0, 20, 40, 60, 80, 100).
     def get_step_distance(self, first, last, count):
         return (last - first) / (count - 1)
-
+    
     # Returns the total voltage offset of the current tuning values
     def get_tuning(self):
         return self.coarse_tune * 8 + self.fine_tune - .5
-
+    
     # Through-zero detuning of current oscillator based on its position in
-    # the list of oscillators - the central oscillator(s) stay(s) in tune while
+    # the list of oscillators - the central oscillator(s) stay(s) in tune while 
     # the outer oscillators are progressively detuned.
     def get_detuning(self, detune_amount, oscillator_index):
         oscillator_count = len(self.oscillators)
         step_distance = self.get_step_distance(
             0, self.max_detune, oscillator_count)
-        return detune_amount * step_distance * (oscillator_index -
+        return detune_amount * step_distance * (oscillator_index - 
              (oscillator_count - 1) / 2)
-
+    
     # Returns a voltage offset for the oscillator based on the current
     # polyphony mode. This allows for things like triads, with the offsets
     # set accordingly.
     def get_offset(self, oscillator_index):
         mode = self.modes[self.current_mode]
-        return mode.voltage_offsets[oscillator_index %
+        return mode.voltage_offsets[oscillator_index % 
             len(mode.voltage_offsets)]
-
+    
     # Saves oscillator tuning & detuning settings
     def save_state(self):
         settings = {
-            "c": self.coarse_tune,
-            "f": self.fine_tune,
+            "c": self.coarse_tune, 
+            "f": self.fine_tune, 
             "m": self.max_detune
         }
         self.save_state_json(settings)
@@ -255,7 +255,7 @@ class PolySquare(EuroPiScript):
         oled.fill_rect(
             tuning_bar_x,
             padding + line_height,
-            int(self.coarse_tune * tuning_bar_width), 8, 1)
+            int(self.coarse_tune * tuning_bar_width), 8, 1)           
         # Fine tuning bar
         oled.text("fine:", padding + 16, padding + line_height * 2)
         oled.rect(
@@ -274,46 +274,46 @@ class PolySquare(EuroPiScript):
                 padding + line_height * 2,
                 int((self.fine_tune - 0.5) * tuning_bar_width), 8, 1)
         oled.show()
-
+    
     # Draws the default UI
     def draw_main_ui(self):
-        oled.centre_text(self.modes[self.current_mode].name +
+        oled.centre_text(self.modes[self.current_mode].name + 
             "\nmax. detune: " + str(self.max_detune))
-
+    
     def numbers_are_close(self, current, other, allowed_error):
         if current == None or other == None:
             return False
         return abs(current - other) <= allowed_error
-
+    
     def update_ui(self):
         if self.tuning_mode:
             self.draw_tuning_ui()
         else:
             self.draw_main_ui()
         self.ui_update_requested = False
-
+    
     def update_tuning_settings(self):
         new_coarse_tune = k1.percent()
         new_fine_tune = k2.percent()
         allowed_error = 0.005
         # Only update the coarse or fine tuning setting if the knob has
-        # been moved since button 1 was depressed - thanks to djmjr
+        # been moved since button 1 was depressed - thanks to djmjr 
         # (github.com/djmjr) for the idea:
         # https://github.com/djmjr/EuroPi/blob/poly-squares-mods/software/contrib/poly_square_mods.py
         if not (self.numbers_are_close(
-                new_coarse_tune, self.tuning_mode_compare_knob_state.k1,
+                new_coarse_tune, self.tuning_mode_compare_knob_state.k1, 
                 allowed_error) or new_coarse_tune == self.coarse_tune):
             self.coarse_tune = new_coarse_tune
             self.tuning_mode_compare_knob_state.k1 = None
             self.ui_update_requested = True
         if not (self.numbers_are_close(
-                new_fine_tune, self.tuning_mode_compare_knob_state.k2,
-                allowed_error) or new_fine_tune == self.fine_tune):
+                new_fine_tune, self.tuning_mode_compare_knob_state.k2, 
+                allowed_error) or new_fine_tune == self.fine_tune):               
             self.fine_tune = new_fine_tune
             self.tuning_mode_compare_knob_state.k2 = None
             self.ui_update_requested = True
-
-    # Updates oscillator settings based on the current knob positions &
+    
+    # Updates oscillator settings based on the current knob positions & 
     # analog input
     def update_settings(self):
         analog_input = ain.read_voltage(32)
@@ -326,9 +326,9 @@ class PolySquare(EuroPiScript):
                 self.ui_update_requested = True
                 self.current_mode = new_mode
         for oscillator in self.oscillators:
-            # Add up the V/oct from the analog input, the offset from the
-            # polyphony mode, the adjustment from the tuning, and the
-            # adjustment from the detune amount to get the final pitch for
+            # Add up the V/oct from the analog input, the offset from the 
+            # polyphony mode, the adjustment from the tuning, and the 
+            # adjustment from the detune amount to get the final pitch for 
             # the oscillator
             oscillator_index = self.oscillators.index(oscillator)
             oscillator.set(oscillator.get_pitch(
