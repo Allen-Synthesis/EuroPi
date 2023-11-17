@@ -6,7 +6,7 @@ from europi_script import EuroPiScript
 from experimental.knobs import KnobBank
 
 """
-An example program showing the use of a KnobBank or LockableKnobs. This script is not meant to be merged into main,
+An example program showing the use of a KnobBank or LockableKnobs. This script is not meant to be merged into main, 
 it only exists so that PR reviewers can try out a LockableKnob in physical hardware easily.
 """
 
