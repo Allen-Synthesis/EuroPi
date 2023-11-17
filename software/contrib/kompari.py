@@ -62,6 +62,7 @@ class Kompari(EuroPiScript):
 
             oled.fill(0)
             oled.centre_text(f"{lower_bound:0.1f}  {x:0.1f}  {upper_bound:0.1f}")
+            oled.show()
 
 if __name__ == "__main__":
     Kompari().main()
