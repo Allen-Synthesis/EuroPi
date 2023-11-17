@@ -26,10 +26,6 @@ increase this duration.
 
 `ain` expects an input range of 0-10V.  `k2` acts as an attenuverter for this input signal.
 
-`cv5` and `cv6` change state every time an incoming gate/trigger starts on `din` or when `b1` or `b2` is pressed.
-Pressing `b2` will ONLY change the state of `cv5` and `cv6`, while `b1` will also output gate and trigger signals on
-`cv1`-`cv4`.
-
 
 ## Timing Diagram
 
