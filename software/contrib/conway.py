@@ -125,34 +125,22 @@ class Conway(EuroPiScript):
         self.next_frame = self.frame
         self.frame = tmp
 
-    def update_cvs(self, change_gate):
-        cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (OLED_WIDTH * OLED_HEIGHT))
-
-        cv6.voltage(5.0 if change_gate else 0.0)
-
     def main(self):
         # turn off all CVs initially
         turn_off_all_cvs()
 
         self.randomize()
-        self.draw()
-        self.update_cvs(False)
-
-        change_gate = True
 
         while True:
-            change = self.reshuffle or self.tick_recvd
-
+            cv6.voltage(5)
             if self.reshuffle:
                 self.randomize()
-
-            if self.tick_recvd:
+            else:
                 self.tick()
 
-            if change:
-                change_gate = not change_gate
-                self.draw()
-                self.update_cvs(change_gate)
+            cv6.voltage(0)
+            self.draw()
+            cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (OLED_WIDTH * OLED_HEIGHT))
 
 if __name__ == "__main__":
     Conway().main()
