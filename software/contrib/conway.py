@@ -17,6 +17,33 @@ def clamp(x, low, hi):
     else:
         return x
 
+def get_bit(arr, index):
+    """Get the value of the bit at the nth position in a bytearray
+
+    Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
+    the first bit of [0]:
+        [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
+    """
+    mask = 1 << ((8-index-1) % 8)
+    byte = arr[index // 8]
+    bit = 1 if byte & mask else 0
+    return bit
+
+def set_bit(arr, index, value):
+    """Set the bit at the nth position in a bytearray
+
+    Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
+    the first bit of [0]:
+        [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
+    """
+    byte = arr[index // 8]
+    mask = 1 << ((8-index-1) % 8)
+    if value:
+        byte = byte | mask
+    else:
+        byte = byte & ~mask
+    arr[index // 8] = byte
+
 class Conway(EuroPiScript):
     def __init__(self):
         # For ease of blitting, store the field as a bit array
@@ -60,31 +87,6 @@ class Conway(EuroPiScript):
         def on_din():
             self.reset_requested = True
 
-    def get_bit(self, arr, index):
-        """Get the value of the bit at the nth position in a bytearray
-
-        Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
-        the first bit of [0]:
-            [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
-        """
-        mask = 1 << ((8-index-1) % 8)
-        byte = arr[index // 8]
-        bit = 1 if byte & mask else 0
-        return bit
-
-    def set_bit(self, arr, index, value):
-        """Set the bit at the nth position in a bytearray
-
-        Bytes are stored most significant bit first
-        """
-        byte = arr[index // 8]
-        mask = 1 << ((8-index-1) % 8)
-        if value:
-            byte = byte | mask
-        else:
-            byte = byte & ~mask
-        arr[index // 8] = byte
-
     def random_spawn(self, fill_level):
         """Randomly spawn cells on the field
 
@@ -95,9 +97,9 @@ class Conway(EuroPiScript):
         for i in range(OLED_WIDTH * OLED_HEIGHT):
             x = random.random()
             # if the space isn't already filled and we want to fill it...
-            if x < fill_level and not self.get_bit(self.field, i):
-                self.set_bit(self.field, i, True)
-                self.set_bit(self.next_field, i, True)
+            if x < fill_level and not get_bit(self.field, i):
+                set_bit(self.field, i, True)
+                set_bit(self.next_field, i, True)
                 self.num_alive = self.num_alive + 1
                 neighbourhood = self.get_neigbour_indices(i)
                 self.changed_spaces.add(i)
@@ -158,14 +160,14 @@ class Conway(EuroPiScript):
             neighbours = self.get_neigbour_indices(bit_index)
             num_neighbours = 0
             for n in neighbours:
-                if self.get_bit(self.field, n):
+                if get_bit(self.field, n):
                     num_neighbours = num_neighbours + 1
 
-            if self.get_bit(self.field, bit_index):
+            if get_bit(self.field, bit_index):
                 if num_neighbours == 2 or num_neighbours == 3:        # happy cell, stays alive
-                    self.set_bit(self.next_field, bit_index, True)
+                    set_bit(self.next_field, bit_index, True)
                 else:                                                 # sad cell, dies
-                    self.set_bit(self.next_field, bit_index, False)
+                    set_bit(self.next_field, bit_index, False)
                     self.num_died = self.num_died + 1
                     self.num_alive = self.num_alive - 1
 
@@ -174,7 +176,7 @@ class Conway(EuroPiScript):
                         new_changes.add(n)
             else:
                 if num_neighbours == 3:                               # baby cell is born!
-                    self.set_bit(self.next_field, bit_index, True)
+                    set_bit(self.next_field, bit_index, True)
                     self.num_alive = self.num_alive + 1
                     self.num_born = self.num_born + 1
 
@@ -182,7 +184,7 @@ class Conway(EuroPiScript):
                     for n in neighbours:
                         new_changes.add(n)
                 else:                                                 # empty space remains empty
-                    self.set_bit(self.next_field, bit_index, False)
+                    set_bit(self.next_field, bit_index, False)
 
         # swap field & next_field so we don't need to copy between arrays
         tmp = self.next_field
