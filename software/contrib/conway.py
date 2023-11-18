@@ -87,6 +87,19 @@ class Conway(EuroPiScript):
         def on_din():
             self.reset_requested = True
 
+    def calculate_spawn_level(self):
+        """Calculate what percentage of the field should contain new cells
+        """
+        base_spawn_level = k1.percent()
+
+        # get the level of AIN, attenuverted by K2
+        cv_mod = ain.percent()
+        cv_att = k2.percent() * 2 - 1
+        cv_mod = cv_mod * cv_att
+
+        spawn_level = clamp(base_spawn_level + cv_mod, 0, 1)
+        return spawn_level
+
     def random_spawn(self, fill_level):
         """Randomly spawn cells on the field
 
@@ -107,6 +120,8 @@ class Conway(EuroPiScript):
                     self.changed_spaces.add(n)
 
     def reset(self):
+        """Clear the whole field and spawn random data in it
+        """
         for i in range(len(self.field)):
             self.field[i] = 0x00
             self.next_field[i] = 0x00
@@ -115,6 +130,8 @@ class Conway(EuroPiScript):
         self.random_spawn(self.calculate_spawn_level())
 
     def draw(self):
+        """Show the current playing field on the OLED
+        """
         oled.blit(self.frame, 0, 0)
         oled.show()
 
@@ -148,6 +165,8 @@ class Conway(EuroPiScript):
         return neighbours
 
     def tick(self):
+        """Calculate the state of the next generation
+        """
         self.num_born = 0
         self.num_died = 0
 
@@ -157,9 +176,9 @@ class Conway(EuroPiScript):
 
         new_changes = set()
         for bit_index in self.changed_spaces:
-            neighbours = self.get_neigbour_indices(bit_index)
+            neighbourhood = self.get_neigbour_indices(bit_index)
             num_neighbours = 0
-            for n in neighbours:
+            for n in neighbourhood:
                 if get_bit(self.field, n):
                     num_neighbours = num_neighbours + 1
 
@@ -172,7 +191,7 @@ class Conway(EuroPiScript):
                     self.num_alive = self.num_alive - 1
 
                     new_changes.add(bit_index)
-                    for n in neighbours:
+                    for n in neighbourhood:
                         new_changes.add(n)
             else:
                 if num_neighbours == 3:                               # baby cell is born!
@@ -181,7 +200,7 @@ class Conway(EuroPiScript):
                     self.num_born = self.num_born + 1
 
                     new_changes.add(bit_index)
-                    for n in neighbours:
+                    for n in neighbourhood:
                         new_changes.add(n)
                 else:                                                 # empty space remains empty
                     set_bit(self.next_field, bit_index, False)
@@ -201,19 +220,6 @@ class Conway(EuroPiScript):
             self.random_spawn(self.calculate_spawn_level())
 
         self.changed_spaces = new_changes
-
-    def calculate_spawn_level(self):
-        """Calculate what percentage of the field should contain new cells
-        """
-        base_spawn_level = k1.percent()
-
-        # get the level of AIN, attenuverted by K2
-        cv_mod = ain.percent()
-        cv_att = k2.percent() * 2 - 1
-        cv_mod = cv_mod * cv_att
-
-        spawn_level = clamp(base_spawn_level + cv_mod, 0, 1)
-        return spawn_level
 
     def main(self):
         # turn off all CVs initially
