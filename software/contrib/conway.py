@@ -18,6 +18,16 @@ class Conway(EuroPiScript):
         self.frame = FrameBuffer(self.field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
         self.next_frame = FrameBuffer(self.next_field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
 
+        # Simple optimization; keep a list of spaces whose states changed & their neighbours
+        # Initially assume everything's changed
+        self.changed_spaces = set(list(range(OLED_HEIGHT * OLED_WIDTH)))
+
+        # how many cells were born this tick?
+        self.num_born = 0
+
+        # how many cells died this tick?
+        self.num_died = 0
+
         # we want to reshuffle immediately when main() starts
         self.reshuffle = False
 
@@ -68,6 +78,11 @@ class Conway(EuroPiScript):
     def randomize(self):
         self.reshuffle = False
 
+        self.num_born = 0
+        self.num_died = 0
+
+        self.changed_spaces = set(list(range(OLED_HEIGHT * OLED_WIDTH)))
+
         fill_level = k1.percent()
         for row in range(OLED_HEIGHT):
             for col in range(OLED_WIDTH):
@@ -78,41 +93,72 @@ class Conway(EuroPiScript):
         oled.blit(self.frame, 0, 0)
         oled.show()
 
-    def count_neighbours(self, row, col, field):
-        """Count how many living neighbours a space on the field has
+    def get_neigbour_indices(self, index):
+        """Get the indices of the 8 bits adjacent to the given index
         """
-        count = 0
-        for i in range(-1, 2):      # -1, 0, 1
-            for j in range(-1, 2):  # -1, 0, 1
-                # ignore the centre of the 3x3 area or anything out-of-bounds
-                if (i != 0 or j != 0) and row + i >= 0 and row + i < OLED_HEIGHT and col + j >= 0 and col + j < OLED_WIDTH:
+        row = index // OLED_WIDTH
+        col = index % OLED_WIDTH
 
-                    index = (row + i) * OLED_WIDTH + col + j
-                    if self.get_bit(field, index):
-                        count = count+1
-        return count
+        neighbours = []
+        if row > 0:
+            neighbours.append((row-1)*OLED_WIDTH + col)
+            if col > 0:
+                neighbours.append((row-1)*OLED_WIDTH + col -1)
+            if col < OLED_WIDTH -1:
+                neighbours.append((row-1)*OLED_WIDTH + col +1)
+
+        if row < OLED_HEIGHT -1:
+            neighbours.append((row+1)*OLED_WIDTH + col)
+            if col > 0:
+                neighbours.append((row+1)*OLED_WIDTH + col -1)
+            if col < OLED_WIDTH -1:
+                neighbours.append((row+1)*OLED_WIDTH + col +1)
+
+        if col > 0:
+            neighbours.append(row*OLED_WIDTH + col -1)
+
+        if col < OLED_WIDTH - 1:
+            neighbours.append(row*OLED_WIDTH + col +1)
+
+        return neighbours
 
     def tick(self):
         self.tick_recvd = False
 
         self.num_alive = 0
-        for row in range(OLED_HEIGHT):
-            for col in range(OLED_WIDTH):
-                neighbours = self.count_neighbours(row, col, self.field)
-                bit_index = row * OLED_WIDTH + col
+        self.num_born = 0
+        self.num_died = 0
 
-                if self.get_bit(self.field, bit_index):
-                    if neighbours == 2 or neighbours == 3:   # happy cell, stays alive
-                        self.set_bit(self.next_field, bit_index, True)
-                        self.num_alive = self.num_alive + 1
-                    else:                                    # sad cell, dies
-                        self.set_bit(self.next_field, bit_index, False)
-                else:
-                    if neighbours == 3:                      # baby cell is born!
-                        self.set_bit(self.next_field, bit_index, True)
-                        self.num_alive = self.num_alive + 1
-                    else:                                    # empty space remains empty
-                        self.set_bit(self.next_field, bit_index, False)
+        new_changes = set()
+        for bit_index in self.changed_spaces:
+            neighbours = self.get_neigbour_indices(bit_index)
+            num_neighbours = 0
+            for n in neighbours:
+                if self.get_bit(self.field, n):
+                    num_neighbours = num_neighbours + 1
+
+            if self.get_bit(self.field, bit_index):
+                if num_neighbours == 2 or num_neighbours == 3:   # happy cell, stays alive
+                    self.set_bit(self.next_field, bit_index, True)
+                    self.num_alive = self.num_alive + 1
+                else:                                    # sad cell, dies
+                    self.set_bit(self.next_field, bit_index, False)
+                    self.num_died = self.num_died + 1
+
+                    new_changes.add(bit_index)
+                    for n in neighbours:
+                        new_changes.add(n)
+            else:
+                if num_neighbours == 3:                      # baby cell is born!
+                    self.set_bit(self.next_field, bit_index, True)
+                    self.num_alive = self.num_alive + 1
+                    self.num_born = self.num_born + 1
+
+                    new_changes.add(bit_index)
+                    for n in neighbours:
+                        new_changes.add(n)
+                else:                                    # empty space remains empty
+                    self.set_bit(self.next_field, bit_index, False)
 
         # TODO: add random additional new cells according to AIN & K2
 
@@ -124,6 +170,8 @@ class Conway(EuroPiScript):
         tmp = self.next_frame
         self.next_frame = self.frame
         self.frame = tmp
+
+        self.changed_spaces = new_changes
 
     def main(self):
         # turn off all CVs initially
@@ -141,6 +189,9 @@ class Conway(EuroPiScript):
             cv6.voltage(0)
             self.draw()
             cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (OLED_WIDTH * OLED_HEIGHT))
+
+            cv4.voltage(5 if self.num_born > self.num_died else 0)
+            cv5.voltage(5 if self.num_born < self.num_died else 0)
 
 if __name__ == "__main__":
     Conway().main()
