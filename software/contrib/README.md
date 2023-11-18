@@ -21,6 +21,12 @@ Users can morph between patterns and CV sequences during operation, with 3 gate 
 <i>Author: [gamecat69](https://github.com/gamecat69)</i>
 <br><i>Labels: sequencer, gates, triggers, drums, randomness</i>
 
+### Conway \[ [documentation](/software/contrib/conway.md) | [script](/software/contrib/conway.md) \]
+A semi-random LFO that uses [John Conway's Game Of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) to produce CV and gate signals.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: lfo, gates, randomness</i>
+
 ### CVecorder \[ [documentation](/software/contrib/cvecorder.md) | [script](/software/contrib/cvecorder.py) \]
 6 channels of control voltage recording
 

@@ -28,6 +28,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Bernoulli Gates",   "contrib.bernoulli_gates.BernoulliGates"],
     ["Coin Toss",         "contrib.coin_toss.CoinToss"],
     ["Consequencer",      "contrib.consequencer.Consequencer"],
+    ["Conway",            "contrib.conway.Conway"],
     ["CVecorder",         "contrib.cvecorder.CVecorder"],
     ["Diagnostic",        "contrib.diagnostic.Diagnostic"],
     ["EnvelopeGen",       "contrib.envelope_generator.EnvelopeGenerator"],
