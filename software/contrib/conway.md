@@ -19,7 +19,7 @@ as an attenuator for the signal on `ain`.
 | `din`         | Clear the field & start a new random spawn                        |
 | `ain`         | Offset control for spawn density                                  |
 | `b1`          | Manual equivalent to `din`                                        |
-| `b2`          | Spawn new cells, but do not clear the field first                 |
+| `b2`          | Manual equivalent to `din`                                        |
 | `k1`          | Base spawn density                                                |
 | `k2`          | Attenuverter for `ain`                                            |
 | `cv1` - `cv6` | Output signals. See below for details                             |

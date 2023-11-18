@@ -69,9 +69,6 @@ class Conway(EuroPiScript):
         # this gets updated on every tick and on random spawns
         self.num_alive = 0
 
-        # Set to True if we want to spawn more random cells
-        self.spawn_requested = False
-
         # Set to True if we want to clear the field & respawn
         self.reset_requested = False
 
@@ -81,7 +78,7 @@ class Conway(EuroPiScript):
 
         @b2.handler
         def on_b2():
-            self.spawn_requested = True
+            self.reset_requested = True
 
         @din.handler
         def on_din():
@@ -213,11 +210,6 @@ class Conway(EuroPiScript):
         tmp = self.next_frame
         self.next_frame = self.frame
         self.frame = tmp
-
-        # If a random spawning was requested, do it here, after calculating the normal generational growth
-        if self.spawn_requested:
-            self.spawn_requested = False
-            self.random_spawn(self.calculate_spawn_level())
 
         self.changed_spaces = new_changes
 
