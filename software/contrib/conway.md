@@ -38,8 +38,47 @@ The six outputs are stepped CV outputs, whose values vary according to the game 
          of births
 - `cv6`: outputs a 5V gate signal if the field has reached a point of stasis
 
-Stasis is considered acheived either when there are no changes in the state of the field, or if less than 5% of
-the field's spaces have changed and the number of births equals the number of deaths
+## Stasis Detection
+
+Because of the modest computing power available, this program uses some simple statistics to infer if the game has
+reached a point of stasis. There is a chance that a false-positive will be detected.
+
+The game is assumed to have reached a state of stasis under these conditions:
+1. At least 12 generations have passed since the last reset
+2. The number of game spaces that have changed from dead to alive or alive to dead is equal to zero OR
+3. The sum of population changes in groups of 2, 3, or 4 generations has a standard deviation of 1.0 or less
+
+To better-explain 3, consider the following 12 generations' of population changes:
+```
+[16, -17, 18, -14, 8, -23, 0, -3, 13, -12, 6, -5]
+```
+
+Grouping these changes into buckets of 2, 3, or 4 generations we produce these summed buckets:
+
+```
+Size 2: [-1, 4, -15, -3, 1, 1]
+Size 3: [17, -29, 10, -11]
+Size 4: [3, -18, 2]
+```
+
+We calculate the standard deviation of each set of buckets, giving:
+```
+Size 2: 6.69328
+Size 3: 18.08833
+Size 4: 9.672412
+```
+
+In this case, none of the deviations are less than or equal to 1.0, so the system is not in stasis.
+
+Conversely, given these populations:
+```
+[0, -9, -3, 5, -8, -9, 2, -8, -5, -6, -11, 4]
+
+Size 2: [-9, 2, -17, -6, -11, -7] -> 5.715476
+Size 3: [-12, -12, -11, -13]      -> 0.7071068
+Size 4: [-7, -23, -18]            -> 6.683312
+```
+we would assume we have reached stasis, as the standard deviation of the size-3 buckets is less than 1.0.
 
 ## Patch Ideas
 

@@ -5,6 +5,7 @@
 from europi import *
 from europi_script import EuroPiScript
 
+import math
 import random
 
 def clamp(x, low, hi):
@@ -44,6 +45,16 @@ def set_bit(arr, index, value):
         byte = byte & ~mask
     arr[index // 8] = byte
 
+def stdev(l):
+    """Return the standard deviation of a list of values
+
+    @param l  The list of numbers we want to calculate the standard deviation of
+
+    @return The standard deviation of the values in @l
+    """
+    mean = sum(l)/len(l)
+    return math.sqrt( sum([((x - mean) ** 2) for x in l]) / len(l) )
+
 class Conway(EuroPiScript):
     def __init__(self):
         # For ease of blitting, store the field as a bit array
@@ -71,6 +82,10 @@ class Conway(EuroPiScript):
 
         # Set to True if we want to clear the field & respawn
         self.reset_requested = False
+
+        # keep the last few changes in population in a list to check if it's oscillating predictably
+        self.population_deltas = []
+        self.MAX_DELTAS = 12
 
         @b1.handler
         def on_b1():
@@ -124,6 +139,7 @@ class Conway(EuroPiScript):
             self.next_field[i] = 0x00
 
         self.num_alive = 0
+        self.population_deltas = []
         self.random_spawn(self.calculate_spawn_level())
 
     def draw(self):
@@ -213,24 +229,50 @@ class Conway(EuroPiScript):
 
         self.changed_spaces = new_changes
 
+    def check_for_stasis(self):
+        """Check the population changes over time to see if we've reached a state of stasis
+        """
+        # we must have at least MAX_DELTAS generations of data
+        if len(self.population_deltas) < self.MAX_DELTAS:
+            return False
+
+        # if there are no changes, we've reached static stasis
+        if len(self.changed_spaces) == 0:
+            return True
+
+        # if the population is oscillating up and down predicatbly, we've probably reached stasis
+        # check for 2, 3, and 4 step repetitions
+        for pattern_length in range(2, 5):
+            sums = []
+            for i in range(self.MAX_DELTAS // pattern_length):
+                sums.append(sum(self.population_deltas[i*pattern_length:i*pattern_length+pattern_length]))
+
+            # check the standard deviation
+            deviation = stdev(sums)
+            if deviation <= 1:
+                return True
+
+        return False
+
+
     def main(self):
-        # turn off all CVs initially
         turn_off_all_cvs()
-
-        # If less than 5% of the field is changing states we may have achieved some kind of statis
-        stasis_threshold = 0.05
-
-        fill_level = k1.percent()
         self.random_spawn(self.calculate_spawn_level())
+
+        in_stasis = False
 
         while True:
             # turn off the stasis gate while we calculate the next generation
             cv6.voltage(0)
 
-            previous_generation = self.num_alive
-
             self.tick()
             self.draw()
+
+            self.population_deltas.append(self.num_born - self.num_died)
+            if len(self.population_deltas) > self.MAX_DELTAS:
+                self.population_deltas.pop(0)
+
+            in_stasis = self.check_for_stasis()
 
             cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (OLED_WIDTH * OLED_HEIGHT))
             cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
@@ -240,9 +282,7 @@ class Conway(EuroPiScript):
             cv5.voltage(5 if self.num_born < self.num_died else 0)
 
             # If we've achieved statis, set CV6
-            if len(self.changed_spaces) == 0 or (
-                len(self.changed_spaces) / (OLED_WIDTH * OLED_HEIGHT) < stasis_threshold and self.num_born == self.num_died
-            ):
+            if in_stasis:
                 cv6.voltage(5)
 
 if __name__ == "__main__":
