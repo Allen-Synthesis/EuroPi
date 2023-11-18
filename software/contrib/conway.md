@@ -80,6 +80,12 @@ Size 4: [-7, -23, -18]            -> 6.683312
 ```
 we would assume we have reached stasis, as the standard deviation of the size-3 buckets is less than 1.0.
 
+## LFO Rate Variablility
+
+Because of the implementation of Conway's Game of Life, when the field is densely-populated, e.g. immediately after a
+reset with a high spawn rate, the outputs will change relatively slow.  As cells die off and the field becomes more
+sparse the rate will increase.  This is normal.
+
 ## Patch Ideas
 
 The LFO will effectively stall if stasis is achieved.  By patching `cv6` into `din` you can force the simulation to
@@ -89,3 +95,6 @@ Alternatively, patch an external LFO into DIN to periodically reset the simulati
 
 You can create interesting feedback by patching `cv1`-`cv3` into `ain` and using the gate signals from `cv4`-`cv6`
 to control the simulation reset rate & reset density.
+
+If the variation in the LFO rate causes problems you can take the outputs from Conway and connect them to an
+externally-clocked Sample & Hold module. This will smooth out the changes in the update frequency of Conway.
