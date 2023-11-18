@@ -193,7 +193,7 @@ class Conway(EuroPiScript):
         self.next_frame = self.frame
         self.frame = tmp
 
-        # If a random spawning was requests, do it here, after calculating the normal generational growth
+        # If a random spawning was requested, do it here, after calculating the normal generational growth
         if self.spawn_requested:
             self.spawn_requested = False
             self.random_spawn(self.calculate_spawn_level())
