@@ -28,14 +28,18 @@ as an attenuator for the signal on `ain`.
 
 The six outputs are stepped CV outputs, whose values vary according to the game state.
 
-- `cv1`: outputs 0-10V depending on the percentage of the field occupied by living cells
-- `cv2`: outputs 0-10V depending on the ratio between the number of new births and the current population
-- `cv3`: outputs 0-10V depending on the ratio between the number of deaths in the most recent generation and the
-         current population
+- `cv1`: outputs 0-10V depending on the percentage of the field occupied by living cells. Under most conditions this
+         output measures between 0 and 1V, but may spike higher
+- `cv2`: outputs 0-10V depending on the ratio between the number of new births and the current population. Under
+         most conditions this output measures between 0 and 2.5V, but may spike higher
+- `cv3`: outputs 0-10V depending on the ratio between the number of births and the number of deaths in the
+         latest generation. Typically this output measures between 0 and 5V, but may spike higher.
 - `cv4`: outputs a 5V gate every generation
 - `cv5`: outputs a 5V gate signal if the number of births in the last generation was greater than the number
          of deaths
 - `cv6`: outputs a 5V gate signal if the field has reached a point of stasis
+
+
 
 ## Stasis Detection
 

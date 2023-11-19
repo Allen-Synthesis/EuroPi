@@ -302,7 +302,7 @@ class Conway(EuroPiScript):
 
             cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (NUM_PIXELS))
             cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
-            cv3.voltage(MAX_OUTPUT_VOLTAGE * self.num_died / self.num_alive)
+            cv3.voltage(MAX_OUTPUT_VOLTAGE * min(self.num_died, self.num_born)/max(self.num_died, self.num_born))
             cv5.voltage(GATE_VOLTAGE if self.num_born > self.num_died else 0)
 
             # If we've achieved statis, set CV6
