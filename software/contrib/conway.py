@@ -61,8 +61,11 @@ def stdev(l):
     mean = sum(l)/len(l)
     return ( sum([((x - mean) ** 2) for x in l]) / len(l) )**0.5
 
-# Hoa many pixels are on the screen
+# How many pixels are on the screen
 NUM_PIXELS = OLED_HEIGHT * OLED_WIDTH
+
+# How many volts are our gate outputs?
+GATE_VOLTAGE = 5
 
 class Conway(EuroPiScript):
     def __init__(self):
@@ -280,7 +283,7 @@ class Conway(EuroPiScript):
             cv6.voltage(0)
 
             # turn on the FPS gate when we start calculating
-            cv4.voltage(5)
+            cv4.voltage(GATE_VOLTAGE)
 
             # calculate the next generation
             self.tick()
@@ -300,11 +303,11 @@ class Conway(EuroPiScript):
             cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (NUM_PIXELS))
             cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
             cv3.voltage(MAX_OUTPUT_VOLTAGE * self.num_died / self.num_alive)
-            cv5.voltage(5 if self.num_born > self.num_died else 0)
+            cv5.voltage(GATE_VOLTAGE if self.num_born > self.num_died else 0)
 
             # If we've achieved statis, set CV6
             if in_stasis:
-                cv6.voltage(5)
+                cv6.voltage(GATE_VOLTAGE)
 
 if __name__ == "__main__":
     Conway().main()
