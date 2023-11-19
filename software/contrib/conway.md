@@ -42,7 +42,7 @@ The six outputs are stepped CV outputs, whose values vary according to the game 
 ## Stasis Detection
 
 Because of the modest computing power available, this program uses some simple statistics to infer if the game has
-reached a point of stasis. There is a chance that a false-positive will be detected.
+reached a point of stasis. There is a chance that false-positives and false-negatives can be detected.
 
 The game is assumed to have reached a state of stasis under these conditions:
 1. At least 12 generations have passed since the last reset
