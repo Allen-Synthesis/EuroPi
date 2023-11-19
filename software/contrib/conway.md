@@ -31,11 +31,10 @@ The six outputs are stepped CV outputs, whose values vary according to the game 
 - `cv1`: outputs 0-10V depending on the percentage of the field occupied by living cells
 - `cv2`: outputs 0-10V depending on the ratio between the number of new births and the current population
 - `cv3`: outputs 0-10V depending on the ratio between the number of deaths in the most recent generation and the
-        current population
-- `cv4`: outputs a 5V gate signal if the number of births in the last generation was greater than the number
+         current population
+- `cv4`: outputs a 5V gate every generation
+- `cv5`: outputs a 5V gate signal if the number of births in the last generation was greater than the number
          of deaths
-- `cv5`: outputs a 5V gate signal if the number of deaths in the last generation was greater than the number
-         of births
 - `cv6`: outputs a 5V gate signal if the field has reached a point of stasis
 
 ## Stasis Detection

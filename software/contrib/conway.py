@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 """Implements Conway's Game of Life as a pseudo-random LFO kernel
+
+Outputs 1-3 are 0-10V control voltages, outputs 4-6 are 5V gates
+
+@author Chris I-B <ve4cib@gmail.com>
+@year   2023
+
+Throughout the program we frequently use `>> 3` instead of `//8` for doing integer division when converting
+from bit indices to byte indices.
 """
 
 from europi import *
 from europi_script import EuroPiScript
-
-import math
-import random
+from random import random as rnd
 
 def clamp(x, low, hi):
     """Clamp a value to lie between low and hi
@@ -26,7 +32,7 @@ def get_bit(arr, index):
         [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
     """
     mask = 1 << ((8-index-1) % 8)
-    byte = arr[index // 8]
+    byte = arr[index >> 3]
     bit = 1 if byte & mask else 0
     return bit
 
@@ -37,13 +43,13 @@ def set_bit(arr, index, value):
     the first bit of [0]:
         [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
     """
-    byte = arr[index // 8]
+    byte = arr[index >> 3]
     mask = 1 << ((8-index-1) % 8)
     if value:
         byte = byte | mask
     else:
         byte = byte & ~mask
-    arr[index // 8] = byte
+    arr[index >> 3] = byte
 
 def stdev(l):
     """Return the standard deviation of a list of values
@@ -53,18 +59,18 @@ def stdev(l):
     @return The standard deviation of the values in @l
     """
     mean = sum(l)/len(l)
-    return math.sqrt( sum([((x - mean) ** 2) for x in l]) / len(l) )
+    return ( sum([((x - mean) ** 2) for x in l]) / len(l) )**0.5
+
+# Hoa many pixels are on the screen
+NUM_PIXELS = OLED_HEIGHT * OLED_WIDTH
 
 class Conway(EuroPiScript):
     def __init__(self):
         # For ease of blitting, store the field as a bit array
         # Each byte is 8 horizontally adjacent pixels, with the most significant bit
         # on the left
-        self.field = bytearray(OLED_HEIGHT * OLED_WIDTH // 8)
-        self.next_field = bytearray(OLED_HEIGHT * OLED_WIDTH // 8)
-
-        self.frame = FrameBuffer(self.field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
-        self.next_frame = FrameBuffer(self.next_field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
+        self.field = bytearray(NUM_PIXELS >> 3)
+        self.next_field = bytearray(NUM_PIXELS >> 3)
 
         # Simple optimization; keep a list of spaces whose states changed & their neighbours
         # This is initially empty as the field is entirely blank
@@ -99,6 +105,30 @@ class Conway(EuroPiScript):
         def on_din():
             self.reset_requested = True
 
+    def get_neigbour_indices(self, index):
+        """Get the indices of the 8 bits adjacent to the given index
+
+        If we're on the top/left/bottom/right edge, wrap arround to the opposite row/column, treating the world
+        as a torus
+
+        Unfortunately we don't have enough RAM to save this in a lookup table, so we have to recalculate it
+        every time, which slows down the simulation
+        """
+        row = index // OLED_WIDTH
+        col = index % OLED_WIDTH
+
+        def rowcol2index(r, c):
+            return (r % OLED_HEIGHT) * OLED_WIDTH + (c % OLED_WIDTH)
+
+        neighbours = []
+
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if i != 0 or j != 0:
+                    neighbours.append(rowcol2index(row+i, col+j))
+
+        return neighbours
+
     def calculate_spawn_level(self):
         """Calculate what percentage of the field should contain new cells
         """
@@ -119,15 +149,15 @@ class Conway(EuroPiScript):
 
         @param fill_level  A [0, 1] value indicating the odds of any space being filled
         """
-        for i in range(OLED_WIDTH * OLED_HEIGHT):
-            x = random.random()
+        for i in range(NUM_PIXELS):
+            x = rnd()
             # if the space isn't already filled and we want to fill it...
             if x < fill_level and not get_bit(self.field, i):
                 set_bit(self.field, i, True)
                 set_bit(self.next_field, i, True)
                 self.num_alive = self.num_alive + 1
-                neighbourhood = self.get_neigbour_indices(i)
                 self.changed_spaces.add(i)
+                neighbourhood = self.get_neigbour_indices(i)
                 for n in neighbourhood:
                     self.changed_spaces.add(n)
 
@@ -145,40 +175,17 @@ class Conway(EuroPiScript):
     def draw(self):
         """Show the current playing field on the OLED
         """
-        oled.blit(self.frame, 0, 0)
+        fb = FrameBuffer(self.field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
+        oled.blit(fb, 0, 0)
         oled.show()
-
-    def get_neigbour_indices(self, index):
-        """Get the indices of the 8 bits adjacent to the given index
-        """
-        row = index // OLED_WIDTH
-        col = index % OLED_WIDTH
-
-        neighbours = []
-        if row > 0:
-            neighbours.append((row-1)*OLED_WIDTH + col)
-            if col > 0:
-                neighbours.append((row-1)*OLED_WIDTH + col -1)
-            if col < OLED_WIDTH -1:
-                neighbours.append((row-1)*OLED_WIDTH + col +1)
-
-        if row < OLED_HEIGHT -1:
-            neighbours.append((row+1)*OLED_WIDTH + col)
-            if col > 0:
-                neighbours.append((row+1)*OLED_WIDTH + col -1)
-            if col < OLED_WIDTH -1:
-                neighbours.append((row+1)*OLED_WIDTH + col +1)
-
-        if col > 0:
-            neighbours.append(row*OLED_WIDTH + col -1)
-
-        if col < OLED_WIDTH - 1:
-            neighbours.append(row*OLED_WIDTH + col +1)
-
-        return neighbours
 
     def tick(self):
         """Calculate the state of the next generation
+
+        This checks the regions around every changed space in the previous generation, updating the
+        total population and counting how many births & deaths this generation had.
+
+        If a reset was requested, the field is cleared & randomly reset _before_ calculating the new generation
         """
         self.num_born = 0
         self.num_died = 0
@@ -223,10 +230,6 @@ class Conway(EuroPiScript):
         self.next_field = self.field
         self.field = tmp
 
-        tmp = self.next_frame
-        self.next_frame = self.frame
-        self.frame = tmp
-
         self.changed_spaces = new_changes
 
     def check_for_stasis(self):
@@ -256,6 +259,10 @@ class Conway(EuroPiScript):
 
 
     def main(self):
+        """The main loop for the program
+
+        Handles setting the CV output, drawing to the OLED, and triggering the simulation
+        """
         turn_off_all_cvs()
         self.random_spawn(self.calculate_spawn_level())
 
@@ -265,21 +272,28 @@ class Conway(EuroPiScript):
             # turn off the stasis gate while we calculate the next generation
             cv6.voltage(0)
 
+            # turn on the FPS gate when we start calculating
+            cv4.voltage(5)
+
+            # calculate the next generation
             self.tick()
+
+            # turn off the FPS gate when we're done calculating but before we draw
+            cv4.voltage(0)
+
+            # show the results on the OLED
             self.draw()
 
+            # check for stasis consitions
             self.population_deltas.append(self.num_born - self.num_died)
             if len(self.population_deltas) > self.MAX_DELTAS:
                 self.population_deltas.pop(0)
-
             in_stasis = self.check_for_stasis()
 
-            cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (OLED_WIDTH * OLED_HEIGHT))
+            cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (NUM_PIXELS))
             cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
             cv3.voltage(MAX_OUTPUT_VOLTAGE * self.num_died / self.num_alive)
-
-            cv4.voltage(5 if self.num_born > self.num_died else 0)
-            cv5.voltage(5 if self.num_born < self.num_died else 0)
+            cv5.voltage(5 if self.num_born > self.num_died else 0)
 
             # If we've achieved statis, set CV6
             if in_stasis:
