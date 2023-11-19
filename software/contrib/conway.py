@@ -72,6 +72,10 @@ class Conway(EuroPiScript):
         self.field = bytearray(NUM_PIXELS >> 3)
         self.next_field = bytearray(NUM_PIXELS >> 3)
 
+        # Keep 2 separate frame buffer instances so we don't need to recreate the FB objects when we draw
+        self.frame = FrameBuffer(self.field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
+        self.next_frame = FrameBuffer(self.next_field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
+
         # Simple optimization; keep a list of spaces whose states changed & their neighbours
         # This is initially empty as the field is entirely blank
         self.changed_spaces = set()
@@ -175,8 +179,7 @@ class Conway(EuroPiScript):
     def draw(self):
         """Show the current playing field on the OLED
         """
-        fb = FrameBuffer(self.field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
-        oled.blit(fb, 0, 0)
+        oled.blit(self.frame, 0, 0)
         oled.show()
 
     def tick(self):
@@ -229,6 +232,10 @@ class Conway(EuroPiScript):
         tmp = self.next_field
         self.next_field = self.field
         self.field = tmp
+
+        tmp = self.next_frame
+        self.next_frame = self.frame
+        self.frame = tmp
 
         self.changed_spaces = new_changes
 
