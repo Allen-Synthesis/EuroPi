@@ -39,8 +39,6 @@ The six outputs are stepped CV outputs, whose values vary according to the game 
          of deaths
 - `cv6`: outputs a 5V gate signal if the field has reached a point of stasis
 
-
-
 ## Stasis Detection
 
 Because of the modest computing power available, this program uses some simple statistics to infer if the game has
