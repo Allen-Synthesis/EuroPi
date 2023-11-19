@@ -48,6 +48,7 @@ The game is assumed to have reached a state of stasis under these conditions:
 1. At least 12 generations have passed since the last reset
 2. The number of game spaces that have changed from dead to alive or alive to dead is equal to zero OR
 3. The sum of population changes in groups of 2, 3, or 4 generations has a standard deviation of 1.0 or less
+   and the absolute value of the mean of the group is less than 1.0.
 
 To better-explain 3, consider the following 12 generations' of population changes:
 ```
@@ -62,24 +63,25 @@ Size 3: [17, -29, 10, -11]
 Size 4: [3, -18, 2]
 ```
 
-We calculate the standard deviation of each set of buckets, giving:
+We calculate the mean and standard deviation of each set of buckets, giving:
 ```
-Size 2: 6.69328
-Size 3: 18.08833
-Size 4: 9.672412
+Size 2: -2.167, 6.69328
+Size 3: -3.25, 18.08833
+Size 4: -4.333, 9.672412
 ```
 
-In this case, none of the deviations are less than or equal to 1.0, so the system is not in stasis.
+In this case none of the standard deviations nor means have a magnitude smaller than 1, so the system is not
+considered to be in stasis.
 
-Conversely, given these populations:
+Conversely, given these population changes:
 ```
-[0, -9, -3, 5, -8, -9, 2, -8, -5, -6, -11, 4]
+[-12, 6, 4, 2, -12, 6, 4, 2, -12, 6, 4, 2]
 
-Size 2: [-9, 2, -17, -6, -11, -7] -> 5.715476
-Size 3: [-12, -12, -11, -13]      -> 0.7071068
-Size 4: [-7, -23, -18]            -> 6.683312
+Size 2: [-6, 6, -6, 6, -6, 6] -> 0.0, 6.0
+Size 3: [-2, -4, -6, 12]      -> 0.0, 7.071068
+Size 4: [0, 0, 0]             -> 0.0, 0.0
 ```
-we would assume we have reached stasis, as the standard deviation of the size-3 buckets is less than 1.0.
+we would assume we have reached stasis, as the mean and standard deviation of the size-3 buckets are less than 1.0.
 
 ## LFO Rate Variablility
 

@@ -262,7 +262,8 @@ class Conway(EuroPiScript):
 
             # check the standard deviation
             deviation = stdev(sums)
-            if deviation <= 1:
+            mean = sum(sums)/len(sums)
+            if deviation <= 1 and abs(mean) <= 1:
                 return True
 
         return False
