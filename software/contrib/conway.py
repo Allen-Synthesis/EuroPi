@@ -138,12 +138,19 @@ class Conway(EuroPiScript):
 
     def calculate_spawn_level(self):
         """Calculate what percentage of the field should contain new cells
+
+        We want to avoid having the spawn rate _too_ high as that can result in high CPU loads and RAM usage.
+        - K1: [0, 0.5]
+        - K2: [-0.5, 0.5]
+        - AIN: [0, 1]
+
+        P = K1 + K2 * AIN => [-0.5, 1.0]
         """
-        base_spawn_level = k1.percent()
+        base_spawn_level = k1.percent() / 2
 
         # get the level of AIN, attenuverted by K2
-        cv_mod = ain.percent()
-        cv_att = k2.percent() * 2 - 1
+        cv_mod = ain.percent()/2
+        cv_att = k2.percent() - 1
         cv_mod = cv_mod * cv_att
 
         spawn_level = clamp(base_spawn_level + cv_mod, 0, 1)
@@ -303,8 +310,15 @@ class Conway(EuroPiScript):
 
             cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (NUM_PIXELS))
             cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
-            cv3.voltage(MAX_OUTPUT_VOLTAGE * min(self.num_died, self.num_born)/max(self.num_died, self.num_born))
             cv5.voltage(GATE_VOLTAGE if self.num_born > self.num_died else 0)
+
+            # Prevent values greater than 1 & division-by-zero errors
+            hi = max(self.num_died, self.num_born)
+            low = min(self.num_died, self.num_born)
+            if (hi > 0):
+                cv3.voltage(MAX_OUTPUT_VOLTAGE * (low/hi))
+            else:
+                cv3.voltage(0)
 
             # If we've achieved statis, set CV6
             if in_stasis:
