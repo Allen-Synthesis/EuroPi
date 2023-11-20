@@ -12,6 +12,7 @@ from bit indices to byte indices.
 
 from europi import *
 from europi_script import EuroPiScript
+from experimental.bitarray import *
 from random import random as rnd
 
 import math
@@ -34,45 +35,6 @@ def clamp(x, low, hi):
         return hi
     else:
         return x
-
-def get_bit(arr, index):
-    """Get the value of the bit at the nth position in a bytearray
-
-    Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
-    the first bit of [0]:
-        [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
-    """
-    mask = 1 << ((8-index-1) % 8)
-    byte = arr[index >> 3]
-    bit = 1 if byte & mask else 0
-    return bit
-
-def set_bit(arr, index, value):
-    """Set the bit at the nth position in a bytearray
-
-    Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
-    the first bit of [0]:
-        [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
-    """
-    byte = arr[index >> 3]
-    mask = 1 << ((8-index-1) % 8)
-    if value:
-        byte = byte | mask
-    else:
-        byte = byte & ~mask
-    arr[index >> 3] = byte
-
-def clear_bits(arr, value=0):
-    """Reset all bits in the array to the same value
-
-    @param arr  The bytearray to reset
-    @param value  If true, set all bits to 1, otherwise all bits are set to 0
-    """
-    for i in range(len(arr)):
-        if value:
-            arr[i] = 0xff
-        else:
-            arr[i] = 0x00
 
 def stdev(l):
     """Return the standard deviation of a list of values
@@ -229,7 +191,7 @@ class Conway(EuroPiScript):
                 self.num_alive = self.num_alive - 1
 
         # Assume the whole field has changed
-        clear_bits(self.changed_spaces, True)
+        set_all_bits(self.changed_spaces, True)
         self.num_changes = NUM_PIXELS
 
     def draw(self):
@@ -299,7 +261,7 @@ class Conway(EuroPiScript):
         tmp = self.next_changed_spaces
         self.next_changed_spaces = self.changed_spaces
         self.changed_spaces = tmp
-        clear_bits(self.next_changed_spaces)
+        set_all_bits(self.next_changed_spaces)
 
     def check_for_stasis(self):
         """Check the population changes over time to see if we've reached a state of stasis
