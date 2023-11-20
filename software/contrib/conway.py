@@ -204,12 +204,13 @@ class Conway(EuroPiScript):
         """
         for i in range(NUM_PIXELS):
             x = rnd()
-            if x < fill_level and not get_bit(self.field, i):
+            is_alive = get_bit(self.field, i)
+            if x < fill_level and not is_alive:
                 # if the space isn't already filled and we want to fill it
                 set_bit(self.field, i, True)
                 set_bit(self.next_field, i, True)
                 self.num_alive = self.num_alive + 1
-            elif x >= fill_level and get_bit(self.field, i):
+            elif x >= fill_level and is_alive:
                 # if the space is filled and we want to clear it
                 set_bit(self.field, i, False)
                 set_bit(self.next_field, i, False)
