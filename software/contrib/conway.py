@@ -195,13 +195,18 @@ class Conway(EuroPiScript):
         spawn_level = clamp(base_spawn_level + cv_mod, 0, 1)
         return spawn_level
 
-    def random_spawn(self, fill_level):
-        """Randomly spawn cells on the field
-
-        The probablility of any space being set to True is equal to fill_level
-
-        @param fill_level  A [0, 1] value indicating the odds of any space being filled
+    def reset(self):
+        """Clear the whole field and spawn random data in it
         """
+        for i in range(len(self.field)):
+            self.field[i] = 0x00
+            self.next_field[i] = 0x00
+
+        self.num_alive = 0
+        self.population_deltas = []
+
+        # fill the field with random cells
+        fill_level = self.calculate_spawn_level()
         for i in range(NUM_PIXELS):
             x = rnd()
             is_alive = get_bit(self.field, i)
@@ -216,18 +221,8 @@ class Conway(EuroPiScript):
                 set_bit(self.next_field, i, False)
                 self.num_alive = self.num_alive - 1
 
+        # Assume the whole field has changed
         clear_bits(self.changed_spaces, True)
-
-    def reset(self):
-        """Clear the whole field and spawn random data in it
-        """
-        for i in range(len(self.field)):
-            self.field[i] = 0x00
-            self.next_field[i] = 0x00
-
-        self.num_alive = 0
-        self.population_deltas = []
-        self.random_spawn(self.calculate_spawn_level())
 
     def draw(self):
         """Show the current playing field on the OLED
@@ -331,7 +326,7 @@ class Conway(EuroPiScript):
         Handles setting the CV output, drawing to the OLED, and triggering the simulation
         """
         turn_off_all_cvs()
-        self.random_spawn(self.calculate_spawn_level())
+        self.reset()
 
         in_stasis = False
 
