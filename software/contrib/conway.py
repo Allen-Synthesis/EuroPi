@@ -51,6 +51,14 @@ def set_bit(arr, index, value):
         byte = byte & ~mask
     arr[index >> 3] = byte
 
+def clear_bits(arr):
+    """Reset all bits in the array to 0
+
+    @param arr  The bytearray to reset
+    """
+    for i in range(len(arr)):
+        arr[i] = 0x00
+
 def stdev(l):
     """Return the standard deviation of a list of values
 
@@ -81,7 +89,11 @@ class Conway(EuroPiScript):
 
         # Simple optimization; keep a list of spaces whose states changed & their neighbours
         # This is initially empty as the field is entirely blank
-        self.changed_spaces = set()
+        # to save memory instead of using a List or Set object, we use a bit array with a length equal to
+        # the size of the field
+        self.num_changes = 0
+        self.changed_spaces = bytearray(NUM_PIXELS >> 3)
+        self.next_changed_spaces = bytearray(NUM_PIXELS >> 3)
 
         # how many cells were born this tick?
         self.num_born = 0
@@ -170,10 +182,10 @@ class Conway(EuroPiScript):
                 set_bit(self.field, i, True)
                 set_bit(self.next_field, i, True)
                 self.num_alive = self.num_alive + 1
-                self.changed_spaces.add(i)
+                set_bit(self.changed_spaces, i, 1)
                 neighbourhood = self.get_neigbour_indices(i)
                 for n in neighbourhood:
-                    self.changed_spaces.add(n)
+                    set_bit(self.changed_spaces, n, 1)
 
     def reset(self):
         """Clear the whole field and spawn random data in it
@@ -202,41 +214,44 @@ class Conway(EuroPiScript):
         """
         self.num_born = 0
         self.num_died = 0
+        self.num_changes = 0
 
         if self.reset_requested:
             self.reset_requested = False
             self.reset()
 
-        new_changes = set()
-        for bit_index in self.changed_spaces:
-            neighbourhood = self.get_neigbour_indices(bit_index)
-            num_neighbours = 0
-            for n in neighbourhood:
-                if get_bit(self.field, n):
-                    num_neighbours = num_neighbours + 1
+        for bit_index in range(NUM_PIXELS):
+            if get_bit(self.changed_spaces, bit_index):
+                neighbourhood = self.get_neigbour_indices(bit_index)
+                num_neighbours = 0
+                for n in neighbourhood:
+                    if get_bit(self.field, n):
+                        num_neighbours = num_neighbours + 1
 
-            if get_bit(self.field, bit_index):
-                if num_neighbours == 2 or num_neighbours == 3:        # happy cell, stays alive
-                    set_bit(self.next_field, bit_index, True)
-                else:                                                 # sad cell, dies
-                    set_bit(self.next_field, bit_index, False)
-                    self.num_died = self.num_died + 1
-                    self.num_alive = self.num_alive - 1
+                if get_bit(self.field, bit_index):
+                    if num_neighbours == 2 or num_neighbours == 3:        # happy cell, stays alive
+                        set_bit(self.next_field, bit_index, True)
+                    else:                                                 # sad cell, dies
+                        set_bit(self.next_field, bit_index, False)
+                        self.num_died = self.num_died + 1
+                        self.num_alive = self.num_alive - 1
 
-                    new_changes.add(bit_index)
-                    for n in neighbourhood:
-                        new_changes.add(n)
-            else:
-                if num_neighbours == 3:                               # baby cell is born!
-                    set_bit(self.next_field, bit_index, True)
-                    self.num_alive = self.num_alive + 1
-                    self.num_born = self.num_born + 1
+                        self.num_changes = self.num_changes + 1
+                        set_bit(self.next_changed_spaces, bit_index, 1)
+                        for n in neighbourhood:
+                            set_bit(self.next_changed_spaces, n, 1)
+                else:
+                    if num_neighbours == 3:                               # baby cell is born!
+                        set_bit(self.next_field, bit_index, True)
+                        self.num_alive = self.num_alive + 1
+                        self.num_born = self.num_born + 1
 
-                    new_changes.add(bit_index)
-                    for n in neighbourhood:
-                        new_changes.add(n)
-                else:                                                 # empty space remains empty
-                    set_bit(self.next_field, bit_index, False)
+                        self.num_changes = self.num_changes + 1
+                        set_bit(self.next_changed_spaces, bit_index, 1)
+                        for n in neighbourhood:
+                            set_bit(self.next_changed_spaces, n, 1)
+                    else:                                                 # empty space remains empty
+                        set_bit(self.next_field, bit_index, False)
 
         # swap field & next_field so we don't need to copy between arrays
         tmp = self.next_field
@@ -247,7 +262,10 @@ class Conway(EuroPiScript):
         self.next_frame = self.frame
         self.frame = tmp
 
-        self.changed_spaces = new_changes
+        tmp = self.next_changed_spaces
+        self.next_changed_spaces = self.changed_spaces
+        self.changed_spaces = tmp
+        clear_bits(self.next_changed_spaces)
 
     def check_for_stasis(self):
         """Check the population changes over time to see if we've reached a state of stasis
@@ -257,7 +275,7 @@ class Conway(EuroPiScript):
             return False
 
         # if there are no changes, we've reached static stasis
-        if len(self.changed_spaces) == 0:
+        if self.num_changes == 0:
             return True
 
         # if the population is oscillating up and down predicatbly, we've probably reached stasis
