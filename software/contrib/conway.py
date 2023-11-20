@@ -16,6 +16,15 @@ from random import random as rnd
 
 import math
 
+# We re-use this constant a lot, so just save it for easy re-use
+LOG2 = math.log(2)
+
+# How many pixels are on the screen
+NUM_PIXELS = OLED_HEIGHT * OLED_WIDTH
+
+# How many volts are our gate outputs?
+GATE_VOLTAGE = 5
+
 def clamp(x, low, hi):
     """Clamp a value to lie between low and hi
     """
@@ -82,25 +91,23 @@ def bitwise_entropy(arr):
 
     @return the Shannon Entropy of the string, assuming a 50/50 chance of any bit being 1 or 0
     """
+    # 1) Count how many bits are 1 in the whole bytearray
     count1s = 0
-    l = len(arr) << 3
-    for i in range(l):
-        if get_bit(arr, i):
-            count1s = count1s + 1
+    for b in arr:
+        for i in range(8):
+            if b & (1 << i):
+                count1s = count1s + 1
 
+    # 2) Calculate the proportion of 0 vs 1 bits in the whole bytearray
+    num_bits = len(arr) << 3
     prob_s = [
-        (l - count1s) / l,
-        count1s / l
+        (num_bits - count1s) / num_bits,
+        count1s / num_bits
     ]
-    entropy = -sum([ p * math.log(p)/math.log(2) for p in prob_s])
-    return entropy
 
+    # 3) The magical entropy calculation
+    return -sum([ p * math.log(p) for p in prob_s]) / LOG2
 
-# How many pixels are on the screen
-NUM_PIXELS = OLED_HEIGHT * OLED_WIDTH
-
-# How many volts are our gate outputs?
-GATE_VOLTAGE = 5
 
 class Conway(EuroPiScript):
     def __init__(self):
@@ -223,6 +230,7 @@ class Conway(EuroPiScript):
 
         # Assume the whole field has changed
         clear_bits(self.changed_spaces, True)
+        self.num_changes = NUM_PIXELS
 
     def draw(self):
         """Show the current playing field on the OLED
