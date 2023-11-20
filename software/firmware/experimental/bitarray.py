@@ -6,6 +6,7 @@ module serves as a loose framework on top of the bytearray object to allow
 easier bit-level access.
 """
 
+
 def make_bit_array(length):
     """Create a bit array that contains at least @length bits
 
@@ -16,10 +17,12 @@ def make_bit_array(length):
 
     @return A bytearray containing at least @length bits
     """
-    if length & 0x03:                     # bitwise check for divisibility by 8
-        byte_length = (length >> 3) + 1   # bitwise divide by 8 +1 for the extra [1, 7] bits
+    # Use bitwise operations instead of integer division and modulo operations to keep things fast
+    if length & 0x07:
+        byte_length = (length >> 3) + 1
     else:
-        byte_length = (length >> 3)       # bitwise divide by 8
+        byte_length = length >> 3
+
 
 def get_bit(arr, index):
     """Get the value of the bit at the nth position in a bytearray
@@ -33,10 +36,12 @@ def get_bit(arr, index):
 
     @return 0 or 1, depending on the state at position @index
     """
+    # Use bitwise operations instead of integer division and modulo operations to keep things fast
     byte = arr[index >> 3]
-    mask = 1 << ((8-index-1) % 8)
+    mask = 1 << ((8 - index - 1) & 0x07)
     bit = 1 if byte & mask else 0
     return bit
+
 
 def set_bit(arr, index, value):
     """Set the bit at the nth position in a bytearray
@@ -49,13 +54,15 @@ def set_bit(arr, index, value):
     @param index  The bit position within the array
     @param value  A truthy value indicating whether the bit should be set to 1 or 0
     """
+    # Use bitwise operations instead of integer division and modulo operations to keep things fast
     byte = arr[index >> 3]
-    mask = 1 << ((8-index-1) % 8)
+    mask = 1 << ((8 - index - 1) & 0x07)
     if value:
         byte = byte | mask
     else:
         byte = byte & ~mask
     arr[index >> 3] = byte
+
 
 def set_all_bits(arr, value=0):
     """Set all bits in the array to the same value
@@ -65,6 +72,6 @@ def set_all_bits(arr, value=0):
     """
     for i in range(len(arr)):
         if value:
-            arr[i] = 0xff
+            arr[i] = 0xFF
         else:
             arr[i] = 0x00
