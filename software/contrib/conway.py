@@ -14,6 +14,8 @@ from europi import *
 from europi_script import EuroPiScript
 from random import random as rnd
 
+import math
+
 def clamp(x, low, hi):
     """Clamp a value to lie between low and hi
     """
@@ -51,13 +53,17 @@ def set_bit(arr, index, value):
         byte = byte & ~mask
     arr[index >> 3] = byte
 
-def clear_bits(arr):
-    """Reset all bits in the array to 0
+def clear_bits(arr, value=0):
+    """Reset all bits in the array to the same value
 
     @param arr  The bytearray to reset
+    @param value  If true, set all bits to 1, otherwise all bits are set to 0
     """
     for i in range(len(arr)):
-        arr[i] = 0x00
+        if value:
+            arr[i] = 0xff
+        else:
+            arr[i] = 0x00
 
 def stdev(l):
     """Return the standard deviation of a list of values
@@ -68,6 +74,27 @@ def stdev(l):
     """
     mean = sum(l)/len(l)
     return ( sum([((x - mean) ** 2) for x in l]) / len(l) )**0.5
+
+def bitwise_entropy(arr):
+    """Calculate the entropy of the bit string in a bytearray
+
+    @param arr  A bytearray, treated as a bit string
+
+    @return the Shannon Entropy of the string, assuming a 50/50 chance of any bit being 1 or 0
+    """
+    count1s = 0
+    l = len(arr) << 3
+    for i in range(l):
+        if get_bit(arr, i):
+            count1s = count1s + 1
+
+    prob_s = [
+        (l - count1s) / l,
+        count1s / l
+    ]
+    entropy = -sum([ p * math.log(p)/math.log(2) for p in prob_s])
+    return entropy
+
 
 # How many pixels are on the screen
 NUM_PIXELS = OLED_HEIGHT * OLED_WIDTH
@@ -177,15 +204,18 @@ class Conway(EuroPiScript):
         """
         for i in range(NUM_PIXELS):
             x = rnd()
-            # if the space isn't already filled and we want to fill it...
             if x < fill_level and not get_bit(self.field, i):
+                # if the space isn't already filled and we want to fill it
                 set_bit(self.field, i, True)
                 set_bit(self.next_field, i, True)
                 self.num_alive = self.num_alive + 1
-                set_bit(self.changed_spaces, i, 1)
-                neighbourhood = self.get_neigbour_indices(i)
-                for n in neighbourhood:
-                    set_bit(self.changed_spaces, n, 1)
+            elif x >= fill_level and get_bit(self.field, i):
+                # if the space is filled and we want to clear it
+                set_bit(self.field, i, False)
+                set_bit(self.next_field, i, False)
+                self.num_alive = self.num_alive - 1
+
+        clear_bits(self.changed_spaces, True)
 
     def reset(self):
         """Clear the whole field and spawn random data in it
@@ -326,7 +356,7 @@ class Conway(EuroPiScript):
                 self.population_deltas.pop(0)
             in_stasis = self.check_for_stasis()
 
-            cv1.voltage(MAX_OUTPUT_VOLTAGE * self.num_alive / (NUM_PIXELS))
+            cv1.voltage(MAX_OUTPUT_VOLTAGE * bitwise_entropy(self.field))
             cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
             cv5.voltage(GATE_VOLTAGE if self.num_born > self.num_died else 0)
 

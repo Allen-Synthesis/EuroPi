@@ -28,7 +28,7 @@ as an attenuator for the signal on `ain`.
 
 The six outputs are stepped CV outputs, whose values vary according to the game state.
 
-- `cv1`: outputs 0-10V depending on the percentage of the field occupied by living cells
+- `cv1`: outputs 0-10V depending on the Shannon entropy of the entire field
 - `cv2`: outputs 0-10V depending on the ratio between the number of new births and the current population
 - `cv3`: outputs 0-10V depending on the ratio between the number of births and the number of deaths in the
          latest generation
