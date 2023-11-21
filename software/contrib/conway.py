@@ -345,9 +345,10 @@ class Conway(EuroPiScript):
             else:
                 cv3.voltage(0)
 
-            # If we've achieved statis, set CV6
+            # If we've achieved statis, set CV6 & trigger a reset
             if in_stasis:
                 cv6.voltage(GATE_VOLTAGE)
+                self.reset_requested = True
 
 if __name__ == "__main__":
     Conway().main()

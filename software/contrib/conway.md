@@ -89,10 +89,7 @@ sparse the rate will increase.  This is normal.
 
 ## Patch Ideas
 
-The LFO will effectively stall if stasis is achieved.  By patching `cv6` into `din` you can force the simulation to
-restart if the stasis conditions are achieved.
-
-Alternatively, patch an external LFO into DIN to periodically reset the simulation.
+You can patch an external LFO into DIN to periodically reset the simulation before it reaches a state of stasis.
 
 You can create interesting feedback by patching `cv1`-`cv3` into `ain` and using the gate signals from `cv4`-`cv6`
 to control the simulation reset rate & reset density.
