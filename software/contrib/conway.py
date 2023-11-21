@@ -276,8 +276,8 @@ class Conway(EuroPiScript):
         if len(self.population_deltas) < self.MAX_DELTAS:
             return False
 
-        # if there are no changes, we've reached static stasis
-        if self.num_changes == 0:
+        # if there are no changes or everything is dead, we've reached static stasis
+        if self.num_changes == 0 or self.num_alive == 0:
             return True
 
         # if the population is oscillating up and down predicatbly, we've probably reached stasis
@@ -294,7 +294,6 @@ class Conway(EuroPiScript):
                 return True
 
         return False
-
 
     def main(self):
         """The main loop for the program
