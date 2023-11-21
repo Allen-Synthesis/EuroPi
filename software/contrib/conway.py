@@ -329,8 +329,14 @@ class Conway(EuroPiScript):
             in_stasis = self.check_for_stasis()
 
             cv1.voltage(MAX_OUTPUT_VOLTAGE * bitwise_entropy(self.field))
-            cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
             cv5.voltage(GATE_VOLTAGE if self.num_born > self.num_died else 0)
+
+            # Make sure we don't divide by zero
+            if self.num_alive > 0:
+                cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
+            else:
+                cv2.voltage(0)
+
 
             # Prevent values greater than 1 & division-by-zero errors
             hi = max(self.num_died, self.num_born)
