@@ -53,21 +53,22 @@ def bitwise_entropy(arr):
 
     @return the Shannon Entropy of the string, assuming a 50/50 chance of any bit being 1 or 0
     """
-    # 1) Count how many bits are 1 in the whole bytearray
+    # Count how many bits are 1 in the whole bytearray
     count1s = 0
     for b in arr:
         for i in range(8):
             if b & (1 << i):
                 count1s = count1s + 1
 
-    # 2) Calculate the proportion of 0 vs 1 bits in the whole bytearray
+    # Make sure we don't have all-1 or all-0 in the array; handle those cases
     num_bits = len(arr) << 3
     if count1s == 0:
         return 0.0
     elif count1s == num_bits:
         return 1.0
     else:
-        # 3) The magical entropy calculation
+        # Calculate the entropy of the string
+        # E = sum(p(x) * log_2(p(x))) = sum(p(x) * log(p(x))) / log(2)
         prob_s = [
             (num_bits - count1s) / num_bits,
             count1s / num_bits
