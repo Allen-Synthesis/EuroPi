@@ -62,13 +62,17 @@ def bitwise_entropy(arr):
 
     # 2) Calculate the proportion of 0 vs 1 bits in the whole bytearray
     num_bits = len(arr) << 3
-    prob_s = [
-        (num_bits - count1s) / num_bits,
-        count1s / num_bits
-    ]
-
-    # 3) The magical entropy calculation
-    return -sum([ p * math.log(p) for p in prob_s]) / LOG2
+    if count1s == 0:
+        return 0.0
+    elif count1s == num_bits:
+        return 1.0
+    else:
+        # 3) The magical entropy calculation
+        prob_s = [
+            (num_bits - count1s) / num_bits,
+            count1s / num_bits
+        ]
+        return -sum([ p * math.log(p) for p in prob_s]) / LOG2
 
 
 class Conway(EuroPiScript):
