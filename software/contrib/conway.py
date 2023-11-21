@@ -69,11 +69,12 @@ def bitwise_entropy(arr):
     else:
         # Calculate the entropy of the string
         # E = sum(p(x) * log_2(p(x))) = sum(p(x) * log(p(x))) / log(2)
-        prob_s = [
-            (num_bits - count1s) / num_bits,
-            count1s / num_bits
+        prob_1 = count1s / num_bits
+        p_x = [
+            1.0 - prob_1,
+            prob_1
         ]
-        return -sum([ p * math.log(p) for p in prob_s]) / LOG2
+        return -sum([ p * math.log(p) for p in p_x]) / LOG2
 
 
 class Conway(EuroPiScript):
