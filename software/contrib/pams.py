@@ -18,6 +18,7 @@ from experimental.screensaver import Screensaver
 from collections import OrderedDict
 from machine import Timer
 
+import gc
 import math
 import time
 import random
@@ -254,7 +255,7 @@ YES_NO_LABELS = [
 #
 #  Banks are shared across all channels
 #  The -1 index is used to indicate "cancel"
-BANK_IDs = list(range(-1, 8))
+BANK_IDs = list(range(-1, 6))
 
 ## Labels for the banks
 BANK_LABELS = [
@@ -264,9 +265,7 @@ BANK_LABELS = [
     "3",
     "4",
     "5",
-    "6",
-    "7",
-    "8"
+    "6"
 ]
 
 ## Integers 0-100 for choosing a percentage value
@@ -1255,42 +1254,51 @@ class PamsMenu:
 
         self.visible_item.draw()
 
-    def reset_channel(self, reset_setting, channel):
+    def reset_channel(self, setting, channel):
         """Reset the given channel if the reset_setting is True
 
-        @param reset_setting  A Setting instance that calls this function as a callback
-        @param channel        The channel to reset
+        @param setting  A Setting instance that calls this function as a callback
+        @param channel  The channel to reset
         """
 
-        if reset_setting.get_value():
+        if setting.get_value():
             # reset the given channel to default...
             channel.reset_settings()
             # ...then reset this setting back to N so we can reset again later
-            reset_setting.reset_to_default()
+            setting.reset_to_default()
 
-    def save_channel(self, save_setting, channel):
+    def save_channel(self, setting, channel):
         """Save the channel settings to the selected bank
 
-        @param save_setting  The Setting instance that calls this function as a callback
-        @param channel       The channel to save
-        """
-        bank = save_setting.get_value()
-        if bank > 0 and bank <= len(self.pams_workout.banks):
-            self.pams_workout.banks[bank] = channel.to_dict()
-
-    def load_channel(self, load_setting, channel):
-        """Load the channel settings from the selected bank
-
-        @param load_setting  The Setting instance that calls this function as a callback
-        @param channel       The channel to load
+        @param setting   The Setting instance that calls this function as a callback
+        @param channel   The channel to save
         """
         try:
-            bank = save_setting.get_value()
+            gc.collect()
+            bank = setting.get_value()
             if bank > 0 and bank <= len(self.pams_workout.banks):
+                self.pams_workout.banks[bank] = channel.to_dict()
+        except Exception as err:
+            print(f"Failed to save settings: {err}")
+        finally:
+            gc.collect()
+
+    def load_channel(self, setting, channel):
+        """Load the channel settings from the selected bank
+
+        @param setting  The Setting instance that calls this function as a callback
+        @param channel  The channel to load
+        """
+        try:
+            gc.collect()
+            bank = setting.get_value()
+            if bank >= 0 and bank < len(self.pams_workout.banks):
                 cfg = self.pams_workout.banks[bank]
                 channel.load_settings(cfg)
         except Exception as err:
             print(f"Failed to load channel settings: {err}")
+        finally:
+            gc.collect()
 
 
 class PamsWorkout(EuroPiScript):
