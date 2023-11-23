@@ -1276,7 +1276,7 @@ class PamsMenu:
         try:
             gc.collect()
             bank = setting.get_value()
-            if bank > 0 and bank <= len(self.pams_workout.banks):
+            if bank >= 0 and bank < len(self.pams_workout.banks):
                 self.pams_workout.banks[bank] = channel.to_dict()
         except Exception as err:
             print(f"Failed to save settings: {err}")
