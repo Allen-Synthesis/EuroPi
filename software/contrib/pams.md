@@ -69,6 +69,8 @@ CV1
  |    +-- Quantization Scale*
  |    +-- Quantizer Root*
  |    +-- Mute
+ |    +-- Save
+ |    +-- Load
  |    +-- Reset
  |
 CV2 to 6
@@ -154,6 +156,8 @@ The submenu for each CV output has the following options:
 - `Quant` -- quantization scale
 - `Q Root` -- quantizer root: transposes the quantized output up by the number of semitones above C.
 - `Mute` -- if a channel is muted its output will always be zero. A muted channel can still be edited.
+- `Save` -- save the channel's current settings to one of 8 banks. Banks are shared across all channels
+- `Load` -- load a channel's settings from one of 8 banks. Banks are shared across all channels
 - `Reset` -- if set to `Y` all channel settings are reset to their defaults
 
 The values of the `Attack`, `Decay`, `Sustain`, and `Release` settings are ignored if the wave whape is not set to
