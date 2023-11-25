@@ -175,3 +175,12 @@ class BootloaderMenu(EuroPiScript):
                 self.show_error(
                     "Crash", f"{err.__class__.__name__[0:MAX_CHARS]}\n{str(err)[0:MAX_CHARS]}", -1
                 )
+
+                # Log the crash to a file for later analysis/recovery
+                try:
+                    with open("last_crash.log", "w") as log_file:
+                        log_file.write(f"{time.ticks_ms()}: {err}\n")
+                except:
+                    # If we fail to create the error log, just silently fail; we don't need
+                    # an additional exception to handle
+                    pass
