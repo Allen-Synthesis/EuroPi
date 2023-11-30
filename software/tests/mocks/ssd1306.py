@@ -25,3 +25,6 @@ class SSD1306_I2C:
 
     def hline(self, *args):
         pass
+
+    def write_cmd(self, *args):
+        pass
