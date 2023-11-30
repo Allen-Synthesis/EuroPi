@@ -12,6 +12,7 @@ MOOG_VOLTS_PER_OCTAVE = 1.0
 # Buchla standard is 1.2 volts per octave (0.1 volts per semitone)
 BUCHLA_VOLTS_PER_OCTAVE = 1.2
 
+
 class EuroPiConfig:
     """This class provides EuroPi's global config points.
 
@@ -37,7 +38,7 @@ class EuroPiConfig:
             configuration.choice(
                 name="volts_per_octave",
                 choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
-                default=MOOG_VOLTS_PER_OCTAVE
+                default=MOOG_VOLTS_PER_OCTAVE,
             ),
         ]
 
