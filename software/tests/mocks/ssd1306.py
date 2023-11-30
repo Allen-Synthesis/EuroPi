@@ -16,6 +16,7 @@ SET_PRECHARGE = const(0xD9)
 SET_VCOM_DESEL = const(0xDB)
 SET_CHARGE_PUMP = const(0x8D)
 
+
 class SSD1306_I2C:
     def __init__(self, *args):
         pass
