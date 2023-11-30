@@ -13,6 +13,7 @@ For example::
 
 Will set the CV output 3 to a voltage of 4.5V.
 """
+import ssd1306
 import sys
 import time
 
@@ -52,6 +53,10 @@ except ImportError:
         56950,
         63475,
     ]
+
+
+# Initialize EuroPi global singleton instance variables.
+europi_config = load_europi_config()
 
 
 # OLED component display dimensions.
@@ -508,6 +513,21 @@ class Display(SSD1306_I2C):
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
                 )
         super().__init__(self.width, self.height, i2c)
+        self.rotate(europi_config["rotate_display"])
+
+    def rotate(self, rotate):
+        """Flip the screen from its default orientation
+
+        @param rotate  True or False, indicating whether we want to flip the screen from its default orientation
+        """
+        # From a hardware perspective, the default screen orientation of the display _is_ rotated
+        # But logically we treat this as right-way-up.
+        if rotate:
+            rotate = 0
+        else:
+            rotate = 1
+        self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
+        self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
 
     def centre_text(self, text):
         """Split the provided text across 3 lines of display."""
@@ -585,10 +605,6 @@ class Output:
         else:
             self.off()
 
-
-## Initialize EuroPi global singleton instance variables.
-
-europi_config = load_europi_config()
 
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(PIN_DIN)
