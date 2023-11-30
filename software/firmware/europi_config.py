@@ -27,26 +27,18 @@ class EuroPiConfig:
     @classmethod
     def config_points(cls):
         return [
-            configuration.choice(
-                name="pico_model",
-                choices=["pico", "pico w"],
-                default="pico"
-            ),
+            configuration.choice(name="pico_model", choices=["pico", "pico w"], default="pico"),
             configuration.choice(
                 name="cpu_freq",
                 choices=[PICO_DEFAULT_CPU_FREQ, OVERCLOCKED_CPU_FREQ],
                 default=OVERCLOCKED_CPU_FREQ,
             ),
-            configuration.choice(
-                name="rotate_display",
-                choices=[False, True],
-                default=False
-            ),
+            configuration.choice(name="rotate_display", choices=[False, True], default=False),
             configuration.choice(
                 name="volts_per_octave",
                 choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
                 default=MOOG_VOLTS_PER_OCTAVE
-            )
+            ),
         ]
 
 
