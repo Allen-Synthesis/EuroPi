@@ -39,12 +39,12 @@ default configuration:
 {
     "pico_model": "pico",
     "cpu_freq": 250000000,
-    "flip_display": false,
+    "rotate_display": false,
     "volts_per_octave": 1.0
 }
 ```
 
 - `pico_model` must be one of `"pico"` or `"pico w"`
 - `cpu_freq` must be one of `250000000` or `125000000`
-- `flip_display` must be one of `false` or `true`
+- `rotate_display` must be one of `false` or `true`
 - `volts_per_octave` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard)
