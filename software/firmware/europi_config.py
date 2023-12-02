@@ -27,6 +27,7 @@ class EuroPiConfig:
 
     @classmethod
     def config_points(cls):
+        # fmt: off
         return [
             # EuroPi revision -- this is currently unused, but reserved for future expansion
             configuration.choice(
@@ -36,7 +37,11 @@ class EuroPiConfig:
             ),
 
             # CPU & board settings
-            configuration.choice(name="pico_model", choices=["pico", "pico w"], default="pico"),
+            configuration.choice(
+                name="pico_model",
+                choices=["pico", "pico w"],
+                default="pico"
+            ),
             configuration.choice(
                 name="cpu_freq",
                 choices=[PICO_DEFAULT_CPU_FREQ, OVERCLOCKED_CPU_FREQ],
@@ -44,9 +49,21 @@ class EuroPiConfig:
             ),
 
             # Display settings
-            configuration.choice(name="rotate_display", choices=[False, True], default=False),
-            configuration.integer(name="display_width", range=range(8, 1024), default=128),
-            configuration.integer(name="display_height", range=range(8, 1024), default=32),
+            configuration.choice(
+                name="rotate_display",
+                choices=[False, True],
+                default=False
+            ),
+            configuration.integer(
+                name="display_width",
+                range=range(8, 1024),
+                default=128
+            ),
+            configuration.integer(
+                name="display_height",
+                range=range(8, 1024),
+                default=32
+            ),
 
             # Synthesizer family settings
             # Normally this is intended for Eurorack compatibility, but being open-source someone may
@@ -56,9 +73,18 @@ class EuroPiConfig:
                 choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
                 default=MOOG_VOLTS_PER_OCTAVE,
             ),
-            configuration.integer(name="max_output_voltage", range=range(1, 11), default=10),
-            configuration.integer(name="max_input_voltage", range=range(1, 13), default=12),
+            configuration.integer(
+                name="max_output_voltage",
+                range=range(1, 11),
+                default=10
+            ),
+            configuration.integer(
+                name="max_input_voltage",
+                range=range(1, 13),
+                default=12
+            ),
         ]
+        # fmt: on
 
 
 def load_europi_config():
