@@ -28,18 +28,36 @@ class EuroPiConfig:
     @classmethod
     def config_points(cls):
         return [
+            # EuroPi revision -- this is currently unused, but reserved for future expansion
+            configuration.choice(
+                name="europi_model",
+                choices = ["europi", "europi_lc", "europi_x"],
+                default="europi"
+            ),
+
+            # CPU & board settings
             configuration.choice(name="pico_model", choices=["pico", "pico w"], default="pico"),
             configuration.choice(
                 name="cpu_freq",
                 choices=[PICO_DEFAULT_CPU_FREQ, OVERCLOCKED_CPU_FREQ],
                 default=OVERCLOCKED_CPU_FREQ,
             ),
+
+            # Display settings
             configuration.choice(name="rotate_display", choices=[False, True], default=False),
+            configuration.integer(name="display_width", range=range(8, 1024), default=128),
+            configuration.integer(name="display_height", range=range(8, 1024), default=32),
+
+            # Synthesizer family settings
+            # Normally this is intended for Eurorack compatibility, but being open-source someone may
+            # want to use it in an ecosystem that uses different specs
             configuration.choice(
                 name="volts_per_octave",
                 choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
                 default=MOOG_VOLTS_PER_OCTAVE,
             ),
+            configuration.integer(name="max_output_voltage", range=range(1, 11), default=10),
+            configuration.integer(name="max_input_voltage", range=range(1, 13), default=12),
         ]
 
 

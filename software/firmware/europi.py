@@ -60,8 +60,8 @@ europi_config = load_europi_config()
 
 
 # OLED component display dimensions.
-OLED_WIDTH = 128
-OLED_HEIGHT = 32
+OLED_WIDTH = europi_config["display_width"]
+OLED_HEIGHT = europi_config["display_height"]
 I2C_CHANNEL = 0
 I2C_FREQUENCY = 400000
 
@@ -70,12 +70,12 @@ MAX_UINT16 = 65535
 
 # Analogue voltage read range.
 MIN_INPUT_VOLTAGE = 0
-MAX_INPUT_VOLTAGE = 12
+MAX_INPUT_VOLTAGE = europi_config["max_input_voltage"]
 DEFAULT_SAMPLES = 32
 
 # Output voltage range
 MIN_OUTPUT_VOLTAGE = 0
-MAX_OUTPUT_VOLTAGE = 10
+MAX_OUTPUT_VOLTAGE = europi_config["max_output_voltage"]
 
 # PWM Frequency
 PWM_FREQ = 100_000
