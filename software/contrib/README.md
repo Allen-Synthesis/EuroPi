@@ -13,6 +13,12 @@ Two channels of probability-based routing, where the digital input will be route
 <i>Author: [Bridgee](https://github.com/Bridgee)</i>
 <br><i>Labels: Random</i>
 
+### Clock Modifier \[ [documentation](/software/contrib/clock_mod.md) | [script](/software/contrib/clock_mod.md) \]
+A clock multiplier or divider. Each channel has an independently-controllable modifier, multiplying or dividing an external clock signal on `din`.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: clock, clock multiplier, clock divider, gates>/i>
+
 ### Consequencer \[ [documentation](/software/contrib/consequencer.md) | [script](/software/contrib/consequencer.md) \]
 A gate and CV sequencer inspired by Mutable Instruments Grids and the Music Thing Modular Turing Machine
 
