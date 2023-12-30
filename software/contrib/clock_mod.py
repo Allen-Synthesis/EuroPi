@@ -30,40 +30,30 @@ class ClockOutput:
         self.last_interval_ms = 0
         self.modifier = modifier
         self.output_port = output_port
-        self.external_clock_counter = 0
+
+        self.is_high = False
+        self.last_state_change_at = time.ticks_ms()
 
     def set_external_clock(self, ticks_ms):
         if self.last_external_clock_at != ticks_ms:
-            self.external_clock_counter = self.external_clock_counter + 1
             self.last_interval_ms = time.ticks_diff(ticks_ms, self.last_external_clock_at)
             self.last_external_clock_at = ticks_ms
 
     def tick(self):
-        if self.modifier >= 1:
-            self.tick_multiply()
-        else:
-            self.tick_divide()
-
-    def tick_divide(self):
-        if self.external_clock_counter % int(1.0/self.modifier) < self.modifier / 2:
-            self.output_port.voltage(GATE_VOLTS)
-        else:
-            self.output_port.voltage(0.0)
-
-    def tick_multiply(self):
-        # calculate the total duration for an output gate, including high & low portions
         gate_duration_ms = self.last_interval_ms / self.modifier
         hi_lo_duration_ms = gate_duration_ms / 2
 
         now = time.ticks_ms()
-        elapsed_ms = time.ticks_diff(now, self.last_external_clock_at)
+        elapsed_ms = time.ticks_diff(now, self.last_state_change_at)
 
-        # determine if we're in the high or low phase of the current gate
-        complete_cycles = floor(elapsed_ms / hi_lo_duration_ms)
-        if complete_cycles & 0x01:
-            self.output_port.voltage(0.0)
-        else:
-            self.output_port.voltage(GATE_VOLTS)
+        if elapsed_ms > hi_lo_duration_ms:
+            self.last_state_change_at = now
+            if self.is_high:
+                self.is_high = False
+                self.output_port.voltage(0)
+            else:
+                self.is_high = True
+                self.output_port.voltage(GATE_VOLTS)
 
 class ClockModifier(EuroPiScript):
     """The main script class; multiplies and divides incoming clock signals
@@ -164,7 +154,7 @@ class ClockModifier(EuroPiScript):
             """
             self.last_clock_at = time.ticks_ms()
 
-    def save_state():
+    def save_state(self):
         state = {
             "mod_cv2": self.k1_bank["channel_b"].percent(),
             "mod_cv3": self.k1_bank["channel_c"].percent(),
