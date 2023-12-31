@@ -7,6 +7,7 @@ import time
 from collections import OrderedDict
 from europi import *
 from europi_script import EuroPiScript
+from experimental.a_to_d import AnalogReaderDigitalWrapper
 from experimental.knobs import KnobBank
 from math import floor
 
@@ -55,6 +56,13 @@ class ClockOutput:
                 self.is_high = True
                 self.output_port.voltage(GATE_VOLTS)
 
+    def reset(self):
+        """Reset the pattern to the initial position
+        """
+        self.is_high = False
+        self.output_port.voltage(0)
+        self.last_state_change_at = time.ticks_ms()
+
 class ClockModifier(EuroPiScript):
     """The main script class; multiplies and divides incoming clock signals
     """
@@ -78,7 +86,9 @@ class ClockModifier(EuroPiScript):
         )
 
         ## The time the last rising edge of the clock was recorded
-        self.last_clock_at = time.ticks_ms()
+        #
+        #  Initially negative 1s to avoid starting the module
+        self.last_clock_at = -1000
 
         ## The output channels
         self.outputs = [
@@ -154,6 +164,17 @@ class ClockModifier(EuroPiScript):
             """
             self.last_clock_at = time.ticks_ms()
 
+        def on_ain():
+            """Reset all channels when AIN goes high
+            """
+            for output in self.outputs:
+                output.reset()
+
+        self.d_ain = AnalogReaderDigitalWrapper(
+            ain,
+            cb_rising=on_ain
+        )
+
     def save_state(self):
         state = {
             "mod_cv2": self.k1_bank["channel_b"].percent(),
@@ -168,6 +189,8 @@ class ClockModifier(EuroPiScript):
         """
         knob_choices = list(self.clock_modifiers.keys())
         while True:
+            self.d_ain.update()
+
             mods = [
                 self.k1_bank["channel_a"].choice(knob_choices),
                 self.k1_bank["channel_b"].choice(knob_choices),
@@ -180,9 +203,15 @@ class ClockModifier(EuroPiScript):
             for i in range(len(mods)):
                 self.outputs[i].modifier = self.clock_modifiers[mods[i]]
 
-            for output in self.outputs:
-                output.set_external_clock(self.last_clock_at)
-                output.tick()
+            # if we don't get an external signal within 1s, stop
+            now = time.ticks_ms()
+            if time.ticks_diff(now, self.last_clock_at) < 1000:
+                for output in self.outputs:
+                    output.set_external_clock(self.last_clock_at)
+                    output.tick()
+            else:
+                for output in self.outputs:
+                    output.reset()
 
             oled.fill(0)
             oled.centre_text(
