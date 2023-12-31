@@ -214,7 +214,7 @@ class ClockModifier(EuroPiScript):
         state = {
             "mod_cv2": self.k1_bank["channel_b"].percent(),
             "mod_cv3": self.k1_bank["channel_c"].percent(),
-            "mod_cv5": self.k2_bank["channel_c"].percent(),
+            "mod_cv5": self.k2_bank["channel_b"].percent(),
             "mod_cv6": self.k2_bank["channel_c"].percent()
         }
         self.save_state_json(state)
