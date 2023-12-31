@@ -54,19 +54,20 @@ class ClockOutput:
             self.last_interval_ms = time.ticks_diff(ticks_ms, self.last_external_clock_at)
             self.last_external_clock_at = ticks_ms
 
-    def calculate_state(self):
+    def calculate_state(self, ms):
         """Calculate whether this output should be high or low based on the current time
 
         Must be called before calling set_output_voltage
+
+        @param ms  The current time in ms; passed as a parameter to synchronize multiple channels
         """
         gate_duration_ms = self.last_interval_ms / self.modifier
         hi_lo_duration_ms = gate_duration_ms / 2
 
-        now = time.ticks_ms()
-        elapsed_ms = time.ticks_diff(now, self.last_state_change_at)
+        elapsed_ms = time.ticks_diff(ms, self.last_state_change_at)
 
         if elapsed_ms > hi_lo_duration_ms:
-            self.last_state_change_at = now
+            self.last_state_change_at = ms
             if self.is_high:
                 self.is_high = False
 
@@ -251,7 +252,7 @@ class ClockModifier(EuroPiScript):
                 # this helps reduce phase-shifting across outputs
                 for output in self.outputs:
                     output.set_external_clock(self.last_clock_at)
-                    output.calculate_state()
+                    output.calculate_state(now)
 
                 for output in self.outputs:
                     output.set_output_voltage()
