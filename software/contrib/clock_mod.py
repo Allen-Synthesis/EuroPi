@@ -11,6 +11,10 @@ from experimental.a_to_d import AnalogReaderDigitalWrapper
 from experimental.knobs import KnobBank
 from math import floor
 
+## Output gates will be 5 volts for compatibility with most other modules
+#
+#  EuroPi can technically output 10V, but many third-party modules specify 5V maximum inputs, so let's use that
+#  for maximum compatibility
 GATE_VOLTS = 5.0
 
 def ljust(s, length):
@@ -27,6 +31,11 @@ class ClockOutput:
     """A control class that handles a single output
     """
     def __init__(self, output_port, modifier):
+        """Constructor
+
+        @param output_port  One of the six output CV ports, e.g. cv1, cv2, etc... that this class will control
+        @param modifier     The initial clock modifier for this output channel
+        """
         self.last_external_clock_at = time.ticks_ms()
         self.last_interval_ms = 0
         self.modifier = modifier
@@ -36,11 +45,20 @@ class ClockOutput:
         self.last_state_change_at = time.ticks_ms()
 
     def set_external_clock(self, ticks_ms):
+        """Notify this output when the last external clock signal was received.
+
+        The calculate_state function will use this to calculate the duration of the high/low phases
+        of the output gate
+        """
         if self.last_external_clock_at != ticks_ms:
             self.last_interval_ms = time.ticks_diff(ticks_ms, self.last_external_clock_at)
             self.last_external_clock_at = ticks_ms
 
-    def tick(self):
+    def calculate_state(self):
+        """Calculate whether this output should be high or low based on the current time
+
+        Must be called before calling set_output_voltage
+        """
         gate_duration_ms = self.last_interval_ms / self.modifier
         hi_lo_duration_ms = gate_duration_ms / 2
 
@@ -51,10 +69,20 @@ class ClockOutput:
             self.last_state_change_at = now
             if self.is_high:
                 self.is_high = False
-                self.output_port.voltage(0)
+
             else:
                 self.is_high = True
                 self.output_port.voltage(GATE_VOLTS)
+
+    def set_output_voltage(self):
+        """Set the output voltage either high or low.
+
+        Must be called after calling calculate_state
+        """
+        if self.is_high:
+            self.output_port.voltage(GATE_VOLTS)
+        else:
+            self.output_port.voltage(0)
 
     def reset(self):
         """Reset the pattern to the initial position
@@ -116,6 +144,9 @@ class ClockModifier(EuroPiScript):
             ["x12", 12.0]
         ])
 
+        # Indicates that the modifiers have changed and a save is required
+        self.state_dirty = False
+
         @b1.handler
         def b1_rising():
             """Activate channel b controls while b1 is held
@@ -145,7 +176,7 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[0] = '>'
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
-            self.save_state()
+            self.state_dirty = True
 
         @b2.handler_falling
         def b2_falling():
@@ -156,7 +187,7 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[0] = '>'
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
-            self.save_state()
+            self.state_dirty = True
 
         @din.handler
         def on_din():
@@ -176,6 +207,10 @@ class ClockModifier(EuroPiScript):
         )
 
     def save_state(self):
+        """Save the clock modifiers for channels 2, 3, 5, 6 to the config file for loading
+
+        Channels 1 and 4 are read directly from the knob positions on startup, and are considered volatile
+        """
         state = {
             "mod_cv2": self.k1_bank["channel_b"].percent(),
             "mod_cv3": self.k1_bank["channel_c"].percent(),
@@ -189,8 +224,15 @@ class ClockModifier(EuroPiScript):
         """
         knob_choices = list(self.clock_modifiers.keys())
         while True:
+            # update AIN so its rising edge callback can fire
             self.d_ain.update()
 
+            # Save the clock modifiers for channels 2, 3, 5, 6 if they've been edited
+            if self.state_dirty:
+                self.state_dirty = False
+                self.save_state()
+
+            # Get the clock modifiers for all 6 channels and apply them to the outputs
             mods = [
                 self.k1_bank["channel_a"].choice(knob_choices),
                 self.k1_bank["channel_b"].choice(knob_choices),
@@ -199,20 +241,32 @@ class ClockModifier(EuroPiScript):
                 self.k2_bank["channel_b"].choice(knob_choices),
                 self.k2_bank["channel_c"].choice(knob_choices)
             ]
-
             for i in range(len(mods)):
                 self.outputs[i].modifier = self.clock_modifiers[mods[i]]
 
             # if we don't get an external signal within 1s, stop
             now = time.ticks_ms()
             if time.ticks_diff(now, self.last_clock_at) < 1000:
+                # separate calculating the high/low state and setting the output voltage into two loops
+                # this helps reduce phase-shifting across outputs
                 for output in self.outputs:
                     output.set_external_clock(self.last_clock_at)
-                    output.tick()
+                    output.calculate_state()
+
+                for output in self.outputs:
+                    output.set_output_voltage()
             else:
                 for output in self.outputs:
                     output.reset()
 
+            # Update the GUI
+            # Yes, this is a very long string, but it centers nicely
+            # It looks something like this:
+            #
+            #    > 1: x1   4: /2
+            #      2: x2   5: x3
+            #      3: /4   6: /3
+            #
             oled.fill(0)
             oled.centre_text(
                 f"{self.channel_markers[0]} 1:{ljust(mods[0], 3)} 4:{ljust(mods[3], 3)}\n{self.channel_markers[1]} 2:{ljust(mods[1], 3)} 5:{ljust(mods[4], 3)}\n{self.channel_markers[2]} 3:{ljust(mods[2], 3)} 6:{ljust(mods[5], 3)}"
