@@ -18,7 +18,8 @@ are not adjustable and are fixed to approximately a 50% duty cycle (some roundin
 | `cv1-6`       | Multiplied/divided clock signals                                  |
 
 The outputs will begin firing automatically when clock signals are received on `din`, and will stop if the input
-signals are stopped for 1s or longer.  Upon stopping all output channels will reset.
+signals are stopped for 1s or longer.  Upon stopping all output channels will reset.  (NOTE: this means the signal
+coming into `din` cannot be 1Hz or slower!)
 
 Applying a signal of at least 0.8V to `ain` will reset all output channels.
 
