@@ -37,7 +37,7 @@ Raspberry Pi Pico. If this file does not exist, default settings will be loaded.
 default configuration:
 ```json
 {
-    "europo_model": "europi",
+    "europi_model": "europi",
     "pico_model": "pico",
     "cpu_freq": 250000000,
     "rotate_display": false,
@@ -49,7 +49,7 @@ default configuration:
 }
 ```
 
-- `europo_model` specifies the type of EuroPi module. Currently only `"europi"` is supported, but in future this
+- `europi_model` specifies the type of EuroPi module. Currently only `"europi"` is supported, but in future this
   may be expanded to include `"europi_lc"` for the low-cost version and `"europi_x"` for the larger version with
   more jacks
 - `pico_model` must be one of `"pico"` or `"pico w"`
