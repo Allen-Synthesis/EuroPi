@@ -12,17 +12,17 @@ class UpdateFirmware(EuroPiScript):
         
     def back(self):
         try:
-            remove('saved_state_BootloaderMenu.txt')
+            remove('saved_state_BootloaderMenu.txt')	#This file needs to be removed so that the menu is returned to rather than this script once it's entered bootloader mode
         except OSError:
             print('OSError: File Not Found')
-        reset()
+        reset()	#Restart the module so that it will boot back into the menu
     
     def enter_bootloader(self):
-        bootloader()
+        bootloader()	#Enter bootloader mode
         
     def main(self):
-        b1.handler(self.back)
-        b2.handler(self.enter_bootloader)
+        b1.handler(self.back)	#Button 1 returns to the menu system
+        b2.handler(self.enter_bootloader)	#Button 2 sends the module into bootloader mode
         
         oled.fill(0)
         oled.text('B1 = Back',0,6)
