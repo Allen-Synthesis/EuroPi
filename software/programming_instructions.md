@@ -7,7 +7,9 @@ This document will take you through the steps to get your module ready to progra
 
 1. Download [flash_nuke.uf2](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython#flash-resetting-uf2-3083182) from Adafruit.
   
-2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.  
+2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
+> **Note**
+> If you are already running the menu system on the EuroPi ( with a version greater or equal to X.X.X) and would rather not take the module out of your rack, you can instead run the script `_Update Firmware` while the module to your computer over USB, and the module will enter bootloader mode
 
 ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
 
