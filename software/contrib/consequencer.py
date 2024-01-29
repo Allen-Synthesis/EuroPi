@@ -318,8 +318,9 @@ class Consequencer(EuroPiScript):
         self.step_length = len(self.BD[self.pattern])
 
         if self.pattern_prev != self.pattern:
-            self._updateUI = True
             self.pattern_prev = self.pattern
+            if not self.screenOff:
+                self._updateUI = True
 
     def getCvPattern(self):
         # If analogue input mode 3, get the CV pattern from CV input
@@ -328,8 +329,10 @@ class Consequencer(EuroPiScript):
             self.CvPattern = int((len(self.random4) / 100) * self.ainVal)
 
         if self.CvPattern_prev != self.CvPattern:
-            self._updateUI = True
             self.CvPattern_prev = self.CvPattern
+
+            if not self.screenOff:
+                self._updateUI = True
 
     def generateRandomPattern(self, length, min, max):
         self.t = []
@@ -345,19 +348,17 @@ class Consequencer(EuroPiScript):
             self.randomness = self.k1Val
 
         if self.randomness_prev != self.randomness:
-            self._updateUI = True
             self.randomness_prev = self.randomness
+
+            if not self.screenOff:
+                self._updateUI = True
 
     def getAinVal(self):
         # Read ain val and update if > threshold
         self.ainValTemp = 100 * ain.percent()
         if abs(self.ainValTemp - self.ainVal) > AIN_CHANGE_TOLERANCE:
             self.ainVal = self.ainValTemp
-            if not self.screenOff:
-                self._updateUI = True
-                if WAKE_SCREEN_ON_AIN_INPUT:
-                    self.screenOff = False
-                    self.lastInteractionTimeMs = ticks_ms()
+
 
     def getKnobVals(self):
         # Read knob vals and update if > threshold
