@@ -4,11 +4,11 @@ from europi import b1, b2, oled
 from os import remove
 
 
-class Bootloader(EuroPiScript):
+class BootloaderMode(EuroPiScript):
     @classmethod
     def display_name(cls):
         """Push this script to the end of the menu."""
-        return "~Bootloader"
+        return "~Bootloader Mode"
         
     def back(self):
         try:
@@ -30,5 +30,5 @@ class Bootloader(EuroPiScript):
         oled.show()
         
 if __name__ == "__main__":
-    Bootloader().main()
+    BootloaderMode().main()
     
