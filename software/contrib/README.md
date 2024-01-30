@@ -91,6 +91,16 @@ source with multiple wave shapes, optional quantization, euclidean rhythm output
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: clock, euclidean, gate, lfo, quantizer, random, trigger</i>
 
+### Particle Physics \[ [documentation](/software/contrib/particle_physics.md) | [script](/software/contrib/particle_physics.py) \]
+An irregular LFO based on a basic 1-dimensional physics simulation. Outputs triggers when a particle bounces under the effects of gravity. Outputs control signals
+based on the particle's position and velocity.
+
+While not technically random, the effects of changing the particle's initial conditions, gravity, and elasticity coefficient can create unpreditable rhythms.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: gate, lfo, sequencer, random, trigger</i>
+
+
 ### Poly Square \[ [documentation](/software/contrib/poly_square.md) | [script](/software/contrib/poly_square.py) \]
 Six independent oscillators which output on CVs 1-6.
 

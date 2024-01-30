@@ -516,7 +516,7 @@ class MasterClock:
             # Turn all other channels off so we don't leave hot wires
             for ch in self.channels:
                 if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
-                    ch.cv_out.voltage(MAX_OUTPUT_VOLTAGE * ch.amplitude / 100.0)
+                    ch.cv_out.voltage(MAX_OUTPUT_VOLTAGE * ch.amplitude.get_value() / 100.0)
                 else:
                     ch.cv_out.voltage(0.0)
             time.sleep(0.01)   # time.sleep works in SECONDS not ms
@@ -1280,9 +1280,9 @@ class PamsWorkout(EuroPiScript):
 
         @din.handler
         def on_din_rising():
-            if self.din_mode == DIN_MODE_GATE:
+            if self.din_mode.get_value() == DIN_MODE_GATE:
                 self.clock.start()
-            elif self.din_mode == DIN_MODE_RESET:
+            elif self.din_mode.get_value() == DIN_MODE_RESET:
                 for ch in self.channels:
                     ch.reset()
             else:
@@ -1293,7 +1293,7 @@ class PamsWorkout(EuroPiScript):
 
         @din.handler_falling
         def on_din_falling():
-            if self.din_mode == DIN_MODE_GATE:
+            if self.din_mode.get_value() == DIN_MODE_GATE:
                 self.clock.stop()
 
         @b1.handler
