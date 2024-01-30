@@ -4,11 +4,11 @@ from europi import b1, b2, oled
 from os import remove
 
 
-class UpdateFirmware(EuroPiScript):
+class Bootloader(EuroPiScript):
     @classmethod
     def display_name(cls):
         """Push this script to the end of the menu."""
-        return "~Update Firmware"
+        return "~Bootloader"
         
     def back(self):
         try:
@@ -30,5 +30,5 @@ class UpdateFirmware(EuroPiScript):
         oled.show()
         
 if __name__ == "__main__":
-    UpdateFirmware().main()
+    Bootloader().main()
     
