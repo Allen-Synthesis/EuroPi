@@ -54,8 +54,8 @@ EUROPI_SCRIPTS = OrderedDict([
     ["StrangeAttractor",  "contrib.strange_attractor.StrangeAttractor"],
     ["Turing Machine",    "contrib.turing_machine.EuroPiTuringMachine"],
 
-    ["_Calibrate",        "calibrate.Calibrate"],  # this one should always be last!
-    ["_Update Firmware",   "update_firmware.UpdateFirmware"]    # this one should always be last!
+    ["_Calibrate",        "calibrate.Calibrate"],      # this one should always be second to last!
+    ["_Bootloader",       "bootloader.Bootloader"]     # this one should always be last!
 ])
 # fmt: on
 
