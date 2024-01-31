@@ -32,7 +32,7 @@ class EuroPiConfig:
             # EuroPi revision -- this is currently unused, but reserved for future expansion
             configuration.choice(
                 name="europi_model",
-                choices = ["europi", "europi_lc", "europi_x"],
+                choices = ["europi"],
                 default="europi"
             ),
 
@@ -49,9 +49,8 @@ class EuroPiConfig:
             ),
 
             # Display settings
-            configuration.choice(
+            configuration.boolean(
                 name="rotate_display",
-                choices=[False, True],
                 default=False
             ),
             configuration.integer(
