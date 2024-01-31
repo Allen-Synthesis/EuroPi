@@ -113,6 +113,7 @@ def integer(name: str, range: range, default: int) -> IntegerConfigPoint:
     """
     return IntegerConfigPoint(name=name, range=range, default=default)
 
+
 def boolean(name: str, default: bool) -> BooleanConfigPoint:
     """A helper function to simplify the creation of BooleanConfigPoints.
 
