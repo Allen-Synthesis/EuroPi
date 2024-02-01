@@ -43,4 +43,6 @@ class ExperimentalConfig:
 
 
 def load_experimental_config():
-    return ConfigFile.load_config(ExperimentalConfig, ConfigSpec(ExperimentalConfig.config_points()))
+    return ConfigFile.load_config(
+        ExperimentalConfig, ConfigSpec(ExperimentalConfig.config_points())
+    )
