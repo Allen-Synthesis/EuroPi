@@ -32,6 +32,7 @@ from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
 from europi_config import load_europi_config
+from experimental_config import load_experimental_config
 
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
@@ -59,6 +60,7 @@ except ImportError:
 
 # Initialize EuroPi global singleton instance variables.
 europi_config = load_europi_config()
+experimental_config = load_experimental_config()
 
 
 # OLED component display dimensions.
