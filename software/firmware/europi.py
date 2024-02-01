@@ -530,8 +530,9 @@ class Display(SSD1306_I2C):
             rotate = 0
         else:
             rotate = 1
-        self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
-        self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
+        if not TEST_ENV:
+            self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
+            self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
 
     def centre_text(self, text):
         """Split the provided text across 3 lines of display."""
