@@ -87,7 +87,6 @@ class BootloaderMenu(EuroPiScript):
         @param message  The body of the error message
         @param duration The number of seconds the message should show. If negative the message is shown forever
         """
-        oled.fill(0)
         oled.centre_text(f"--{title}--\n{message}")
 
         if duration > 0:

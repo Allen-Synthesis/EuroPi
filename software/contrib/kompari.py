@@ -60,9 +60,7 @@ class Kompari(EuroPiScript):
             cv5.voltage(min(x, upper_bound) * MAX_OUTPUT_VOLTAGE)
             cv6.voltage(max(lower_bound, min(x, upper_bound)) * MAX_OUTPUT_VOLTAGE)
 
-            oled.fill(0)
             oled.centre_text(f"{lower_bound:0.1f}  {x:0.1f}  {upper_bound:0.1f}")
-            oled.show()
 
 if __name__ == "__main__":
     Kompari().main()
