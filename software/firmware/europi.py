@@ -537,7 +537,7 @@ class Display(SSD1306_I2C):
     def centre_text(self, text, clear_first=True, auto_show=True):
         """Display one or more lines of text centred both horizontally and vertically.
 
-        @param text  The text to display, containing at most 3 lines
+        @param text  The text to display
         @param clear_first  If true, the screen buffer is cleared before rendering the text
         @param auto_show  If true, oled.show() is called after rendering the text. If false, you must call
                           oled.show() yourself
@@ -545,8 +545,8 @@ class Display(SSD1306_I2C):
         if clear_first:
             self.fill(0)
         # Default font is 8x8 pixel monospaced font which can be split to a
-        # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
-        # for readability.
+        # maximum of 4 lines on a 128x32 display, but the maximum lines is
+        # rounded for readability
         lines = str(text).split("\n")
         maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
