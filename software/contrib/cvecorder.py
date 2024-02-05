@@ -170,7 +170,7 @@ class CVecorder(EuroPiScript):
     def handleClock(self):
 
         # Sample input to 2 decimal places
-        self.CvIn = round(20 * ain.percent(), 2)
+        self.CvIn = round(ain.read_voltage(), 2)
 
         # Start recording if pending and on first step
         if self.step == 0 and self.CvRecording[self.ActiveCvr] == 'pending':
