@@ -83,10 +83,31 @@
 <span id="configuration"></span><h1>configuration<a class="headerlink" href="#module-configuration" title="Permalink to this heading"></a></h1>
 <p>A collection of classes and functions for dealing with configuration data. There are two main
 types of configuration data: the <cite>dict</cite> configuration itself, and the <cite>ConfigSpec</cite>.</p>
-<p>The configuration is represented by <cite>Dict(str, Any)</cite>, where the string key represents the config 
+<p>The configuration is represented by <cite>Dict(str, Any)</cite>, where the string key represents the config
 point’s name, pointing to a value that may be of any type.</p>
-<p>The <cite>ConfgSpec</cite> is a collection of <cite>ConfigPoints</cite>. Each ConfigPoint consists of a name and description 
+<p>The <cite>ConfgSpec</cite> is a collection of <cite>ConfigPoints</cite>. Each ConfigPoint consists of a name and description
 of the valid values that it may have. There are several different types of COnfigPoints available.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="configuration.BooleanConfigPoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">BooleanConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.BooleanConfigPoint" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>ConfigPoint</cite> that allows True/False values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to look up the configured value.</p></li>
+<li><p><strong>default</strong> – The default value</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="configuration.BooleanConfigPoint.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.Validation" title="configuration.Validation"><span class="pre">Validation</span></a></span></span><a class="headerlink" href="#configuration.BooleanConfigPoint.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validates the given value with this ConfigPoint. Returns a <cite>Validation</cite> containing the
+validation result, as well as an error message containing the reason for a validation failure.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.ChoiceConfigPoint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ChoiceConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ChoiceConfigPoint" title="Permalink to this definition"></a></dt>
@@ -256,6 +277,20 @@ validation result, as well as an error message containing the reason for a valid
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="configuration.boolean">
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">boolean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.BooleanConfigPoint" title="configuration.BooleanConfigPoint"><span class="pre">BooleanConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.boolean" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to simplify the creation of BooleanConfigPoints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
+<li><p><strong>default</strong> – The default value</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
