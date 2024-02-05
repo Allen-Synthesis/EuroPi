@@ -545,8 +545,8 @@ class Display(SSD1306_I2C):
         if clear_first:
             self.fill(0)
         # Default font is 8x8 pixel monospaced font which can be split to a
-        # maximum of 4 lines on a 128x32 display, but the maximum lines is
-        # rounded for readability
+        # maximum of 4 lines on a 128x32 display, but the maximum_lines variable
+        # is rounded down for readability
         lines = str(text).split("\n")
         maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
