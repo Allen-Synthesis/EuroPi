@@ -1,4 +1,5 @@
 """Provides a base class for scripts which wish to participate in the bootloader menu."""
+
 import os
 import json
 from utime import ticks_diff, ticks_ms

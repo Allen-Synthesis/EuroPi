@@ -87,9 +87,7 @@ class BootloaderMenu(EuroPiScript):
         @param message  The body of the error message
         @param duration The number of seconds the message should show. If negative the message is shown forever
         """
-        oled.fill(0)
         oled.centre_text(f"--{title}--\n{message}")
-        oled.show()
 
         if duration > 0:
             time.sleep(duration)
@@ -175,3 +173,13 @@ class BootloaderMenu(EuroPiScript):
                 self.show_error(
                     "Crash", f"{err.__class__.__name__[0:MAX_CHARS]}\n{str(err)[0:MAX_CHARS]}", -1
                 )
+
+                # Log the crash to a file for later analysis/recovery
+                try:
+                    with open("last_crash.log", "w") as log_file:
+                        log_file.write(f"{time.ticks_ms()}: {err}\n")
+                        sys.print_exception(err, log_file)
+                except:
+                    # If we fail to create the error log, just silently fail; we don't need
+                    # an additional exception to handle
+                    pass

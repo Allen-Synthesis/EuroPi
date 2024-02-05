@@ -13,6 +13,9 @@ For example::
 
 Will set the CV output 3 to a voltage of 4.5V.
 """
+
+
+import ssd1306
 import sys
 import time
 
@@ -29,6 +32,7 @@ from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
 from europi_config import load_europi_config
+from experimental_config import load_experimental_config
 
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
@@ -54,9 +58,14 @@ except ImportError:
     ]
 
 
+# Initialize EuroPi global singleton instance variables.
+europi_config = load_europi_config()
+experimental_config = load_experimental_config()
+
+
 # OLED component display dimensions.
-OLED_WIDTH = 128
-OLED_HEIGHT = 32
+OLED_WIDTH = europi_config["display_width"]
+OLED_HEIGHT = europi_config["display_height"]
 I2C_CHANNEL = 0
 I2C_FREQUENCY = 400000
 
@@ -65,12 +74,12 @@ MAX_UINT16 = 65535
 
 # Analogue voltage read range.
 MIN_INPUT_VOLTAGE = 0
-MAX_INPUT_VOLTAGE = 12
+MAX_INPUT_VOLTAGE = europi_config["max_input_voltage"]
 DEFAULT_SAMPLES = 32
 
 # Output voltage range
 MIN_OUTPUT_VOLTAGE = 0
-MAX_OUTPUT_VOLTAGE = 10
+MAX_OUTPUT_VOLTAGE = europi_config["max_output_voltage"]
 
 # PWM Frequency
 PWM_FREQ = 100_000
@@ -508,6 +517,21 @@ class Display(SSD1306_I2C):
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
                 )
         super().__init__(self.width, self.height, i2c)
+        self.rotate(europi_config["rotate_display"])
+
+    def rotate(self, rotate):
+        """Flip the screen from its default orientation
+
+        @param rotate  True or False, indicating whether we want to flip the screen from its default orientation
+        """
+        # From a hardware perspective, the default screen orientation of the display _is_ rotated
+        # But logically we treat this as right-way-up.
+        if rotate:
+            rotate = 0
+        else:
+            rotate = 1
+        self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
+        self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
 
     def centre_text(self, text):
         """Split the provided text across 3 lines of display."""
@@ -585,10 +609,6 @@ class Output:
         else:
             self.off()
 
-
-## Initialize EuroPi global singleton instance variables.
-
-europi_config = load_europi_config()
 
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(PIN_DIN)
