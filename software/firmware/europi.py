@@ -14,7 +14,6 @@ For example::
 Will set the CV output 3 to a voltage of 4.5V.
 """
 
-
 import ssd1306
 import sys
 import time
