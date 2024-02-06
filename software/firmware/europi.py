@@ -14,7 +14,6 @@ For example::
 Will set the CV output 3 to a voltage of 4.5V.
 """
 
-
 import ssd1306
 import sys
 import time
@@ -553,7 +552,7 @@ class Display(SSD1306_I2C):
             raise Exception("Provided text exceeds available space on oled display.")
         padding_top = (self.height - (len(lines) * (CHAR_HEIGHT + 1))) / 2
         for index, content in enumerate(lines):
-            x_offset = int((self.width - ((len(content) + 1) * (CHAR_WIDTH- 1))) / 2) - 1
+            x_offset = int((self.width - ((len(content) + 1) * (CHAR_WIDTH - 1))) / 2) - 1
             y_offset = int((index * (CHAR_HEIGHT + 1)) + padding_top) - 1
             self.text(content, x_offset, y_offset)
 
