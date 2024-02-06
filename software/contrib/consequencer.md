@@ -29,21 +29,32 @@ Some example patterns have been included in this release and you can find instru
 You can easiliy identify steps within patterns that have a probability less than 100%.
 Normal steps are shown with a `^` character, whereas steps with a probability are shown with a `-`.
 
-# Controls
+# Controls and Outputs
 
 ![Operating Diagram](https://user-images.githubusercontent.com/79809962/154732035-ccc0d8c1-0e4e-4b8c-97e3-ccfa07a4880b.png)
+
+## Inputs
 
 - digital_in: Clock in
 - analog_in: Mode 1: Adjusts randonmess, Mode 2: Selects gate pattern, Mode 3: Selects stepped CV pattern
 
-- knob_1: Adjust randomness
-- knob_2: Select pre-loaded gate pattern
+## Knobs
 
-- button_1: Short Press: Toggle randomized pattern on output 3 on / off. Long Press: Play previous stepped CV sequence
-- button_2:
-  - Short Press  (<300ms)  : Generate a new random cv pattern for outputs 4 - 6.
-  - Medium Press (>300ms)  : Cycle through analogue input modes
-  - Long Press   (>3000ms) : Toggle option to send clocks from output 4
+- knob_1: randomness
+- knob_2: select pattern
+
+## Buttons
+
+button_1:
+- Short Press  (<300ms)  : Play previous CV Pattern
+- Medium Press (>300ms)  : Short Press: toggle randomized hi-hats on / off
+- Long Press   (>3000ms) : Toggle option to send clocks from output 4 on / off
+button_2:
+- Short Press  (<300ms)  : Play next CV Pattern or generate a new one if needed
+- Medium Press (>300ms)  : Cycle through analogue input modes
+- Long Press   (>3000ms) : Toggle between pattern banks (original / grids)
+
+## Outputs
 
 - output_1: gate 1 e.g Kick Drum
 - output_2: gate 2 e.g Snare Drum
@@ -86,19 +97,37 @@ Example usage for these CV outputs, (this will depend on the inputs your drum mo
 ## Selecting analogue input modes
 
 Consequencer can perform 3 different actions when a control voltage input is received at the analogue input.
-The current running mode is shown on the bottom right of the screen (e.g. M1, M2, M3)
+The current running mode is shown on the bottom right of the screen (e.g. Mr, Mp, Mc)
 Cycle through the modes by long-pressing and releasing button 2. The following modes are available:
 
-- Mode 1: Control voltage adjusts randomness of the gate patterns sent to outputs 1 - 3
-- Mode 2: Control voltage selects the gate pattern
-- Mode 3: Control voltage selects the stepped CV pattern
+- Mode 1 (Mr) : Control voltage adjusts randomness of the gate patterns sent to outputs 1 - 3
+- Mode 2 (Mp) : Control voltage selects the gate pattern
+- Mode 3 (Mc) : Control voltage selects the stepped CV pattern
 
 ## Controlling a pattern using CV
 
-1. Select analogue mode 2.
+1. Select analogInputMode 2 (Mr) using button 2.
 2. Send a control voltage into the analogue input
 
 A fixed voltage will select a single pattern and varying voltage (e.g. an envelope or LFO) will smoothly cycle through patterns.
+
+# Grids Patterns
+
+The 25 different patterns from the Mutable Instruments Grids module were exported from the Grids code and added to the Consequencer.
+
+Access the Grids patterns by holding button 2 for 3-5 seconds and releasing.
+When Grids mode is enabled, a period '.' is visible before the pattern number on the bottom right of the screen
+
+Two different versions of each Grids pattern have been created. The first version (even numbers, including 0) are the equivalent of having all three Grids density knobs at 50%. The second version (odd numbers) are the equivalent of having all three Grids density knobs at 70%. An example is below:
+
+- Pattern 0: Grids pattern 1, density: 50%
+- Pattern 1: Grids pattern 1, density: 70%
+- Pattern 2: Grids pattern 2, density: 50%
+- Pattern 3: Grids pattern 2, density: 70%
+
+# Screen saver
+
+To improve performance a little, a screen saver mode has been added which turns the screen off if the module has not been interacted with in 10 seconds. The screen saver is turned off as soon as an interaction occurs. Example interactions are knob movement and button presses.
 
 # Advanced usage
 
