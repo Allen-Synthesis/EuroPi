@@ -578,6 +578,7 @@ class Output:
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
+        self.gate_voltage = clamp(europi_config["gate_voltage"], self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
         self._gradients = []
         for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
@@ -599,7 +600,7 @@ class Output:
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
-        self.voltage(5)
+        self.voltage(self.gate_voltage)
 
     def off(self):
         """Set the voltage LOW at 0 volts."""
