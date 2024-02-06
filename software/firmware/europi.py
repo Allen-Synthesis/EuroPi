@@ -539,8 +539,7 @@ class Display(SSD1306_I2C):
 
         @param text  The text to display, containing at most 3 lines
         @param clear_first  If true, the screen buffer is cleared before rendering the text
-        @param auto_show  If true, oled.show() is called after rendering the text. If false, you must call
-                          oled.show() yourself
+        @param auto_show  If true, oled.show() is called after rendering the text. If false, you must call oled.show() yourself
         """
         if clear_first:
             self.fill(0)
