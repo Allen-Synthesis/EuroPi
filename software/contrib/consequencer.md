@@ -116,9 +116,9 @@ A fixed voltage will select a single pattern and varying voltage (e.g. an envelo
 The 25 different patterns from the Mutable Instruments Grids module were exported from the Grids code and added to the Consequencer.
 
 Access the Grids patterns by holding button 2 for 3-5 seconds and releasing.
-Grids mode is enabled a period '.' before the pattern number on the bottom right of the screen.
+When Grids mode is enabled, a period '.' is visible before the pattern number on the bottom right of the screen
 
-Two different versions of each Grids pattern have been created. The first version (even numbers, including 0) are the equivilant of having all three Grids density knobs at 50%. The second version (odd numbers) are the equivilant of having all three Grids density knobs at 70%. An example is below:
+Two different versions of each Grids pattern have been created. The first version (even numbers, including 0) are the equivalent of having all three Grids density knobs at 50%. The second version (odd numbers) are the equivalent of having all three Grids density knobs at 70%. An example is below:
 
 - Pattern 0: Grids pattern 1, density: 50%
 - Pattern 1: Grids pattern 1, density: 70%
@@ -127,7 +127,7 @@ Two different versions of each Grids pattern have been created. The first versio
 
 # Screen saver
 
-To improve performance a little, a screen saver mode has been added which turns the screen off if the module has not been interacted with in 10 seconds. The screen saver is turned off as soon as an interaction occurs. Example interactions are : ain input, knob movement, button presses.
+To improve performance a little, a screen saver mode has been added which turns the screen off if the module has not been interacted with in 10 seconds. The screen saver is turned off as soon as an interaction occurs. Example interactions are knob movement and button presses.
 
 # Advanced usage
 
