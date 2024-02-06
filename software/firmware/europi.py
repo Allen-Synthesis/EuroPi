@@ -14,6 +14,7 @@ For example::
 Will set the CV output 3 to a voltage of 4.5V.
 """
 
+
 import ssd1306
 import sys
 import time
@@ -230,18 +231,14 @@ class AnalogueInput(AnalogueReader):
     function of the AnalogueReader and Knob classes
     """
 
-    def __init__(
-        self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE
-    ):
+    def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
         super().__init__(pin)
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
         self._gradients = []
         for index, value in enumerate(INPUT_CALIBRATION_VALUES[:-1]):
             try:
-                self._gradients.append(
-                    1 / (INPUT_CALIBRATION_VALUES[index + 1] - value)
-                )
+                self._gradients.append(1 / (INPUT_CALIBRATION_VALUES[index + 1] - value))
             except ZeroDivisionError:
                 raise Exception(
                     "The input calibration process did not complete properly. Please complete again with rack power turned on"
@@ -274,9 +271,7 @@ class AnalogueInput(AnalogueReader):
             )
         else:
             index = int(percent * (len(INPUT_CALIBRATION_VALUES) - 1))
-            cv = index + (
-                self._gradients[index] * (raw_reading - INPUT_CALIBRATION_VALUES[index])
-            )
+            cv = index + (self._gradients[index] * (raw_reading - INPUT_CALIBRATION_VALUES[index]))
         return clamp(cv, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
 
@@ -359,18 +354,12 @@ class DigitalReader:
     def _bounce_wrapper(self, pin):
         """IRQ handler wrapper for falling and rising edge callback functions."""
         if self.value() == HIGH:
-            if (
-                time.ticks_diff(time.ticks_ms(), self.last_rising_ms)
-                < self.debounce_delay
-            ):
+            if time.ticks_diff(time.ticks_ms(), self.last_rising_ms) < self.debounce_delay:
                 return
             self.last_rising_ms = time.ticks_ms()
             return self._rising_handler()
         else:
-            if (
-                time.ticks_diff(time.ticks_ms(), self.last_falling_ms)
-                < self.debounce_delay
-            ):
+            if time.ticks_diff(time.ticks_ms(), self.last_falling_ms) < self.debounce_delay:
                 return
             self.last_falling_ms = time.ticks_ms()
 
@@ -564,9 +553,7 @@ class Display(SSD1306_I2C):
             raise Exception("Provided text exceeds available space on oled display.")
         padding_top = (self.height - (len(lines) * (CHAR_HEIGHT + 1))) / 2
         for index, content in enumerate(lines):
-            x_offset = (
-                int((self.width - ((len(content) + 1) * (CHAR_WIDTH - 1))) / 2) - 1
-            )
+            x_offset = int((self.width - ((len(content) + 1) * (CHAR_WIDTH- 1))) / 2) - 1
             y_offset = int((index * (CHAR_HEIGHT + 1)) + padding_top) - 1
             self.text(content, x_offset, y_offset)
 
@@ -585,9 +572,7 @@ class Output:
     calibration is important if you want to be able to output precise voltages.
     """
 
-    def __init__(
-        self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE
-    ):
+    def __init__(self, pin, min_voltage=MIN_OUTPUT_VOLTAGE, max_voltage=MAX_OUTPUT_VOLTAGE):
         self.pin = PWM(Pin(pin))
         self.pin.freq(PWM_FREQ)
         self._duty = 0
@@ -610,9 +595,7 @@ class Output:
             return self._duty / MAX_UINT16
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
         index = int(voltage // 1)
-        self._set_duty(
-            OUTPUT_CALIBRATION_VALUES[index] + (self._gradients[index] * (voltage % 1))
-        )
+        self._set_duty(OUTPUT_CALIBRATION_VALUES[index] + (self._gradients[index] * (voltage % 1)))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
