@@ -6,7 +6,7 @@ main clock generator, euclidean rhythm generator, clocked LFO, clocked
 random voltage source, etc... with optional quantization.
 
 The module itself will generate the master clock signal with a configurable
-BPM (1-300 BPM supported). Each output has an independently controlled
+BPM (1-240 BPM supported). Each output has an independently controlled
 clock multiplier or divider, chosen from the following:
 
 ```
@@ -92,7 +92,7 @@ by the current configuration for that channel.
 
 The main clock menu has the following options:
 
-- `BPM` -- the main BPM for the clock. Must be in the range `[1, 300]`.
+- `BPM` -- the main BPM for the clock. Must be in the range `[1, 240]`.
 
 The submenu for the main clock has the following options:
 
