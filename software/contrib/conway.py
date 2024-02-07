@@ -166,7 +166,6 @@ class Conway(EuroPiScript):
         """Clear the whole field and spawn random data in it
         """
         for i in range(len(self.field)):
-            self.field[i] = 0x00
             self.next_field[i] = 0x00
 
         self.num_alive = 0
