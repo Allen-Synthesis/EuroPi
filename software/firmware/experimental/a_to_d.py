@@ -4,7 +4,13 @@ import utime
 
 
 class AnalogReaderDigitalWrapper:
-    """Wraps an AnalogReader to allow it to simulate a DigitalReader"""
+    """Wraps an AnalogReader to allow it to simulate a DigitalReader.
+
+    The EuroPiScript class using the AnalogReaderDigitalWrapper must call `.update()` to read the current state of
+    the analogue input and trigger any rising/falling edge callbacks.
+
+    The value returned by `.value()` is accurate to the last time `.update()` was called.
+    """
 
     def __init__(
         self, ain, debounce=1, high_low_cutoff=0.8, cb_rising=lambda: None, cb_falling=lambda: None
