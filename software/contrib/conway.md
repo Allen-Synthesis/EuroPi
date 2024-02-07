@@ -42,6 +42,10 @@ The six outputs are stepped CV outputs, whose values vary according to the game 
 Because of the modest computing power available, this program uses some simple statistics to infer if the game has
 reached a point of stasis. There is a chance that false-positives and false-negatives can be detected.
 
+When the game is believed to have reached a state of stasis it will automatically reset, as if a signal had been
+detected on `din`.  The field will clear and be filled with random data with a density governed by `ain`, `k1`, and
+`k2`.
+
 The game is assumed to have reached a state of stasis under these conditions:
 1. At least 12 generations have passed since the last reset
 2. The number of game spaces that have changed from dead to alive or alive to dead is equal to zero OR
