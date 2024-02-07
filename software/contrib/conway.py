@@ -26,15 +26,6 @@ NUM_PIXELS = OLED_HEIGHT * OLED_WIDTH
 # How many volts are our gate outputs?
 GATE_VOLTAGE = 5
 
-def clamp(x, low, hi):
-    """Clamp a value to lie between low and hi
-    """
-    if x < low:
-        return low
-    elif x > hi:
-        return hi
-    else:
-        return x
 
 def stdev(l):
     """Return the standard deviation of a list of values
@@ -45,6 +36,7 @@ def stdev(l):
     """
     mean = sum(l)/len(l)
     return ( sum([((x - mean) ** 2) for x in l]) / len(l) )**0.5
+
 
 def bitwise_entropy(arr):
     """Calculate the entropy of the bit string in a bytearray
