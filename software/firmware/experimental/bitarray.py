@@ -22,6 +22,7 @@ def make_bit_array(length):
         byte_length = (length >> 3) + 1
     else:
         byte_length = length >> 3
+    return bytearray(byte_length)
 
 
 def get_bit(arr, index):
