@@ -118,7 +118,6 @@ class Traffic(EuroPiScript):
 
     def main(self):
         TRIGGER_DURATION = 10   # 10ms triggers every time we get a rising edge on either input channel
-        TRIGGER_VOLTAGE = 5     # triggers are 5V
 
         while True:
             self.din2.update()
@@ -148,7 +147,7 @@ class Traffic(EuroPiScript):
             if time.ticks_diff(now, self.last_trigger_at) > TRIGGER_DURATION:
                 cv6.off()
             else:
-                cv6.voltage(TRIGGER_VOLTAGE)
+                cv6.on()
 
 
             # show the current gains * outputs, marking the channel we're controlling via the knobs & buttons
