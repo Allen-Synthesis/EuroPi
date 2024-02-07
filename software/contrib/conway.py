@@ -50,7 +50,7 @@ def bitwise_entropy(arr):
     for b in arr:
         for i in range(8):
             if b & (1 << i):
-                count1s = count1s + 1
+                count1s += 1
 
     # Make sure we don't have all-1 or all-0 in the array; handle those cases
     num_bits = len(arr) << 3
@@ -180,12 +180,12 @@ class Conway(EuroPiScript):
                 # if the space isn't already filled and we want to fill it
                 set_bit(self.field, i, True)
                 set_bit(self.next_field, i, True)
-                self.num_alive = self.num_alive + 1
+                self.num_alive += 1
             elif x >= fill_level and is_alive:
                 # if the space is filled and we want to clear it
                 set_bit(self.field, i, False)
                 set_bit(self.next_field, i, False)
-                self.num_alive = self.num_alive - 1
+                self.num_alive -= 1
 
         # Assume the whole field has changed
         set_all_bits(self.changed_spaces, True)
@@ -216,30 +216,27 @@ class Conway(EuroPiScript):
         for bit_index in range(NUM_PIXELS):
             if get_bit(self.changed_spaces, bit_index):
                 neighbourhood = self.get_neigbour_indices(bit_index)
-                num_neighbours = 0
-                for n in neighbourhood:
-                    if get_bit(self.field, n):
-                        num_neighbours = num_neighbours + 1
+                num_neighbours = sum(1 for n in neighbourhood if get_bit(self.field, n))
 
                 if get_bit(self.field, bit_index):
                     if num_neighbours == 2 or num_neighbours == 3:        # happy cell, stays alive
                         set_bit(self.next_field, bit_index, True)
                     else:                                                 # sad cell, dies
                         set_bit(self.next_field, bit_index, False)
-                        self.num_died = self.num_died + 1
-                        self.num_alive = self.num_alive - 1
+                        self.num_died += 1
+                        self.num_alive -= 1
 
-                        self.num_changes = self.num_changes + 1
+                        self.num_changes += 1
                         set_bit(self.next_changed_spaces, bit_index, 1)
                         for n in neighbourhood:
                             set_bit(self.next_changed_spaces, n, 1)
                 else:
                     if num_neighbours == 3:                               # baby cell is born!
                         set_bit(self.next_field, bit_index, True)
-                        self.num_alive = self.num_alive + 1
-                        self.num_born = self.num_born + 1
+                        self.num_alive += 1
+                        self.num_born += 1
 
-                        self.num_changes = self.num_changes + 1
+                        self.num_changes += 1
                         set_bit(self.next_changed_spaces, bit_index, 1)
                         for n in neighbourhood:
                             set_bit(self.next_changed_spaces, n, 1)
