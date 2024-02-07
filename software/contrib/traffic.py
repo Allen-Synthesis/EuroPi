@@ -42,8 +42,7 @@ class Traffic(EuroPiScript):
             self.channel_markers[1] = ' '
             self.channel_markers[2] = '>'
 
-        @b1.handler_falling
-        def b1_falling():
+        def either_button_falling():
             """Revert to channel a when the button is released
             """
             self.k1_bank.set_current("channel_a")
@@ -52,17 +51,8 @@ class Traffic(EuroPiScript):
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
             self.save_state()
-
-        @b2.handler_falling
-        def b2_falling():
-            """Revert to channel a when the button is released
-            """
-            self.k1_bank.set_current("channel_a")
-            self.k2_bank.set_current("channel_a")
-            self.channel_markers[0] = '>'
-            self.channel_markers[1] = ' '
-            self.channel_markers[2] = ' '
-            self.save_state()
+        b1.handler_falling(either_button_falling)
+        b2.handler_falling(either_button_falling)
 
         @din.handler
         def din1_rising():
