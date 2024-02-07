@@ -35,7 +35,7 @@ The six outputs are stepped CV outputs, whose values vary according to the game 
 - `cv4`: outputs a 5V gate every generation
 - `cv5`: outputs a 5V gate signal if the number of births in the last generation was greater than the number
          of deaths
-- `cv6`: outputs a 5V gate signal if the field has reached a point of stasis
+- `cv6`: outputs a 5V trigger if the field has reached a point of stasis
 
 ## Stasis Detection
 
@@ -95,8 +95,8 @@ sparse the rate will increase.  This is normal.
 
 You can patch an external LFO into DIN to periodically reset the simulation before it reaches a state of stasis.
 
-You can create interesting feedback by patching `cv1`-`cv3` into `ain` and using the gate signals from `cv4`-`cv6`
-to control the simulation reset rate & reset density.
+You can create interesting feedback by patching `cv1`-`cv3` into `ain` and using the gate/trigger signals from
+`cv4`-`cv6` to control the simulation reset rate & reset density.
 
 If the variation in the LFO rate causes problems you can take the outputs from Conway and connect them to an
 externally-clocked Sample & Hold module. This will smooth out the changes in the update frequency of Conway.
