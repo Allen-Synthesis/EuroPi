@@ -321,7 +321,7 @@ class Conway(EuroPiScript):
             # show the results on the OLED
             self.draw()
 
-            # check for stasis consitions
+            # check for stasis conditions
             self.population_deltas.append(self.num_born - self.num_died)
             if len(self.population_deltas) > self.MAX_DELTAS:
                 self.population_deltas.pop(0)
