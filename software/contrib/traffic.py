@@ -20,6 +20,8 @@ class Traffic(EuroPiScript):
 
         state = self.load_state_json()
 
+        # Button handlers to change the active channel for setting gains
+        self.channel_markers = ['>', ' ', ' ']    # used to indicate the editable channel on the screen
         @b1.handler
         def b1_rising():
             """Activate channel b controls while b1 is held
@@ -54,21 +56,24 @@ class Traffic(EuroPiScript):
         b1.handler_falling(either_button_falling)
         b2.handler_falling(either_button_falling)
 
+
+        # Input trigger handlers
+        self.input1_trigger_at = time.ticks_ms()
+        self.input2_trigger_at = self.input1_trigger_at
         @din.handler
         def din1_rising():
-            self.in_1 = HIGH
-            self.last_trigger_at = time.ticks_ms()
+            self.input1_trigger_at = time.ticks_ms()
 
-        @din.handler_falling
-        def din1_falling():
-            self.in_1 = LOW
+            # Set the all-triggers output high
+            self.last_output_trigger_at = self.input1_trigger_at
+            cv6.on()
 
         def din2_rising():
-            self.in_2 = HIGH
-            self.last_trigger_at = time.ticks_ms()
+            self.input2_trigger_at = time.ticks_ms()
 
-        def din2_falling():
-            self.in_2 = LOW
+            # Set the all-triggers output high
+            self.last_output_trigger_at = self.input2_trigger_at
+            cv6.on()
 
         self.k1_bank = (
             KnobBank.builder(k1) \
@@ -87,15 +92,10 @@ class Traffic(EuroPiScript):
         )
 
         self.din1 = din
-        self.din2 = AnalogReaderDigitalWrapper(ain, cb_rising=din2_rising, cb_falling=din2_falling)
-
-        self.in_1 = LOW
-        self.in_2 = LOW
+        self.din2 = AnalogReaderDigitalWrapper(ain, cb_rising=din2_rising)
 
         # we fire a trigger on CV6, so keep track of the previous outputs so we know when something's changed
-        self.last_trigger_at = time.ticks_ms()
-
-        self.channel_markers = ['>', ' ', ' ']
+        self.last_output_trigger_at = time.ticks_ms()
 
     def save_state(self):
         state = {
@@ -121,11 +121,17 @@ class Traffic(EuroPiScript):
             gain_c1 = round(self.k1_bank["channel_c"].percent(), 2)
             gain_c2 = round(self.k2_bank["channel_c"].percent(), 2)
 
-            # calculate the outputs, multiplied by half the max output voltage
-            # this gives us 0-10V, depending on the gains and input values
-            out_a = MAX_OUTPUT_VOLTAGE/2 * (self.in_1 * gain_a1 + self.in_2 * gain_a2)
-            out_b = MAX_OUTPUT_VOLTAGE/2 * (self.in_1 * gain_b1 + self.in_2 * gain_b2)
-            out_c = MAX_OUTPUT_VOLTAGE/2 * (self.in_1 * gain_c1 + self.in_2 * gain_c2)
+            # calculate the outputs
+            if time.ticks_diff(self.input1_trigger_at, self.input2_trigger_at) >= 0:
+                # din received a trigger more recently than ain
+                out_a = MAX_OUTPUT_VOLTAGE * gain_a1
+                out_b = MAX_OUTPUT_VOLTAGE * gain_b1
+                out_c = MAX_OUTPUT_VOLTAGE * gain_c1
+            else:
+                # ain received a trigger more recently than din
+                out_a = MAX_OUTPUT_VOLTAGE * gain_a2
+                out_b = MAX_OUTPUT_VOLTAGE * gain_b2
+                out_c = MAX_OUTPUT_VOLTAGE * gain_c2
 
             cv1.voltage(out_a)
             cv2.voltage(out_b)
@@ -134,11 +140,8 @@ class Traffic(EuroPiScript):
             cv5.voltage(abs(out_a - out_c))
 
             now = time.ticks_ms()
-            if time.ticks_diff(now, self.last_trigger_at) > TRIGGER_DURATION:
+            if time.ticks_diff(now, self.last_output_trigger_at) > TRIGGER_DURATION:
                 cv6.off()
-            else:
-                cv6.on()
-
 
             # show the current gains * outputs, marking the channel we're controlling via the knobs & buttons
             ssoled.centre_text(f"{self.channel_markers[0]}{gain_a1:0.2f} {gain_a2:0.2f} {out_a:0.2f}\n{self.channel_markers[1]}{gain_b1:0.2f} {gain_b2:0.2f} {out_b:0.2f}\n{self.channel_markers[2]}{gain_c1:0.2f} {gain_c2:0.2f} {out_c:0.2f}")
