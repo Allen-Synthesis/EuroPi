@@ -7,9 +7,9 @@ Traffic has 3 output channels (`cv1`-`cv3`), which output CVs signals. The value
 1. which input the trigger was received most recently and
 2. the gains for that trigger on each channel.
 
-For example, suppose the gains for channel A are set to `[0.25, 0.6]`. Whenever a trigger on `din` is received,
-channel A (`cv1`) will output `MAX_VOLTAGE * 0.25 = 2.5V`. Whenever a trigger on `ain` in received, channel A
-will output `MAX_VOLTAGE * 0.6 = 6V`.
+For example, suppose the gains for channel A are set to `[0.25, 0.6]`. Whenever a trigger on `din` (trigger input 1) is
+received, channel A (`cv1`) will output `MAX_VOLTAGE * 0.25 = 2.5V`. Whenever a trigger on `ain` (trigger input 2) in
+received, channel A will output `MAX_VOLTAGE * 0.6 = 6V`.
 
 The same occurs for channels B and C on `cv2` and `cv3`, each with their own pair of gains for the two inputs.
 
