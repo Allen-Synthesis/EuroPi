@@ -15,7 +15,7 @@ default configuration:
     "volts_per_octave": 1.0,
     "max_output_voltage": 10,
     "max_input_voltage": 12,
-	"gate_voltage": 5
+    "gate_voltage": 5
 }
 ```
 
