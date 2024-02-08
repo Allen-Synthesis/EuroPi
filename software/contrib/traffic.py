@@ -112,14 +112,14 @@ class Traffic(EuroPiScript):
         while True:
             self.din2.update()
 
-            gain_a1 = round(self.k1_bank["channel_a"].percent(), 2)
-            gain_a2 = round(self.k2_bank["channel_a"].percent(), 2)
+            gain_a1 = round(self.k1_bank["channel_a"].percent(), 3)
+            gain_a2 = round(self.k2_bank["channel_a"].percent(), 3)
 
-            gain_b1 = round(self.k1_bank["channel_b"].percent(), 2)
-            gain_b2 = round(self.k2_bank["channel_b"].percent(), 2)
+            gain_b1 = round(self.k1_bank["channel_b"].percent(), 3)
+            gain_b2 = round(self.k2_bank["channel_b"].percent(), 3)
 
-            gain_c1 = round(self.k1_bank["channel_c"].percent(), 2)
-            gain_c2 = round(self.k2_bank["channel_c"].percent(), 2)
+            gain_c1 = round(self.k1_bank["channel_c"].percent(), 3)
+            gain_c2 = round(self.k2_bank["channel_c"].percent(), 3)
 
             # calculate the outputs
             if time.ticks_diff(self.input1_trigger_at, self.input2_trigger_at) >= 0:
@@ -144,7 +144,7 @@ class Traffic(EuroPiScript):
                 cv6.off()
 
             # show the current gains * outputs, marking the channel we're controlling via the knobs & buttons
-            ssoled.centre_text(f"{self.channel_markers[0]}{gain_a1:0.2f} {gain_a2:0.2f} {out_a:0.2f}\n{self.channel_markers[1]}{gain_b1:0.2f} {gain_b2:0.2f} {out_b:0.2f}\n{self.channel_markers[2]}{gain_c1:0.2f} {gain_c2:0.2f} {out_c:0.2f}")
+            ssoled.centre_text(f"{self.channel_markers[0]} A {gain_a1:0.3f} {gain_a2:0.3f}\n{self.channel_markers[1]} B {gain_b1:0.3f} {gain_b2:0.3f}\n{self.channel_markers[2]} C {gain_c1:0.3f} {gain_c2:0.3f}")
 
 
 if __name__ == "__main__":
