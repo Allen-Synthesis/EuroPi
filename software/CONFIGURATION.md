@@ -14,7 +14,8 @@ default configuration:
     "display_height": 32,
     "volts_per_octave": 1.0,
     "max_output_voltage": 10,
-    "max_input_voltage": 12
+    "max_input_voltage": 12,
+    "gate_voltage": 5
 }
 ```
 
@@ -29,3 +30,4 @@ default configuration:
   The hardware is capable of 10V maximum
 - `max_input_voltage` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
   The hardware is capable of 12V maximum
+- `gate_voltage` is an integer in the range `[0, 12]` indicating the voltage that an output will produce when `cvx.on()` is called

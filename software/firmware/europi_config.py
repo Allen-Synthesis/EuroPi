@@ -82,6 +82,11 @@ class EuroPiConfig:
                 range=range(1, 13),
                 default=12
             ),
+            configuration.integer(
+                name="gate_voltage",
+                range=range(1, 13),
+                default=5
+            ),
         ]
         # fmt: on
 
