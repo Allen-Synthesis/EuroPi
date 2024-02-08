@@ -14,7 +14,6 @@ For example::
 Will set the CV output 3 to a voltage of 4.5V.
 """
 
-
 import ssd1306
 import sys
 import time
@@ -535,25 +534,25 @@ class Display(SSD1306_I2C):
             self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
 
     def centre_text(self, text, clear_first=True, auto_show=True):
-        """Split the provided text across 3 lines of display.
+        """Display one or more lines of text centred both horizontally and vertically.
 
-        @param text  The text to display, containing at most 3 lines
+        @param text  The text to display
         @param clear_first  If true, the screen buffer is cleared before rendering the text
         @param auto_show  If true, oled.show() is called after rendering the text. If false, you must call oled.show() yourself
         """
         if clear_first:
             self.fill(0)
         # Default font is 8x8 pixel monospaced font which can be split to a
-        # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
-        # for readability.
+        # maximum of 4 lines on a 128x32 display, but the maximum_lines variable
+        # is rounded down for readability
         lines = str(text).split("\n")
         maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
             raise Exception("Provided text exceeds available space on oled display.")
-        padding_top = (self.height - (len(lines) * 9)) / 2
+        padding_top = (self.height - (len(lines) * (CHAR_HEIGHT + 1))) / 2
         for index, content in enumerate(lines):
-            x_offset = int((self.width - ((len(content) + 1) * 7)) / 2) - 1
-            y_offset = int((index * 9) + padding_top) - 1
+            x_offset = int((self.width - ((len(content) + 1) * (CHAR_WIDTH - 1))) / 2) - 1
+            y_offset = int((index * (CHAR_HEIGHT + 1)) + padding_top) - 1
             self.text(content, x_offset, y_offset)
 
         if auto_show:
