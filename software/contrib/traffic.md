@@ -3,16 +3,18 @@
 This script is inspired by [Jasmine & Olive Tree's Traffic](https://jasmineandolivetrees.com/products/traffic).
 Instead of 3 trigger inputs, this version only has 2.
 
-Traffic has 3 output channels (`cv1`-`cv3`), which output a CV signal when a trigger is received on either
-of the two inputs.  The value of the output signal depends on:
-1. which input the trigger was received on and
+Traffic has 3 output channels (`cv1`-`cv3`), which output CVs signals. The value of the output signal depends on:
+1. which input the trigger was received most recently and
 2. the gains for that trigger on each channel.
 
 For example, suppose the gains for channel A are set to `[0.25, 0.6]`. Whenever a trigger on `din` is received,
-channel 1 (`cv1`) will output `MAX_VOLTAGE * 0.25 = 2.5V`. Whenever a trigger on `ain` in received, channel A
+channel A (`cv1`) will output `MAX_VOLTAGE * 0.25 = 2.5V`. Whenever a trigger on `ain` in received, channel A
 will output `MAX_VOLTAGE * 0.6 = 6V`.
 
 The same occurs for channels B and C on `cv2` and `cv3`, each with their own pair of gains for the two inputs.
+
+Changing the gains will immediately update the output value, if the gain for that input is active. i.e. if `din` last
+detected a trigger, changing the gains for `din` on channel A/B/C will affect the voltage on `cv1/2/3` immediately.
 
 `cv6` outputs a 10ms, 5V gate every time a trigger is received on _either_ input.
 
@@ -40,8 +42,8 @@ gains for channel A are always read from the current knob positions on startup.
 |---------------|-------------------------------------------------------------------|
 | `din`         | Trigger input 1                                                   |
 | `ain`         | Trigger input 2                                                   |
-| `b1`          | Hold to adjust gains for channel A                                |
-| `b2`          | Hold to adjust gains for channel B                                |
+| `b1`          | Hold to adjust gains for channel B                                |
+| `b2`          | Hold to adjust gains for channel C                                |
 | `k1`          | Input 1 gain for channel A/B/C                                    |
 | `k2`          | Input 2 gain for channel A/B/C                                    |
 | `cv1`         | Channel A output                                                  |
