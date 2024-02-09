@@ -655,9 +655,9 @@ class EgressusMelodiam(EuroPiScript):
         self.CvPattern = self.state.get("CvPattern", 0)
         self.outputSlewModes = self.state.get("outputSlewModes", [0, 0, 0, 0, 0, 0])
         self.outputDivisions = self.state.get("outputDivisions", [1, 2, 4, 1, 2, 4])
-        self.patternLength = self.state.get("patternLength", 1)
+        self.patternLength = self.state.get("patternLength", 8)
         self.msBetweenClocks = self.state.get("msBetweenClocks", 976)
-        self.unClockedMode = self.state.get("unClockedMode", True)
+        self.unClockedMode = self.state.get("unClockedMode", False)
 
         if len(self.cvPatternBanks) == 0:
             self.initCvPatternBanks()
