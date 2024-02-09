@@ -99,10 +99,10 @@ class Traffic(EuroPiScript):
 
     def save_state(self):
         state = {
-            "gain_b1": self.k1_bank["channel_b"].percent(),
-            "gain_b2": self.k2_bank["channel_b"].percent(),
-            "gain_c1": self.k1_bank["channel_c"].percent(),
-            "gain_c2": self.k2_bank["channel_c"].percent()
+            "gain_b1": self.k1_bank["channel_b"].percent(samples=1024),
+            "gain_b2": self.k2_bank["channel_b"].percent(samples=1024),
+            "gain_c1": self.k1_bank["channel_c"].percent(samples=1024),
+            "gain_c2": self.k2_bank["channel_c"].percent(samples=1024)
         }
         self.save_state_json(state)
 
@@ -112,14 +112,14 @@ class Traffic(EuroPiScript):
         while True:
             self.din2.update()
 
-            gain_a1 = round(self.k1_bank["channel_a"].percent(), 3)
-            gain_a2 = round(self.k2_bank["channel_a"].percent(), 3)
+            gain_a1 = round(self.k1_bank["channel_a"].percent(samples=1024), 3)
+            gain_a2 = round(self.k2_bank["channel_a"].percent(samples=1024), 3)
 
-            gain_b1 = round(self.k1_bank["channel_b"].percent(), 3)
-            gain_b2 = round(self.k2_bank["channel_b"].percent(), 3)
+            gain_b1 = round(self.k1_bank["channel_b"].percent(samples=1024), 3)
+            gain_b2 = round(self.k2_bank["channel_b"].percent(samples=1024), 3)
 
-            gain_c1 = round(self.k1_bank["channel_c"].percent(), 3)
-            gain_c2 = round(self.k2_bank["channel_c"].percent(), 3)
+            gain_c1 = round(self.k1_bank["channel_c"].percent(samples=1024), 3)
+            gain_c2 = round(self.k2_bank["channel_c"].percent(samples=1024), 3)
 
             # calculate the outputs
             delta_t = time.ticks_diff(self.input1_trigger_at, self.input2_trigger_at)
