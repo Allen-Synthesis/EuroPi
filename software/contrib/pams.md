@@ -158,7 +158,7 @@ The submenu for each CV output has the following options:
 - `Mute` -- if a channel is muted its output will always be zero. A muted channel can still be edited.
 - `Save` -- save the channel's current settings to one of 6 banks. Banks are shared across all channels
 - `Load` -- load a channel's settings from one of 6 banks. Banks are shared across all channels
-- `Reset` -- if set to `Y` all channel settings are reset to their defaults
+- `Reset` -- if set to `OK` all channel settings are reset to their defaults. Setting to `Cancel` takes no action
 
 The values of the `Attack`, `Decay`, `Sustain`, and `Release` settings are ignored if the wave whape is not set to
 `ADSR`
