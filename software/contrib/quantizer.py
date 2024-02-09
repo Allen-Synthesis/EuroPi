@@ -356,6 +356,8 @@ class QuantizerScript(EuroPiScript):
         self.screen_centre = int(OLED_WIDTH / 2)
 
         self.load()
+        
+        self.max_voltage = europi_config["max_output_voltage"]
 
         # connect event handlers for the rising & falling clock edges + button presses
 
@@ -449,10 +451,10 @@ class QuantizerScript(EuroPiScript):
         self.input_voltage = ain.read_voltage(500)   # increase the number of samples to help reduce noise
         self.quantize(self.input_voltage)
 
-        cv1.voltage(self.output_voltage)
+        cv1.voltage(min(self.output_voltage,self.max_voltage))
 
         for i in range(len(self.aux_outs)):
-            self.aux_outs[i].voltage(self.output_voltage + self.intervals[i] * VOLTS_PER_SEMITONE)
+            self.aux_outs[i].voltage(min(self.output_voltage + self.intervals[i] * VOLTS_PER_SEMITONE),self.max_voltage)
 
     def choose_option(self, new_item, current_item, all_items):
         item_widths = []
