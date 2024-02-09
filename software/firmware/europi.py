@@ -13,6 +13,8 @@ For example::
 
 Will set the CV output 3 to a voltage of 4.5V.
 """
+
+import ssd1306
 import sys
 import time
 
@@ -29,6 +31,7 @@ from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
 from europi_config import load_europi_config
+from experimental_config import load_experimental_config
 
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
@@ -54,9 +57,14 @@ except ImportError:
     ]
 
 
+# Initialize EuroPi global singleton instance variables.
+europi_config = load_europi_config()
+experimental_config = load_experimental_config()
+
+
 # OLED component display dimensions.
-OLED_WIDTH = 128
-OLED_HEIGHT = 32
+OLED_WIDTH = europi_config["display_width"]
+OLED_HEIGHT = europi_config["display_height"]
 I2C_CHANNEL = 0
 I2C_FREQUENCY = 400000
 
@@ -65,12 +73,12 @@ MAX_UINT16 = 65535
 
 # Analogue voltage read range.
 MIN_INPUT_VOLTAGE = 0
-MAX_INPUT_VOLTAGE = 12
+MAX_INPUT_VOLTAGE = europi_config["max_input_voltage"]
 DEFAULT_SAMPLES = 32
 
 # Output voltage range
 MIN_OUTPUT_VOLTAGE = 0
-MAX_OUTPUT_VOLTAGE = 10
+MAX_OUTPUT_VOLTAGE = europi_config["max_output_voltage"]
 
 # PWM Frequency
 PWM_FREQ = 100_000
@@ -508,23 +516,47 @@ class Display(SSD1306_I2C):
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
                 )
         super().__init__(self.width, self.height, i2c)
+        self.rotate(europi_config["rotate_display"])
 
-    def centre_text(self, text):
-        """Split the provided text across 3 lines of display."""
-        self.fill(0)
+    def rotate(self, rotate):
+        """Flip the screen from its default orientation
+
+        @param rotate  True or False, indicating whether we want to flip the screen from its default orientation
+        """
+        # From a hardware perspective, the default screen orientation of the display _is_ rotated
+        # But logically we treat this as right-way-up.
+        if rotate:
+            rotate = 0
+        else:
+            rotate = 1
+        if not TEST_ENV:
+            self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
+            self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
+
+    def centre_text(self, text, clear_first=True, auto_show=True):
+        """Display one or more lines of text centred both horizontally and vertically.
+
+        @param text  The text to display
+        @param clear_first  If true, the screen buffer is cleared before rendering the text
+        @param auto_show  If true, oled.show() is called after rendering the text. If false, you must call oled.show() yourself
+        """
+        if clear_first:
+            self.fill(0)
         # Default font is 8x8 pixel monospaced font which can be split to a
-        # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
-        # for readability.
+        # maximum of 4 lines on a 128x32 display, but the maximum_lines variable
+        # is rounded down for readability
         lines = str(text).split("\n")
         maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
             raise Exception("Provided text exceeds available space on oled display.")
-        padding_top = (self.height - (len(lines) * 9)) / 2
+        padding_top = (self.height - (len(lines) * (CHAR_HEIGHT + 1))) / 2
         for index, content in enumerate(lines):
-            x_offset = int((self.width - ((len(content) + 1) * 7)) / 2) - 1
-            y_offset = int((index * 9) + padding_top) - 1
+            x_offset = int((self.width - ((len(content) + 1) * (CHAR_WIDTH - 1))) / 2) - 1
+            y_offset = int((index * (CHAR_HEIGHT + 1)) + padding_top) - 1
             self.text(content, x_offset, y_offset)
-        self.show()
+
+        if auto_show:
+            self.show()
 
 
 class Output:
@@ -544,6 +576,7 @@ class Output:
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
+        self.gate_voltage = clamp(europi_config["gate_voltage"], self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
         self._gradients = []
         for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
@@ -565,7 +598,7 @@ class Output:
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
-        self.voltage(5)
+        self.voltage(self.gate_voltage)
 
     def off(self):
         """Set the voltage LOW at 0 volts."""
@@ -585,10 +618,6 @@ class Output:
         else:
             self.off()
 
-
-## Initialize EuroPi global singleton instance variables.
-
-europi_config = load_europi_config()
 
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(PIN_DIN)

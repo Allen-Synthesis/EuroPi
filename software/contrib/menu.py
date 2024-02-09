@@ -28,10 +28,12 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Bernoulli Gates",   "contrib.bernoulli_gates.BernoulliGates"],
     ["Coin Toss",         "contrib.coin_toss.CoinToss"],
     ["Consequencer",      "contrib.consequencer.Consequencer"],
+    ["Conway",            "contrib.conway.Conway"],
     ["CVecorder",         "contrib.cvecorder.CVecorder"],
     ["Diagnostic",        "contrib.diagnostic.Diagnostic"],
     ["EnvelopeGen",       "contrib.envelope_generator.EnvelopeGenerator"],
     ["Euclid",            "contrib.euclid.EuclideanRhythms"],
+    ["Gates & Triggers",  "contrib.gates_and_triggers.GatesAndTriggers"],
     ["Hamlet",            "contrib.hamlet.Hamlet"],
     ["HarmonicLFOs",      "contrib.harmonic_lfos.HarmonicLFOs"],
     ["HelloWorld",        "contrib.hello_world.HelloWorld"],
@@ -54,7 +56,8 @@ EUROPI_SCRIPTS = OrderedDict([
     ["StrangeAttractor",  "contrib.strange_attractor.StrangeAttractor"],
     ["Turing Machine",    "contrib.turing_machine.EuroPiTuringMachine"],
 
-    ["_Calibrate",        "calibrate.Calibrate"]  # this one should always be last!
+    ["_Calibrate",        "calibrate.Calibrate"],              # this one should always be second to last!
+    ["_BootloaderMode",   "bootloader_mode.BootloaderMode"]    # this one should always be last!
 ])
 # fmt: on
 

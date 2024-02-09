@@ -6,7 +6,7 @@ date: 2022-03-30
 
 labels: sequencer, random, triggers
 
-A script meant to recreate the [Music Thing Modular Turning Machine Random Sequencer](https://musicthing.co.uk/pages/turing.html)
+A script meant to recreate the [Music Thing Modular Turning Machine Random Sequencer](https://www.musicthing.co.uk/Turing-Machine/)
 as faithfully as possible on the EuroPi hardware. Plenty of information is available at that link, but the most 
 important bit is this:
 

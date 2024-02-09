@@ -20,6 +20,10 @@ B1, B2, and DIN are not used
 from europi import *
 from europi_script import EuroPiScript
 
+from experimental.screensaver import OledWithScreensaver
+
+ssoled = OledWithScreensaver()
+
 class Kompari(EuroPiScript):
     """The main Kompari script.  See module comment for usage
     """
@@ -28,6 +32,14 @@ class Kompari(EuroPiScript):
 
     def __init__(self):
         super().__init__()
+
+        @b1.handler
+        def on_b1_press():
+            ssoled.notify_user_interaction()
+
+        @b2.handler
+        def on_b2_press():
+            ssoled.notify_user_interaction()
 
     @classmethod
     def display_name(cls):
@@ -60,9 +72,7 @@ class Kompari(EuroPiScript):
             cv5.voltage(min(x, upper_bound) * MAX_OUTPUT_VOLTAGE)
             cv6.voltage(max(lower_bound, min(x, upper_bound)) * MAX_OUTPUT_VOLTAGE)
 
-            oled.fill(0)
-            oled.centre_text(f"{lower_bound:0.1f}  {x:0.1f}  {upper_bound:0.1f}")
-            oled.show()
+            ssoled.centre_text(f"{lower_bound:0.1f}  {x:0.1f}  {upper_bound:0.1f}", clear_first=True, auto_show=True)
 
 if __name__ == "__main__":
     Kompari().main()

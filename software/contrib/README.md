@@ -21,6 +21,12 @@ Users can morph between patterns and CV sequences during operation, with 3 gate 
 <i>Author: [gamecat69](https://github.com/gamecat69)</i>
 <br><i>Labels: sequencer, gates, triggers, drums, randomness</i>
 
+### Conway \[ [documentation](/software/contrib/conway.md) | [script](/software/contrib/conway.md) \]
+A semi-random LFO that uses [John Conway's Game Of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) to produce CV and gate signals.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: lfo, gates, randomness</i>
+
 ### CVecorder \[ [documentation](/software/contrib/cvecorder.md) | [script](/software/contrib/cvecorder.py) \]
 6 channels of control voltage recording
 
@@ -42,6 +48,13 @@ Euclidean rhythm generator. Each channel can generate an independent euclidean r
 
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: sequencer, gates, triggers, euclidean</i>
+
+### Gates and Triggers \[ [documentation](/software/contrib/gates_and_triggers.md) | [script](/software/contrib/gates_and_triggers.py) \]
+Convert incoming triggers to gates or gates to triggers.  Buttons allow manually creating gates/triggers, knobs control
+the duration of the output signals.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: gates, triggers</i>
 
 ### Hamlet \[ [documentation](/software/contrib/hamlet.md) | [script](/software/contrib/hamlet.py) \]
 A variation of the Consequencer script specifically geared towards driving voices

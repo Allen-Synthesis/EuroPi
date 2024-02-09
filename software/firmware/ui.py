@@ -1,5 +1,6 @@
 """This module provides reusable UI components.
 """
+
 from europi import CHAR_HEIGHT, CHAR_WIDTH, b1, k1, oled
 
 
