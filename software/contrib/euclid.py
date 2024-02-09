@@ -9,18 +9,15 @@ This script contains code released under the MIT license, as
 noted below
 """
 
+import random
+
 from europi import *
 from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
-from experimental.screensaver import Screensaver
+from experimental.screensaver import OledWithScreensaver
 
-import random
-import time
-
-## Duration before we blank the screen
-SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
-
+ssoled = OledWithScreensaver()
 
 class EuclidGenerator:
     """Generates the euclidean rhythm for a single output
@@ -150,17 +147,17 @@ class ChannelMenu:
         g = self.script.generators[generator_index]
         pattern_str = str(g)
 
-        oled.fill(0)
-        oled.text(f"-- CV {generator_index+1} --", 0, 0)
+        ssoled.fill(0)
+        ssoled.text(f"-- CV {generator_index+1} --", 0, 0)
         if len(pattern_str) > 16:
             pattern_row1 = pattern_str[0:16]
             pattern_row2 = pattern_str[16:]
-            oled.text(f"{pattern_row1}", 0, 10)
-            oled.text(f"{pattern_row2}", 0, 20)
+            ssoled.text(f"{pattern_row1}", 0, 10)
+            ssoled.text(f"{pattern_row2}", 0, 20)
         else:
-            oled.text(f"{pattern_str}", 0, 10)
+            ssoled.text(f"{pattern_str}", 0, 10)
 
-        oled.show()
+        ssoled.show()
 
 class SettingsMenu:
     """A menu screen for controlling a single setting of the generator
@@ -226,10 +223,10 @@ class SettingsMenu:
     def draw(self):
         (menu_item, lower_bound, upper_bound, current_setting, new_setting) = self.read_knobs()
 
-        oled.fill(0)
-        oled.text(f"-- {self.menu_items[menu_item]} --", 0, 0)
-        oled.text(f"{current_setting} <- {new_setting}", 0, 10)
-        oled.show()
+        ssoled.fill(0)
+        ssoled.text(f"-- {self.menu_items[menu_item]} --", 0, 0)
+        ssoled.text(f"{current_setting} <- {new_setting}", 0, 10)
+        ssoled.show()
 
     def apply_setting(self):
         """Apply the current setting
@@ -277,11 +274,8 @@ class EuclideanRhythms(EuroPiScript):
 
         self.channel_menu = ChannelMenu(self)
         self.settings_menu = SettingsMenu(self)
-        self.screensaver = Screensaver()
 
         self.active_screen = self.channel_menu
-
-        self.last_interaction_time = time.ticks_ms()
 
         @din.handler
         def on_rising_clock():
@@ -305,11 +299,9 @@ class EuclideanRhythms(EuroPiScript):
         def on_b1_press():
             """Handler for pressing button 1
             """
-            self.last_interaction_time = time.ticks_ms()
+            ssoled.notify_user_interaction()
 
-            if self.active_screen == self.screensaver:
-                self.active_screen = self.channel_menu
-            elif self.active_screen == self.channel_menu:
+            if self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.settings_menu.apply_setting()
@@ -319,11 +311,9 @@ class EuclideanRhythms(EuroPiScript):
         def on_b2_press():
             """Handler for pressing button 2
             """
-            self.last_interaction_time = time.ticks_ms()
+            ssoled.notify_user_interaction()
 
-            if self.active_screen == self.screensaver:
-                self.active_screen = self.channel_menu
-            elif self.active_screen == self.channel_menu:
+            if self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.activate_channel_menu()
@@ -381,11 +371,6 @@ class EuclideanRhythms(EuroPiScript):
 
     def main(self):
         while True:
-            # check if we've been idle for long enough to trigger the screensaver
-            now = time.ticks_ms()
-            if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
-                self.active_screen = self.screensaver
-
             self.active_screen.draw()
 
 if __name__=="__main__":
