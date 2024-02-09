@@ -1321,9 +1321,6 @@ class PamsWorkout(EuroPiScript):
         ## The master top-level menu
         self.main_menu = PamsMenu(self)
 
-        ## The screensaver
-        self.screensaver = Screensaver()
-
         ## How long ago was _either_ button pressed?
         #
         #  This is used to wake the screensaver up and suppress the normal
