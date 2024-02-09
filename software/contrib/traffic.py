@@ -122,7 +122,8 @@ class Traffic(EuroPiScript):
             gain_c2 = round(self.k2_bank["channel_c"].percent(), 3)
 
             # calculate the outputs
-            if time.ticks_diff(self.input1_trigger_at, self.input2_trigger_at) >= 0:
+            delta_t = time.ticks_diff(self.input1_trigger_at, self.input2_trigger_at)
+            if delta_t > 0 or abs(delta_t) <= 50:       # assume triggers within 50ms are simultaneous
                 # din received a trigger more recently than ain
                 out_a = MAX_OUTPUT_VOLTAGE * gain_a1
                 out_b = MAX_OUTPUT_VOLTAGE * gain_b1
