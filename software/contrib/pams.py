@@ -18,6 +18,7 @@ from experimental.screensaver import OledWithScreensaver
 from collections import OrderedDict
 from machine import Timer
 
+import gc
 import math
 import time
 import random
@@ -247,6 +248,23 @@ YES_NO_LABELS = [
     "Y"
 ]
 
+## IDs for the load/save banks
+#
+#  Banks are shared across all channels
+#  The -1 index is used to indicate "cancel"
+BANK_IDs = list(range(-1, 6))
+
+## Labels for the banks
+BANK_LABELS = [
+    "Cancel",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+]
+
 ## Integers 0-100 for choosing a percentage value
 PERCENT_RANGE = list(range(101))
 
@@ -428,7 +446,7 @@ class MasterClock:
     MIN_BPM = 1
 
     ## The absolute fastest the clock can go
-    MAX_BPM = 300
+    MAX_BPM = 240
 
     def __init__(self, bpm):
         """Create the main clock to run at a given bpm
@@ -1182,6 +1200,10 @@ class PamsMenu:
                 SettingChooser(prefix, ch.quantizer),
                 SettingChooser(prefix, ch.root),
                 SettingChooser(prefix, ch.mute),
+                SettingChooser(prefix, Setting("Save", "save", BANK_LABELS, BANK_IDs, allow_cv_in=False,
+                    on_change_fn=self.save_channel, callback_arg=ch)),
+                SettingChooser(prefix, Setting("Load", "load", BANK_LABELS, BANK_IDs, allow_cv_in=False,
+                    on_change_fn=self.load_channel, callback_arg=ch)),
                 SettingChooser(prefix, Setting("Reset", "reset", OK_CANCEL_LABELS, YES_NO_MODES, allow_cv_in=False,
                     on_change_fn=self.reset_channel, callback_arg=ch))
             ]))
@@ -1229,18 +1251,51 @@ class PamsMenu:
 
         self.visible_item.draw()
 
-    def reset_channel(self, reset_setting, channel):
+    def reset_channel(self, setting, channel):
         """Reset the given channel if the reset_setting is True
 
-        @param reset_setting  A Setting instance that calls this function as a callback
-        @param channel        The channel to reset
+        @param setting  A Setting instance that calls this function as a callback
+        @param channel  The channel to reset
         """
 
-        if reset_setting.get_value():
+        if setting.get_value():
             # reset the given channel to default...
             channel.reset_settings()
             # ...then reset this setting back to N so we can reset again later
-            reset_setting.reset_to_default()
+            setting.reset_to_default()
+
+    def save_channel(self, setting, channel):
+        """Save the channel settings to the selected bank
+
+        @param setting   The Setting instance that calls this function as a callback
+        @param channel   The channel to save
+        """
+        try:
+            gc.collect()
+            bank = setting.get_value()
+            if bank >= 0 and bank < len(self.pams_workout.banks):
+                self.pams_workout.banks[bank] = channel.to_dict()
+        except Exception as err:
+            print(f"Failed to save settings: {err}")
+        finally:
+            gc.collect()
+
+    def load_channel(self, setting, channel):
+        """Load the channel settings from the selected bank
+
+        @param setting  The Setting instance that calls this function as a callback
+        @param channel  The channel to load
+        """
+        try:
+            gc.collect()
+            bank = setting.get_value()
+            if bank >= 0 and bank < len(self.pams_workout.banks):
+                cfg = self.pams_workout.banks[bank]
+                channel.load_settings(cfg)
+        except Exception as err:
+            print(f"Failed to load channel settings: {err}")
+        finally:
+            gc.collect()
 
 
 class PamsWorkout(EuroPiScript):
@@ -1265,6 +1320,30 @@ class PamsWorkout(EuroPiScript):
 
         ## The master top-level menu
         self.main_menu = PamsMenu(self)
+
+        ## The screensaver
+        self.screensaver = Screensaver()
+
+        ## How long ago was _either_ button pressed?
+        #
+        #  This is used to wake the screensaver up and suppress the normal
+        #  button operations while doing so
+        self.last_interaction_time = time.ticks_ms()
+
+        default_channel = PamsOutput(None, self.clock, 0)
+        ## A set of 8 pre-generated banks for the CV outs
+        #
+        #  These can be overwritten with the Save command, or loaded with the Load command.
+        self.banks = [
+            default_channel.to_dict(),
+            default_channel.to_dict(),
+            default_channel.to_dict(),
+            default_channel.to_dict(),
+            default_channel.to_dict(),
+            default_channel.to_dict(),
+            default_channel.to_dict(),
+            default_channel.to_dict()
+        ]
 
         @din.handler
         def on_din_rising():
@@ -1352,6 +1431,8 @@ class PamsWorkout(EuroPiScript):
             for i in range(len(ain_cfg)):
                 CV_INS[cv_keys[i]].load_settings(ain_cfg[i])
 
+            self.banks = state.get("banks", self.banks)
+
         except Exception as err:
             print(f"[ERR ] Error loading saved configuration for PamsWorkout: {err}")
             print("[ERR ] Please delete the storage file and restart the module")
@@ -1367,7 +1448,8 @@ class PamsWorkout(EuroPiScript):
             "din": self.din_mode.to_dict(),
             "ain": [
                 CV_INS[cv].to_dict() for cv in CV_INS.keys()
-            ]
+            ],
+            "banks": self.banks
         }
 
         self.save_state_json(state)
