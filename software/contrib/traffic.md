@@ -35,6 +35,10 @@ gains for channel B. Pressing and holding `b2` while rotating the knobs will set
 The gains for channels B and C are saved to the module's onboard memory, and will persist across power-cycles.  The
 gains for channel A are always read from the current knob positions on startup.
 
+Note that this each channel makes used of "locked knobs."  This means that when changing the active channel by pressing
+or releasing `b1` or `b2` it may be necessary to sweep the knob to its prior position before the gain can be changed.
+This helps prevent accidentally changing the gains by pressing the buttons.
+
 
 ## I/O Mapping
 
