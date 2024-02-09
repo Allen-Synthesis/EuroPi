@@ -75,6 +75,8 @@ class Sequence:
         # Save state struct
         self.format_string = "4s"
         self.State = namedtuple("State", "note_indexes")
+        
+        self.max_voltage = europi_config["max_output_voltage"]
 
     def set_state(self, state):
         """Update instance variables with given state bytestring."""
@@ -91,7 +93,7 @@ class Sequence:
 
     def _set_pitch(self):
         pitch = self._pitch_cv(self.current_note())
-        self.pitch_cv.voltage(pitch)
+        self.pitch_cv.voltage(min(pitch,self.max_voltage))
 
     def current_note(self) -> str:
         return self.notes[self.step_index]
