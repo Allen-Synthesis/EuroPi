@@ -178,6 +178,13 @@ Users have the x, y, and z values of the output of each attractor model availabl
 <i>Author: [seanbechhofer](https://github.com/seanbechhofer)</i>
 <br><i>Labels: gates, triggers, randomness</i>
 
+### Traffic \[ [documentation](/software/contrib/traffic.md) | [script](/software/contrib/traffic.py) \]
+A re-imagining of [Jasmine and Olive Tree's Traffic](https://jasmineandolivetrees.com/products/traffic) module. Triggers are sent to both inputs
+generating CV signals based on which trigger fired most recently and a pair of gains per channel.
+
+<i>Author: [chrisib](http://github.com/chrisib)</i>
+<br><i>Labels: sequencer, gate, triggers</i>
+
 ### Turing Machine \[ [documentation](/software/contrib/turing_machine.md) | [script](/software/contrib/turing_machine.py) \]
 A script meant to recreate the [Music Thing Modular Turning Machine Random Sequencer](https://musicthing.co.uk/pages/turing.html)
 as faithfully as possible on the EuroPi hardware.

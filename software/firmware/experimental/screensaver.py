@@ -129,9 +129,6 @@ class OledWithScreensaver:
     def fill(self, color):
         oled.fill(color)
 
-    def clear(self):
-        oled.clear()
-
     def text(self, string, x, y, color=1):
         oled.text(string, x, y, color)
 
