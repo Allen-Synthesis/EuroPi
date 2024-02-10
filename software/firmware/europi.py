@@ -1,5 +1,5 @@
 """
-Rory Allen 19/11/2021 Apache License Version 2.0
+Rory Allen 2024 Apache License Version 2.0
 
 Before using any of this library, follow the instructions in
 `programming_instructions.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/programming_instructions.md>`_
