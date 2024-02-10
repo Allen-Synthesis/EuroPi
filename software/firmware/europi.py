@@ -31,7 +31,7 @@ from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
 from europi_config import load_europi_config
-from experimental_config import load_experimental_config
+from experimental.experimental_config import load_experimental_config
 
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware

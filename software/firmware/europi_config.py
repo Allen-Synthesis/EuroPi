@@ -65,13 +65,6 @@ class EuroPiConfig:
             ),
 
             # Synthesizer family settings
-            # Normally this is intended for Eurorack compatibility, but being open-source someone may
-            # want to use it in an ecosystem that uses different specs
-            configuration.choice(
-                name="volts_per_octave",
-                choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
-                default=MOOG_VOLTS_PER_OCTAVE,
-            ),
             configuration.integer(
                 name="max_output_voltage",
                 range=range(1, 11),
