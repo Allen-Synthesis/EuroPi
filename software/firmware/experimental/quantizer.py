@@ -91,6 +91,12 @@ class Quantizer:
         # re-apply the root to transpose back up
         volts = base_volts + nearest_on_scale * VOLTS_PER_SEMITONE + root * VOLTS_PER_SEMITONE
 
+        # If the calculated voltage is above what we can actually output, move down in octaves until we get
+        # to something on the scale
+        # Typically this should only be 1 octave, maybe 2 if the root offset is set especially high
+        while volts > MAX_OUTPUT_VOLTAGE:
+            volts = volts - VOLTS_PER_OCTAVE
+
         return (volts, nearest_on_scale)
 
 
