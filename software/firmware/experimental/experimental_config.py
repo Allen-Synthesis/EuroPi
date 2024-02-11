@@ -1,4 +1,4 @@
-"""Additional configuration settings for experimental scripts
+"""Additional configuration settings for experimental firmware features
 
 Any scripts in firmware/experimental that need editiable, persistent settings should use this. If/when
 they're moved out of experimental, their associated settings should be migrated to europi_config.py

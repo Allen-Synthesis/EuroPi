@@ -12,7 +12,6 @@ default configuration:
     "rotate_display": false,
     "display_width": 128,
     "display_height": 32,
-    "volts_per_octave": 1.0,
     "max_output_voltage": 10,
     "max_input_voltage": 12,
     "gate_voltage": 5
@@ -31,3 +30,20 @@ default configuration:
 - `max_input_voltage` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
   The hardware is capable of 12V maximum
 - `gate_voltage` is an integer in the range `[0, 12]` indicating the voltage that an output will produce when `cvx.on()` is called
+
+
+
+# Experimental configuration
+
+Other configuration properties are used by [experimental features](software/firmware/experimental/__init__.py)
+and can be set using a similar static configuration file. This file is located at `/config/config_ExperimentalConfig.json` 
+on the Raspberry Pi Pico. If this file does not exist, default settings will be loaded.  The following
+shows the default configuration:
+
+```json
+{
+    "volts_per_octave": 1.0,
+}
+```
+
+- `volts_per_octave` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard)
