@@ -75,7 +75,7 @@ class EuroPiConfig:
             ),
             configuration.integer(
                 name="display_channel",
-                range=range(0, 1),
+                range=range(0, 2),
                 default=0
             ),
 
