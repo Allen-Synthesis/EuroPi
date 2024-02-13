@@ -43,13 +43,12 @@ class Menu:
         current = self.selected
         oled.fill(0)
         line_height = CHAR_HEIGHT + 2
-        
+
         for line_number, item in enumerate(self.items):
             y_position = ((line_number - current) * line_height) + 1
             if line_number == (current + 1):
                 self._inverted_text(f"{item}", 2, y_position)
             else:
                 oled.text(f"{item}", 2, y_position, 1)
-        
-        oled.show()
 
+        oled.show()
