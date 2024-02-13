@@ -63,6 +63,21 @@ class EuroPiConfig:
                 range=range(8, 1024),
                 default=32
             ),
+            configuration.choice(
+                name="display_sda",
+                choices=[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 26],
+                default=0,
+            ),
+            configuration.choice(
+                name="display_scl",
+                choices=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 27],
+                default=1,
+            ),
+            configuration.integer(
+                name="display_channel",
+                range=range(0, 1),
+                default=0
+            ),
 
             # Synthesizer family settings
             configuration.integer(
