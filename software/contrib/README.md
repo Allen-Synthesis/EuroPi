@@ -39,8 +39,14 @@ A semi-random LFO that uses [John Conway's Game Of Life](https://en.wikipedia.or
 Record 6 banks of 6 channels of control voltage, and then play them back at a consistent rate set by an external clock.
 Recording of CV can be primed so that you can record a movement without missing a beat
 
-<i>Author: [anselln](https://github.com/anselln)</i>
+<i>Author: [gamecat69](https://github.com/gamecat69)</i>
 <br><i>Labels: sequencer, CV, performance</i>
+
+### Egressus Melodium \[ [documentation](/software/contrib/egressus_melodiam.md) | [script](/software/contrib/egressus_melodiam.py) \]
+Clockable and free-running LFO and random CV pattern generator
+
+<i>Author: [gamecat69](https://github.com/gamecat69)</i>
+<br><i>Labels: clocked lfo, sequencer, CV, randomness</i>
 
 ### Envelope Generator \[ [documentation](/software/contrib/envelope_generator.md) | [script](/software/contrib/envelope_generator.py) \]
 An attack release envelope with optional sustain and looping functionality.
