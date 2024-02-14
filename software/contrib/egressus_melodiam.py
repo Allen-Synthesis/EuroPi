@@ -93,8 +93,11 @@ SLEW_BUFFER_SIZE_IN_SAMPLES = int(
     (MAX_CLOCK_TIME_MS / 1000) * MAX_SAMPLE_RATE * MAX_OUTPUT_DENOMINATOR
 )
 
-# How much to print to the console?
-DEBUG_MODE = 0  # 0:Nothing, 1:Some things, 2:Lots, 3: Maybe a bit too much for some
+# Keep these in for future debugging during feature expansion
+DEBUG_VERBOSE = 3
+DEBUG_LOTS = 2
+NO_DEBUG = 0
+DEBUG_MODE = NO_DEBUG
 
 # Attempt to avoid knob hysteresis
 KNOB_CHANGE_TOLERANCE = 0.999
@@ -197,7 +200,7 @@ class EgressusMelodiam(EuroPiScript):
         self.calculateOptimalSampleRate()
 
         # Dump the entire CV Pattern structure to screen
-        if DEBUG_MODE == 3:
+        if DEBUG_MODE == DEBUG_VERBOSE:
 
             print(f"SLEW_BUFFER_SIZE_IN_SAMPLES: {SLEW_BUFFER_SIZE_IN_SAMPLES}")
             for idx, output in enumerate(self.cvPatternBanks):
@@ -237,7 +240,7 @@ class EgressusMelodiam(EuroPiScript):
                     and abs(newDiffBetweenClocks - self.averageMsBetweenClocks)
                     > MIN_CLOCK_CHANGE_DETECTION_MS
                 ):
-                    if DEBUG_MODE == 3:
+                    if DEBUG_MODE == DEBUG_VERBOSE:
                         print(
                             f"clock rate changed by {abs(newDiffBetweenClocks - self.averageMsBetweenClocks)}"
                         )
@@ -429,7 +432,7 @@ class EgressusMelodiam(EuroPiScript):
                             # Output the previous voltage to keep things as smooth as possible
                             cvs[idx].voltage(self.previousOutputVoltage[idx])
                             self.bufferUnderrunCounter[idx] += 1
-                            if DEBUG_MODE == 2:
+                            if DEBUG_MODE == DEBUG_LOTS:
                                 diff = self.slewBufferPosition[idx] - self.slewBufferSampleNum[idx]
                                 # Print an error if we are 2 or more samples out
                                 if diff >= 2:
@@ -445,11 +448,11 @@ class EgressusMelodiam(EuroPiScript):
 
                     except StopIteration:
                         # we shouldn't ever get here...
-                        if DEBUG_MODE == 2:
+                        if DEBUG_MODE == DEBUG_LOTS:
                             print(f"[{self.clockStep}][{idx}] ERROR: StopIteration")
                         continue
                     except Exception as e:
-                        if DEBUG_MODE == 2:
+                        if DEBUG_MODE == DEBUG_LOTS:
                             print(f"[{self.clockStep}][{idx}] ERROR: Exception: {e}")
                         continue
 
@@ -493,7 +496,7 @@ class EgressusMelodiam(EuroPiScript):
         # Cycle through outputs and generate slew for each
         for idx in range(len(cvs)):
 
-            if DEBUG_MODE == 3:
+            if DEBUG_MODE == DEBUG_VERBOSE:
                 print(f"sample rates: {self.samplesPerSec[idx]}")
 
             # If the clockstep is a division of the output division
@@ -507,7 +510,7 @@ class EgressusMelodiam(EuroPiScript):
                     self.bufferOverrunSamples[idx] = int(
                         self.slewBufferPosition[idx] - self.slewBufferSampleNum[idx]
                     )
-                    if DEBUG_MODE == 3:
+                    if DEBUG_MODE == DEBUG_VERBOSE:
                         print(
                             f"[{self.clockStep}][{idx}] bufferOverrunSamples: {self.bufferOverrunSamples[idx]}"
                         )
@@ -519,7 +522,7 @@ class EgressusMelodiam(EuroPiScript):
                     self.bufferSampleOffsets[idx] = 0
 
                 # Set the target number of samples for the next cycle, factoring in any previous overruns
-                if DEBUG_MODE == 3:
+                if DEBUG_MODE == DEBUG_VERBOSE:
                     print(
                         f"[{self.clockStep}][{idx}] previousTarget: {self.slewBufferSampleNum[idx]}"
                     )
@@ -536,7 +539,7 @@ class EgressusMelodiam(EuroPiScript):
                         - self.bufferSampleOffsets[idx]
                     ),
                 )
-                if DEBUG_MODE == 3:
+                if DEBUG_MODE == DEBUG_VERBOSE:
                     print(
                         f"[{self.clockStep}][{idx}] Time(ms) between clocks: {self.averageMsBetweenClocks}"
                     )
@@ -544,7 +547,7 @@ class EgressusMelodiam(EuroPiScript):
                         f"[{self.clockStep}][{idx}] slewBufferSampleNum: {self.slewBufferSampleNum}. Max: {SLEW_BUFFER_SIZE_IN_SAMPLES}"
                     )
 
-                if DEBUG_MODE == 3:
+                if DEBUG_MODE == DEBUG_VERBOSE:
                     print(
                         f"[{self.clockStep}][{idx}] bufferSampleOffset (AFTER): {self.bufferSampleOffsets[idx]}"
                     )
@@ -663,10 +666,10 @@ class EgressusMelodiam(EuroPiScript):
 
         if len(self.cvPatternBanks) == 0:
             self.initCvPatternBanks()
-            if DEBUG_MODE == 3:
+            if DEBUG_MODE == DEBUG_VERBOSE:
                 print("Initializing CV Pattern banks")
         else:
-            if DEBUG_MODE == 3:
+            if DEBUG_MODE == DEBUG_VERBOSE:
                 print(f"Loaded {len(self.cvPatternBanks[0])} CV Pattern Banks")
 
         self.saveState()
