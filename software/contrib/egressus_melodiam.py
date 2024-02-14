@@ -113,6 +113,9 @@ CLOCK_DIFF_BUFFER_LEN = 5
 # Avoids wonky waves when wonky clocks are used.
 MIN_CLOCK_CHANGE_DETECTION_MS = 100
 
+# Slightly quicker way to get integers from boolean values
+BOOL_DICT = { False: 0, True: 1}
+
 class EgressusMelodiam(EuroPiScript):
     def __init__(self):
 
@@ -555,12 +558,12 @@ class EgressusMelodiam(EuroPiScript):
                     # If square transition, set next output value to be one of the voltage extremes (flipping each time)
                     if self.outputSlewModes[idx] == 0:
                         self.squareOutputs[idx] = self.voltageExtremes[
-                            int(self.outputVoltageFlipFlops[idx])
+                            BOOL_DICT[self.outputVoltageFlipFlops[idx]]
                         ]
                     else:
                         self.slewArray = self.slewShapes[self.outputSlewModes[idx]](
-                            self.voltageExtremes[int(self.outputVoltageFlipFlops[idx])],
-                            self.voltageExtremes[int(not self.outputVoltageFlipFlops[idx])],
+                            self.voltageExtremes[BOOL_DICT[self.outputVoltageFlipFlops[idx]]],
+                            self.voltageExtremes[BOOL_DICT[not self.outputVoltageFlipFlops[idx]]],
                             self.slewBufferSampleNum[idx],
                             self.slewBuffers[idx],
                         )
