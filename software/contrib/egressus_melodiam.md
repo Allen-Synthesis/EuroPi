@@ -20,7 +20,7 @@ knob_2: Set LFO / CV Pattern clock division per output
 
 button_1:
 - Short Press (< 300ms): Cycle through slew/LFO shapes for the selected output
-- Long Press (Between 2 and 5 seconds): Generate a new random CV patter for the selected output
+- Long Press (Between 2 and 5 seconds): Generate a new random CV pattern for the selected output
 
 button_2:
 - Short Press (< 300ms): Cycle through outputs to edit

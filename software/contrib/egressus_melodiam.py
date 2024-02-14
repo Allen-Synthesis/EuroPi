@@ -356,7 +356,7 @@ class EgressusMelodiam(EuroPiScript):
     def generateNewRandomCVPattern(self, new=True, activePatternOnly=False):
         """Generate new CV pattern for existing bank or create a new bank"""
         # Note: This function is capable of working with multiple pattern banks
-        #  However, due to current memory limitations onlly one pattern bank is used
+        #  However, due to current memory limitations only one pattern bank is used
         try:
             gc.collect()
             if new:
