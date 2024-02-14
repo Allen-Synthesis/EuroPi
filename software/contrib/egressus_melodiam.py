@@ -446,11 +446,6 @@ class EgressusMelodiam(EuroPiScript):
                         # Advance the position in the sample/slew buffer
                         self.slewBufferPosition[idx] += 1
 
-                    except StopIteration:
-                        # we shouldn't ever get here...
-                        if DEBUG_MODE == DEBUG_LOTS:
-                            print(f"[{self.clockStep}][{idx}] ERROR: StopIteration")
-                        continue
                     except Exception as e:
                         if DEBUG_MODE == DEBUG_LOTS:
                             print(f"[{self.clockStep}][{idx}] ERROR: Exception: {e}")
