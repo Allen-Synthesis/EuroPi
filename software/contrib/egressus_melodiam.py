@@ -3,6 +3,7 @@ import machine
 from time import ticks_diff, ticks_ms
 from random import uniform
 from europi_script import EuroPiScript
+from europi_config import EuroPiConfig
 import gc
 import math
 import framebuf
@@ -103,7 +104,7 @@ DEBUG_MODE = NO_DEBUG
 # Attempt to avoid knob hysteresis
 KNOB_CHANGE_TOLERANCE = 0.999
 
-MAX_CV_VOLTAGE = 5
+MAX_CV_VOLTAGE = min(9, europi_config["max_output_voltage"])
 MAX_STEP_LENGTH = 32
 
 # Diff between incoming clocks are stored in the FiFo buffer and averaged
