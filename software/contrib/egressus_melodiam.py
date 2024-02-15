@@ -5,6 +5,7 @@ from random import uniform
 from europi_script import EuroPiScript
 import gc
 import math
+import framebuf
 
 """
 Egressus Melodiam (Stepped Melody)
@@ -115,6 +116,18 @@ MIN_CLOCK_CHANGE_DETECTION_MS = 100
 
 # Slightly quicker way to get integers from boolean values
 BOOL_DICT = { False: 0, True: 1}
+
+# Wave shape bit arrays
+WAVE_SHAPE_IMGS = [
+    bytearray(b'\xfe\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x83\xf0'), # stepUpStepDown
+    bytearray(b'\x00\x00\x06\x00\x05\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10'), # linspace (tri)
+    bytearray(b'0\x00(\x10D\x10D\x10D D\x10\x82 \x82 \x82 \x82 \x81@\x01\xc0'), # smooth (sine)
+    bytearray(b'\x04\x00\x04\x00\x06\x00\x06\x00\n\x00\t\x00\t\x00\x10\x80 \x80 @@ \x80\x10'), # expUpexpDown
+    bytearray(b'\x0c\x00\x12\x00\x12\x00"\x00"\x00A\x00A\x00@\x80@\x80\x80@\x80 \x80\x10'), # sharkTooth
+    bytearray(b'\x04\x00\x05\x00\x04\x80\x08\x80\x08@\x08@\x10 \x10 \x10   @\x10\x80\x00'), # sharkToothReverse
+    bytearray(b'\x03\xf0\x0c\x100\x10 \x10@\x10@\x10@\x10\x80\x10\x80\x10\x80\x10\x80\x10\x80\x10'), # logUpStepDown
+    bytearray(b'\xff\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80@\x80@\x80 \x80\x10'), # stepUpExpDown
+]
 
 class EgressusMelodiam(EuroPiScript):
     def __init__(self):
@@ -677,131 +690,8 @@ class EgressusMelodiam(EuroPiScript):
 
     def drawWave(self):
         """UI wave visualizations"""
-        # oled.pixel(x,y, colour)
-        # oled.vline(x,y.height,colout)
-        if self.outputSlewModes[self.selectedOutput] == 0:  # stepUpStepDown
-            oled.vline(3, 24, 8, 1)
-            oled.hline(3, 24, 6, 1)
-            oled.vline(9, 24, 8, 1)
-            oled.hline(9, 31, 6, 1)
-            oled.vline(15, 24, 8, 1)
-        elif self.outputSlewModes[self.selectedOutput] == 1:  # linspace
-            oled.pixel(3, 29, 1)
-            oled.pixel(4, 28, 1)
-            oled.pixel(5, 27, 1)
-            oled.pixel(6, 26, 1)
-            oled.pixel(7, 25, 1)
-            oled.pixel(8, 24, 1)
-            oled.pixel(9, 23, 1)
-            oled.pixel(10, 24, 1)
-            oled.pixel(11, 25, 1)
-            oled.pixel(12, 26, 1)
-            oled.pixel(13, 27, 1)
-            oled.pixel(14, 28, 1)
-            oled.pixel(15, 29, 1)
-        elif self.outputSlewModes[self.selectedOutput] == 2:  # smooth (cosine)
-            oled.pixel(3, 31, 1)
-            oled.pixel(3, 30, 1)
-            oled.pixel(3, 29, 1)
-            oled.pixel(4, 28, 1)
-            oled.pixel(4, 27, 1)
-            oled.pixel(4, 26, 1)
-            oled.pixel(4, 25, 1)
-            oled.pixel(5, 24, 1)
-            oled.pixel(6, 23, 1)
-            oled.pixel(7, 23, 1)
-            oled.pixel(8, 24, 1)
-            oled.pixel(9, 25, 1)
-            oled.pixel(9, 26, 1)
-            oled.pixel(9, 27, 1)
-            oled.pixel(10, 28, 1)
-            oled.pixel(10, 29, 1)
-            oled.pixel(11, 30, 1)
-            oled.pixel(12, 31, 1)
-            oled.pixel(13, 31, 1)
-            oled.pixel(14, 30, 1)
-            oled.pixel(15, 29, 1)
-            oled.pixel(15, 28, 1)
-            oled.pixel(15, 27, 1)
-            oled.pixel(15, 26, 1)
-            oled.pixel(16, 25, 1)
-            oled.pixel(16, 24, 1)
-            oled.pixel(16, 23, 1)
-
-        elif self.outputSlewModes[self.selectedOutput] == 3:  # expUpexpDown
-            oled.pixel(3, 31, 1)
-            oled.pixel(4, 30, 1)
-            oled.pixel(10, 30, 1)
-            oled.pixel(12, 30, 1)
-            oled.vline(5, 28, 2, 1)
-            oled.vline(9, 28, 2, 1)
-            oled.vline(13, 28, 2, 1)
-            oled.vline(6, 26, 2, 1)
-            oled.vline(8, 26, 2, 1)
-            oled.vline(14, 26, 2, 1)
-            oled.vline(7, 23, 3, 1)
-            oled.vline(15, 23, 3, 1)
-            oled.pixel(11, 31, 1)
-
-        elif self.outputSlewModes[self.selectedOutput] == 4:  # sharkTooth
-            oled.pixel(3, 30, 1)
-            oled.pixel(3, 29, 1)
-            oled.pixel(3, 28, 1)
-            oled.pixel(4, 27, 1)
-            oled.pixel(4, 26, 1)
-            oled.pixel(5, 25, 1)
-            oled.pixel(6, 25, 1)
-            oled.pixel(7, 24, 1)
-            oled.pixel(8, 24, 1)
-            oled.pixel(9, 23, 1)
-            oled.pixel(10, 24, 1)
-            oled.pixel(10, 25, 1)
-            oled.pixel(10, 26, 1)
-            oled.pixel(11, 27, 1)
-            oled.pixel(11, 28, 1)
-            oled.pixel(12, 28, 1)
-            oled.pixel(13, 29, 1)
-            oled.pixel(14, 29, 1)
-            oled.pixel(15, 30, 1)
-        elif self.outputSlewModes[self.selectedOutput] == 5:  # sharkToothReverse
-            oled.pixel(3, 30, 1)
-            oled.pixel(4, 29, 1)
-            oled.pixel(5, 29, 1)
-            oled.pixel(6, 28, 1)
-            oled.pixel(7, 28, 1)
-            oled.pixel(7, 27, 1)
-            oled.pixel(8, 26, 1)
-            oled.pixel(8, 25, 1)
-            oled.pixel(8, 24, 1)
-            oled.pixel(9, 23, 1)
-            oled.pixel(10, 24, 1)
-            oled.pixel(11, 24, 1)
-            oled.pixel(12, 25, 1)
-            oled.pixel(13, 25, 1)
-            oled.pixel(14, 26, 1)
-            oled.pixel(14, 27, 1)
-            oled.pixel(15, 28, 1)
-            oled.pixel(15, 29, 1)
-            oled.pixel(15, 30, 1)
-        elif self.outputSlewModes[self.selectedOutput] == 6:  # logUpStepDown
-            oled.vline(3, 28, 4, 1)
-            oled.hline(6, 24, 9, 1)
-            oled.pixel(4, 26, 1)
-            oled.pixel(4, 27, 1)
-            oled.pixel(5, 25, 1)
-            oled.vline(15, 24, 8, 1)
-        elif self.outputSlewModes[self.selectedOutput] == 7:  # stepUpExpDown
-            oled.hline(4, 24, 7, 1)
-            oled.vline(4, 24, 8, 1)
-            oled.pixel(10, 24, 1)
-            oled.pixel(10, 25, 1)
-            oled.pixel(10, 26, 1)
-            oled.pixel(11, 27, 1)
-            oled.pixel(11, 28, 1)
-            oled.pixel(12, 29, 1)
-            oled.pixel(12, 30, 1)
-            oled.pixel(13, 31, 1)
-            oled.pixel(14, 31, 1)
+        fb = framebuf.FrameBuffer(WAVE_SHAPE_IMGS[self.outputSlewModes[self.selectedOutput]], 12, 12, framebuf.MONO_HLSB)
+        oled.blit(fb, 0,20)
 
 
     def updateScreen(self):
@@ -858,7 +748,7 @@ class EgressusMelodiam(EuroPiScript):
                 for i in range(self.patternLength):
                     row1 = row1 + "."
 
-            xStart = 31
+            xStart = 27
             oled.text(row1, xStart, 0, 1)
             oled.text(row2, xStart, 6, 1)
             oled.text(row3, xStart, 12, 1)
@@ -867,28 +757,8 @@ class EgressusMelodiam(EuroPiScript):
         # Draw a visual cue for when a long button press has been detected
         # and a new random pattern is being generated
         if self.shreadedVis:
-            oled.fill_rect(0, 0, 20, 9, 1)
-            oled.pixel(2, 8, 0)
-            oled.pixel(2, 7, 0)
-            oled.pixel(2, 6, 0)
-            oled.pixel(3, 5, 0)
-            oled.pixel(3, 4, 0)
-            oled.pixel(4, 3, 0)
-            oled.pixel(5, 3, 0)
-            oled.pixel(6, 4, 0)
-            oled.pixel(7, 5, 0)
-            oled.pixel(8, 5, 0)
-            oled.pixel(9, 4, 0)
-            oled.pixel(9, 3, 0)
-            oled.pixel(9, 2, 0)
-            oled.pixel(10, 1, 0)
-            oled.pixel(11, 2, 0)
-            oled.pixel(12, 3, 0)
-            oled.pixel(12, 4, 0)
-            oled.pixel(13, 5, 0)
-            oled.pixel(13, 6, 0)
-            oled.pixel(14, 7, 0)
-            oled.pixel(15, 8, 0)
+            fb = framebuf.FrameBuffer(bytearray(b'\x0f\x000\x80N`Q \x94\xa0\xaa\x90\xa9P\xa5@Z\x80H\x803\x00\x0c\x00'), 12, 12, framebuf.MONO_HLSB)
+            oled.blit(fb, 0,0)
 
         oled.show()
 
@@ -1092,3 +962,4 @@ class EgressusMelodiam(EuroPiScript):
 if __name__ == "__main__":
     dm = EgressusMelodiam()
     dm.main()
+
