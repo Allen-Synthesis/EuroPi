@@ -408,30 +408,35 @@ class EgressusMelodiam(EuroPiScript):
                     and self.running
                 ):
 
-                    # Do we have a sample in the buffer?
-                    if self.slewBufferPosition[idx] < self.slewBufferSampleNum[idx]:
-                        # Yes, we have a sample, output voltage to match the sample, reset underrun counter and advance position in buffer
+                    try:
 
-                        # If a square interpolation mode (0) a precalculated value is used
-                        # as the generator function for square waves was really buggy
-                        if self.outputSlewModes[idx] == 0:
-                            v = self.squareOutputs[idx]
+                        # Do we have a sample in the buffer?
+                        if self.slewBufferPosition[idx] < self.slewBufferSampleNum[idx]:
+                            # Yes, we have a sample, output voltage to match the sample, reset underrun counter and advance position in buffer
+
+                            # If a square interpolation mode (0) a precalculated value is used
+                            # as the generator function for square waves was really buggy
+                            if self.outputSlewModes[idx] == 0:
+                                v = self.squareOutputs[idx]
+                            else:
+                                v = next(self.slewGeneratorObjects[idx])
+                            cvs[idx].voltage(v)
+                            self.previousOutputVoltage[idx] = v
+                            self.bufferUnderrunCounter[idx] = 0
                         else:
-                            v = next(self.slewGeneratorObjects[idx])
-                        cvs[idx].voltage(v)
-                        self.previousOutputVoltage[idx] = v
-                        self.bufferUnderrunCounter[idx] = 0
-                    else:
-                        # We do not have a sample - buffer under run
-                        # Output the previous voltage to keep things as smooth as possible
-                        cvs[idx].voltage(self.previousOutputVoltage[idx])
-                        self.bufferUnderrunCounter[idx] += 1
+                            # We do not have a sample - buffer under run
+                            # Output the previous voltage to keep things as smooth as possible
+                            cvs[idx].voltage(self.previousOutputVoltage[idx])
+                            self.bufferUnderrunCounter[idx] += 1
 
-                    # Advance the position in the sample/slew buffer
-                    self.slewBufferPosition[idx] += 1
+                        # Advance the position in the sample/slew buffer
+                        self.slewBufferPosition[idx] += 1
 
-                    # Update the last sample output time
-                    self.lastSlewVoltageOutputTime[idx] = ticks_ms()
+                        # Update the last sample output time
+                        self.lastSlewVoltageOutputTime[idx] = ticks_ms()
+                
+                    except StopIteration:
+                        continue
 
             # If we are not being clocked, trigger a clock after the configured clock time
             if (
