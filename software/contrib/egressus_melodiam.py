@@ -95,12 +95,6 @@ SLEW_BUFFER_SIZE_IN_SAMPLES = int(
     (MAX_CLOCK_TIME_MS / 1000) * MAX_SAMPLE_RATE * MAX_OUTPUT_DENOMINATOR
 )
 
-# Keep these in for future debugging during feature expansion
-DEBUG_VERBOSE = 3
-DEBUG_LOTS = 2
-NO_DEBUG = 0
-DEBUG_MODE = NO_DEBUG
-
 # Attempt to avoid knob hysteresis
 KNOB_CHANGE_TOLERANCE = 0.999
 
@@ -219,17 +213,6 @@ class EgressusMelodiam(EuroPiScript):
         # Clock rate or output division changed, recalculate optimal sample rate
         self.calculateOptimalSampleRate()
 
-        # Dump the entire CV Pattern structure to screen
-        if DEBUG_MODE == DEBUG_VERBOSE:
-
-            print(f"SLEW_BUFFER_SIZE_IN_SAMPLES: {SLEW_BUFFER_SIZE_IN_SAMPLES}")
-            for idx, output in enumerate(self.cvPatternBanks):
-                print(f"Output Channel: {idx}")
-                for idx, n in enumerate(output):
-                    print(f"  CV Pattern Bank: {idx}")
-                    for idx, voltage in enumerate(n):
-                        print(f"    Step {idx}: {voltage}")
-
         # -----------------------------
         # Interupt Handling functions
         # -----------------------------
@@ -260,10 +243,6 @@ class EgressusMelodiam(EuroPiScript):
                     and abs(newDiffBetweenClocks - self.averageMsBetweenClocks)
                     > MIN_CLOCK_CHANGE_DETECTION_MS
                 ):
-                    if DEBUG_MODE == DEBUG_VERBOSE:
-                        print(
-                            f"clock rate changed by {abs(newDiffBetweenClocks - self.averageMsBetweenClocks)}"
-                        )
                     # Update average ms between clocks
                     self.averageMsBetweenClocks = self.average(self.inputClockDiffs)
                     # Clock rate or output division changed, recalculate optimal sample rate
@@ -432,44 +411,27 @@ class EgressusMelodiam(EuroPiScript):
                     and self.running
                 ):
 
-                    try:
+                    # Do we have a sample in the buffer?
+                    if self.slewBufferPosition[idx] < self.slewBufferSampleNum[idx]:
+                        # Yes, we have a sample, output voltage to match the sample, reset underrun counter and advance position in buffer
 
-                        # Do we have a sample in the buffer?
-                        if self.slewBufferPosition[idx] < self.slewBufferSampleNum[idx]:
-                            # Yes, we have a sample, output voltage to match the sample, reset underrun counter and advance position in buffer
-
-                            # If a square interpolation mode (0) a precalculated value is used
-                            # as the generator function for square waves was really buggy
-                            if self.outputSlewModes[idx] == 0:
-                                v = self.squareOutputs[idx]
-                            else:
-                                v = next(self.slewGeneratorObjects[idx])
-                            cvs[idx].voltage(v)
-                            self.previousOutputVoltage[idx] = v
-                            self.bufferUnderrunCounter[idx] = 0
+                        # If a square interpolation mode (0) a precalculated value is used
+                        # as the generator function for square waves was really buggy
+                        if self.outputSlewModes[idx] == 0:
+                            v = self.squareOutputs[idx]
                         else:
-                            # We do not have a sample - buffer under run
-                            # Output the previous voltage to keep things as smooth as possible
-                            cvs[idx].voltage(self.previousOutputVoltage[idx])
-                            self.bufferUnderrunCounter[idx] += 1
-                            if DEBUG_MODE == DEBUG_LOTS:
-                                diff = self.slewBufferPosition[idx] - self.slewBufferSampleNum[idx]
-                                # Print an error if we are 2 or more samples out
-                                if diff >= 2:
-                                    print(
-                                        f"[{self.clockStep}][{idx}] Buffer underrun [{self.bufferUnderrunCounter[idx]}] ({diff}). Using previous voltage: {self.previousOutputVoltage[idx]}"
-                                    )
-                                    print(
-                                        f"[{self.clockStep}][{idx}] Current sample num: {self.slewBufferPosition[idx]} Buffer size: {self.slewBufferSampleNum[idx]}"
-                                    )
+                            v = next(self.slewGeneratorObjects[idx])
+                        cvs[idx].voltage(v)
+                        self.previousOutputVoltage[idx] = v
+                        self.bufferUnderrunCounter[idx] = 0
+                    else:
+                        # We do not have a sample - buffer under run
+                        # Output the previous voltage to keep things as smooth as possible
+                        cvs[idx].voltage(self.previousOutputVoltage[idx])
+                        self.bufferUnderrunCounter[idx] += 1
 
-                        # Advance the position in the sample/slew buffer
-                        self.slewBufferPosition[idx] += 1
-
-                    except Exception as e:
-                        if DEBUG_MODE == DEBUG_LOTS:
-                            print(f"[{self.clockStep}][{idx}] ERROR: Exception: {e}")
-                        continue
+                    # Advance the position in the sample/slew buffer
+                    self.slewBufferPosition[idx] += 1
 
                     # Update the last sample output time
                     self.lastSlewVoltageOutputTime[idx] = ticks_ms()
@@ -511,9 +473,6 @@ class EgressusMelodiam(EuroPiScript):
         # Cycle through outputs and generate slew for each
         for idx in range(len(cvs)):
 
-            if DEBUG_MODE == DEBUG_VERBOSE:
-                print(f"sample rates: {self.samplesPerSec[idx]}")
-
             # If the clockstep is a division of the output division
             if self.clockStep % (self.outputDivisions[idx]) == 0:
                 # flip the flip flop value for LFO mode
@@ -525,10 +484,7 @@ class EgressusMelodiam(EuroPiScript):
                     self.bufferOverrunSamples[idx] = int(
                         self.slewBufferPosition[idx] - self.slewBufferSampleNum[idx]
                     )
-                    if DEBUG_MODE == DEBUG_VERBOSE:
-                        print(
-                            f"[{self.clockStep}][{idx}] bufferOverrunSamples: {self.bufferOverrunSamples[idx]}"
-                        )
+
                     self.bufferSampleOffsets[idx] = (
                         self.bufferSampleOffsets[idx] - self.bufferOverrunSamples[idx]
                     )
@@ -537,11 +493,6 @@ class EgressusMelodiam(EuroPiScript):
                     self.bufferSampleOffsets[idx] = 0
 
                 # Set the target number of samples for the next cycle, factoring in any previous overruns
-                if DEBUG_MODE == DEBUG_VERBOSE:
-                    print(
-                        f"[{self.clockStep}][{idx}] previousTarget: {self.slewBufferSampleNum[idx]}"
-                    )
-
                 # Calculate the number of samples needed until the next clock
                 self.slewBufferSampleNum[idx] = min(
                     SLEW_BUFFER_SIZE_IN_SAMPLES,
@@ -554,19 +505,6 @@ class EgressusMelodiam(EuroPiScript):
                         - self.bufferSampleOffsets[idx]
                     ),
                 )
-                if DEBUG_MODE == DEBUG_VERBOSE:
-                    print(
-                        f"[{self.clockStep}][{idx}] Time(ms) between clocks: {self.averageMsBetweenClocks}"
-                    )
-                    print(
-                        f"[{self.clockStep}][{idx}] slewBufferSampleNum: {self.slewBufferSampleNum}. Max: {SLEW_BUFFER_SIZE_IN_SAMPLES}"
-                    )
-
-                if DEBUG_MODE == DEBUG_VERBOSE:
-                    print(
-                        f"[{self.clockStep}][{idx}] bufferSampleOffset (AFTER): {self.bufferSampleOffsets[idx]}"
-                    )
-                    print(f"[{self.clockStep}][{idx}] newTarget: {self.slewBufferSampleNum[idx]}")
 
                 # If length is one, cycle between high and low voltages (traditional LFO)
                 # Each output uses a its configured slew shape
@@ -681,11 +619,6 @@ class EgressusMelodiam(EuroPiScript):
 
         if len(self.cvPatternBanks) == 0:
             self.initCvPatternBanks()
-            if DEBUG_MODE == DEBUG_VERBOSE:
-                print("Initializing CV Pattern banks")
-        else:
-            if DEBUG_MODE == DEBUG_VERBOSE:
-                print(f"Loaded {len(self.cvPatternBanks[0])} CV Pattern Banks")
 
         self.saveState()
         # Let the rest of the script know how many pattern banks we have
