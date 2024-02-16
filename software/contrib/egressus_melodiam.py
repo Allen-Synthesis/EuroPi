@@ -95,7 +95,7 @@ SLEW_BUFFER_SIZE_IN_SAMPLES = int(
     (MAX_CLOCK_TIME_MS / 1000) * MAX_SAMPLE_RATE * MAX_OUTPUT_DENOMINATOR
 )
 
-# Attempt to avoid knob hysteresis
+# Reduce knob hysteresis using this value - Mutable Instruments style
 KNOB_CHANGE_TOLERANCE = 0.999
 
 # Set the maximum CV voltage using a global config value
@@ -140,8 +140,8 @@ class EgressusMelodiam(EuroPiScript):
         self.CvPattern = 0
         self.resetTimeout = MAX_CLOCK_TIME_MS
         self.screenRefreshNeeded = True
-        self.shreadedVis = False
-        self.shreadedVisClockStep = 0
+        self.showNewPatternIndicator = False
+        self.showNewPatternIndicatorClockStep = 0
 
         self.numCvPatterns = 1  # Leave at 1 due to memory limitations
         self.maxCvPatterns = 1  # Leave at 1 due to memory limitations
@@ -263,9 +263,9 @@ class EgressusMelodiam(EuroPiScript):
             ):
                 # long press generate new CV pattern
                 self.generateNewRandomCVPattern(new=False, activePatternOnly=True)
-                self.shreadedVis = True
+                self.showNewPatternIndicator = True
                 self.screenRefreshNeeded = True
-                self.shreadedVisClockStep = self.clockStep
+                self.showNewPatternIndicatorClockStep = self.clockStep
                 self.saveState()
             elif ticks_diff(ticks_ms(), b1.last_pressed()) > 300:
                 # medium press, save for future use
@@ -389,7 +389,7 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def generateRandomPattern(self, length, min, max):
-        """Generate a random pattern between min and max of the desired length"""
+        """Generate a random pattern of a desired length containing values between min and max"""
         self.t = []
         for i in range(0, length):
             self.t.append(round(uniform(min, max), 3))
@@ -547,8 +547,8 @@ class EgressusMelodiam(EuroPiScript):
                 self.nextStepPerOutput[idx] = ((self.stepPerOutput[idx] + 1)) % self.patternLength
 
         # Hide the shreaded visual indicator after 2 clock steps
-        if self.clockStep > self.shreadedVisClockStep + 2:
-            self.shreadedVis = False
+        if self.clockStep > self.showNewPatternIndicatorClockStep + 2:
+            self.showNewPatternIndicator = False
 
 
     def getK1Value(self):
@@ -693,7 +693,7 @@ class EgressusMelodiam(EuroPiScript):
 
         # Draw a visual cue for when a long button press has been detected
         # and a new random pattern is being generated
-        if self.shreadedVis:
+        if self.showNewPatternIndicator:
             fb = framebuf.FrameBuffer(bytearray(b'\x0f\x000\x80N`Q \x94\xa0\xaa\x90\xa9P\xa5@Z\x80H\x803\x00\x0c\x00'), 12, 12, framebuf.MONO_HLSB)
             oled.blit(fb, 0,0)
 
