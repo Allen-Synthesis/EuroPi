@@ -116,19 +116,34 @@ CLOCK_DIFF_BUFFER_LEN = 5
 MIN_CLOCK_CHANGE_DETECTION_MS = 100
 
 # Slightly quicker way to get integers from boolean values
-BOOL_DICT = { False: 0, True: 1}
+BOOL_DICT = {False: 0, True: 1}
 
 # Wave shape bit arrays
 WAVE_SHAPE_IMGS = [
-    bytearray(b'\xfe\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x83\xf0'), # stepUpStepDown
-    bytearray(b'\x00\x00\x06\x00\x05\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10'), # linspace (tri)
-    bytearray(b'0\x00(\x10D\x10D\x10D D\x10\x82 \x82 \x82 \x82 \x81@\x01\xc0'), # smooth (sine)
-    bytearray(b'\x04\x00\x04\x00\x06\x00\x06\x00\n\x00\t\x00\t\x00\x10\x80 \x80 @@ \x80\x10'), # expUpexpDown
-    bytearray(b'\x0c\x00\x12\x00\x12\x00"\x00"\x00A\x00A\x00@\x80@\x80\x80@\x80 \x80\x10'), # sharkTooth
-    bytearray(b'\x04\x00\x05\x00\x04\x80\x08\x80\x08@\x08@\x10 \x10 \x10   @\x10\x80\x00'), # sharkToothReverse
-    bytearray(b'\x03\xf0\x0c\x100\x10 \x10@\x10@\x10@\x10\x80\x10\x80\x10\x80\x10\x80\x10\x80\x10'), # logUpStepDown
-    bytearray(b'\xff\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80@\x80@\x80 \x80\x10'), # stepUpExpDown
+    bytearray(
+        b"\xfe\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x82\x10\x83\xf0"
+    ),  # stepUpStepDown
+    bytearray(
+        b"\x00\x00\x06\x00\x05\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10"
+    ),  # linspace (tri)
+    bytearray(b"0\x00(\x10D\x10D\x10D D\x10\x82 \x82 \x82 \x82 \x81@\x01\xc0"),  # smooth (sine)
+    bytearray(
+        b"\x04\x00\x04\x00\x06\x00\x06\x00\n\x00\t\x00\t\x00\x10\x80 \x80 @@ \x80\x10"
+    ),  # expUpexpDown
+    bytearray(
+        b'\x0c\x00\x12\x00\x12\x00"\x00"\x00A\x00A\x00@\x80@\x80\x80@\x80 \x80\x10'
+    ),  # sharkTooth
+    bytearray(
+        b"\x04\x00\x05\x00\x04\x80\x08\x80\x08@\x08@\x10 \x10 \x10   @\x10\x80\x00"
+    ),  # sharkToothReverse
+    bytearray(
+        b"\x03\xf0\x0c\x100\x10 \x10@\x10@\x10@\x10\x80\x10\x80\x10\x80\x10\x80\x10\x80\x10"
+    ),  # logUpStepDown
+    bytearray(
+        b"\xff\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80@\x80@\x80 \x80\x10"
+    ),  # stepUpExpDown
 ]
+
 
 class EgressusMelodiam(EuroPiScript):
     def __init__(self):
@@ -224,13 +239,12 @@ class EgressusMelodiam(EuroPiScript):
         @din.handler
         def clockTrigger():
             """Triggered on each rising edge into digital input. Sets running flag to true.
-               Sets a flag to tell main() to process the clock step. Ignored in unclocked mode."""
+            Sets a flag to tell main() to process the clock step. Ignored in unclocked mode."""
 
             self.running = True
 
             if not self.unClockedMode:
                 self.newClockToProcess = True
-        
 
         @b1.handler_falling
         def b1Pressed():
@@ -256,7 +270,6 @@ class EgressusMelodiam(EuroPiScript):
                 self.screenRefreshNeeded = True
                 self.saveState()
 
-        
         @b2.handler_falling
         def b2Pressed():
             """Triggered when B2 is pressed and released"""
@@ -284,9 +297,8 @@ class EgressusMelodiam(EuroPiScript):
                 self.screenRefreshNeeded = True
                 self.saveState()
 
-
     def calculateOptimalSampleRate(self):
-        """ Calculate optimal sample rate for smooth CV output while using minimal memory """
+        """Calculate optimal sample rate for smooth CV output while using minimal memory"""
         for idx in range(len(cvs)):
             self.samplesPerSec[idx] = int(
                 min(
@@ -296,7 +308,6 @@ class EgressusMelodiam(EuroPiScript):
                 )
             )
             self.msBetweenSamples[idx] = int(1000 / self.samplesPerSec[idx])
-
 
     def initSlewBuffers(self):
         """Create slew buffers and fill with zeros"""
@@ -311,7 +322,6 @@ class EgressusMelodiam(EuroPiScript):
         myList = list.copy()
         return sum(myList) / len(myList)
 
-
     def initCvPatternBanks(self):
         """Initialize CV pattern banks"""
         # Init CV pattern banks, one for each output
@@ -320,11 +330,11 @@ class EgressusMelodiam(EuroPiScript):
             self.generateNewRandomCVPattern(self)
         return self.cvPatternBanks
 
-
     def generateNewRandomCVPattern(self, new=True, activePatternOnly=False):
         """Generate new CV pattern for existing bank or create a new bank
         new (True/False): create new pattern / overwrite existing
-        activePatternOnly (True/False): generate pattern for selected output / generate pattern for all outputs"""
+        activePatternOnly (True/False): generate pattern for selected output / generate pattern for all outputs
+        """
         # Note: This function is capable of working with multiple pattern banks
         #  However, due to current memory limitations only one pattern bank is used
         try:
@@ -355,14 +365,12 @@ class EgressusMelodiam(EuroPiScript):
         except Exception:
             return False
 
-
     def generateRandomPattern(self, length, min, max):
         """Generate a random pattern of a desired length containing values between min and max"""
         self.t = []
         for i in range(0, length):
             self.t.append(round(uniform(min, max), 3))
         return self.t
-
 
     def main(self):
         """Entry point - main loop. See inline comments for more info"""
@@ -398,7 +406,6 @@ class EgressusMelodiam(EuroPiScript):
                 # Incremenent the clock step
                 self.clockStep += 1
                 self.newClockToProcess = False
-
 
             # Cycle through outputs, process when needed
             for idx in range(len(cvs)):
@@ -462,7 +469,6 @@ class EgressusMelodiam(EuroPiScript):
                 self.bufferOverrunSamples = [0, 0, 0, 0, 0, 0]
                 self.slewBufferPosition = [0, 0, 0, 0, 0, 0]
                 self.bufferSampleOffsets = [0, 0, 0, 0, 0, 0]
-
 
     def handleClockStep(self):
         """Advances step and generates new slew voltages to next value in CV pattern"""
@@ -547,7 +553,6 @@ class EgressusMelodiam(EuroPiScript):
         if self.clockStep > self.showNewPatternIndicatorClockStep + 2:
             self.showNewPatternIndicator = False
 
-
     def getK1Value(self):
         """Get the k1 value, update params if changed"""
 
@@ -574,7 +579,6 @@ class EgressusMelodiam(EuroPiScript):
 
         self.lastK1Reading = self.currentK1Reading
 
-
     def getOutputDivision(self):
         """Get the output division from k2"""
         self.currentK2Reading = k2.read_position(MAX_OUTPUT_DENOMINATOR) + 1
@@ -588,9 +592,8 @@ class EgressusMelodiam(EuroPiScript):
 
             self.saveState()
 
-
     def saveState(self):
-        """ Save working vars to a save state file"""
+        """Save working vars to a save state file"""
         self.state = {
             "cvPatternBanks": self.cvPatternBanks,
             "CvPattern": self.CvPattern,
@@ -602,9 +605,8 @@ class EgressusMelodiam(EuroPiScript):
         }
         self.save_state_json(self.state)
 
-
     def loadState(self):
-        """ Load a previously saved state, or initialize working vars, then save"""
+        """Load a previously saved state, or initialize working vars, then save"""
         self.state = self.load_state_json()
         self.cvPatternBanks = self.state.get("cvPatternBanks", [])
         self.CvPattern = self.state.get("CvPattern", 0)
@@ -621,12 +623,12 @@ class EgressusMelodiam(EuroPiScript):
         # Let the rest of the script know how many pattern banks we have
         self.numCvPatterns = len(self.cvPatternBanks[0])
 
-
     def drawWave(self):
         """UI wave visualizations"""
-        fb = framebuf.FrameBuffer(WAVE_SHAPE_IMGS[self.outputSlewModes[self.selectedOutput]], 12, 12, framebuf.MONO_HLSB)
-        oled.blit(fb, 0,20)
-
+        fb = framebuf.FrameBuffer(
+            WAVE_SHAPE_IMGS[self.outputSlewModes[self.selectedOutput]], 12, 12, framebuf.MONO_HLSB
+        )
+        oled.blit(fb, 0, 20)
 
     def updateScreen(self):
         """Update the screen only if something has changed. oled.show() hogs the processor and causes latency."""
@@ -691,15 +693,19 @@ class EgressusMelodiam(EuroPiScript):
         # Draw a visual cue for when a long button press has been detected
         # and a new random pattern is being generated
         if self.showNewPatternIndicator:
-            fb = framebuf.FrameBuffer(bytearray(b'\x0f\x000\x80N`Q \x94\xa0\xaa\x90\xa9P\xa5@Z\x80H\x803\x00\x0c\x00'), 12, 12, framebuf.MONO_HLSB)
-            oled.blit(fb, 0,0)
+            fb = framebuf.FrameBuffer(
+                bytearray(b"\x0f\x000\x80N`Q \x94\xa0\xaa\x90\xa9P\xa5@Z\x80H\x803\x00\x0c\x00"),
+                12,
+                12,
+                framebuf.MONO_HLSB,
+            )
+            oled.blit(fb, 0, 0)
 
         oled.show()
 
     # -----------------------------
     # Slew functions
     # -----------------------------
-
 
     def stepUpStepDown(self, start, stop, num, buffer):
         """Produces step up, step down
@@ -719,7 +725,6 @@ class EgressusMelodiam(EuroPiScript):
                 c += 1
         return buffer
 
-
     def linspace(self, start, stop, num, buffer):
         """Produces a linear transition
         start: starting value. stop: target value. num: number of samples required
@@ -732,7 +737,6 @@ class EgressusMelodiam(EuroPiScript):
             buffer[c] = val
             c += 1
         return buffer
-
 
     def logUpStepDown(self, start, stop, num, buffer):
         """Produces log up, step down
@@ -761,7 +765,6 @@ class EgressusMelodiam(EuroPiScript):
                     c += 1
         return buffer
 
-
     def stepUpExpDown(self, start, stop, num, buffer):
         """Produces step up, exp down
         start: starting value. stop: target value. num: number of samples required
@@ -778,7 +781,6 @@ class EgressusMelodiam(EuroPiScript):
                 buffer[c] = stop
                 c += 1
         return buffer
-
 
     def smooth(self, start, stop, sampleRate, buffer):
         """Produces smooth curve using half a cosine wave
@@ -805,7 +807,6 @@ class EgressusMelodiam(EuroPiScript):
             buffer[c] = round(val + amplitudeOffset, 4)
             c += 1
         return buffer
-
 
     def expUpexpDown(self, start, stop, sampleRate, buffer):
         """Produces a pointy exponential wave using a quarter cosine
@@ -838,7 +839,6 @@ class EgressusMelodiam(EuroPiScript):
                 c += 1
         return buffer
 
-
     def sharkTooth(self, start, stop, sampleRate, buffer):
         """Produces a log(ish) up and exponential(ish) down using a quarter cosine
         start: starting value. stop: target value. sampleRate: number of samples required
@@ -869,7 +869,6 @@ class EgressusMelodiam(EuroPiScript):
                 buffer[c] = round(val + amplitudeOffset, 4)
                 c += 1
         return buffer
-
 
     def sharkToothReverse(self, start, stop, sampleRate, buffer):
         """Produces an exponential(ish) up and log(ish) down using a quarter cosine
@@ -902,7 +901,6 @@ class EgressusMelodiam(EuroPiScript):
                 c += 1
         return buffer
 
-
     def slewGenerator(self, arr):
         """Generator function that returns the next slew sample from the specified list (arr)"""
         for s in range(len(arr)):
@@ -912,5 +910,3 @@ class EgressusMelodiam(EuroPiScript):
 if __name__ == "__main__":
     dm = EgressusMelodiam()
     dm.main()
-
-
