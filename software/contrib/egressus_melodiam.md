@@ -8,8 +8,6 @@ Clockable and free-running LFO and random CV pattern generator.
 Six different wave shapes either define the LFO shape or the slew shape between CV pattern steps.
 Use it to generate variable length melodies (using a quantizer), LFOs or wierd and wonderful control voltages.   
 
-Demo video: TBC
-
 # Inputs, Outputs and Controls
 
 digital_in: clock in
