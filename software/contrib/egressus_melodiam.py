@@ -21,7 +21,7 @@ Use it to generate variable length melodies (using a quantizer), LFOs or wierd a
 Known Issues:
 - When the clock rate or output division changes significantly this creates temporary wave shape discontinuities
 - Input clocks > 150BPM can cause waveshape glitches. Workaround this by dividing the clock first if working at 150BPM or higher.
-- Some input clocks < 20ms can be occasionally missed causing glitchy waves to he output or CV pattern steps to be missed.
+- Some input clocks < 16ms can be occasionally missed causing glitchy waves to he output or CV pattern steps to be missed.
 Workaround this issue using longer clock pulse durations or 50% duty cycle square waves.
 - Performance is affected when using the controls - the poor pico has trouble keeping up with the not-yet optimized code
 
@@ -32,7 +32,7 @@ Possible future work:
 
 - Med [UX]: When in unclocked mode the pattern length cannot be changed - change UI? Or maybe restrict pattern length to 1 (LFO mode only in unclocked mode?)
 - Low [FEATURE]: Find a use for ain? Change unClocked clock time?
-- High [PERF]: See if performance can be optimized to work with clock inputs < 20ms
+- High [PERF]: See if performance can be optimized to work with clock inputs < 16ms
 
 """
 """
@@ -134,6 +134,7 @@ class EgressusMelodiam(EuroPiScript):
         machine.freq(250_000_000)
 
         # Initialize variables
+        self.newClockToProcess = False
         self.clockStep = 0
         self.stepPerOutput = [0, 0, 0, 0, 0, 0]
         self.nextStepPerOutput = [0, 0, 0, 0, 0, 0]
@@ -219,39 +220,13 @@ class EgressusMelodiam(EuroPiScript):
 
         @din.handler
         def clockTrigger():
-            """Triggered on each rising edge into digital input.
-               Detects changes in clock timings and calls HandleClockStep().
-               Ignored in unclocked mode."""
+            """Triggered on each rising edge into digital input. Sets running flag to true.
+               Sets a flag to tell main() to process the clock step. Ignored in unclocked mode."""
 
             self.running = True
 
             if not self.unClockedMode:
-
-                # Get the time difference since the last clockTime
-                newDiffBetweenClocks = min(MAX_CLOCK_TIME_MS, ticks_ms() - self.lastClockTime)
-                self.lastClockTime = ticks_ms()
-
-                # Add time diff between clocks to inputClockDiffs Fifo list, skipping the first clock as we have no reference
-                if self.clockStep > 0:
-                    self.inputClockDiffs[self.clockStep % CLOCK_DIFF_BUFFER_LEN] = (
-                        newDiffBetweenClocks
-                    )
-
-                # Clock rate change detection
-                if (
-                    self.clockStep >= CLOCK_DIFF_BUFFER_LEN
-                    and abs(newDiffBetweenClocks - self.averageMsBetweenClocks)
-                    > MIN_CLOCK_CHANGE_DETECTION_MS
-                ):
-                    # Update average ms between clocks
-                    self.averageMsBetweenClocks = self.average(self.inputClockDiffs)
-                    # Clock rate or output division changed, recalculate optimal sample rate
-                    self.calculateOptimalSampleRate()
-
-                self.handleClockStep()
-                # Incremenent the clock step
-                self.clockStep += 1
-
+                self.newClockToProcess = True
         
 
         @b1.handler_falling
@@ -392,6 +367,35 @@ class EgressusMelodiam(EuroPiScript):
             self.updateScreen()
             self.getK1Value()
             self.getOutputDivision()
+
+            if self.newClockToProcess:
+
+                # Get the time difference since the last clockTime
+                newDiffBetweenClocks = min(MAX_CLOCK_TIME_MS, ticks_ms() - self.lastClockTime)
+                self.lastClockTime = ticks_ms()
+
+                # Add time diff between clocks to inputClockDiffs Fifo list, skipping the first clock as we have no reference
+                if self.clockStep > 0:
+                    self.inputClockDiffs[self.clockStep % CLOCK_DIFF_BUFFER_LEN] = (
+                        newDiffBetweenClocks
+                    )
+
+                # Clock rate change detection
+                if (
+                    self.clockStep >= CLOCK_DIFF_BUFFER_LEN
+                    and abs(newDiffBetweenClocks - self.averageMsBetweenClocks)
+                    > MIN_CLOCK_CHANGE_DETECTION_MS
+                ):
+                    # Update average ms between clocks
+                    self.averageMsBetweenClocks = self.average(self.inputClockDiffs)
+                    # Clock rate or output division changed, recalculate optimal sample rate
+                    self.calculateOptimalSampleRate()
+
+                self.handleClockStep()
+                # Incremenent the clock step
+                self.clockStep += 1
+                self.newClockToProcess = False
+
 
             # Cycle through outputs, process when needed
             for idx in range(len(cvs)):
@@ -905,4 +909,5 @@ class EgressusMelodiam(EuroPiScript):
 if __name__ == "__main__":
     dm = EgressusMelodiam()
     dm.main()
+
 
