@@ -102,6 +102,9 @@ KNOB_CHANGE_TOLERANCE = 0.999
 # Important: Needs firmware v0.12.1 or higher
 MAX_CV_VOLTAGE = europi_config["max_output_voltage"]
 
+# Set the desired CPU frequency using a global config value. Default is overclocked.
+CPU_FREQ = europi_config["cpu_freq"]
+
 MAX_STEP_LENGTH = 32
 
 # Diff between incoming clocks are stored in the FiFo buffer and averaged
@@ -131,7 +134,7 @@ class EgressusMelodiam(EuroPiScript):
     def __init__(self):
 
         # Overclock the Pico for improved performance.
-        machine.freq(250_000_000)
+        machine.freq(CPU_FREQ)
 
         # Initialize variables
         self.newClockToProcess = False
