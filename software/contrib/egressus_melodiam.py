@@ -237,7 +237,7 @@ class EgressusMelodiam(EuroPiScript):
                         newDiffBetweenClocks
                     )
 
-                # Alternate clock rate change detection - IN TEST
+                # Clock rate change detection
                 if (
                     self.clockStep >= CLOCK_DIFF_BUFFER_LEN
                     and abs(newDiffBetweenClocks - self.averageMsBetweenClocks)
@@ -327,18 +327,6 @@ class EgressusMelodiam(EuroPiScript):
             self.slewBuffers.append([])  # add new empty list to the buffer list
             for m in range(SLEW_BUFFER_SIZE_IN_SAMPLES):
                 self.slewBuffers[n].append(0)
-
-
-    def bpmFromMs(self, ms):
-        """Calc BPM from time between incoming clocks (ms)"""
-        return int(((1 / (ms / 1000)) * 60) / 4)
-
-
-    def calculateBpm(self, list):
-        """Returns average BPM from input list of milliseconds between clocks"""
-        self.averageDiff = self.average(list)
-        return self.bpmFromMs(self.averageDiff)
-
 
     def average(self, list):
         """Pythonic mean average function"""
