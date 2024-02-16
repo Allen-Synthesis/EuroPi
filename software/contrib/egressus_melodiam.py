@@ -344,7 +344,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def generateNewRandomCVPattern(self, new=True, activePatternOnly=False):
-        """Generate new CV pattern for existing bank or create a new bank"""
+        """Generate new CV pattern for existing bank or create a new bank
+        new (True/False): create new pattern / overwrite existing
+        activePatternOnly (True/False): generate pattern for selected output / generate pattern for all outputs"""
         # Note: This function is capable of working with multiple pattern banks
         #  However, due to current memory limitations only one pattern bank is used
         try:
@@ -693,7 +695,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def stepUpStepDown(self, start, stop, num, buffer):
-        """Produces step up, step down"""
+        """Produces step up, step down
+        start: starting value. stop: target value. num: number of samples required
+        buffer: pointer to fill with samples"""
         c = 0
         if self.patternLength == 1:  # LFO Mode, make sure we complete a full cycle
             for i in range(num / 2):
@@ -710,7 +714,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def linspace(self, start, stop, num, buffer):
-        """Produces a linear transition"""
+        """Produces a linear transition
+        start: starting value. stop: target value. num: number of samples required
+        buffer: pointer to fill with samples"""
         c = 0
         num = max(1, num)  # avoid divide by zero
         diff = (float(stop) - start) / (num)
@@ -722,7 +728,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def logUpStepDown(self, start, stop, num, buffer):
-        """Produces log up, step down"""
+        """Produces log up, step down
+        start: starting value. stop: target value. num: number of samples required
+        buffer: pointer to fill with samples"""
         c = 0
         if self.patternLength == 1:  # LFO Mode, make sure we complete a full cycle
             for i in range(num / 2):
@@ -748,7 +756,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def stepUpExpDown(self, start, stop, num, buffer):
-        """Produces step up, exp down"""
+        """Produces step up, exp down
+        start: starting value. stop: target value. num: number of samples required
+        buffer: pointer to fill with samples"""
         c = 0
         if stop <= start:
             for i in range(num):
@@ -764,7 +774,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def smooth(self, start, stop, sampleRate, buffer):
-        """Produces smooth curve using half a cosine wave"""
+        """Produces smooth curve using half a cosine wave
+        start: starting value. stop: target value. sampleRate: number of samples required
+        buffer: pointer to fill with samples"""
         c = 0
         freqHz = 0.5  # We want to complete half a cycle
         amplitude = abs(
@@ -789,7 +801,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def expUpexpDown(self, start, stop, sampleRate, buffer):
-        """Produces a pointy exponential wave using a quarter cosine"""
+        """Produces a pointy exponential wave using a quarter cosine
+        start: starting value. stop: target value. sampleRate: number of samples required
+        buffer: pointer to fill with samples"""
         c = 0
         freqHz = 0.25  # We want to complete quarter of a cycle
         amplitude = abs(
@@ -819,7 +833,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def sharkTooth(self, start, stop, sampleRate, buffer):
-        """Produces a log(ish) up and exponential(ish) down using a quarter cosine"""
+        """Produces a log(ish) up and exponential(ish) down using a quarter cosine
+        start: starting value. stop: target value. sampleRate: number of samples required
+        buffer: pointer to fill with samples"""
         c = 0
         freqHz = 0.25  # We want to complete quarter of a cycle
         amplitude = abs(
@@ -849,7 +865,9 @@ class EgressusMelodiam(EuroPiScript):
 
 
     def sharkToothReverse(self, start, stop, sampleRate, buffer):
-        """Produces an exponential(ish) up and log(ish) down using a quarter cosine"""
+        """Produces an exponential(ish) up and log(ish) down using a quarter cosine
+        start: starting value. stop: target value. sampleRate: number of samples required
+        buffer: pointer to fill with samples"""
         c = 0
         freqHz = 0.25  # We want to complete quarter of a cycle
         amplitude = abs(
