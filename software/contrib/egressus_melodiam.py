@@ -258,9 +258,6 @@ class EgressusMelodiam(EuroPiScript):
                 self.screenRefreshNeeded = True
                 self.showNewPatternIndicatorClockStep = self.clockStep
                 self.saveState()
-            elif ticks_diff(ticks_ms(), b1.last_pressed()) > 300:
-                # medium press, save for future use
-                pass
             else:
                 # short press change slew mode
                 self.outputSlewModes[self.selectedOutput] = (
@@ -287,9 +284,6 @@ class EgressusMelodiam(EuroPiScript):
                 self.lastK2Reading = self.currentK2Reading
                 self.screenRefreshNeeded = True
 
-            elif ticks_diff(ticks_ms(), b2.last_pressed()) > 300:
-                # medium press save for future use
-                pass
             else:
                 # short press change selected output
                 self.selectedOutput = (self.selectedOutput + 1) % 6
