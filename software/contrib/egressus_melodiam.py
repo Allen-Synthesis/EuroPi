@@ -148,7 +148,7 @@ WAVE_SHAPE_IMGS = [
 class EgressusMelodiam(EuroPiScript):
     def __init__(self):
 
-        # Overclock the Pico for improved performance.
+        # Overclock the Pico for improved performance if configured globally
         machine.freq(CPU_FREQ)
 
         # Initialize variables
