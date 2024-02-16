@@ -209,7 +209,6 @@ class EgressusMelodiam(EuroPiScript):
         self.msBetweenSamples = [0, 0, 0, 0, 0, 0]
 
         self.unClockedMode = False
-        self.unClockedModeIndicator = ["", "U"]
         self.lastClockTime = ticks_ms()
         self.previousOutputVoltage = [0, 0, 0, 0, 0, 0]
         self.slewBufferSampleNum = [0, 0, 0, 0, 0, 0]
