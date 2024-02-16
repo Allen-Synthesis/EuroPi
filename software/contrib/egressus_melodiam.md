@@ -83,3 +83,19 @@ The OLED screen is broken into 3 sections:
 # Saving and loading
 
 All settings and CV patterns are saved when changes are made and will not be lost when the module is powered off.
+
+# Changing the maximum CV voltage
+
+CV Patterns (including LFOs) output a range of 0-10V based on the default globally configured value.
+If you would like to change this value, two methods are available 1) Create a json file (see below), 2) Configure the global configuration value using the UI (coming soon in a later firmware release).
+
+## Reducing the maximum CV output using a json file
+
+1. Create a file on your pico named `config/config_EuroPiConfig.json`. Thonny is the easiest method for this.
+2. Add the following to the json file:
+
+```json
+{
+    "max_output_voltage": 5
+}
+```

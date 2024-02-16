@@ -104,8 +104,9 @@ DEBUG_MODE = NO_DEBUG
 # Attempt to avoid knob hysteresis
 KNOB_CHANGE_TOLERANCE = 0.999
 
-# Set the maximum CV voltage. Important: Needs firmware v0.12.1 or higher
-MAX_CV_VOLTAGE = min(5, europi_config["max_output_voltage"])
+# Set the maximum CV voltage using a global config value
+# Important: Needs firmware v0.12.1 or higher
+MAX_CV_VOLTAGE = europi_config["max_output_voltage"]
 
 MAX_STEP_LENGTH = 32
 
