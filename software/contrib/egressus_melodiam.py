@@ -104,7 +104,12 @@ DEBUG_MODE = NO_DEBUG
 # Attempt to avoid knob hysteresis
 KNOB_CHANGE_TOLERANCE = 0.999
 
-MAX_CV_VOLTAGE = min(5, europi_config["max_output_voltage"])
+# put in a try catch block so it does not need the latest europi firmware version
+try:
+    MAX_CV_VOLTAGE = min(5, europi_config["max_output_voltage"])
+except:
+    MAX_CV_VOLTAGE = 5
+
 MAX_STEP_LENGTH = 32
 
 # Diff between incoming clocks are stored in the FiFo buffer and averaged
