@@ -1,10 +1,10 @@
 """A collection of classes and functions for dealing with configuration data. There are two main
 types of configuration data: the `dict` configuration itself, and the `ConfigSpec`.
 
-The configuration is represented by `Dict(str, Any)`, where the string key represents the config 
+The configuration is represented by `Dict(str, Any)`, where the string key represents the config
 point's name, pointing to a value that may be of any type.
 
-The `ConfgSpec` is a collection of `ConfigPoints`. Each ConfigPoint consists of a name and description 
+The `ConfgSpec` is a collection of `ConfigPoints`. Each ConfigPoint consists of a name and description
 of the valid values that it may have. There are several different types of COnfigPoints available.
 """
 
@@ -82,6 +82,17 @@ class IntegerConfigPoint(ChoiceConfigPoint):
         super().__init__(name=name, choices=list(range), default=default)
 
 
+class BooleanConfigPoint(ChoiceConfigPoint):
+    """A `ConfigPoint` that allows True/False values.
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to look up the configured value.
+    :param default: The default value
+    """
+
+    def __init__(self, name: str, default: bool):
+        super().__init__(name=name, choices=[False, True], default=default)
+
+
 def choice(name: str, choices: "List", default) -> ChoiceConfigPoint:
     """A helper function to simplify the creation of ChoiceConfigPoints. Requires selection from a
     limited number of choices. The default value must exist in the given choices.
@@ -101,6 +112,15 @@ def integer(name: str, range: range, default: int) -> IntegerConfigPoint:
     :param default: The default value
     """
     return IntegerConfigPoint(name=name, range=range, default=default)
+
+
+def boolean(name: str, default: bool) -> BooleanConfigPoint:
+    """A helper function to simplify the creation of BooleanConfigPoints.
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
+    :param default: The default value
+    """
+    return BooleanConfigPoint(name=name, default=default)
 
 
 class ConfigSpec:

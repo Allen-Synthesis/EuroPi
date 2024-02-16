@@ -18,14 +18,14 @@ For wonky/more interesting clock patterns try these:
 
 Demo video: TBC
 
-digital_in: (optional) Reset step count on rising edge. (optional) External clock
-analog_in: (optional) Adjust BPM
+knob_1: (in config mode) Select option to edit 
+knob_2: (in config mode) Edit selected option 
 
 knob_1: Screen 2: Adjust BPM. Screen 3: Select output to edit 
 knob_2: Screen 2: Adjust Pulse width. Screen 3: Adjust division of selected output 
 
-button_1: Short Press (<500ms): Start / Stop. Long Press (>500ms): Select clock source (Internal/External)
-button_2: Short Press (<500ms): Cycle through screens. Long Press (>500ms): Enter config mode
+button_1: Short Press (<500ms): Start/Stop (when using internal clock). Long Press (>500ms): Select clock source (Internal/External)
+button_2: Short Press (<500ms): Not used. Long Press (>500ms): Enter config mode
 
 Defaults:
 output_1: clock / 1
@@ -36,7 +36,6 @@ output_5: clock / 16
 output_6: clock / 32
 
 Known Issues:
-- If playback is restarted while screen 2 is in config mode, playback will be slightly irratic, especially when moving knobs
 - BPM occasionally drifts by 1ms - possibly because asyncio is is truely async
 
 # Getting started
@@ -45,29 +44,20 @@ Patch any module that uses gates/triggers to any output! By default the module w
 
 # Configuring / Playing around
 
-Use button 2 (right button) to cycle through screens 1 - 3. A description of each screen is shown below.
-Hold button 2 for 2 seconds to enter configuration mode when in screen 2 or 3.
-Configuration mode will exit when changing screens to avoid accidentally changing any values on the next screen.
-Also note that playback may stop when in config mode - this is by design for performance reasons.
-
-## Screen 1
-- Top: Number of completed cycles since playback was last started, follewed by the current step in the cycle
-- Bottom: Instruction to use B1 to toggle start/stop
-
-## Screen 2
-- BPM
-- PW:MS: Pulse Width (PW) as a percentage of the output 1 division. Milliseconds (MS) - the duration of each pulse
-
 Hold button 2 for 2 seconds to enter configuration mode, then use knob 1 (left) to adjust BPM and knob 2 (right) to adjust pulse width. To exit configuration mode, just press button 2 to move to the next screen.
 
-## Screen 3:
+Playback may be slightly erraratic when in config mode - this is due to more screen updates hogging the CPU
 
-This screen shows the configured clock division for each output.
-To edit a clock division for an output:
+## Screen
+
+This screen shows the BPM, Pulse width and configured clock division for each output.
+The Pulse width is displayed as `PW:MS`. `PW` is a percentage of the output 1 division and `MS` is the duration of each pulse in milliseconds
+
+To edit the BPM (internal clock mode only), Pulse Width or the clock division for an output:
 - Use knob 1 to select the output you want to edit
 - Press and hold button 2 for 2 seconds to enter configuration mode
-- Use knob 2 to select the division you want that that output. Setting a division to zero will produce random fluctuations between 0V and +5V.
-- Exit configuration mode by pressing button 2 to move to the next screen
+- Use knob 2 to select the division you want that that output.
+- Exit configuration mode by holding button 2 for 2 seconds.
 
 # Selecting a Clock Source
 
@@ -81,4 +71,4 @@ Note that when using an external clock, the reset functionality using the din ja
 
 # Randomizing pulses
 
-Selecting a clock division of 'r' will cause pulses to be sent randomly from the configured output. Note that the 'r' option is at the end (far right) of the division options.
+Selecting a clock division of `/r` will cause pulses to be sent randomly from the configured output. Note that the 'r' option is at the end (far right) of the division options.

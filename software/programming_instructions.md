@@ -7,7 +7,9 @@ This document will take you through the steps to get your module ready to progra
 
 1. Download [flash_nuke.uf2](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython#flash-resetting-uf2-3083182) from Adafruit.
   
-2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.  
+2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
+> **Note**
+> If you are already running the menu system on the EuroPi (with a version greater or equal to X.X.X) and would rather not take the module out of your rack, you can instead run the script `_Bootloader Mode` while the module is connected to your computer over USB, and the module will enter bootloader mode
 
 ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
 
@@ -32,7 +34,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
 ### Installing the firmware
-1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.19.1`.
+1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.20.0`.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
 
     ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
@@ -77,6 +79,19 @@ Use the exact same process as for the ssd1306 library to install the europi libr
 3. Click 'Install'.
 4. You will now see several new files, including 'europi.py' alongside the 'ssd1306.py' inside the 'lib' folder.
 
+### (Optional) Installing the EuroPi Contrib library
+
+The EuroPi Contrib library will make user-contributed software available on your EuroPi when using the [Menu](/software/contrib/menu.md) software. To install it, follow the same steps as the previous libraries on Thonny:
+
+1. Type 'micropython-europi-contrib' into the search box and click 'Search on PyPi'
+1. Click the result named 'micropython-europi-contrib'.
+
+    ![Screenshot from 2023-07-14 03-02-02](https://github.com/Allen-Synthesis/EuroPi/assets/5189714/6690e1e3-56e1-49d6-8701-6f5912d10ba1)
+   
+1. Click 'Install'.
+1. You will now see a 'contrib' folder inside the 'lib' folder which contains several software options with the extension `.py`.
+
+
 ## Next Steps
 
 Now that you have installed the europi.py and ssd1306 libraries, you are ready to take the next step with the module.  
@@ -118,8 +133,9 @@ Now you have access to the inputs and outputs using easy methods, which you can 
   
 ### Install the contrib scripts and setup the menu
 
-1. Complete all of the steps for [Option 2](#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
-2. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically.
+1. Make sure you've [Installed the EuroPi Contrib library](#optional-installing-the-europi-contrib-library).
+2. Complete all of the steps for [Option 2](#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
+3. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically.
 
 One of the scripts that is installed with the menu system is named '~ Calibrate', and it requires you to send precise voltages to the module to calibrate it for the future, allowing you to input and output precise values from your module.  
 This is entirely optional and it will work with a usable degree of accuracy without calibration, however if you do want to then move to the ['Calibrate the module'](#calibrate-the-module) step.
@@ -170,4 +186,3 @@ As with all hardware, the EuroPi has certain limitations. Some are more obvious 
 ### In Depth Limitations
 - Clock pulses shorter than approximately 0.01s (10ms) will not be reliably detected (this depends on clock speed too)
 - Reading any analogue source, either the analogue input or knobs, will result in a slight delay of the script (this can be reduced by using fewer samples, at the cost of accuracy)
-

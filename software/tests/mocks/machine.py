@@ -38,5 +38,19 @@ class PWM:
         pass
 
 
+class Timer:
+    ONE_SHOT = 0
+    PERIODIC = 1
+
+    def __init__(self, *, mode=1, freq=-1, period=-1, callback=None):
+        pass
+
+    def init(self, *, mode=1, freq=-1, period=-1, callback=None):
+        pass
+
+    def deinit(self):
+        pass
+
+
 def freq(_):
     pass
