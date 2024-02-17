@@ -226,7 +226,7 @@ class ConfigSettings:
         self.__dict__ = {}
 
         for k in d.keys():
-            cname = k.upper().strip().replace(' ', '_').replace('-', '_')
+            cname = k.upper().strip().replace(" ", "_").replace("-", "_")
             if cname[0].isdigit():
                 cname = f"_{cname}"
 
