@@ -24,12 +24,14 @@ button_2:
 - Short Press (< 300ms): Cycle through outputs to edit
 - Long Press (Between 2 and 5 seconds): Toggle between clocked mode and free-running mode
 
-output_1: LFO / randomly generated CV pattern (0 to +10V)
-output_2: LFO / randomly generated CV pattern (0 to +10V)
-output_3: LFO / randomly generated CV pattern (0 to +10V)
-output_4: LFO / randomly generated CV pattern (0 to +10V)
-output_5: LFO / randomly generated CV pattern (0 to +10V)
-output_6: LFO / randomly generated CV pattern (0 to +10V)
+output_1: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
+output_2: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
+output_3: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
+output_4: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
+output_5: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
+output_6: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
+
+**Note: `MAX_OUTPUT_VOLTAGE` is +10v by default**
 
 # Getting started
 
