@@ -11,11 +11,6 @@ from experimental.a_to_d import AnalogReaderDigitalWrapper
 from experimental.knobs import KnobBank
 from math import floor
 
-## Output gates will be 5 volts for compatibility with most other modules
-#
-#  EuroPi can technically output 10V, but many third-party modules specify 5V maximum inputs, so let's use that
-#  for maximum compatibility
-GATE_VOLTS = 5.0
 
 def ljust(s, length):
     """Re-implements the str.ljust method from standard Python
@@ -73,7 +68,7 @@ class ClockOutput:
 
             else:
                 self.is_high = True
-                self.output_port.voltage(GATE_VOLTS)
+                self.output_port.on()
 
     def set_output_voltage(self):
         """Set the output voltage either high or low.
@@ -81,15 +76,15 @@ class ClockOutput:
         Must be called after calling calculate_state
         """
         if self.is_high:
-            self.output_port.voltage(GATE_VOLTS)
+            self.output_port.on()
         else:
-            self.output_port.voltage(0)
+            self.output_port.off()
 
     def reset(self):
         """Reset the pattern to the initial position
         """
         self.is_high = False
-        self.output_port.voltage(0)
+        self.output_port.off()
         self.last_state_change_at = time.ticks_ms()
 
 class ClockModifier(EuroPiScript):

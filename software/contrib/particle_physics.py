@@ -215,21 +215,21 @@ class ParticlePhysics(EuroPiScript):
 
             # CV 1 outputs a gate whenever we hit the ground
             if self.particle.hit_ground:
-                cv1.voltage(5)
+                cv1.on()
             else:
-                cv1.voltage(0)
+                cv1.off()
 
             # CV 2 outputs a trigger whenever we reach peak altitude and start falling again
             if self.particle.reached_apogee:
-                cv2.voltage(5)
+                cv2.on()
             else:
-                cv2.voltage(0)
+                cv2.off()
 
             # CV 3 outputs a gate when the particle comes to rest
             if self.particle.stopped:
-                cv3.voltage(5)
+                cv3.on()
             else:
-                cv3.voltage(0)
+                cv3.off()
 
             # CV 4 outputs control voltage based on the height of the particle
             cv4.voltage(rescale(self.particle.y, 0, MAX_HEIGHT, 0, MAX_OUTPUT_VOLTAGE))
