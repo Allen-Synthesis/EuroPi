@@ -121,10 +121,13 @@ class EuroPiScript:
     configured language::
 
         def main(self):
-            if self.config["language"] == "french":
+            if self.config.LANGUAGE == "french":
                 oled.centre_text("Bonjour le monde")
             else:
                 oled.centre_text("Hello world")
+
+    Note that the configuration object's properties share the `name` field of the config_point, but converted to
+    upper case to appear as a constant.
 
     Configuration files are validated, so scripts do not need to worry about invalid values. Validation
     failures raise exceptions with messages that will help the user correct their configurations.
