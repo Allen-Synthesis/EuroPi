@@ -4,7 +4,7 @@
     @year   2023
 """
 
-from europi import experimental_config
+from europi import experimental_config, MAX_OUTPUT_VOLTAGE
 
 ## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
 VOLTS_PER_OCTAVE = experimental_config["volts_per_octave"]
