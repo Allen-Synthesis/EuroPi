@@ -189,23 +189,46 @@ class ConfigFile:
 
     @staticmethod
     def load_config(cls, config_spec: ConfigSpec):
-        """If this class has config points, this method validates and returns the config dictionary
-        as saved in this class's config file, else, returns an empty dict."""
+        """If this class has config points, this method validates and returns the ConfigSettings object
+        representing the class's config file.  Otherwise an empty ConfigSettings object is returned.
+        """
         if len(config_spec):
             saved_config = load_json_file(ConfigFile.config_filename(cls))
             config = config_spec.default_config()
+
             validation = config_spec.validate(saved_config)
 
             if not validation.is_valid:
                 raise ValueError(validation.message)
 
             config.update(saved_config)
-
-            return config
+            return ConfigSettings(config)
         else:
-            return {}
+            return ConfigSettings({})
 
     @staticmethod
     def delete_config(cls):
         """Deletes the config file, effectively resetting to defaults."""
         delete_file(ConfigFile.config_filename(cls))
+
+
+class ConfigSettings(dict):
+    """A dict wrapper that presents its contents as attributes
+    """
+
+    def __init__(self, d):
+        """Constructor
+
+        @param d  A dict to copy into this instance
+        """
+        super().__init__()
+        self.__dict__ = {}
+
+        for k in d.keys():
+            self[k] = d[k]
+
+            cname = k.upper().strip().replace(' ', '_').replace('-', '_')
+            if cname[0].isdigit():
+                cname = f"_{cname}"
+
+            setattr(self, cname, d[k])

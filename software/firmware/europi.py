@@ -63,11 +63,11 @@ experimental_config = load_experimental_config()
 
 
 # OLED component display dimensions.
-OLED_WIDTH = europi_config["display_width"]
-OLED_HEIGHT = europi_config["display_height"]
-I2C_SDA = europi_config["display_sda"]
-I2C_SCL = europi_config["display_scl"]
-I2C_CHANNEL = europi_config["display_channel"]
+OLED_WIDTH = europi_config.DISPLAY_WIDTH
+OLED_HEIGHT = europi_config.DISPLAY_HEIGHT
+I2C_SDA = europi_config.DISPLAY_SDA
+I2C_SCL = europi_config.DISPLAY_SCL
+I2C_CHANNEL = europi_config.DISPLAY_CHANNEL
 I2C_FREQUENCY = 400000
 
 # Standard max int consts.
@@ -75,12 +75,12 @@ MAX_UINT16 = 65535
 
 # Analogue voltage read range.
 MIN_INPUT_VOLTAGE = 0
-MAX_INPUT_VOLTAGE = europi_config["max_input_voltage"]
+MAX_INPUT_VOLTAGE = europi_config.MAX_INPUT_VOLTAGE
 DEFAULT_SAMPLES = 32
 
 # Output voltage range
 MIN_OUTPUT_VOLTAGE = 0
-MAX_OUTPUT_VOLTAGE = europi_config["max_output_voltage"]
+MAX_OUTPUT_VOLTAGE = europi_config.MAX_OUTPUT_VOLTAGE
 
 # PWM Frequency
 PWM_FREQ = 100_000
@@ -518,7 +518,7 @@ class Display(SSD1306_I2C):
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
                 )
         super().__init__(self.width, self.height, i2c)
-        self.rotate(europi_config["rotate_display"])
+        self.rotate(europi_config.ROTATE_DISPLAY)
 
     def rotate(self, rotate):
         """Flip the screen from its default orientation
@@ -578,7 +578,7 @@ class Output:
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
-        self.gate_voltage = clamp(europi_config["gate_voltage"], self.MIN_VOLTAGE, self.MAX_VOLTAGE)
+        self.gate_voltage = clamp(europi_config.GATE_VOLTAGE, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
         self._gradients = []
         for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
@@ -641,7 +641,7 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
 
 # Overclock the Pico for improved performance.
-freq(europi_config["cpu_freq"])
+freq(europi_config.CPU_FREQ)
 
 # Reset the module state upon import.
 reset_state()
