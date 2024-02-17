@@ -312,8 +312,11 @@ class EgressusMelodiam(EuroPiScript):
 
     def generateNewRandomCVPattern(self, new=True, activePatternOnly=False):
         """Generate new CV pattern for existing bank or create a new bank
-        new (True/False): create new pattern / overwrite existing
-        activePatternOnly (True/False): generate pattern for selected output / generate pattern for all outputs
+        
+        @param new  If true, create a new pattern/overwrite the existing one. Otherwise re-use the existing pattern
+        @param activePatternOnly  If true, generate pattern for selected output. Otherwise generate pattern for all outputs
+
+        @return True if the pattern(s) were successfully generated, otherwise False
         """
         # Note: This function is capable of working with multiple pattern banks
         #  However, due to current memory limitations only one pattern bank is used
@@ -346,7 +349,14 @@ class EgressusMelodiam(EuroPiScript):
             return False
 
     def generateRandomPattern(self, length, min, max):
-        """Generate a random pattern of a desired length containing values between min and max"""
+        """Generate a random pattern of a desired length containing values between min and max
+
+        @param length  The length of the desired pattern
+        @param min  The minimum value for pattern elements (inclusive)
+        @param max  The maximum value for pattern elements (inclusive)
+
+        @return  The generated pattern
+        """
         self.t = []
         for i in range(0, length):
             self.t.append(round(uniform(min, max), 3))
@@ -694,8 +704,14 @@ class EgressusMelodiam(EuroPiScript):
 
     def stepUpStepDown(self, start, stop, num, buffer):
         """Produces step up, step down
-        start: starting value. stop: target value. num: number of samples required
-        buffer: pointer to fill with samples"""
+        
+        @param start  Starting value
+        @param stop   Target value
+        @param num    Number of samples required
+        @param buffer Pointer to fill with samples
+
+        @return  The edited buffer
+        """
         c = 0
         if self.patternLength == 1:  # LFO Mode, make sure we complete a full cycle
             for i in range(num / 2):
@@ -712,8 +728,14 @@ class EgressusMelodiam(EuroPiScript):
 
     def linspace(self, start, stop, num, buffer):
         """Produces a linear transition
-        start: starting value. stop: target value. num: number of samples required
-        buffer: pointer to fill with samples"""
+        
+        @param start  Starting value
+        @param stop   Target value
+        @param num    Number of samples required
+        @param buffer Pointer to fill with samples
+
+        @return  The edited buffer
+        """
         c = 0
         num = max(1, num)  # avoid divide by zero
         diff = (float(stop) - start) / (num)
@@ -724,9 +746,15 @@ class EgressusMelodiam(EuroPiScript):
         return buffer
 
     def logUpStepDown(self, start, stop, num, buffer):
-        """Produces log up, step down
-        start: starting value. stop: target value. num: number of samples required
-        buffer: pointer to fill with samples"""
+        """Produces a log up/step down transition
+        
+        @param start  Starting value
+        @param stop   Target value
+        @param num    Number of samples required
+        @param buffer Pointer to fill with samples
+
+        @return  The edited buffer
+        """
         c = 0
         if self.patternLength == 1:  # LFO Mode, make sure we complete a full cycle
             for i in range(num / 2):
@@ -751,9 +779,15 @@ class EgressusMelodiam(EuroPiScript):
         return buffer
 
     def stepUpExpDown(self, start, stop, num, buffer):
-        """Produces step up, exp down
-        start: starting value. stop: target value. num: number of samples required
-        buffer: pointer to fill with samples"""
+        """Produces a step up, exponential down transition
+        
+        @param start  Starting value
+        @param stop   Target value
+        @param num    Number of samples required
+        @param buffer Pointer to fill with samples
+
+        @return  The edited buffer
+        """
         c = 0
         if stop <= start:
             for i in range(num):
@@ -767,10 +801,16 @@ class EgressusMelodiam(EuroPiScript):
                 c += 1
         return buffer
 
-    def smooth(self, start, stop, sampleRate, buffer):
+    def smooth(self, start, stop, num, buffer):
         """Produces smooth curve using half a cosine wave
-        start: starting value. stop: target value. sampleRate: number of samples required
-        buffer: pointer to fill with samples"""
+        
+        @param start  Starting value
+        @param stop   Target value
+        @param num    The number of samples required
+        @param buffer Pointer to fill with samples
+
+        @return  The edited buffer
+        """
         c = 0
         freqHz = 0.5  # We want to complete half a cycle
         amplitude = abs(
@@ -778,116 +818,139 @@ class EgressusMelodiam(EuroPiScript):
         )  # amplitude is half of the diff between start and stop (this is peak to peak)
         if start <= stop:
             # Starting position is 90 degrees (cos) at 'start' volts
-            startOffset = sampleRate
+            startOffset = num
             amplitudeOffset = start
         else:
             # Starting position is 0 degrees (cos) at 'stop' volts
             startOffset = 0
             amplitudeOffset = stop
-        for i in range(sampleRate):
+        for i in range(num):
             i += startOffset
             val = amplitude + float(
-                amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate))
+                amplitude * math.cos(2 * math.pi * freqHz * i / float(num))
             )
             buffer[c] = round(val + amplitudeOffset, 4)
             c += 1
         return buffer
 
-    def expUpexpDown(self, start, stop, sampleRate, buffer):
-        """Produces a pointy exponential wave using a quarter cosine
-        start: starting value. stop: target value. sampleRate: number of samples required
-        buffer: pointer to fill with samples"""
+    def expUpexpDown(self, start, stop, num, buffer):
+        """Produces pointy exponential wave using a quarter cosine up and a quarter cosine down
+        
+        @param start  Starting value
+        @param stop   Target value
+        @param num    The number of samples required
+        @param buffer Pointer to fill with samples
+
+        @return  The edited buffer
+        """
         c = 0
         freqHz = 0.25  # We want to complete quarter of a cycle
         amplitude = abs(
             (stop - start)
         )  # amplitude is half of the diff between start and stop (this is peak to peak)
         if start <= stop:
-            startOffset = sampleRate * 2
+            startOffset = num * 2
             amplitudeOffset = start
-            for i in range(sampleRate):
+            for i in range(num):
                 i += startOffset
                 val = amplitude + float(
-                    amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate))
+                    amplitude * math.cos(2 * math.pi * freqHz * i / float(num))
                 )
                 buffer[c] = round(val + amplitudeOffset, 4)
                 c += 1
         else:
-            startOffset = sampleRate
+            startOffset = num
             amplitudeOffset = stop
-            for i in range(sampleRate):
+            for i in range(num):
                 i += startOffset
                 val = amplitude + float(
-                    amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate))
+                    amplitude * math.cos(2 * math.pi * freqHz * i / float(num))
                 )
                 buffer[c] = round(val + amplitudeOffset, 4)
                 c += 1
         return buffer
 
-    def sharkTooth(self, start, stop, sampleRate, buffer):
-        """Produces a log(ish) up and exponential(ish) down using a quarter cosine
-        start: starting value. stop: target value. sampleRate: number of samples required
-        buffer: pointer to fill with samples"""
+    def sharkTooth(self, start, stop, num, buffer):
+        """Produces a sharktooth wave with an approximate log curve up and approximate
+        exponential curve down
+        
+        @param start  Starting value
+        @param stop   Target value
+        @param num    The number of samples required
+        @param buffer Pointer to fill with samples
+
+        @return  The edited buffer
+        """
         c = 0
         freqHz = 0.25  # We want to complete quarter of a cycle
         amplitude = abs(
             (stop - start)
         )  # amplitude is half of the diff between start and stop (this is peak to peak)
         if start <= stop:
-            startOffset = sampleRate * 3
+            startOffset = num * 3
             amplitudeOffset = start - amplitude
-            for i in range(sampleRate):
+            for i in range(num):
                 i += startOffset
                 val = amplitude + float(
-                    amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate))
+                    amplitude * math.cos(2 * math.pi * freqHz * i / float(num))
                 )
                 buffer[c] = round(val + amplitudeOffset, 4)
                 c += 1
         else:
-            startOffset = sampleRate
+            startOffset = num
             amplitudeOffset = stop
-            for i in range(sampleRate):
+            for i in range(num):
                 i += startOffset
                 val = amplitude + float(
-                    amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate))
+                    amplitude * math.cos(2 * math.pi * freqHz * i / float(num))
                 )
                 buffer[c] = round(val + amplitudeOffset, 4)
                 c += 1
         return buffer
 
-    def sharkToothReverse(self, start, stop, sampleRate, buffer):
-        """Produces an exponential(ish) up and log(ish) down using a quarter cosine
-        start: starting value. stop: target value. sampleRate: number of samples required
-        buffer: pointer to fill with samples"""
+    def sharkToothReverse(self, start, stop, num, buffer):
+        """Produces a reverse sharktooth wave with an approximate exponential curve up and approximate
+        log curve down
+        
+        @param start  Starting value
+        @param stop   Target value
+        @param num    The number of samples required
+        @param buffer Pointer to fill with samples
+
+        @return  The edited buffer
+        """
         c = 0
         freqHz = 0.25  # We want to complete quarter of a cycle
         amplitude = abs(
             (stop - start)
         )  # amplitude is half of the diff between start and stop (this is peak to peak)
         if start <= stop:
-            startOffset = sampleRate * 2
+            startOffset = num * 2
             amplitudeOffset = start
-            for i in range(sampleRate):
+            for i in range(num):
                 i += startOffset
                 val = amplitude + float(
-                    amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate))
+                    amplitude * math.cos(2 * math.pi * freqHz * i / float(num))
                 )
                 buffer[c] = round(val + amplitudeOffset, 4)
                 c += 1
         else:
             startOffset = 0
             amplitudeOffset = 1 - (amplitude - stop + 1)
-            for i in range(sampleRate):
+            for i in range(num):
                 i += startOffset
                 val = amplitude + float(
-                    amplitude * math.cos(2 * math.pi * freqHz * i / float(sampleRate))
+                    amplitude * math.cos(2 * math.pi * freqHz * i / float(num))
                 )
                 buffer[c] = round(val + amplitudeOffset, 4)
                 c += 1
         return buffer
 
     def slewGenerator(self, arr):
-        """Generator function that returns the next slew sample from the specified list (arr)"""
+        """Generator function that returns the next slew sample from the specified list
+
+        @param  The list of samples to choose from
+        """
         for s in range(len(arr)):
             yield arr[s]
 
