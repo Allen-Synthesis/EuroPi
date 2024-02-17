@@ -212,7 +212,7 @@ class ConfigFile:
         delete_file(ConfigFile.config_filename(cls))
 
 
-class ConfigSettings:
+class ConfigSettings(dict):
     """Collects the configuration settings into an object with attributes instead of a dict with keys
 
     Dict keys are converted to upper-case strings with underscores
@@ -223,9 +223,11 @@ class ConfigSettings:
 
         @param d  The raw dict loaded from the configuration file
         """
+        super().__init__()
         self.__dict__ = {}
 
         for k in d.keys():
+            self[k] = d[k]
             cname = k.upper().strip().replace(" ", "_").replace("-", "_")
             if cname[0].isdigit():
                 cname = f"_{cname}"

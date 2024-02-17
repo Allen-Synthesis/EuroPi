@@ -121,13 +121,10 @@ class EuroPiScript:
     configured language::
 
         def main(self):
-            if self.config.LANGUAGE == "french":
+            if self.config["language"] == "french":
                 oled.centre_text("Bonjour le monde")
             else:
                 oled.centre_text("Hello world")
-
-    Note that the configuration object's properties share the `name` field of the config_point, but converted to
-    upper case to appear as a constant.
 
     Configuration files are validated, so scripts do not need to worry about invalid values. Validation
     failures raise exceptions with messages that will help the user correct their configurations.
@@ -135,6 +132,14 @@ class EuroPiScript:
     Users can create and edit configuration files in order to change a script's configuration. The
     files should be uploaded to the pico in the `/config` directory. To assist in generating initial
     versions of these files, see `/scripts/generate_default_configs.py`.
+
+    Note that config points can also be accessed as named constants using the same name, converted to upper case:
+
+        def main(self):
+            if self.config.LANGUAGE == "french":
+                oled.centre_text("Bonjour le monde")
+            else:
+                oled.centre_text("Hello world")
     """
 
     def __init__(self):
