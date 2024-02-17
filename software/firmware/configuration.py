@@ -212,21 +212,20 @@ class ConfigFile:
         delete_file(ConfigFile.config_filename(cls))
 
 
-class ConfigSettings(dict):
-    """A dict wrapper that presents its contents as attributes
+class ConfigSettings:
+    """Collects the configuration settings into an object with attributes instead of a dict with keys
+
+    Dict keys are converted to upper-case strings with underscores
     """
 
     def __init__(self, d):
         """Constructor
 
-        @param d  A dict to copy into this instance
+        @param d  The raw dict loaded from the configuration file
         """
-        super().__init__()
         self.__dict__ = {}
 
         for k in d.keys():
-            self[k] = d[k]
-
             cname = k.upper().strip().replace(' ', '_').replace('-', '_')
             if cname[0].isdigit():
                 cname = f"_{cname}"

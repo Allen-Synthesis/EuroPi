@@ -6,12 +6,6 @@ from configuration import ConfigFile, ConfigSpec
 PICO_DEFAULT_CPU_FREQ = 125_000_000
 OVERCLOCKED_CPU_FREQ = 250_000_000
 
-# Moog/Eurorack standard is 1.0 volts per octave
-MOOG_VOLTS_PER_OCTAVE = 1.0
-
-# Buchla standard is 1.2 volts per octave (0.1 volts per semitone)
-BUCHLA_VOLTS_PER_OCTAVE = 1.2
-
 
 class EuroPiConfig:
     """This class provides EuroPi's global config points.

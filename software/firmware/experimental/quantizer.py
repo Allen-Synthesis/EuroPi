@@ -7,7 +7,7 @@
 from europi import experimental_config, MAX_OUTPUT_VOLTAGE
 
 ## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
-VOLTS_PER_OCTAVE = experimental_config["volts_per_octave"]
+VOLTS_PER_OCTAVE = experimental_config.VOLTS_PER_OCTAVE
 
 ## Standard western music scale has 12 semitones per octave
 SEMITONES_PER_OCTAVE = 12
@@ -104,7 +104,7 @@ class Quantizer:
         #  to MAX_OUTPUT_VOLTAGE
         highest_volts = volts
         highest_note = nearest_on_scale
-        while volts > MAX_OUTPUT_VOLTAGE:
+        while volts > europi_config.MAX_OUTPUT_VOLTAGE:
             highest_volts -= VOLTS_PER_SEMITONE
             highest_note = (highest_note - 1) % len(self.notes)
             if self.notes[highest_note]:
