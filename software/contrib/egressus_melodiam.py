@@ -25,17 +25,12 @@ Known Issues:
 Workaround this issue using longer clock pulse durations or 50% duty cycle square waves.
 - Performance is affected when using the controls - the poor pico has trouble keeping up with the not-yet optimized code
 
-"""
-
-"""
 Possible future work:
 
 - Med [UX]: When in unclocked mode the pattern length cannot be changed - change UI? Or maybe restrict pattern length to 1 (LFO mode only in unclocked mode?)
 - Low [FEATURE]: Find a use for ain? Change unClocked clock time?
 - High [PERF]: See if performance can be optimized to work with clock inputs < 16ms
 
-"""
-"""
 Programming notes:
 
 Outputs -> CVPattern Banks -> CV Patterns data structure:
@@ -45,9 +40,7 @@ self.cvPatternBanks[idx][self.CvPattern][step]
 cvPatternBank[idx] - Output: Each list item is a reference to an output
     [maxCvPatterns] - Cv Pattern Banks: Each list item is a reference to a CV Pattern
         [maxStepLength] - Cv Patterns: Each list item is a CV value per clock step
-"""
 
-"""
 Slew / interpolation generator structures:
 
 CV shapes are created using interpolation formulas that fill in the gaps between CV step values in a CV pattern.
