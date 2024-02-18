@@ -14,7 +14,7 @@ default configuration:
     "display_height": 32,
     "display_sda": 0,
     "display_scl": 1,
-    "display_channel": 0
+    "display_channel": 0,
     "max_output_voltage": 10,
     "max_input_voltage": 12,
     "gate_voltage": 5
@@ -53,3 +53,54 @@ shows the default configuration:
 ```
 
 - `volts_per_octave` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard)
+
+
+# Accessing config members in Python code
+
+The configuration manger converts the JSON file into a `ConfigSettings` object, where the JSON keys are converted
+to Python attributes.  The attribute names are the same as their JSON strings, but converted to upper case (so as to
+appear as constants in the code) and with any alphanumeric characters replaced with `_` characters.  If the key starts
+with a number, a `K_` prefix is added. e.g.:
+
+- `language` -> `.LANGUAGE`
+- `display_channel` -> `.DISPLAY_CHANNEL`
+- `2pi` -> `K_2PI`
+- `max-frequency` -> `MAX_FREQUENCY`
+
+The `europi` namespace contains `.europi_config` and `.experimental_config` members that contain all of the
+configuration attributes described in the sections above:
+
+```python
+>>> from europi import europi_config
+>>> dir(europi_config)
+[
+  '__class__',
+  '__init__',
+  '__module__',
+  '__qualname__',
+  '__dict__',
+  '__eq__',
+  'to_attr_name',
+  'CPU_FREQ',
+  'DISPLAY_CHANNEL',
+  'DISPLAY_HEIGHT',
+  'DISPLAY_SCL',
+  'DISPLAY_SDA',
+  'DISPLAY_WIDTH',
+  'EUROPI_MODEL',
+  'GATE_VOLTAGE',
+  'MAX_INPUT_VOLTAGE',
+  'MAX_OUTPUT_VOLTAGE',
+  'PICO_MODEL',
+  'ROTATE_DISPLAY'
+]
+```
+
+In code:
+
+```python
+import europi
+
+# A voltage range we can select from in a user menu
+VOLTAGE_RANGE = range(0, europi.europi_config.MAX_OUTPUT_VOLTAGE)
+```
