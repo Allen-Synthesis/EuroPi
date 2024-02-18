@@ -240,7 +240,7 @@ class ConfigSettings:
                     If the string starts with a number, a leading 'K_' is added
         """
         key = key.strip()
-        s = ''
+        s = ""
         for ch in key:
             if ch.isalpha() or ch.isdigit():
                 s += ch.upper()
