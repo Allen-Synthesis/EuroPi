@@ -212,7 +212,7 @@ class ConfigFile:
         delete_file(ConfigFile.config_filename(cls))
 
 
-class ConfigSettings(dict):
+class ConfigSettings:
     """Collects the configuration settings into an object with attributes instead of a dict with keys
 
     Dict keys are converted to upper-case strings with underscores
@@ -223,13 +223,45 @@ class ConfigSettings(dict):
 
         @param d  The raw dict loaded from the configuration file
         """
-        super().__init__()
         self.__dict__ = {}
 
         for k in d.keys():
-            self[k] = d[k]
-            cname = k.upper().strip().replace(" ", "_").replace("-", "_")
+            cname = self.to_attr_name(k)
             if cname[0].isdigit():
                 cname = f"_{cname}"
 
             setattr(self, cname, d[k])
+
+    def to_attr_name(self, key):
+        """Converts a dict key string to its equivalent attribute name
+
+        @param key  The string to convert
+        @return     The same string, converted to upper-case with non-alphanumeric characters replaced with '_'
+                    If the string starts with a number, a leading 'K_' is added
+        """
+        key = key.strip()
+        s = ''
+        for ch in key:
+            if ch.isalpha() or ch.isdigit():
+                s += ch.upper()
+            else:
+                s += "_"
+        if len(s) > 0 and s[0].isdigit():
+            s = f"K_{s}"
+        return s
+
+    def __eq__(self, d):
+        """Compare this object's contents with a dict
+
+        Dict keys are converted to attribute names and checked.  This is used by the tests to verify
+        that the class is working correctly.
+
+        @param d  The dictionary to compare to
+        @return   True if this instance's attributes are a superset of the dict's keys
+                  i.e. every key is an attribute, but not every attribute must be a key
+        """
+        for k in d.keys():
+            k_attr = self.to_attr_name(k)
+            if getattr(self, k_attr) != d[k]:
+                return False
+        return True
