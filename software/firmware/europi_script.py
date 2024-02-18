@@ -118,24 +118,16 @@ class EuroPiScript:
             return [configuration.choice(name="language", choices=["english", "french"], default="english")]
 
     Our main method could then use the value of this configuration to display its greeting in the
-    configured language::
+    configured language:
 
         def main(self):
-            if self.config.LANGUAGE == "french":
+            if self.config["language"] == "french":
                 oled.centre_text("Bonjour le monde")
             else:
                 oled.centre_text("Hello world")
 
     Configuration files are validated, so scripts do not need to worry about invalid values. Validation
     failures raise exceptions with messages that will help the user correct their configurations.
-
-    The config object's attributes have names equivalent to the config_point's names, converted to upper-case,
-    with non-alphanumeric characters replaced with the underscore '_' character.  Names that start with numbers
-    have 'K_' added to the start of their names. e.g.:
-
-        - "language" -> .LANGUAGE
-        - "max_frequency" -> .MAX_FREQUENCY
-        - "2pi" -> .K_2PI
 
     Users can create and edit configuration files in order to change a script's configuration. The
     files should be uploaded to the pico in the `/config` directory. To assist in generating initial

@@ -29,6 +29,7 @@ from ssd1306 import SSD1306_I2C
 
 from version import __version__
 
+from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB
 from europi_config import load_europi_config
 from experimental.experimental_config import load_experimental_config
@@ -58,8 +59,10 @@ except ImportError:
 
 
 # Initialize EuroPi global singleton instance variables.
-europi_config = load_europi_config()
-experimental_config = load_experimental_config()
+__europi_config_json = load_europi_config()
+__experimental_config_json = load_experimental_config()
+europi_config = ConfigSettings(__europi_config_json)
+experimental_config = ConfigSettings(__experimental_config_json)
 
 
 # OLED component display dimensions.

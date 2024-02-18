@@ -227,9 +227,6 @@ class ConfigSettings:
 
         for k in d.keys():
             cname = self.to_attr_name(k)
-            if cname[0].isdigit():
-                cname = f"_{cname}"
-
             setattr(self, cname, d[k])
 
     def to_attr_name(self, key):
@@ -249,19 +246,3 @@ class ConfigSettings:
         if len(s) > 0 and s[0].isdigit():
             s = f"K_{s}"
         return s
-
-    def __eq__(self, d):
-        """Compare this object's contents with a dict
-
-        Dict keys are converted to attribute names and checked.  This is used by the tests to verify
-        that the class is working correctly.
-
-        @param d  The dictionary to compare to
-        @return   True if this instance's attributes are a superset of the dict's keys
-                  i.e. every key is an attribute, but not every attribute must be a key
-        """
-        for k in d.keys():
-            k_attr = self.to_attr_name(k)
-            if getattr(self, k_attr) != d[k]:
-                return False
-        return True

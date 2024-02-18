@@ -57,7 +57,7 @@ shows the default configuration:
 
 # Accessing config members in Python code
 
-The configuration manger converts the JSON file into a `ConfigSettings` object, where the JSON keys are converted
+The firmware converts the JSON file into a `ConfigSettings` object, where the JSON keys are converted
 to Python attributes.  The attribute names are the same as their JSON strings, but converted to upper case (so as to
 appear as constants in the code) and with any alphanumeric characters replaced with `_` characters.  If the key starts
 with a number, a `K_` prefix is added. e.g.:
@@ -79,7 +79,6 @@ configuration attributes described in the sections above:
   '__module__',
   '__qualname__',
   '__dict__',
-  '__eq__',
   'to_attr_name',
   'CPU_FREQ',
   'DISPLAY_CHANNEL',

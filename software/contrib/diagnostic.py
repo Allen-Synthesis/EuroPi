@@ -49,7 +49,7 @@ class Diagnostic(EuroPiScript):
             5,
             10,  # max
         ]
-        self.temp_units = self.config.TEMP_UNITS
+        self.temp_units = self.config["temp_units"]
         self.use_fahrenheit = self.temp_units == "F"
 
     @classmethod
