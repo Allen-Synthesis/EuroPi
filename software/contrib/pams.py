@@ -22,6 +22,8 @@ import gc
 import math
 import time
 import random
+import _thread
+
 
 ## Screensaver-enabled display
 ssoled = OledWithScreensaver()
@@ -267,6 +269,52 @@ BANK_LABELS = [
 
 ## Integers 0-100 for choosing a percentage value
 PERCENT_RANGE = list(range(101))
+
+
+class DigitalInputMonitor:
+    """Helper class to work around the fact that _thread doesn't play nicely with ISRs
+
+    Used by the UI thread to check the state of the buttons + din and indicate if rising/falling
+    edges are detected
+    """
+    def __init__(self):
+        self.din_rising = False
+        self.din_falling = False
+        self.b1_rising = False
+        self.b1_falling = False
+        self.b2_rising = False
+        self.b2_falling = False
+
+        self.din_high = False
+        self.b1_high = False
+        self.b2_high = False
+
+        self.b1_last_pressed = 0
+        self.b2_last_pressed = 0
+
+    def check(self):
+        din_state = din.value() != 0
+        b1_state = b1.value() != 0
+        b2_state = b2.value() != 0
+
+        self.din_rising = not self.din_high and din_state
+        self.din_falling = self.din_high and not din_state
+
+        self.b1_rising = not self.b1_high and b1_state
+        self.b1_falling = self.b1_high and not b1_state
+
+        self.b2_rising = not self.b2_high and b2_state
+        self.b2_falling = self.b2_high and not b2_state
+
+        self.din_high = din_state
+        self.b1_high = b1_state
+        self.b2_high = b2_state
+
+        if b1_state:
+            self.b1_last_pressed = time.ticks_ms()
+        if b2_state:
+            self.b2_last_pressed = time.ticks_ms()
+
 
 class Setting:
     """A single setting that can be loaded, saved, or dynamically read from an analog input
@@ -1342,68 +1390,68 @@ class PamsWorkout(EuroPiScript):
             default_channel.to_dict()
         ]
 
-        @din.handler
-        def on_din_rising():
-            if self.din_mode.get_value() == DIN_MODE_GATE:
-                self.clock.start()
-            elif self.din_mode.get_value() == DIN_MODE_RESET:
-                for ch in self.channels:
-                    ch.reset()
-            else:
-                if self.clock.is_running:
-                    self.clock.stop()
-                else:
-                    self.clock.start()
+        self.digital_input_state = DigitalInputMonitor()
 
-        @din.handler_falling
-        def on_din_falling():
-            if self.din_mode.get_value() == DIN_MODE_GATE:
-                self.clock.stop()
-
-        @b1.handler
-        def on_b1_press():
-            """Handler for pressing button 1
-
-            Button 1 starts/stops the master clock
-            """
+    def on_din_rising():
+        if self.din_mode.get_value() == DIN_MODE_GATE:
+            self.clock.start()
+        elif self.din_mode.get_value() == DIN_MODE_RESET:
+            for ch in self.channels:
+                ch.reset()
+        else:
             if self.clock.is_running:
                 self.clock.stop()
             else:
                 self.clock.start()
 
-        @b1.handler_falling
-        def on_b1_release():
-            """Handler for releasing button 1
+    def on_din_falling(self):
+        if self.din_mode.get_value() == DIN_MODE_GATE:
+            self.clock.stop()
 
-            Wake up the display if it's asleep.  We do this on release to keep the
-            wake up behavior the same for both buttons
-            """
-            ssoled.notify_user_interaction()
+    def on_b1_press(self):
+        """Handler for pressing button 1
 
+        Button 1 starts/stops the master clock
+        """
+        if self.clock.is_running:
+            self.clock.stop()
+        else:
+            self.clock.start()
 
-        @b2.handler_falling
-        def on_b2_release():
-            """Handler for releasing button 2
+        ssoled.notify_user_interaction()
 
-            Handle long vs short presses differently
+    def on_b1_release(self):
+        """Handler for releasing button 1
+        """
+        ssoled.notify_user_interaction()
 
-            Button 2 is used to cycle between screens
+    def on_b2_press(self):
+        """Handler for pressing button 2
+        """
+        ssoled.notify_user_interaction()
 
-            If the screensaver is visible, just wake up the display & don't process
-            the actual button click/long-press
-            """
-            now = time.ticks_ms()
-            if not ssoled.is_screenaver() and not ssoled.is_blank():
-                if time.ticks_diff(now, b2.last_pressed()) > LONG_PRESS_MS:
-                    # long press
-                    # change between the main & sub menus
-                    self.main_menu.on_long_press()
-                else:
-                    # short press
-                    self.main_menu.on_click()
-                    self.save()
+    def on_b2_release(self):
+        """Handler for releasing button 2
 
-            ssoled.notify_user_interaction()
+        Handle long vs short presses differently
+
+        Button 2 is used to cycle between screens
+
+        If the screensaver is visible, just wake up the display & don't process
+        the actual button click/long-press
+        """
+        now = time.ticks_ms()
+        if not ssoled.is_screenaver() and not ssoled.is_blank():
+            if time.ticks_diff(now, self.digital_input_state.b2_last_pressed) > LONG_PRESS_MS:
+                # long press
+                # change between the main & sub menus
+                self.main_menu.on_long_press()
+            else:
+                # short press
+                self.main_menu.on_click()
+                self.save()
+
+        ssoled.notify_user_interaction()
 
     def load(self):
         """Load parameters from persistent storage and apply them
@@ -1455,14 +1503,28 @@ class PamsWorkout(EuroPiScript):
     def display_name(cls):
         return "Pam's Workout"
 
-    def main(self):
-        self.load()
-
+    def ui_thread(self):
+        """The main GUI thread; runs on core 1 as a secondary thread
+        """
         while True:
             now = time.ticks_ms()
 
-            for cv in CV_INS.values():
-                cv.update()
+            # simulate the ISRs manually
+            self.digital_input_state.check()
+            if self.digital_input_state.b1_rising:
+                self.on_b1_press()
+            elif self.digital_input_state.b1_falling:
+                self.on_b1_release()
+
+            if self.digital_input_state.b2_rising:
+                self.on_b2_press()
+            elif self.digital_input_state.b2_falling:
+                self.on_b2_release()
+
+            if self.digital_input_state.din_rising:
+                self.on_din_rising()
+            elif self.digital_input_state.din_falling:
+                self.on_din_falling()
 
             ssoled.fill(0)
             self.main_menu.draw()
@@ -1475,6 +1537,30 @@ class PamsWorkout(EuroPiScript):
             ssoled.blit(imgFB, OLED_WIDTH - STATUS_IMG_WIDTH, 0)
 
             ssoled.show()
+
+    def voltage_thread(self):
+        """The main thread; handles all CV I/O. The main clock timer runs on this thread on core 0
+        """
+        GC_INTERVAL_MS = 250
+        last_gc_at = time.ticks_ms()
+
+        while True:
+            now = time.ticks_ms()
+            for cv in CV_INS.values():
+                cv.update()
+
+            # Force garbage collection at regular intervals
+            if time.ticks_diff(last_gc_at, now) > GC_INTERVAL_MS:
+                gc.collect()
+                gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
+                last_gc_at = now
+
+    def main(self):
+        self.load()
+
+        core_1_thread = _thread.start_new_thread(self.ui_thread(), ())
+        self.voltage_thread()
+
 
 if __name__=="__main__":
     PamsWorkout().main()
