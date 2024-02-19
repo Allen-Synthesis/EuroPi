@@ -39,7 +39,7 @@ A semi-random LFO that uses [John Conway's Game Of Life](https://en.wikipedia.or
 Record 6 banks of 6 channels of control voltage, and then play them back at a consistent rate set by an external clock.
 Recording of CV can be primed so that you can record a movement without missing a beat
 
-<i>Author: [gamecat69](https://github.com/gamecat69)</i>
+<i>Author: [anselln](https://github.com/anselln)</i>
 <br><i>Labels: sequencer, CV, performance</i>
 
 ### Egressus Melodium \[ [documentation](/software/contrib/egressus_melodiam.md) | [script](/software/contrib/egressus_melodiam.py) \]
