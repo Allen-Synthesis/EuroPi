@@ -1562,7 +1562,7 @@ class PamsWorkout(EuroPiScript):
     def main(self):
         self.load()
 
-        core_1_thread = _thread.start_new_thread(self.ui_thread(), ())
+        core_1_thread = _thread.start_new_thread(self.ui_thread, ())
         self.voltage_thread()
 
 
