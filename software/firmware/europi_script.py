@@ -5,7 +5,7 @@ import json
 from utime import ticks_diff, ticks_ms
 from configuration import ConfigSpec, ConfigFile
 from europi_config import EuroPiConfig
-from file_utils import load_file, delete_file, load_json_data
+from file_utils import load_file, delete_file, load_json_file
 
 
 class EuroPiScript:
@@ -181,7 +181,9 @@ class EuroPiScript:
             script. Only call save state when state has changed and consider
             adding a time since last save check to reduce save frequency.
         """
-        return self._save_state(state)
+        with open(self._state_filename, "w") as file:
+            file.write(state)
+            self._last_saved = ticks_ms()
 
     def save_state_bytes(self, state: bytes):
         """Take state in persistence format as bytes and write to disk.
@@ -192,7 +194,9 @@ class EuroPiScript:
             script. Only call save state when state has changed and consider
             adding a time since last save check to reduce save frequency.
         """
-        return self._save_state(state, mode="wb")
+        with open(self._state_filename, "wb") as file:
+            file.write(state)
+            self._last_saved = ticks_ms()
 
     def save_state_json(self, state: dict):
         """Take state as a dict and save as a json string.
@@ -203,13 +207,9 @@ class EuroPiScript:
             script. Only call save state when state has changed and consider
             adding a time since last save check to reduce save frequency.
         """
-        json_str = json.dumps(state)
-        return self._save_state(json_str)
-
-    def _save_state(self, state: str, mode: str = "w"):
-        with open(self._state_filename, mode) as file:
-            file.write(state)
-        self._last_saved = ticks_ms()
+        with open(self._state_filename, "w") as file:
+            json.dump(state, file)
+            self._last_saved = ticks_ms()
 
     def load_state_str(self) -> str:
         """Check disk for saved state, if it exists, return the raw state value as a string.
@@ -217,7 +217,7 @@ class EuroPiScript:
         Check for a previously saved state. If it exists, return state as a
         string. If no state is found, an empty string will be returned.
         """
-        return self._load_state()
+        return load_file(self._state_filename, "r")
 
     def load_state_bytes(self) -> bytes:
         """Check disk for saved state, if it exists, return the raw state value as bytes.
@@ -225,7 +225,7 @@ class EuroPiScript:
         Check for a previously saved state. If it exists, return state as a
         byte string. If no state is found, an empty string will be returned.
         """
-        return self._load_state(mode="rb")
+        return load_file(self._state_filename, "rb")
 
     def load_state_json(self) -> dict:
         """Load previously saved state as a dict.
@@ -233,10 +233,7 @@ class EuroPiScript:
         Check for a previously saved state. If it exists, return state as a
         dict. If no state is found, an empty dictionary will be returned.
         """
-        return load_json_data(self._load_state())
-
-    def _load_state(self, mode: str = "r") -> any:
-        return load_file(self._state_filename, mode)
+        return load_json_file(self._state_filename)
 
     def remove_state(self):
         """Remove the state file for this script."""
