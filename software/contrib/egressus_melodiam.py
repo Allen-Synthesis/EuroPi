@@ -79,6 +79,8 @@ MAX_CLOCK_TIME_MS = 3750
 MAX_SAMPLE_RATE = 32
 MAX_OUTPUT_DENOMINATOR = 8
 
+MIN_MS_BETWEEN_SAVES = 2000
+
 # Calculate maximum sample buffer size required
 SLEW_BUFFER_SIZE_IN_SAMPLES = int(
     (MAX_CLOCK_TIME_MS / 1000) * MAX_SAMPLE_RATE * MAX_OUTPUT_DENOMINATOR
@@ -193,6 +195,8 @@ class EgressusMelodiam(EuroPiScript):
 
         self.unClockedMode = False
         self.lastClockTime = ticks_ms()
+        self.lastSaveState = ticks_ms()
+        self.pendingSaveState = False
         self.previousOutputVoltage = [0, 0, 0, 0, 0, 0]
         self.slewBufferSampleNum = [0, 0, 0, 0, 0, 0]
         self.slewBufferPosition = [0, 0, 0, 0, 0, 0]
@@ -240,14 +244,16 @@ class EgressusMelodiam(EuroPiScript):
                 self.showNewPatternIndicator = True
                 self.screenRefreshNeeded = True
                 self.showNewPatternIndicatorClockStep = self.clockStep
-                self.saveState()
+                self.pendingSaveState = True
+                #self.saveState()
             else:
                 # short press change slew mode
                 self.outputSlewModes[self.selectedOutput] = (
                     self.outputSlewModes[self.selectedOutput] + 1
                 ) % len(self.slewShapes)
                 self.screenRefreshNeeded = True
-                self.saveState()
+                self.pendingSaveState = True
+                #self.saveState()
 
         @b2.handler_falling
         def b2Pressed():
@@ -260,7 +266,8 @@ class EgressusMelodiam(EuroPiScript):
                 self.unClockedMode = not self.unClockedMode
                 if self.unClockedMode:
                     self.running = True
-                self.saveState()
+                self.pendingSaveState = True
+                #self.saveState()
 
                 # Update previous knob values to avoid them changing when the mode changes
                 self.lastK1Reading = self.currentK1Reading
@@ -271,7 +278,8 @@ class EgressusMelodiam(EuroPiScript):
                 # short press change selected output
                 self.selectedOutput = (self.selectedOutput + 1) % 6
                 self.screenRefreshNeeded = True
-                self.saveState()
+                self.pendingSaveState = True
+                #self.saveState()
 
     def calculateOptimalSampleRate(self):
         """Calculate optimal sample rate for smooth CV output while using minimal memory"""
@@ -431,6 +439,11 @@ class EgressusMelodiam(EuroPiScript):
                     except StopIteration:
                         continue
 
+            # Save state
+            if self.pendingSaveState and ticks_diff(ticks_ms(), self.lastSaveState) >= MIN_MS_BETWEEN_SAVES:
+                self.saveState()
+                self.pendingSaveState = False
+
             # If we are not being clocked, trigger a clock after the configured clock time
             if (
                 self.unClockedMode
@@ -451,7 +464,8 @@ class EgressusMelodiam(EuroPiScript):
                     self.stepPerOutput[idx] = 0
                 # Update screen with the upcoming CV pattern
                 self.screenRefreshNeeded = True
-                self.saveState()
+                self.pendingSaveState = True
+                #self.saveState()
                 self.running = False
                 for cv in cvs:
                     cv.off()
@@ -565,7 +579,8 @@ class EgressusMelodiam(EuroPiScript):
                 self.patternLength = int((MAX_STEP_LENGTH / 100) * (self.currentK1Reading - 1)) + 1
 
             # Something changed, update screen and save state
-            self.saveState()
+            self.pendingSaveState = True
+            #self.saveState()
             self.screenRefreshNeeded = True
 
         self.lastK1Reading = self.currentK1Reading
@@ -580,8 +595,8 @@ class EgressusMelodiam(EuroPiScript):
             self.lastK2Reading = self.currentK2Reading
             # clock rate or output division changed, calculate optimal sample rate
             self.calculateOptimalSampleRate()
-
-            self.saveState()
+            self.pendingSaveState = True
+            #self.saveState()
 
     def saveState(self):
         """Save working vars to a save state file"""
@@ -595,6 +610,7 @@ class EgressusMelodiam(EuroPiScript):
             "unClockedMode": self.unClockedMode,
         }
         self.save_state_json(self.state)
+        self.lastSaveState = ticks_ms()
 
     def loadState(self):
         """Load a previously saved state, or initialize working vars, then save"""
@@ -610,7 +626,8 @@ class EgressusMelodiam(EuroPiScript):
         if len(self.cvPatternBanks) == 0:
             self.initCvPatternBanks()
 
-        self.saveState()
+        self.pendingSaveState = True
+        #self.saveState()
         # Let the rest of the script know how many pattern banks we have
         self.numCvPatterns = len(self.cvPatternBanks[0])
 
