@@ -1,51 +1,35 @@
 # Egressus Melodiam (Stepped Melody)
 
 author: Nik Ansell (github.com/gamecat69)
-date: 02-Feb-24
+date: 19-Feb-24
 labels: clocked lfo, sequencer, CV, randomness
 
 Clockable and free-running LFO and random CV pattern generator.
-Six different wave shapes either define the LFO shape or the slew shape between CV pattern steps.
+Eight different wave shapes either define the LFO shape or the slew shape between CV pattern steps.
 Use it to generate variable length melodies (using a quantizer), LFOs or wierd and wonderful control voltages.   
 
 # Inputs, Outputs and Controls
 
-digital_in: clock in
-analog_in: not used
+![Operating Diagram](./egressus_melodiam-docs/egressus_melodiam.png)
 
-knob_1: Set global CV pattern length / free-running clock speed (A pattern length of 1 produces an cycling LFO)
-knob_2: Set LFO / CV Pattern clock division per output
-
-button_1:
-- Short Press (< 300ms): Cycle through slew/LFO shapes for the selected output
-- Long Press (Between 2 and 5 seconds): Generate a new random CV pattern for the selected output
-
-button_2:
-- Short Press (< 300ms): Cycle through outputs to edit
-- Long Press (Between 2 and 5 seconds): Toggle between clocked mode and free-running mode
-
-output_1: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
-output_2: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
-output_3: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
-output_4: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
-output_5: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
-output_6: LFO / randomly generated CV pattern (0 to MAX_OUTPUT_VOLTAGE, as defined by europi_config)
-
-**Note: `MAX_OUTPUT_VOLTAGE` is +10v by default**
+Analogue outputs send a voltage from 0V to the maximum configured output voltage (MAX_OUTPUT_VOLTAGE) as defined by europi_config.
+The default maximum output voltage is +10V.
 
 # Getting started
 
-1. Patch a 50% duty cycle square wave or clock with pulses >= 18ms in duration  into the digital input
+1. Patch a 50% duty cycle square wave or clock with pulses >= 16ms in duration into the digital input
 2. Connect one or more outputs to an input on another module (e.g. CV modulation inputs)
 3. Select a pattern pength using Knob 1
-4. Start your clock. Each output will now send a random looping CV to your module!
+4. Start your clock. Each output will now send a looping CV pattern to your module!
 
 So, what happened in the above example?
 When the module first powered on it automatically generated 6 x 32 step random CV patterns - one for each of the 6 outputs.
 Each time a clock is received, the step advances by one step and then loops when it get to the end of the pattern.
 The length of the pattern loop is controlled using knob 1, which supports a value from 1 to 32.
 
-# Changing the wave shape and clock division of an output
+# Changing the slew/wave shape and clock division of an output
+
+Refer to the above diagram for a visual representation of the example below.
 
 1. Press and release button 2 until the output number you would like edit is shown on the top-right.
 2. Press button 1 to cycle through the available wave shapes
@@ -53,6 +37,19 @@ The length of the pattern loop is controlled using knob 1, which supports a valu
 output to run at the clock rate. An output greater than one reduces the CV pattern / LFO to run at the selected division (e.g. selecting a division of 2 would run at half the clock rate)
 
 In LFO mode (pattern length of 1) the wave shape determines the shape of the cycling LFO. However, when in CV pattern mode (Pattern length > 1) the wave shape determines the slew between pattern steps.
+
+## Available Slew/wave shapes
+
+Eight shapes are available. Some are symmetrical where the rising shape is the same as the falling shape, others are asymmetrical.
+
+- [<img src="./egressus_melodiam-docs/square.png" width="15"/>](square.png) **Square/Step**: Moves up/down immediately and holds until the next step
+- [<img src="./egressus_melodiam-docs/tri.png" width="15"/>](tri.png) **Triangle/Linear**: A straight line between steps
+- [<img src="./egressus_melodiam-docs/sine.png" width="15"/>](sine.png) **Sine/Smooth**: A smooth line between steps using a sine/cosine wave
+- [<img src="./egressus_melodiam-docs/exp-up-exp-down.png" width="15"/>](exp-up-exp-down.png) **Exponential up and down**: An exponential curve between steps. This rises/falls slowly at the start and fast at the end
+- [<img src="./egressus_melodiam-docs/sharktooth.png" width="15"/>](sharktooth.png) **Sharktooth**: Logarithmic rise, exponential fall. A logarithmic curve rises/falls quickly at the start and slow at the end.
+- [<img src="./egressus_melodiam-docs/sharktooth-rev.png" width="15"/>](sharktooth-rev.png) **Reverse Sharktooth**: Exponential rise, Logarithmic fall.
+- [<img src="./egressus_melodiam-docs/log-up-step-down.png" width="15"/>](log-up-step-down.png) **Logarithmic up, step down**: Upward transitions are logarithmic, downward transitions are stepped.
+- [<img src="./egressus_melodiam-docs/square-up-exp-down.png" width="15"/>](square-up-exp-down.png) **Step up, exponential down**: Upward transitions are stepped, downward transitions are exponential.
 
 # Generating a new CV pattern for an output
 
@@ -71,16 +68,6 @@ To enter free-running mode, hold button 2 for 2 seconds and release. The configu
 in the middle of the screen to indicate you are in free-running mode.
 
 Note that when in free-running mode, the previously selected pattern length remains unchanged, it is therefore a good idea to select the required pattern length before changing to unclocked mode.
-
-# Display
-
-The OLED screen is broken into 3 sections:
-
-- Left: The currently selected wave / slew shape for the selected output is shown on the bottom left. When a new CV pattern is generated (by holding down and releasing button 1 for longer than 2 seconds) an icon is displayed on the top left to show the pattern was generated.
-
-- Middle: The global pattern length is shown in rows of 8 dots
-
-- Right: The selected output is shown on the top-right; the currerntly configured output division is shown on the bottom-right.
 
 # Saving and loading
 

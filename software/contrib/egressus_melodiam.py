@@ -11,12 +11,8 @@ import framebuf
 """
 Egressus Melodiam (Stepped Melody)
 author: Nik Ansell (github.com/gamecat69)
-date: 02-Feb-24
+date: 19-Feb-24
 labels: clocked lfo, sequencer, CV, randomness
-
-Clockable and free-running LFO and random CV pattern generator.
-Six different wave shapes either define the LFO shape or the slew shape between CV pattern steps.
-Use it to generate variable length melodies (using a quantizer), LFOs or wierd and wonderful control voltages. 
 
 Known Issues:
 - When the clock rate or output division changes significantly this creates temporary wave shape discontinuities
