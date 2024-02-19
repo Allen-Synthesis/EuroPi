@@ -310,9 +310,9 @@ class DigitalInputMonitor:
         self.b1_high = b1_state
         self.b2_high = b2_state
 
-        if b1_state:
+        if self.b1_rising:
             self.b1_last_pressed = time.ticks_ms()
-        if b2_state:
+        if self.b2_rising:
             self.b2_last_pressed = time.ticks_ms()
 
 
@@ -1505,6 +1505,8 @@ class PamsWorkout(EuroPiScript):
 
     def ui_thread(self):
         """The main GUI thread; runs on core 1 as a secondary thread
+
+        Handles reading the digital inputs (din + buttons) & rendering the GUI
         """
         while True:
             now = time.ticks_ms()
@@ -1540,6 +1542,8 @@ class PamsWorkout(EuroPiScript):
 
     def voltage_thread(self):
         """The main thread; handles all CV I/O. The main clock timer runs on this thread on core 0
+
+        Handles most of the math-heavy work via the main clock's tick & runs garbage collection periodically
         """
         GC_INTERVAL_MS = 250
         last_gc_at = time.ticks_ms()
