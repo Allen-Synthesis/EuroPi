@@ -285,7 +285,7 @@ class EgressusMelodiam(EuroPiScript):
         """Calculate optimal sample rate for smooth CV output while using minimal memory"""
         for idx in range(len(cvs)):
             self.samplesPerSec[idx] = int(
-                min(
+                min(2 *
                     (MAX_SAMPLE_RATE / self.outputDivisions[idx])
                     * (MAX_CLOCK_TIME_MS / self.averageMsBetweenClocks),
                     MAX_SAMPLE_RATE,
