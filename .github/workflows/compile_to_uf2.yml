@@ -23,6 +23,7 @@ jobs:
           path: micropython
 
       - name: install os deps
+        run: sudo apt-get update
         run: sudo apt-get install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
 
       - name: prepare micropython build
