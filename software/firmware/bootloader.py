@@ -150,7 +150,9 @@ class BootloaderMenu(EuroPiScript):
 
         if not script_class:
             script_class = self.run_menu()
-            self.save_state_json({"last_launched": f"{script_class.__module__}.{script_class.__name__}"})
+            self.save_state_json(
+                {"last_launched": f"{script_class.__module__}.{script_class.__name__}"}
+            )
             machine.reset()
         else:
             # setup the exit handlers, and execute the selection
