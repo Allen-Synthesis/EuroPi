@@ -35,8 +35,8 @@ def script_for_testing_with_config():
 
 
 def test_save_state(script_for_testing):
-    script_for_testing.save_state_str("test state")
-    assert script_for_testing.load_state_str() == "test state"
+    script_for_testing.save_state_json({"spam": "eggs"})
+    assert script_for_testing.load_state_json() == {"spam": "eggs"}
 
 
 def test_state_file_name(script_for_testing):

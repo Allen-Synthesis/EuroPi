@@ -170,20 +170,7 @@ class EuroPiScript:
         appropriate save method, such as `save_state_json(state)`. See the
         class documentation for a full example.
         """
-        pass
-
-    def save_state_str(self, state: str):
-        """Take state in persistence format as a string and write to disk.
-
-        .. note::
-            Be mindful of how often `save_state_str()` is called because
-            writing to disk too often can slow down the performance of your
-            script. Only call save state when state has changed and consider
-            adding a time since last save check to reduce save frequency.
-        """
-        with open(self._state_filename, "w") as file:
-            file.write(state)
-            self._last_saved = ticks_ms()
+        self.save_state_json({})
 
     def save_state_bytes(self, state: bytes):
         """Take state in persistence format as bytes and write to disk.
@@ -210,14 +197,6 @@ class EuroPiScript:
         with open(self._state_filename, "w") as file:
             json.dump(state, file)
             self._last_saved = ticks_ms()
-
-    def load_state_str(self) -> str:
-        """Check disk for saved state, if it exists, return the raw state value as a string.
-
-        Check for a previously saved state. If it exists, return state as a
-        string. If no state is found, an empty string will be returned.
-        """
-        return load_file(self._state_filename, "r")
 
     def load_state_bytes(self) -> bytes:
         """Check disk for saved state, if it exists, return the raw state value as bytes.
