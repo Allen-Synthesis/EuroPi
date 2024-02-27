@@ -46,7 +46,7 @@ class MasterClockInner(EuroPiScript):
         self.previousClockTime = 0
         self.inputClockDiffs = []
         self.clockSelectionScreenActive = False
-        
+
         # State flag to determine if UI state has changed and display should update.
         self._updateUI = True
 
@@ -63,7 +63,7 @@ class MasterClockInner(EuroPiScript):
         for n in range(1,self.MAX_DIVISION+1):
             self.clockDivisions.append(n)
         self.clockDivisions.append('r')
-        
+
         # When enabled, set msDriftCompensation to 30
         # When disabled, set msDriftCompensation to 28
         self.DEBUG = False
@@ -94,7 +94,7 @@ class MasterClockInner(EuroPiScript):
 
         self.tasks = []
         for n in range(6):
-            self.tasks.append(0)            
+            self.tasks.append(0)
 
         # Starts/Stops the master clock
         @b1.handler_falling
@@ -139,7 +139,7 @@ class MasterClockInner(EuroPiScript):
                                 self.bpm = bpm
                                 self._updateUI = True
                     self.previousClockTime = ticks_ms()
-                    
+
                 self.clockInputNum += 1
             else:
                 self.step = 1
@@ -164,7 +164,7 @@ class MasterClockInner(EuroPiScript):
                 self.clockSelectionScreenActive = False
                 break
             time.sleep(0.05)
-        
+
         self.saveState()
         self._updateUI = True
 
@@ -189,7 +189,7 @@ class MasterClockInner(EuroPiScript):
         oled.fill(0)
         if self.configMode and self.activeOption != 3:
             configMarker = '|'
-            
+
             # if active config option changes, lock k2 and save state
             if self.previousActiveOption != self.activeOption:
                 self.k2Unlocked = False
@@ -210,7 +210,7 @@ class MasterClockInner(EuroPiScript):
                     self.calcSleepTime()
                     self.getPulseWidth()
                     self._updateUI = True
-                        
+
             elif self.activeOption == 2:
                 # read current knob value
                 newPw = k2.read_position(steps=self.MAX_PW_PERCENTAGE) + 1
@@ -231,15 +231,15 @@ class MasterClockInner(EuroPiScript):
                 # self.activeOption != 3 / output 1 is disabled from configuration
                 if self.previousSelectedDivision != selectedDivision and self.activeOption != 3:
                     self.outputDivisions[self.activeOption - 3] = selectedDivision
-                
+
                 self.previousSelectedDivision = selectedDivision
                 self._updateUI = True
-            
+
             self.previousActiveOption = self.activeOption
-                    
+
         else:
             configMarker = '.'
-        
+
         oled.text(str(self.bpm) + ' bpm', 6, 0, 1)
         oled.text(str(self.pulseWidthPercent) + ':' + str(str(self.pulseWidthMs)), 75, 0, 1)
         oled.text('/' + str(self.outputDivisions[0]), 6, 12, 1)
@@ -249,18 +249,18 @@ class MasterClockInner(EuroPiScript):
         oled.text('/' + str(self.outputDivisions[4]), 45, 24, 1)
         oled.text('/' + str(self.outputDivisions[5]), 85, 24, 1)
         oled.text(configMarker, self.markerPositions[self.activeOption-1][0], self.markerPositions[self.activeOption-1][1], 1)
-        self.updateDisplay() 
+        self.updateDisplay()
 
     ''' Holds given output (cv) high for pulseWidthMs duration '''
     async def outputPulse(self, cv):
-        cv.voltage(5)
+        cv.on()
         await asyncio.sleep_ms(self.pulseWidthMs)
         cv.off()
 
     ''' Given a desired BPM, calculate the time to sleep between clock pulses '''
     def calcSleepTime(self):
         self.mSBetweenClockCycles = int((60000 / self.bpm / self.CLOCKS_PER_QUARTER_NOTE))
-    
+
     def checkForAinBPM(self):
         val = 100 * ain.percent()
         # If there is an analogue input voltage use that for BPM. clamp ensures it is higher than MIN and lower than MAX
@@ -269,7 +269,7 @@ class MasterClockInner(EuroPiScript):
         else:
             # No analog input, revert to last saved state
             bpm = self.state.get("bpm", 100)
-        
+
         if self.bpm != bpm:
             self.bpm = bpm
             self.calcSleepTime()
@@ -319,7 +319,7 @@ class MasterClockInner(EuroPiScript):
         else:
             self.completedCycles += 1
             self.step = 1
-        
+
         # Get time of last step to use in the auto reset function
         self.previousStepTime = ticks_ms()
 
@@ -333,7 +333,7 @@ class MasterClockInner(EuroPiScript):
                     print(f'[{i}] done: {str(i.done())}. state: {str(i.state)}. data: {str(i.data)}. coro: {str(i.coro)}')
                 else:
                     print(0)
-    
+
     def updateDisplay(self):
         """Update the display if UI state has changed."""
         if self._updateUI:
@@ -400,6 +400,3 @@ class MasterClock(EuroPiScript):
 if __name__ == '__main__':
     m = MasterClock()
     m.main()
-
-
-

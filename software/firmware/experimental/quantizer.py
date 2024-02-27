@@ -4,7 +4,7 @@
     @year   2023
 """
 
-from europi import experimental_config
+from europi import experimental_config, MAX_OUTPUT_VOLTAGE
 
 ## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
 VOLTS_PER_OCTAVE = experimental_config["volts_per_octave"]
@@ -68,6 +68,11 @@ class Quantizer:
                 the raw voltage to output, and note is a value from
                 0-11 indicating the semitone
         """
+        # Make sure we've got at least 1 note in the scale enabled, otherwise we might have infinite loop problems
+        # If we have nothing to quantize to, just output zero for both outputs
+        if not (True in self.notes):
+            return (0, 0)
+
         # offset the input voltage by the root to transpose down
         analog_in = analog_in - VOLTS_PER_SEMITONE * root
 
@@ -90,6 +95,21 @@ class Quantizer:
 
         # re-apply the root to transpose back up
         volts = base_volts + nearest_on_scale * VOLTS_PER_SEMITONE + root * VOLTS_PER_SEMITONE
+
+        # If the calculated voltage is above what we can actually output, move down in semitones until we get
+        # to something on the scale
+        # Author's Note:
+        #  The likeliest way for this to trigger is if MAX_OUTPUT_VOLTAGE is set significantly lower than
+        #  MAX_INPUT_VOLTAGE (e.g. 10V in, 5V out) and/or @root is set very high and @analog_in is close
+        #  to MAX_OUTPUT_VOLTAGE
+        highest_volts = volts
+        highest_note = nearest_on_scale
+        while volts > MAX_OUTPUT_VOLTAGE:
+            highest_volts -= VOLTS_PER_SEMITONE
+            highest_note = (highest_note - 1) % len(self.notes)
+            if self.notes[highest_note]:
+                volts = highest_volts
+                nearest_on_scale = highest_note
 
         return (volts, nearest_on_scale)
 

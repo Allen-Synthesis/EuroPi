@@ -23,9 +23,6 @@ LOG2 = math.log(2)
 # How many pixels are on the screen
 NUM_PIXELS = OLED_HEIGHT * OLED_WIDTH
 
-# How many volts are our gate outputs?
-GATE_VOLTAGE = 5
-
 
 def stdev(l):
     """Return the standard deviation of a list of values
@@ -295,16 +292,16 @@ class Conway(EuroPiScript):
 
         while True:
             # turn off the stasis gate while we calculate the next generation
-            cv6.voltage(0)
+            cv6.off()
 
             # turn on the FPS gate when we start calculating
-            cv4.voltage(GATE_VOLTAGE)
+            cv4.on()
 
             # calculate the next generation
             self.tick()
 
             # turn off the FPS gate when we're done calculating but before we draw
-            cv4.voltage(0)
+            cv4.on()
 
             # show the results on the OLED
             self.draw()
@@ -316,13 +313,16 @@ class Conway(EuroPiScript):
             in_stasis = self.check_for_stasis()
 
             cv1.voltage(MAX_OUTPUT_VOLTAGE * bitwise_entropy(self.field))
-            cv5.voltage(GATE_VOLTAGE if self.num_born > self.num_died else 0)
+            if self.num_born > self.num_died:
+                cv5.on()
+            else:
+                cv5.off()
 
             # Make sure we don't divide by zero
             if self.num_alive > 0:
                 cv2.voltage(MAX_OUTPUT_VOLTAGE * self.num_born / self.num_alive)
             else:
-                cv2.voltage(0)
+                cv2.off()
 
 
             # Prevent values greater than 1 & division-by-zero errors
@@ -331,11 +331,11 @@ class Conway(EuroPiScript):
             if (hi > 0):
                 cv3.voltage(MAX_OUTPUT_VOLTAGE * (low/hi))
             else:
-                cv3.voltage(0)
+                cv3.off()
 
             # If we've achieved statis, set CV6 & trigger a reset
             if in_stasis:
-                cv6.voltage(GATE_VOLTAGE)
+                cv6.on()
                 self.reset_requested = True
 
 if __name__ == "__main__":

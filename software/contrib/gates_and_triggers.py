@@ -18,9 +18,6 @@ from experimental.screensaver import OledWithScreensaver
 
 ssoled = OledWithScreensaver()
 
-## All digital output signals are 5V
-OUTPUT_VOLTAGE = 5.0
-
 ## Trigger outputs are 10ms long (rising/falling edges of gate signals)
 TRIGGER_DURATION_MS = 10
 
@@ -78,8 +75,8 @@ class GatesAndTriggers(EuroPiScript):
         """
         self.gate_on = True
         self.on_incoming_rise_start_time = time.ticks_ms()
-        self.incoming_rise_out.voltage(OUTPUT_VOLTAGE)
-        self.gate_out.voltage(OUTPUT_VOLTAGE)
+        self.incoming_rise_out.on()
+        self.gate_out.on()
 
         self.on_toggle()
 
@@ -87,17 +84,17 @@ class GatesAndTriggers(EuroPiScript):
         """Handle the falling edge of the input signal
         """
         self.on_incoming_fall_start_time = time.ticks_ms()
-        self.incoming_fall_out.voltage(OUTPUT_VOLTAGE)
+        self.incoming_fall_out.on()
 
     def on_toggle(self):
         """Handle toggling the toggle output
         """
         self.toggle_on = not self.toggle_on
         if self.toggle_on:
-            self.toggle_out.voltage(OUTPUT_VOLTAGE)
+            self.toggle_out.on()
         else:
-            self.toggle_out.voltage(0)
-            self.toggle_fall_out.voltage(OUTPUT_VOLTAGE)
+            self.toggle_out.off()
+            self.toggle_fall_out.on()
             self.on_toggle_fall_start_time = time.ticks_ms()
 
     def tick(self):
@@ -118,21 +115,21 @@ class GatesAndTriggers(EuroPiScript):
 
         if self.gate_on and time.ticks_diff(now, self.on_incoming_rise_start_time) > self.gate_duration:
             self.gate_on = False
-            self.gate_out.voltage(0)
-            self.gate_fall_out.voltage(OUTPUT_VOLTAGE)
+            self.gate_out.off()
+            self.gate_fall_out.on()
             self.on_gate_fall_start_time = now
 
         if time.ticks_diff(now, self.on_gate_fall_start_time) > TRIGGER_DURATION_MS:
-            self.gate_fall_out.voltage(0)
+            self.gate_fall_out.off()
 
         if time.ticks_diff(now, self.on_incoming_rise_start_time) > TRIGGER_DURATION_MS:
-            self.incoming_rise_out.voltage(0)
+            self.incoming_rise_out.off()
 
         if time.ticks_diff(now, self.on_incoming_fall_start_time) > TRIGGER_DURATION_MS:
-            self.incoming_fall_out.voltage(0)
+            self.incoming_fall_out.off()
 
         if time.ticks_diff(now, self.on_toggle_fall_start_time) > TRIGGER_DURATION_MS:
-            self.toggle_fall_out.voltage(0)
+            self.toggle_fall_out.off()
 
         self.k1_percent = k1_percent
         self.k2_percent = k2_percent

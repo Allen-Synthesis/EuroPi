@@ -14,7 +14,7 @@ class EnvelopeGenerator(EuroPiScript):
         self.sustain_mode = state.get("sustain_mode", 1)
         self.looping_mode = state.get("looping_mode", 0)
 
-        self.max_output_voltage = 10
+        self.max_output_voltage = europi_config["max_output_voltage"]
         
         #Distance of envelope voltage from max voltage/0 before 'jumping' to it - prevents large logarithmic calculations
         self.voltage_threshold = 0.1

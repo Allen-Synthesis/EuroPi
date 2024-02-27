@@ -72,8 +72,8 @@ class Consequencer(EuroPiScript):
         self.CvPattern_prev = 0
         self.reset_timeout = 1000
         self.maxRandomPatterns = 32  # This prevents a memory allocation error
-        self.maxCvVoltage = 9  # The maximum is 9 to maintain single digits in the voltage list
-        self.gateVoltage = 10
+        self.maxCvVoltage = clamp(europi_config["max_output_voltage"], 0, 9)  # The maximum is 9 to maintain single digits in the voltage list
+        self.gateVoltage = europi_config["gate_voltage"]
         self.gateVoltages = [0, self.gateVoltage]
 
         self.ainVal = 0

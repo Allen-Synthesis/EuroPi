@@ -63,15 +63,23 @@ class EuroPiConfig:
                 range=range(8, 1024),
                 default=32
             ),
+            configuration.choice(
+                name="display_sda",
+                choices=[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 26],
+                default=0,
+            ),
+            configuration.choice(
+                name="display_scl",
+                choices=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 27],
+                default=1,
+            ),
+            configuration.integer(
+                name="display_channel",
+                range=range(0, 2),
+                default=0
+            ),
 
             # Synthesizer family settings
-            # Normally this is intended for Eurorack compatibility, but being open-source someone may
-            # want to use it in an ecosystem that uses different specs
-            configuration.choice(
-                name="volts_per_octave",
-                choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
-                default=MOOG_VOLTS_PER_OCTAVE,
-            ),
             configuration.integer(
                 name="max_output_voltage",
                 range=range(1, 11),

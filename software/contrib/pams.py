@@ -533,11 +533,11 @@ class MasterClock:
                 if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
                     ch.cv_out.voltage(MAX_OUTPUT_VOLTAGE * ch.amplitude.get_value() / 100.0)
                 else:
-                    ch.cv_out.voltage(0.0)
+                    ch.cv_out.off()
             time.sleep(0.01)   # time.sleep works in SECONDS not ms
             for ch in self.channels:
                 if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
-                    ch.cv_out.voltage(0)
+                    ch.cv_out.off()
 
     def running_time(self):
         """Return how long the clock has been running
@@ -1065,7 +1065,7 @@ class PamsOutput:
         If the channel is muted this will set the output to zero, regardless of anything else
         """
         if self.mute.get_value():
-            self.cv_out.voltage(0)
+            self.cv_out.off()
         else:
             self.cv_out.voltage(self.out_volts)
 

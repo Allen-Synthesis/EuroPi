@@ -1,5 +1,5 @@
 """
-Rory Allen 19/11/2021 Apache License Version 2.0
+Rory Allen 2024 Apache License Version 2.0
 
 Before using any of this library, follow the instructions in
 `programming_instructions.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/programming_instructions.md>`_
@@ -31,7 +31,7 @@ from version import __version__
 
 from framebuf import FrameBuffer, MONO_HLSB
 from europi_config import load_europi_config
-from experimental_config import load_experimental_config
+from experimental.experimental_config import load_experimental_config
 
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
@@ -65,7 +65,9 @@ experimental_config = load_experimental_config()
 # OLED component display dimensions.
 OLED_WIDTH = europi_config["display_width"]
 OLED_HEIGHT = europi_config["display_height"]
-I2C_CHANNEL = 0
+I2C_SDA = europi_config["display_sda"]
+I2C_SCL = europi_config["display_scl"]
+I2C_CHANNEL = europi_config["display_channel"]
 I2C_FREQUENCY = 400000
 
 # Standard max int consts.
@@ -499,8 +501,8 @@ class Display(SSD1306_I2C):
 
     def __init__(
         self,
-        sda,
-        scl,
+        sda=I2C_SDA,
+        scl=I2C_SCL,
         width=OLED_WIDTH,
         height=OLED_HEIGHT,
         channel=I2C_CHANNEL,
@@ -627,7 +629,7 @@ k2 = Knob(PIN_K2)
 b1 = Button(PIN_B1)
 b2 = Button(PIN_B2)
 
-oled = Display(0, 1)
+oled = Display()
 cv1 = Output(PIN_CV1)
 cv2 = Output(PIN_CV2)
 cv3 = Output(PIN_CV3)
