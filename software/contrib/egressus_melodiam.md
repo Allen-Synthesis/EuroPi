@@ -3,10 +3,11 @@
 author: Nik Ansell (github.com/gamecat69)
 date: 19-Feb-24
 labels: clocked lfo, sequencer, CV, randomness
+Demo Video: https://youtu.be/_qlnV_ewb_c
 
-Clockable and free-running LFO and random CV pattern generator.
+Clock-able and free-running LFO and random CV pattern generator.
 Eight different wave shapes either define the LFO shape or the slew shape between CV pattern steps.
-Use it to generate variable length melodies (using a quantizer), LFOs or wierd and wonderful control voltages.   
+Use it to generate variable length melodies (using a quantizer), LFOs or weird and wonderful control voltages.   
 
 # Inputs, Outputs and Controls
 
@@ -19,7 +20,7 @@ The default maximum output voltage is +10V.
 
 1. Patch a 50% duty cycle square wave or clock with pulses >= 16ms in duration into the digital input
 2. Connect one or more outputs to an input on another module (e.g. CV modulation inputs)
-3. Select a pattern pength using Knob 1
+3. Select a pattern length using Knob 1
 4. Start your clock. Each output will now send a looping CV pattern to your module!
 
 So, what happened in the above example?
@@ -31,10 +32,10 @@ The length of the pattern loop is controlled using knob 1, which supports a valu
 
 Refer to the above diagram for a visual representation of the example below.
 
-1. Press and release button 2 until the output number you would like edit is shown on the top-right.
+1. Press and release button 2 until the output number you would like to edit is shown on the top-right.
 2. Press button 1 to cycle through the available wave shapes
 3. Adjust knob 2 to select the output division. An output division of 1 causes the CV pattern / LFO for that
-output to run at the clock rate. An output greater than one reduces the CV pattern / LFO to run at the selected division (e.g. selecting a division of 2 would run at half the clock rate)
+output to run at the clock rate. An output division greater than one reduces the CV pattern / LFO to run at the selected division (e.g. selecting a division of 2 would run at half the clock rate)
 
 In LFO mode (pattern length of 1) the wave shape determines the shape of the cycling LFO. However, when in CV pattern mode (Pattern length > 1) the wave shape determines the slew between pattern steps.
 
@@ -46,7 +47,7 @@ Eight shapes are available. Some are symmetrical where the rising shape is the s
 - [<img src="./egressus_melodiam-docs/tri.png" width="15"/>](tri.png) **Triangle/Linear**: A straight line between steps
 - [<img src="./egressus_melodiam-docs/sine.png" width="15"/>](sine.png) **Sine/Smooth**: A smooth line between steps using a sine/cosine wave
 - [<img src="./egressus_melodiam-docs/exp-up-exp-down.png" width="15"/>](exp-up-exp-down.png) **Exponential up and down**: An exponential curve between steps. This rises/falls slowly at the start and fast at the end
-- [<img src="./egressus_melodiam-docs/sharktooth.png" width="15"/>](sharktooth.png) **Sharktooth**: Logarithmic rise, exponential fall. A logarithmic curve rises/falls quickly at the start and slow at the end.
+- [<img src="./egressus_melodiam-docs/sharktooth.png" width="15"/>](sharktooth.png) **Sharktooth**: Logarithmic rise, exponential fall. A logarithmic curve rises/falls quickly at the start and slowly at the end.
 - [<img src="./egressus_melodiam-docs/sharktooth-rev.png" width="15"/>](sharktooth-rev.png) **Reverse Sharktooth**: Exponential rise, Logarithmic fall.
 - [<img src="./egressus_melodiam-docs/log-up-step-down.png" width="15"/>](log-up-step-down.png) **Logarithmic up, step down**: Upward transitions are logarithmic, downward transitions are stepped.
 - [<img src="./egressus_melodiam-docs/square-up-exp-down.png" width="15"/>](square-up-exp-down.png) **Step up, exponential down**: Upward transitions are stepped, downward transitions are exponential.
