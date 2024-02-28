@@ -6,6 +6,9 @@
 *.sh text eol=lf
 *.bash text eol=lf
 
+# Windows-specific files need crlf endings
+*.bat text eol=crlf
+
 # Image files should be binary
 *.png binary
 *.jpg binary
