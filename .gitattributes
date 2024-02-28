@@ -1,0 +1,11 @@
+# Python, markdown files can use user-preferred line endings
+*.py text=auto
+*.md text=auto
+
+# Linux-specific files need lf endings
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Image files should be binary
+*.png binary
+*.jpg binary
