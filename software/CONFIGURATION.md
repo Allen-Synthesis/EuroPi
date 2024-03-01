@@ -59,8 +59,8 @@ shows the default configuration:
 
 The firmware converts the JSON file into a `ConfigSettings` object, where the JSON keys are converted
 to Python attributes.  The attribute names are the same as their JSON strings, but converted to upper case (so as to
-appear as constants in the code) and with any alphanumeric characters replaced with `_` characters.  If the key starts
-with a number, a `K_` prefix is added. e.g.:
+appear as constants in the code) and with any non-alphanumeric characters replaced with `_` characters.  If the key
+starts with a number, a `K_` prefix is added. e.g.:
 
 - `language` -> `.LANGUAGE`
 - `display_channel` -> `.DISPLAY_CHANNEL`
