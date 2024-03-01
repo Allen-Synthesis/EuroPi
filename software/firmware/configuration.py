@@ -223,7 +223,7 @@ class ConfigSettings:
 
         @param d  The raw dict loaded from the configuration file
         """
-        self.__dict__ = {}     # required for getattr & setattr
+        self.__dict__ = {}  # required for getattr & setattr
 
         for k in d.keys():
             cname = self.to_attr_name(k)
