@@ -104,7 +104,7 @@ class Quantizer:
         #  to MAX_OUTPUT_VOLTAGE
         highest_volts = volts
         highest_note = nearest_on_scale
-        while volts > europi_config.MAX_OUTPUT_VOLTAGE:
+        while volts > MAX_OUTPUT_VOLTAGE:
             highest_volts -= VOLTS_PER_SEMITONE
             highest_note = (highest_note - 1) % len(self.notes)
             if self.notes[highest_note]:
