@@ -42,6 +42,12 @@ Recording of CV can be primed so that you can record a movement without missing 
 <i>Author: [anselln](https://github.com/anselln)</i>
 <br><i>Labels: sequencer, CV, performance</i>
 
+### Egressus Melodium \[ [documentation](/software/contrib/egressus_melodiam.md) | [script](/software/contrib/egressus_melodiam.py) \]
+Clockable and free-running LFO and random CV pattern generator
+
+<i>Author: [gamecat69](https://github.com/gamecat69)</i>
+<br><i>Labels: clocked lfo, sequencer, CV, randomness</i>
+
 ### Envelope Generator \[ [documentation](/software/contrib/envelope_generator.md) | [script](/software/contrib/envelope_generator.py) \]
 An attack release envelope with optional sustain and looping functionality.
 Envelopes are triggered or gated by the digital input, and the envelope is output, along with a copy of the digital input and an inverted copy of the envelope.
