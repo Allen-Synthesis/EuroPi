@@ -98,8 +98,8 @@ configuration attributes described in the sections above:
 In code:
 
 ```python
-import europi
+from europi import europi_config
 
 # A voltage range we can select from in a user menu
-VOLTAGE_RANGE = range(0, europi.europi_config.MAX_OUTPUT_VOLTAGE)
+VOLTAGE_RANGE = range(0, europi_config.MAX_OUTPUT_VOLTAGE)
 ```
