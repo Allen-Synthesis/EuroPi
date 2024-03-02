@@ -58,11 +58,9 @@ except ImportError:
     ]
 
 
-# Initialize EuroPi global singleton instance variables.
-__europi_config_json = load_europi_config()
-__experimental_config_json = load_experimental_config()
-europi_config = ConfigSettings(__europi_config_json)
-experimental_config = ConfigSettings(__experimental_config_json)
+# Initialize EuroPi global singleton instance variables
+europi_config = load_europi_config()
+experimental_config = load_experimental_config()
 
 
 # OLED component display dimensions.

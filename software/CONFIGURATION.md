@@ -1,7 +1,7 @@
 # Configuration Customization
 
 Certain properties of the module, such as screen rotation, CPU clock speed, and Raspberry Pi Pico model, can be
-set using a static configuration file.  This file is located at `/config/config_EuroPiConfig.json` on the
+set using a static configuration file.  This file is located at `/config/EuroPiConfig.json` on the
 Raspberry Pi Pico. If this file does not exist, default settings will be loaded.  The following shows the
 default configuration:
 ```json
@@ -42,7 +42,7 @@ default configuration:
 # Experimental configuration
 
 Other configuration properties are used by [experimental features](software/firmware/experimental/__init__.py)
-and can be set using a similar static configuration file. This file is located at `/config/config_ExperimentalConfig.json`
+and can be set using a similar static configuration file. This file is located at `/config/ExperimentalConfig.json`
 on the Raspberry Pi Pico. If this file does not exist, default settings will be loaded.  The following
 shows the default configuration:
 
@@ -58,14 +58,45 @@ shows the default configuration:
 # Accessing config members in Python code
 
 The firmware converts the JSON file into a `ConfigSettings` object, where the JSON keys are converted
-to Python attributes.  The attribute names are the same as their JSON strings, but converted to upper case (so as to
-appear as constants in the code) and with any non-alphanumeric characters replaced with `_` characters.  If the key
-starts with a number, a `K_` prefix is added. e.g.:
+to Python attributes.  The JSON object's keys must follow these rules, otherwise a `ValueError` will be raised:
 
-- `language` -> `.LANGUAGE`
-- `display_channel` -> `.DISPLAY_CHANNEL`
-- `2pi` -> `K_2PI`
-- `max-frequency` -> `MAX_FREQUENCY`
+1. The string cannot be empty
+1. The string may only contain letters, numbers, and the underscore (`_`) character
+1. The string may not begin with a number
+
+The JSON key is converted to upper-case and turned into a Python attribute of the configuration object. For example,
+this JSON file
+```json
+{
+  "clock_multiplier": 4,
+  "hard_sync": true,
+  "wave_shape: "sine"
+}
+```
+would produce a Python object with these attributes:
+```python
+>>> dir(config_object)
+[
+  '__class__',
+  '__init__',
+  '__module__',
+  '__qualname__',
+  '__dict__',
+  'to_attr_name',
+  'CLOCK_MULTIPLIER',
+  'HARD_SYNC',
+  'WAVE_SHAPE'
+]
+
+>>> config_object.CLOCK_MULTIPLIER
+4
+
+>>> config_object.HARD_SYNC
+True
+
+>>> config_object.WAVE_SHAPE
+'sine'
+```
 
 The `europi` namespace contains `.europi_config` and `.experimental_config` members that contain all of the
 configuration attributes described in the sections above:

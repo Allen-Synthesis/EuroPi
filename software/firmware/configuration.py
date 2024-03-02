@@ -166,8 +166,8 @@ class ConfigFile:
 
     @staticmethod
     def config_filename(cls):
-        """Returns the filename for teh config file for the given class."""
-        return f"config/config_{cls.__qualname__}.json"
+        """Returns the filename for the config file for the given class."""
+        return f"config/{cls.__qualname__}.json"
 
     @staticmethod
     def save_config(cls, data: dict):
@@ -233,16 +233,21 @@ class ConfigSettings:
         """Converts a dict key string to its equivalent attribute name
 
         @param key  The string to convert
-        @return     The same string, converted to upper-case with non-alphanumeric characters replaced with '_'
-                    If the string starts with a number, a leading 'K_' is added
+        @return     The same string, converted to upper-case, preserving underscores
+
+        @exception  ValueError if the key contains invalid characters; only letters, numbers, hyphens, and underscores
+                    are permitted. They key cannot be length 0, nor can it begin with a number
         """
         key = key.strip()
         s = ""
         for ch in key:
-            if ch.isalpha() or ch.isdigit():
+            if ch.isalpha() or ch.isdigit() or ch == "_":
                 s += ch.upper()
             else:
-                s += "_"
-        if len(s) > 0 and s[0].isdigit():
-            s = f"K_{s}"
+                raise ValueError(f"Invalid attribute name: {key}. Keys cannot contain the character {ch}")
+
+        if len(s) == 0:
+            raise ValueError("Invalid attribute name: key cannot be empty")
+        elif s[0].isdigit():
+            raise ValueError("Invalid attribute name: key cannot start with a number")
         return s
