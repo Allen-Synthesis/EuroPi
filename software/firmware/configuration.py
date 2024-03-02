@@ -251,3 +251,29 @@ class ConfigSettings:
         elif s[0].isdigit():
             raise ValueError("Invalid attribute name: key cannot start with a number")
         return s
+
+    def __eq__(self, that):
+        """Allows comparing the config object directly to either another config object or a dict
+
+        @param that  The object we're comparing to, either a dict or another ConfigSettings object
+
+        @return True if the two objects are equivalent, otherwise False
+        """
+        if type(that) is dict:
+            try:
+                that = ConfigSettings(that)
+                return self == that
+            except ValueError:
+                return False
+        elif type(that) is ConfigSettings:
+            # Make sure every key self exists and is equal to the equivalent in that
+            for k in self.__dict__.keys():
+                if not k in that.__dict__ or self.__dict__[k] != that.__dict__[k]:
+                    return False
+
+            # Make sure every key in that exists and is equal to its equivalent in self
+            for k in that.__dict__.keys():
+                if not k in self.__dict__ or self.__dict__[k] != that.__dict__[k]:
+                    return False
+
+            return True

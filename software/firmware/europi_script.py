@@ -121,7 +121,7 @@ class EuroPiScript:
     configured language:
 
         def main(self):
-            if self.config["language"] == "french":
+            if self.config.LANGUAGE == "french":
                 oled.centre_text("Bonjour le monde")
             else:
                 oled.centre_text("Hello world")
