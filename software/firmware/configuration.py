@@ -244,7 +244,9 @@ class ConfigSettings:
             if ch.isalpha() or ch.isdigit() or ch == "_":
                 s += ch.upper()
             else:
-                raise ValueError(f"Invalid attribute name: {key}. Keys cannot contain the character {ch}")
+                raise ValueError(
+                    f"Invalid attribute name: {key}. Keys cannot contain the character {ch}"
+                )
 
         if len(s) == 0:
             raise ValueError("Invalid attribute name: key cannot be empty")
