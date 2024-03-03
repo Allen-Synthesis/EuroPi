@@ -193,15 +193,15 @@ class ConfigFile:
         as saved in this class's config file, else, returns an empty dict."""
         if len(config_spec):
             saved_config = load_json_file(ConfigFile.config_filename(cls))
-            default_config = config_spec.default_config()
+            config = config_spec.default_config()
             validation = config_spec.validate(saved_config)
 
             if not validation.is_valid:
                 raise ValueError(validation.message)
 
-            default_config.update(saved_config)
+            config.update(saved_config)
 
-            return default_config
+            return config
         else:
             return {}
 
