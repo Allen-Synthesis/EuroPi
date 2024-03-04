@@ -10,7 +10,7 @@ of the valid values that it may have. There are several different types of COnfi
 
 import os
 import json
-from file_utils import load_file, delete_file, load_json_data
+from file_utils import load_file, delete_file, load_json_file
 from collections import namedtuple
 
 Validation = namedtuple("Validation", "is_valid message")
@@ -192,20 +192,16 @@ class ConfigFile:
         """If this class has config points, this method validates and returns the config dictionary
         as saved in this class's config file, else, returns an empty dict."""
         if len(config_spec):
-            data = load_file(ConfigFile.config_filename(cls))
+            saved_config = load_json_file(ConfigFile.config_filename(cls))
             config = config_spec.default_config()
-            if not data:
-                return config
-            else:
-                saved_config = load_json_data(data)
-                validation = config_spec.validate(saved_config)
+            validation = config_spec.validate(saved_config)
 
-                if not validation.is_valid:
-                    raise ValueError(validation.message)
+            if not validation.is_valid:
+                raise ValueError(validation.message)
 
-                config.update(saved_config)
+            config.update(saved_config)
 
-                return config
+            return config
         else:
             return {}
 
