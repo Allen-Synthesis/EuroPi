@@ -244,14 +244,6 @@ dict. If no state is found, an empty dictionary will be returned.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="europi_script.EuroPiScript.load_state_str">
-<span class="sig-name descname"><span class="pre">load_state_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#europi_script.EuroPiScript.load_state_str" title="Permalink to this definition"></a></dt>
-<dd><p>Check disk for saved state, if it exists, return the raw state value as a string.</p>
-<p>Check for a previously saved state. If it exists, return state as a
-string. If no state is found, an empty string will be returned.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="europi_script.EuroPiScript.main">
 <span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.main" title="Permalink to this definition"></a></dt>
 <dd><p>Override this method with your script’s main loop method.</p>
@@ -293,19 +285,6 @@ adding a time since last save check to reduce save frequency.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Be mindful of how often <cite>save_state_json()</cite> is called because
-writing to disk too often can slow down the performance of your
-script. Only call save state when state has changed and consider
-adding a time since last save check to reduce save frequency.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi_script.EuroPiScript.save_state_str">
-<span class="sig-name descname"><span class="pre">save_state_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_script.EuroPiScript.save_state_str" title="Permalink to this definition"></a></dt>
-<dd><p>Take state in persistence format as a string and write to disk.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Be mindful of how often <cite>save_state_str()</cite> is called because
 writing to disk too often can slow down the performance of your
 script. Only call save state when state has changed and consider
 adding a time since last save check to reduce save frequency.</p>
