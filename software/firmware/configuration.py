@@ -195,7 +195,6 @@ class ConfigFile:
         if len(config_spec):
             saved_config = load_json_file(ConfigFile.config_filename(cls))
             config = config_spec.default_config()
-
             validation = config_spec.validate(saved_config)
 
             if not validation.is_valid:
