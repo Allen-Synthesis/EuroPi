@@ -3,7 +3,7 @@
 The PCB files are in two file types:
 - .pcb files, which can be opened in [DesignSpark](https://www.rs-online.com/designspark/pcb-software) free PCB software
 - .rar files, which are zipped folders containing the Gerber format PCBs. Each entire .rar folder can be dragged and dropped to a PCB manufacturer such as [JLC PCB](https://jlcpcb.com/) (my personal choice)
-  
+
 There are two different options for the panel PCB:
 - Panel, which is made for JLC aluminium production
 - Black Panel, which is made for FR4 production by any manufacturer

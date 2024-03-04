@@ -1,7 +1,7 @@
 # Troubleshooting the EuroPi module
 
-This document should help you fix any problems you might be having with the hardware or software of the module.  
-If you have any other issues that aren't covered in this document, please create an Issue on this GitHub repository using the template.  
+This document should help you fix any problems you might be having with the hardware or software of the module.
+If you have any other issues that aren't covered in this document, please create an Issue on this GitHub repository using the template.
 You can search through this file for the error message you are getting or just press Ctrl-F and paste the first line of the message given in Thonny.
 
 ## No inputs or outputs are working
@@ -13,13 +13,13 @@ You can search through this file for the error message you are getting or just p
 ## Couldn't find the device automatically
 
 ```diff
-- Couldn't find the device automatically. 
+- Couldn't find the device automatically.
 - Check the connection (making sure the device is not in bootloader mode) or choose
 - "Configure interpreter" in the interpreter menu (bottom-right corner of the window)
 - to select specific port or another interpreter.
 ```
 
-This means that your device is either not connected, or not being detected.  
+This means that your device is either not connected, or not being detected.
 #### Steps to fix
 1. Make sure the USB cable is connected firmly to both the Pico and your computer
 2. Make sure your USB cable is capable of data transfer rather than just power
@@ -29,12 +29,12 @@ This means that your device is either not connected, or not being detected.
 
 ## Calibration gets stuck on 10V
 
-This means that the value the module recorded for 10V when you were sending in voltages to the analogue input cannot be reached by the CV output.  
+This means that the value the module recorded for 10V when you were sending in voltages to the analogue input cannot be reached by the CV output.
 This could mean either:
 1. The value you sent in for 10V was more than 10V
 2. The module actually cannot reach 10V
 
-To test if it is 1 or 2, first retry calibration, making sure the voltages you send in are accurate (never more than 10V). Measure this with a multimeter if you can to be sure.  
+To test if it is 1 or 2, first retry calibration, making sure the voltages you send in are accurate (never more than 10V). Measure this with a multimeter if you can to be sure.
 
 If this doesn't fix the issue, then you know that your module cannot reach 10V on its own. There are a few things this could be:
 1. The LEDs you used draw more current than the standard ones in the BOM, and are thus causing the output voltage to drop below 10V
@@ -42,7 +42,7 @@ If this doesn't fix the issue, then you know that your module cannot reach 10V o
 3. (Very unlikely) The output jack is broken and is not connected to the circuit properly
 
 The easiest way to test a few of these possibilities at once is to set the output to the highest value possible, with this code:
-``` 
+```
 from europi import *
 cv1._set_duty(65535)
 ```
