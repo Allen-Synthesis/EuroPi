@@ -24,4 +24,4 @@ jobs:
       - uses: psf/black@23.11.0
       - uses: civerachb-cpr/find-trailing-whitespace@master
         env:
-          FILE_FILTER: ".*\.(py|md)"
+          FILE_FILTER: ".*\\.(py|md)"
