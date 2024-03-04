@@ -30,7 +30,6 @@ default configuration:
 - `display_sda` is the I²C SDA pin used for the display. Only SDA capable pins can be selected
 - `display_scl` is the I²C SCL pin used for the display. Only SCL capable pins can be selected
 - `display_channel` is the I²C channel used for the display, either 0 or 1.
-- `volts_per_octave` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard)
 - `max_output_voltage` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate.
   The hardware is capable of 10V maximum
 - `max_input_voltage` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
@@ -41,7 +40,7 @@ default configuration:
 
 # Experimental configuration
 
-Other configuration properties are used by [experimental features](software/firmware/experimental/__init__.py)
+Other configuration properties are used by [experimental features](/software/firmware/experimental/experimental_config.py)
 and can be set using a similar static configuration file. This file is located at `/config/ExperimentalConfig.json`
 on the Raspberry Pi Pico. If this file does not exist, default settings will be loaded.  The following
 shows the default configuration:
@@ -70,7 +69,7 @@ this JSON file
 {
   "clock_multiplier": 4,
   "hard_sync": true,
-  "wave_shape: "sine"
+  "wave_shape": "sine"
 }
 ```
 would produce a Python object with these attributes:
