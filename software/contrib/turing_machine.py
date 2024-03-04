@@ -1,5 +1,5 @@
 """
- A script meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully 
+ A script meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully
  as possible on the EuroPi hardware using bit shift operations to mimic the analog shift register.
 
 din - clock
@@ -15,7 +15,7 @@ cv4 - pulse cv1 & cv2
 cv5 - pulse cv2 & cv3
 cv6 - sequence out
 
-If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT` 
+If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT`
 constants below.
 
 The length, scale, and bit pattern are saved whenever the knob 2 state is changed, or when the user

@@ -1,6 +1,6 @@
 # Noddy Holder
 
-author: Sean Bechhofer (github.com/seanbechhofer)  
+author: Sean Bechhofer (github.com/seanbechhofer)
 date: 2022-03-26
 labels: gates, sample&hold, track&hold
 
@@ -12,7 +12,7 @@ Digital in is a gate, Analog in is arbitrary CV.
 Output 1 is the original gate, Output 2 is S&H based on gate and CV,
 Ouput 3 is T&H based on gate and CV.
 
-Outputs 4, 5 and 6 are similar, but with the gate *inverted*. 
+Outputs 4, 5 and 6 are similar, but with the gate *inverted*.
 
 Credits:
 - The Europi hardware and firmware was designed by Allen Synthesis: https://github.com/Allen-Synthesis/EuroPi
@@ -22,13 +22,13 @@ Credits:
 - digital_in: Gate
 - analog_in: CV
 
-- knob_1: 
-- knob_2: 
+- knob_1:
+- knob_2:
 
-- button_1: 
-- button_2: 
+- button_1:
+- button_2:
 
-- output_1: gate 
+- output_1: gate
 - output_2: s&h based on gate
 - output_3: t&h based on gate
 - output_4: inverted gate
@@ -51,4 +51,4 @@ output until the gate goes ```HIGH``` again and we re-sample.
 
 *Track & Hold:* When gate is ```HIGH```, CV input is mirrored to the
 output. When gate goes ```LOW```, CV is sampled and the resulting value is
-output until the gate goes ```HIGH``` again. 
+output until the gate goes ```HIGH``` again.

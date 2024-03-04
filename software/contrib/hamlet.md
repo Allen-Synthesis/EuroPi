@@ -12,7 +12,7 @@ Hamlet is a drum and voice sequencer based on Nik Ansell's
 Consequencer, which is itself inspired by Grids from Mutable
 Instruments. It's also influenced by O_C's TB3PO. Hamlet adds two
 tracks of CV and gates to the Consequencer, sacrificing one drum track
-to do so. 
+to do so.
 
 The app provides two gates for drum patterns and a pair of channels
 giving gate/CV to drive voices. Density of notes played on the CV
@@ -38,10 +38,10 @@ https://github.com/Allen-Synthesis/EuroPi
 - knob_1: Adjust sparsity
 - knob_2: Select pre-loaded gate pattern
 
-- button_1: Short Press: Select previous voice pattern for tracks 1 and 2.  
+- button_1: Short Press: Select previous voice pattern for tracks 1 and 2.
   Long Press: Cycle pattern length multiplier
 - button_2: Short Press: Select next voice patterns for tracks 1
-  and 2. Creates a new pattern if we're at the last.  
+  and 2. Creates a new pattern if we're at the last.
   Long Press: Cycle through analogue input modes
 
 - output_1: gate 1 e.g Kick Drum
@@ -64,7 +64,7 @@ drive voices.
 4. Select different patterns manually using knob 2 (right-hand
 knob). The first section of the selected gate pattern for track 1 is shown visually on the screen.
 
-## Voices 
+## Voices
 1. Connect output 3 to gate on voice 1
 2. Connect output 6 to pitch on voice 1, optionally via quantiser/attenuator.
 3. Connect output 4 to gate on voice 2
@@ -148,4 +148,4 @@ The mapping of `BD`, `HH` is as follows:
 
 # Known bugs / Interesting features
 
-Probably. 
+Probably.
