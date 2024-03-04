@@ -32,6 +32,9 @@ def load_json_file(filename, mode="r") -> dict:
     try:
         with open(filename, mode) as file:
             return json.load(file)
+    except ValueError as e:
+        print(f"Unable to parse JSON data from {filename}: {e}")
+        return {}
     except OSError as e:
         print(f"Unable to read JSON data from {filename}: {e}")
         return {}
