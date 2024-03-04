@@ -9,7 +9,7 @@ jobs:
 
   run_tests:
     uses: ./.github/workflows/pytest.yml
-  
+
   build_and_publish:
     uses: ./.github/workflows/publish_to_pypi.yml
     needs: run_tests
@@ -22,3 +22,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@23.11.0
+      - uses: harupy/find-trailing-whitespace@master
