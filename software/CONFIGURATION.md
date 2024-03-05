@@ -63,7 +63,7 @@ to Python attributes.  The JSON object's keys must follow these rules, otherwise
 1. The string may not be empty
 1. The string may only contain letters, numbers, and the underscore (`_`) character
 1. The string may not begin with a number
-1. The string should be in `ALL_CAPS` -- this is not enforced, but is highly recommended
+1. The string should be in `ALL_CAPS`
 
 The JSON key is converted into a Python attribute of the configuration object. For example, this JSON file
 ```json
