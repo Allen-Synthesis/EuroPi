@@ -212,8 +212,7 @@ class ConfigFile:
 
 
 class ConfigSettings:
-    """Collects the configuration settings into an object with attributes instead of a dict with keys
-    """
+    """Collects the configuration settings into an object with attributes instead of a dict with keys"""
 
     def __init__(self, d):
         """Constructor
