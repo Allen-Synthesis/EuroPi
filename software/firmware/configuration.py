@@ -213,8 +213,6 @@ class ConfigFile:
 
 class ConfigSettings:
     """Collects the configuration settings into an object with attributes instead of a dict with keys
-
-    Dict keys are converted to upper-case strings with underscores
     """
 
     def __init__(self, d):
@@ -225,33 +223,31 @@ class ConfigSettings:
         self.__dict__ = {}  # required for getattr & setattr
 
         for k in d.keys():
-            cname = self.to_attr_name(k)
-            setattr(self, cname, d[k])
+            self.validate_key(k)
+            setattr(self, k, d[k])
 
-    def to_attr_name(self, key):
-        """Converts a dict key string to its equivalent attribute name
+    def validate_key(self, key):
+        """Ensures that a `dict` key is a valid attribute name
 
-        @param key  The string to convert
-        @return     The same string, converted to upper-case, preserving underscores
+        @param key  The string to check
+        @return     True if the key is valid. Otherwise an exception is raised
 
         @exception  ValueError if the key contains invalid characters; only letters, numbers, hyphens, and underscores
                     are permitted. They key cannot be length 0, nor can it begin with a number
         """
         key = key.strip()
-        s = ""
         for ch in key:
-            if ch.isalpha() or ch.isdigit() or ch == "_":
-                s += ch.upper()
-            else:
+            if not (ch.isalpha() or ch.isdigit() or ch == "_"):
                 raise ValueError(
                     f"Invalid attribute name: {key}. Keys cannot contain the character {ch}"
                 )
 
-        if len(s) == 0:
+        if len(key) == 0:
             raise ValueError("Invalid attribute name: key cannot be empty")
-        elif s[0].isdigit():
+        elif key[0].isdigit():
             raise ValueError("Invalid attribute name: key cannot start with a number")
-        return s
+
+        return True
 
     def __eq__(self, that):
         """Allows comparing the config object directly to either another config object or a dict

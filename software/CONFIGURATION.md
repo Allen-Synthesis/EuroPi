@@ -6,35 +6,36 @@ Raspberry Pi Pico. If this file does not exist, default settings will be loaded.
 default configuration:
 ```json
 {
-    "europi_model": "europi",
-    "pico_model": "pico",
-    "cpu_freq": 250000000,
-    "rotate_display": false,
-    "display_width": 128,
-    "display_height": 32,
-    "display_sda": 0,
-    "display_scl": 1,
-    "display_channel": 0,
-    "max_output_voltage": 10,
-    "max_input_voltage": 12,
-    "gate_voltage": 5
+    "EUROPI_MODEL": "europi",
+    "PICO_MODEL": "pico",
+    "CPU_FREQ": 250000000,
+    "ROTATE_DISPLAY": false,
+    "DISPLAY_WIDTH": 128,
+    "DISPLAY_HEIGHT": 32,
+    "DISPLAY_SDA": 0,
+    "DISPLAY_SCL": 1,
+    "DISPLAY_CHANNEL": 0,
+    "MAX_OUTPUT_VOLTAGE": 10,
+    "MAX_INPUT_VOLTAGE": 12,
+    "GATE_VOLTAGE": 5
 }
 ```
 
-- `europi_model` specifies the type of EuroPi module. Currently only `"europi"` is supported
-- `pico_model` must be one of `"pico"` or `"pico w"`
-- `cpu_freq` must be one of `250000000` or `125000000`
-- `rotate_display` must be one of `false` or `true`
-- `display_width` is the width of the screen in pixels. The standard EuroPi screen is 128 pixels wide
-- `display_height` is the height of the screen in pixels. The standard EuroPi screen is 32 pixels tall
-- `display_sda` is the I²C SDA pin used for the display. Only SDA capable pins can be selected
-- `display_scl` is the I²C SCL pin used for the display. Only SCL capable pins can be selected
-- `display_channel` is the I²C channel used for the display, either 0 or 1.
-- `max_output_voltage` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate.
+- `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported
+- `PICO_MODEL` must be one of `"pico"` or `"pico w"`
+- `CPU_FREQ` must be one of `250000000` or `125000000`
+- `ROTATE_DISPLAY` must be one of `false` or `true`
+- `DISPLAY_WIDTH` is the width of the screen in pixels. The standard EuroPi screen is 128 pixels wide
+- `DISPLAY_HEIGHT` is the height of the screen in pixels. The standard EuroPi screen is 32 pixels tall
+- `DISPLAY_SDA` is the I²C SDA pin used for the display. Only SDA capable pins can be selected
+- `DISPLAY_SCL` is the I²C SCL pin used for the display. Only SCL capable pins can be selected
+- `DISPLAY_CHANNEL` is the I²C channel used for the display, either 0 or 1.
+- `MAX_OUTPUT_VOLTAGE` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate.
   The hardware is capable of 10V maximum
-- `max_input_voltage` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
+- `MAX_INPUT_VOLTAGE` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
   The hardware is capable of 12V maximum
-- `gate_voltage` is an integer in the range `[0, 12]` indicating the voltage that an output will produce when `cvx.on()` is called
+- `GATE_VOLTAGE` is an integer in the range `[0, 10]` indicating the voltage that an output will produce when `cvx.on()`
+  is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`
 
 
 
@@ -47,11 +48,11 @@ shows the default configuration:
 
 ```json
 {
-    "volts_per_octave": 1.0,
+    "VOLTS_PER_OCTAVE": 1.0,
 }
 ```
 
-- `volts_per_octave` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard)
+- `VOLTS_PER_OCTAVE` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard)
 
 
 # Accessing config members in Python code
@@ -59,17 +60,17 @@ shows the default configuration:
 The firmware converts the JSON file into a `ConfigSettings` object, where the JSON keys are converted
 to Python attributes.  The JSON object's keys must follow these rules, otherwise a `ValueError` will be raised:
 
-1. The string cannot be empty
+1. The string may not be empty
 1. The string may only contain letters, numbers, and the underscore (`_`) character
 1. The string may not begin with a number
+1. The string should be in `ALL_CAPS` -- this is not enforced, but is highly recommended
 
-The JSON key is converted to upper-case and turned into a Python attribute of the configuration object. For example,
-this JSON file
+The JSON key is converted into a Python attribute of the configuration object. For example, this JSON file
 ```json
 {
-  "clock_multiplier": 4,
-  "hard_sync": true,
-  "wave_shape": "sine"
+  "CLOCK_MULTIPLIER": 4,
+  "HARD_SYNC": true,
+  "WAVE_SHAPE": "sine"
 }
 ```
 would produce a Python object with these attributes:
