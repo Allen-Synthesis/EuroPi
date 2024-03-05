@@ -267,14 +267,4 @@ class ConfigSettings:
             except ValueError:
                 return False
         elif type(that) is ConfigSettings:
-            # Make sure every key self exists and is equal to the equivalent in that
-            for k in self.__dict__.keys():
-                if not k in that.__dict__ or self.__dict__[k] != that.__dict__[k]:
-                    return False
-
-            # Make sure every key in that exists and is equal to its equivalent in self
-            for k in that.__dict__.keys():
-                if not k in self.__dict__ or self.__dict__[k] != that.__dict__[k]:
-                    return False
-
-            return True
+            return self.__dict__ == that.__dict__
