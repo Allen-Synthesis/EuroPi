@@ -126,11 +126,18 @@ configuration attributes described in the sections above:
 ]
 ```
 
-In code:
-
+When you import the `europi` namespace into your project you can access the `europi_config` object like this:
 ```python
-from europi import europi_config
+from europi import *
 
 # A voltage range we can select from in a user menu
 VOLTAGE_RANGE = range(0, europi_config.MAX_OUTPUT_VOLTAGE)
+```
+
+Alternatively, you can access it using the fully qualified namespace too:
+```python
+import europi
+
+# A voltage range we can select from in a user menu
+VOLTAGE_RANGE = range(0, europi.europi_config.MAX_OUTPUT_VOLTAGE)
 ```
