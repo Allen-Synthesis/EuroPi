@@ -54,7 +54,7 @@ class Diagnostic(EuroPiScript):
 
     @classmethod
     def config_points(cls):
-        return [configuration.choice(name="temp_units", choices=["C", "F"], default="C")]
+        return [configuration.choice(name="TEMP_UNITS", choices=["C", "F"], default="C")]
 
     def calc_temp(self):
         # see the pico's datasheet for the details of this calculation
