@@ -98,8 +98,8 @@ True
 'sine'
 ```
 
-The `europi` namespace contains `.europi_config` and `.experimental_config` members that contain all of the
-configuration attributes described in the sections above:
+`europi.py` contains objects called `europi_config` and `experimental_config` which contain the configuration attributes
+described above:
 
 ```python
 >>> from europi import europi_config
@@ -126,7 +126,7 @@ configuration attributes described in the sections above:
 ]
 ```
 
-When you import the `europi` namespace into your project you can access the `europi_config` object like this:
+When you import `europi` into your project you can access the `europi_config` object like this:
 ```python
 from europi import *
 
@@ -134,7 +134,7 @@ from europi import *
 VOLTAGE_RANGE = range(0, europi_config.MAX_OUTPUT_VOLTAGE)
 ```
 
-Alternatively, you can access it using the fully qualified namespace too:
+Alternatively, you can access it using the fully qualified namespace:
 ```python
 import europi
 
