@@ -98,8 +98,8 @@ True
 'sine'
 ```
 
-`europi.py` contains objects called `europi_config` and `experimental_config` which contain the configuration attributes
-described above:
+`europi.py` contains objects called `europi_config` and `experimental_config` which implement the core & experimental
+customizations described in the sections above. Below is a detailed summary of the contents of these objects:
 
 ```python
 >>> from europi import europi_config
