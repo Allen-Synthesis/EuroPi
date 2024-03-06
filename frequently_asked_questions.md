@@ -1,9 +1,9 @@
 # FAQ
 
 ### Frequently asked questions about the EuroPi project. If you can't find the answer to your question here, head over to [The Discord](https://discord.gg/JaQwtCnBV5) and ask it in the support channel!
-  
+
 #
-  
+
 ### Topics:
 
 ### [General Questions](#general-questions)

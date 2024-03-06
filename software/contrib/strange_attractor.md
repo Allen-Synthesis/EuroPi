@@ -1,11 +1,11 @@
-# EuroPi Strange Attractor. 
+# EuroPi Strange Attractor.
 
-author: Sean Bechhofer (github.com/seanbechhofer)  
-date: 2022-03-15  
-labels: gates, triggers, randomness  
+author: Sean Bechhofer (github.com/seanbechhofer)
+date: 2022-03-15
+labels: gates, triggers, randomness
 
 Strange Attractor is a source of chaotic modulation using systems
-of differential equations such as the Lorenz System: 
+of differential equations such as the Lorenz System:
 
 https://en.wikipedia.org/wiki/Lorenz_system
 
@@ -23,7 +23,7 @@ Credits:
 # Controls
 
 - digital_in: Pause motion when `HIGH`
-- analog_in: 
+- analog_in:
 
 - knob_1: Adjust speed
 - knob_2: Adjust threshold for triggers
@@ -31,7 +31,7 @@ Credits:
 - button_1: Decrease output voltage range; change equation system
 - button_2: Increase output voltage range; change display
 
-- output_1: x 
+- output_1: x
 - output_2: y
 - output_3: z
 - output_4: triggers/gates
@@ -41,7 +41,7 @@ Credits:
 # Getting Started
 
 Outputs 1-3 provide chaotic shifting voltages.
-Outputs 4-6 provide gates/triggers. 
+Outputs 4-6 provide gates/triggers.
 
 ## Basic Usage
 1. Switch on
@@ -66,7 +66,7 @@ voltages and triggers.
 
 A selection of equation systems are available, currently including
 Lorzez, Rossler, Pan-X-Zhou and Rikitake -- see code for
-details. Each has a set of parameters and defaults. 
+details. Each has a set of parameters and defaults.
 
 On startup, code runs through a number of iterations in order to
 calculate the possible output ranges. This process takes
@@ -74,7 +74,7 @@ around 30 seconds per system. This is then used to normalise *x*, *y* and *z*
 values to the range 0-100 for calculation of voltages on outputs 1, 2
 and 3.
 
-A system is then chosen at random. 
+A system is then chosen at random.
 
 Outputs 4, 5 and 6 are triggers, with 4 giving more frequent triggers
 than 5 and 6. Output 4 takes the normalised value of output 1 and sets

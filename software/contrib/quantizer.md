@@ -28,7 +28,7 @@ and continuous.
 
 Connect the signal to be quantized to the analog input.
 
-If operating in triggered mode, connect a clock pulse, 
+If operating in triggered mode, connect a clock pulse,
 square LFO, or other trigger source to the digital input.
 
 When a trigger is received on the digital input, the analog input

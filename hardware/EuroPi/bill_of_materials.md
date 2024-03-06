@@ -1,11 +1,11 @@
 # Bill of Materials
 
 In addition to the Front Panel, Jack PCB, and Pico PCB (bought from Allen Synthesis or a third-party supplier), you will need the following components to complete your build.
-You will also need one 3.5mm cable (normal Eurorack patch cable) to perform the calibration process.  
-  
-Please note that a few of these are multi-packs of components, and there may well be cheaper alternatives if you are doing a single build, so as long as the specification is the same you can get any of these components from any supplier most accessible to you.  
+You will also need one 3.5mm cable (normal Eurorack patch cable) to perform the calibration process.
 
-You can either add each of these components to your basket using whichever suppliers you prefer, or alternatively use the complete [Mouser Shopping Basket](https://www.mouser.co.uk/ProjectManager/ProjectDetail.aspx?AccessID=b8e6a0d666) and then buy the few components that Mouser doesn't stock (Knobs, OLED, and Eurorack Power Cable) elsewhere.  
+Please note that a few of these are multi-packs of components, and there may well be cheaper alternatives if you are doing a single build, so as long as the specification is the same you can get any of these components from any supplier most accessible to you.
+
+You can either add each of these components to your basket using whichever suppliers you prefer, or alternatively use the complete [Mouser Shopping Basket](https://www.mouser.co.uk/ProjectManager/ProjectDetail.aspx?AccessID=b8e6a0d666) and then buy the few components that Mouser doesn't stock (Knobs, OLED, and Eurorack Power Cable) elsewhere.
 If buying in bulk there are likely other suppliers that are cheaper - this BOM is compiled for DIY builders aiming to build 1-5 EuroPis at once.
 
 | Component | Quantity | Value | Description | Suggested Supplier
@@ -40,7 +40,7 @@ If buying in bulk there are likely other suppliers that are cheaper - this BOM i
 | | 1 | | Raspberry Pi Pico | [The Pi Hut](https://thepihut.com/products/raspberry-pi-pico)<br>[CPC](https://cpc.farnell.com/raspberry-pi/raspberry-pi-pico/raspberry-pi-pico-rp2040-mcu-board/dp/SC17106)<br>[Mouser](https://www.mouser.co.uk/ProductDetail/Raspberry-Pi/SC0915?qs=T%252BzbugeAwjgnLi4azxXVFA%3D%3D)<br>**Note: Any official version of the Raspberry Pi Pico will work (W, H, or WH). Third party RP2040 boards may work, but there is no guarantee - always double check the pinout**
 
 #### Note about OLED
-The OLED has two suppliers listed, each with different pin configurations. The module supports either of these two configurations (the most common), but no others, so make sure that the one you buy, wherever you source it, has one of these two configurations.  
+The OLED has two suppliers listed, each with different pin configurations. The module supports either of these two configurations (the most common), but no others, so make sure that the one you buy, wherever you source it, has one of these two configurations.
 It also *must* be 36mm or less. There are some displays which are 38mm wide, which will not only not fit within the width of the module, but will also leave the display off-centre in relation to the panel cutout. You can check the datasheet of any display before you buy to determine the width, but both of the displays listed in the BOM above are the correct 36mm.
 
 ![OLED Pin Configurations](https://user-images.githubusercontent.com/79809962/145800121-2c88d73b-b4d2-4196-baa1-8628dc327467.png)

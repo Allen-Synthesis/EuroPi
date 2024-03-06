@@ -42,7 +42,7 @@ default configuration:
 # Experimental configuration
 
 Other configuration properties are used by [experimental features](software/firmware/experimental/__init__.py)
-and can be set using a similar static configuration file. This file is located at `/config/config_ExperimentalConfig.json` 
+and can be set using a similar static configuration file. This file is located at `/config/config_ExperimentalConfig.json`
 on the Raspberry Pi Pico. If this file does not exist, default settings will be loaded.  The following
 shows the default configuration:
 
