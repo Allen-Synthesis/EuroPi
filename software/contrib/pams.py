@@ -1296,7 +1296,7 @@ class PamsMenu:
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = k2_bank.current.choice(self.get_active_items(), samples=1024)
+            self.visible_item = k2_bank.current.choice(self.get_active_items(), samples=2048)
 
         self.visible_item.draw()
 
