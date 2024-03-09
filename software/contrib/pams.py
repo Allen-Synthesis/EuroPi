@@ -552,6 +552,9 @@ class MasterClock:
             self.elapsed_pulses = self.elapsed_pulses + 1
             for ch in self.channels:
                 ch.apply()
+        else:
+            for ch in self.channels:
+                ch.cv_out.off()
 
     def start(self):
         """Start the timer
@@ -584,8 +587,7 @@ class MasterClock:
                     ch.cv_out.off()
             time.sleep(0.01)   # time.sleep works in SECONDS not ms
             for ch in self.channels:
-                if ch.clock_mod.get_value() == CLOCK_MOD_RESET:
-                    ch.cv_out.off()
+                ch.cv_out.off()
 
     def running_time(self):
         """Return how long the clock has been running
@@ -1154,7 +1156,6 @@ class SettingChooser:
         The OLED must be cleared before calling this function. You must call ssoled.show() after
         calling this function
         """
-
         text_left = 0
         prefix_left = 1
         prefix_right = len(self.prefix)*CHAR_WIDTH
@@ -1295,7 +1296,7 @@ class PamsMenu:
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = k2_bank.current.choice(self.get_active_items())
+            self.visible_item = k2_bank.current.choice(self.get_active_items(), samples=1024)
 
         self.visible_item.draw()
 
@@ -1352,6 +1353,8 @@ class PamsWorkout(EuroPiScript):
 
     def __init__(self):
         super().__init__()
+
+        self.menu_lock = _thread.allocate_lock()
 
         self.din_mode = Setting("DIN Mode", "din", DIN_MODES, DIN_MODES, False)
 
@@ -1445,10 +1448,12 @@ class PamsWorkout(EuroPiScript):
             if time.ticks_diff(now, self.digital_input_state.b2_last_pressed) > LONG_PRESS_MS:
                 # long press
                 # change between the main & sub menus
-                self.main_menu.on_long_press()
+                with self.menu_lock:
+                    self.main_menu.on_long_press()
             else:
                 # short press
-                self.main_menu.on_click()
+                with self.menu_lock:
+                    self.main_menu.on_click()
                 self.save()
 
         ssoled.notify_user_interaction()
@@ -1506,30 +1511,14 @@ class PamsWorkout(EuroPiScript):
     def ui_thread(self):
         """The main GUI thread; runs on core 1 as a secondary thread
 
-        Handles reading the digital inputs (din + buttons) & rendering the GUI
+        Handles drawing the GUI to the screen
         """
         while True:
             now = time.ticks_ms()
 
-            # simulate the ISRs manually
-            self.digital_input_state.check()
-            if self.digital_input_state.b1_rising:
-                self.on_b1_press()
-            elif self.digital_input_state.b1_falling:
-                self.on_b1_release()
-
-            if self.digital_input_state.b2_rising:
-                self.on_b2_press()
-            elif self.digital_input_state.b2_falling:
-                self.on_b2_release()
-
-            if self.digital_input_state.din_rising:
-                self.on_din_rising()
-            elif self.digital_input_state.din_falling:
-                self.on_din_falling()
-
             ssoled.fill(0)
-            self.main_menu.draw()
+            with self.menu_lock:
+                self.main_menu.draw()
 
             # draw a simple header to indicate status
             if self.clock.is_running:
@@ -1552,6 +1541,23 @@ class PamsWorkout(EuroPiScript):
             now = time.ticks_ms()
             for cv in CV_INS.values():
                 cv.update()
+
+            # simulate the ISRs manually
+            self.digital_input_state.check()
+            if self.digital_input_state.b1_rising:
+                self.on_b1_press()
+            elif self.digital_input_state.b1_falling:
+                self.on_b1_release()
+
+            if self.digital_input_state.b2_rising:
+                self.on_b2_press()
+            elif self.digital_input_state.b2_falling:
+                self.on_b2_release()
+
+            if self.digital_input_state.din_rising:
+                self.on_din_rising()
+            elif self.digital_input_state.din_falling:
+                self.on_din_falling()
 
             # Force garbage collection at regular intervals
             if time.ticks_diff(last_gc_at, now) > GC_INTERVAL_MS:
