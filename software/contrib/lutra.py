@@ -20,6 +20,8 @@ from europi_script import EuroPiScript
 import math
 import time
 
+import _thread
+
 class WaveGenerator:
 
     ## Supported wave shapes
@@ -126,8 +128,8 @@ class Lutra(EuroPiScript):
         "Speed"
     ]
 
-    MIN_CYCLE_TICKS = 10
-    MAX_CYCLE_TICKS = 1600
+    MIN_CYCLE_TICKS = 250
+    MAX_CYCLE_TICKS = 10000
 
     def __init__(self):
         self.waves = [
@@ -140,6 +142,14 @@ class Lutra(EuroPiScript):
             self.hold_low = True
         b1.handler(hold_reset)
         din.handler(hold_reset)
+
+        # Save the last screen width's worth of output voltages converted to pixel heights
+        # This speeds up rendering
+        self.display_pixels = [
+            [] for cv in cvs
+        ]
+
+        self.pixel_lock = _thread.allocate_lock()
 
         def resync():
             """Resynchronize all of the outputs
@@ -192,11 +202,21 @@ class Lutra(EuroPiScript):
         self.save_state_json(cfg)
         self.config_dirty = False
 
-    def main(self):
-        # To keep a rolling display of the waves, save a screen's width's worth of pixels
-        display_pixels = [
-            [] for cv in cvs
-        ]
+    def gui_render_thread(self):
+        """A thread function that handles drawing the GUI
+        """
+        while True:
+            oled.fill(0)
+            with self.pixel_lock:
+                for channel in self.display_pixels:
+                    for px in range(len(channel)):
+                        oled.pixel(px, channel[px], 1)
+            oled.blit(WaveGenerator.WAVE_SHAPE_IMAGES[self.waves[0].shape], 0, 0)
+            oled.show()
+
+    def wave_generation_thread(self):
+        """A thread function that handles the underlying math of generating the waveforms
+        """
 
         while True:
             # Read the CV inputs and apply them
@@ -218,25 +238,24 @@ class Lutra(EuroPiScript):
                 self.waves[i].change_cycle_length(base_ticks - spread_adjust)
 
             for i in range(len(cvs)):
+                pixel_height = OLED_HEIGHT - 1
                 if self.hold_low:
-                    display_pixels[i].append(OLED_HEIGHT-1)
                     cvs[i].off()
                 else:
                     volts = self.waves[i].tick()
-                    display_pixels[i].append(int(OLED_HEIGHT - 1 - volts / MAX_OUTPUT_VOLTAGE * (OLED_HEIGHT-1)))
+                    pixel_height = int(OLED_HEIGHT - 1 - volts / MAX_OUTPUT_VOLTAGE * (OLED_HEIGHT-1))
 
-                if len(display_pixels[i]) >= OLED_WIDTH:
-                        display_pixels[i].pop(0)
+                with self.pixel_lock:
+                    self.display_pixels[i].append(pixel_height)
+                    if len(self.display_pixels[i]) >= OLED_WIDTH:
+                        self.display_pixels[i].pop(0)
 
             if self.config_dirty:
                 self.save()
 
-            oled.fill(0)
-            for channel in display_pixels:
-                for px in range(len(channel)):
-                    oled.pixel(px, channel[px], 1)
-            oled.blit(WaveGenerator.WAVE_SHAPE_IMAGES[self.waves[0].shape], 0, 0)
-            oled.show()
+    def main(self):
+        gui_thread = _thread.start_new_thread(self.gui_render_thread, ())
+        self.wave_generation_thread()
 
 if __name__ == "__main__":
     Lutra().main()
