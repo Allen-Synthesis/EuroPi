@@ -274,7 +274,7 @@ PERCENT_RANGE = list(range(101))
 class DigitalInputMonitor:
     """Helper class to work around the fact that _thread doesn't play nicely with ISRs
 
-    Used by the UI thread to check the state of the buttons + din and indicate if rising/falling
+    Used by the main thread to check the state of the buttons + din and indicate if rising/falling
     edges are detected
     """
     def __init__(self):
