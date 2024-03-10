@@ -22,6 +22,49 @@ import time
 
 import _thread
 
+class DigitalInputMonitor:
+    """Helper class to work around the fact that _thread doesn't play nicely with ISRs
+    Used by the main thread to check the state of the buttons + din and indicate if rising/falling
+    edges are detected
+    """
+    def __init__(self):
+        self.din_rising = False
+        self.din_falling = False
+        self.b1_rising = False
+        self.b1_falling = False
+        self.b2_rising = False
+        self.b2_falling = False
+
+        self.din_high = False
+        self.b1_high = False
+        self.b2_high = False
+
+        self.b1_last_pressed = 0
+        self.b2_last_pressed = 0
+
+    def check(self):
+        din_state = din.value() != 0
+        b1_state = b1.value() != 0
+        b2_state = b2.value() != 0
+
+        self.din_rising = not self.din_high and din_state
+        self.din_falling = self.din_high and not din_state
+
+        self.b1_rising = not self.b1_high and b1_state
+        self.b1_falling = self.b1_high and not b1_state
+
+        self.b2_rising = not self.b2_high and b2_state
+        self.b2_falling = self.b2_high and not b2_state
+
+        self.din_high = din_state
+        self.b1_high = b1_state
+        self.b2_high = b2_state
+
+        if self.b1_rising:
+            self.b1_last_pressed = time.ticks_ms()
+        if self.b2_rising:
+            self.b2_last_pressed = time.ticks_ms()
+
 class WaveGenerator:
 
     ## Supported wave shapes
@@ -137,11 +180,9 @@ class Lutra(EuroPiScript):
         ]
         self.config_dirty = False
         self.hold_low = False
+        self.last_wave_change_at = time.ticks_ms()
 
-        def hold_reset():
-            self.hold_low = True
-        b1.handler(hold_reset)
-        din.handler(hold_reset)
+        self.digital_input_state = DigitalInputMonitor()
 
         # Save the last screen width's worth of output voltages converted to pixel heights
         # This speeds up rendering
@@ -150,24 +191,6 @@ class Lutra(EuroPiScript):
         ]
 
         self.pixel_lock = _thread.allocate_lock()
-
-        def resync():
-            """Resynchronize all of the outputs
-            """
-            self.hold_low = False
-            for wave in self.waves:
-                wave.reset()
-        b1.handler_falling(resync)
-        din.handler_falling(resync)
-
-        @b2.handler
-        def change_wave():
-            """Change the current wave shape
-            """
-            shape = (self.waves[0].shape + 1) % WaveGenerator.NUM_WAVE_SHAPES
-            for wave in self.waves:
-                wave.shape = shape
-            self.config_dirty = True
 
         self.load()
 
@@ -205,13 +228,16 @@ class Lutra(EuroPiScript):
     def gui_render_thread(self):
         """A thread function that handles drawing the GUI
         """
+        SHOW_WAVE_TIMEOUT = 3000
         while True:
+            now = time.ticks_ms()
             oled.fill(0)
             with self.pixel_lock:
                 for channel in self.display_pixels:
                     for px in range(len(channel)):
                         oled.pixel(px, channel[px], 1)
-            oled.blit(WaveGenerator.WAVE_SHAPE_IMAGES[self.waves[0].shape], 0, 0)
+            if time.ticks_diff(now, self.last_wave_change_at) < SHOW_WAVE_TIMEOUT:
+                oled.blit(WaveGenerator.WAVE_SHAPE_IMAGES[self.waves[0].shape], 0, 0)
             oled.show()
 
     def wave_generation_thread(self):
@@ -219,6 +245,23 @@ class Lutra(EuroPiScript):
         """
 
         while True:
+            # Read the digital inputs
+            self.digital_input_state.check()
+
+            if self.digital_input_state.b1_high or self.digital_input_state.din_high:
+                self.hold_low = True
+                for wave in self.waves:
+                    wave.reset()
+            else:
+                self.hold_low = False
+
+            if self.digital_input_state.b2_rising:
+                shape = (self.waves[0].shape + 1) % WaveGenerator.NUM_WAVE_SHAPES
+                for wave in self.waves:
+                    wave.shape = shape
+                self.last_wave_change_at = time.ticks_ms()
+                self.config_dirty = True
+
             # Read the CV inputs and apply them
             # Round to 2 decimal places to reduce noise
             ain_percent = round(ain.percent(), 2)

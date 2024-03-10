@@ -45,8 +45,7 @@ When `b1` or `din` receive a high voltage all CV outputs are temporarily halted.
 all output LFOs will start again from the reset state.  In this way a very short gate(trigger) can be used to reset
 the LFOs, or a longer gate can hold them in a reset state for as long as desired.
 
-Note that if you are holding `b1` and have a gate patched into `din`, the LFOs will start when _either_ `b1` is released
-or when `din` drops low.
+Note that if a gate signal is connected to `din` then both `din` and `b1` must be low for the LFOs to oscillate.
 
 ## CV Control
 
