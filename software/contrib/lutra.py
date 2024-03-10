@@ -208,7 +208,7 @@ class Lutra(EuroPiScript):
         else:
             raise ValueError(f"Unknown AIN mode: {ain_mode}")
 
-        shape = cfg.get("shape", "sine").lower()
+        shape = cfg.get("wave", "sine").lower()
         if shape in WaveGenerator.WAVE_SHAPES_NAMES_TO_SHAPES.keys():
             for wave in self.waves:
                 wave.shape = WaveGenerator.WAVE_SHAPES_NAMES_TO_SHAPES[shape]
