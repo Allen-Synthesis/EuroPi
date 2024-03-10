@@ -28,6 +28,9 @@ The wave shape is shown in the upper-left corner of the display:
 - ![Saw Wave](./lutra-docs/wave_saw.png) Saw
 - ![Ramp Wave](./lutra-docs/wave_ramp.png) Ramp
 
+When pressing `b2` to select the wave shape, the selected shape will briefly appear in the upper left corner of the
+screen.
+
 ## Knob Control
 
 Turning `k1` fully anticlockwise will set the clock speed to the slowest setting. Turning `k1` fully clockwise will set
