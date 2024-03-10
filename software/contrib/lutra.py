@@ -240,6 +240,21 @@ class Lutra(EuroPiScript):
                 oled.blit(WaveGenerator.WAVE_SHAPE_IMAGES[self.waves[0].shape], 0, 0)
             oled.show()
 
+    def on_digital_in_rising(self):
+        self.hold_low = True
+
+    def on_digital_in_falling(self):
+        self.hold_low = False
+        for wave in self.waves:
+                wave.reset()
+
+    def on_b2_rising(self):
+        shape = (self.waves[0].shape + 1) % WaveGenerator.NUM_WAVE_SHAPES
+        for wave in self.waves:
+            wave.shape = shape
+        self.last_wave_change_at = time.ticks_ms()
+        self.config_dirty = True
+
     def wave_generation_thread(self):
         """A thread function that handles the underlying math of generating the waveforms
         """
@@ -248,19 +263,16 @@ class Lutra(EuroPiScript):
             # Read the digital inputs
             self.digital_input_state.check()
 
-            if self.digital_input_state.b1_high or self.digital_input_state.din_high:
-                self.hold_low = True
-                for wave in self.waves:
-                    wave.reset()
-            else:
-                self.hold_low = False
+            if self.digital_input_state.b1_rising or self.digital_input_state.din_rising:
+                self.on_digital_in_rising()
+            elif (
+                (self.digital_input_state.b1_falling and not self.digital_input_state.din_high) or
+                (self.digital_input_state.din_falling and not self.digital_input_state.b1_high)
+            ):
+                self.on_digital_in_falling()
 
             if self.digital_input_state.b2_rising:
-                shape = (self.waves[0].shape + 1) % WaveGenerator.NUM_WAVE_SHAPES
-                for wave in self.waves:
-                    wave.shape = shape
-                self.last_wave_change_at = time.ticks_ms()
-                self.config_dirty = True
+                self.on_b2_rising()
 
             # Read the CV inputs and apply them
             # Round to 2 decimal places to reduce noise
