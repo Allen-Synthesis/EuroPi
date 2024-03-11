@@ -17,12 +17,12 @@ class DigitalInputHelper:
     """
     def __init__(
         self,
-        on_din_rising=lambda:None,
-        on_din_falling=lambda:None,
-        on_b1_rising=lambda:None,
-        on_b1_falling=lambda:None,
-        on_b2_rising=lambda:None,
-        on_b2_falling=lambda:None,
+        on_din_rising=lambda: None,
+        on_din_falling=lambda: None,
+        on_b1_rising=lambda: None,
+        on_b1_falling=lambda: None,
+        on_b2_rising=lambda: None,
+        on_b2_falling=lambda: None,
     ):
         """Constructor
 
