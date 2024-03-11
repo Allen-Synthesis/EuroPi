@@ -5,6 +5,18 @@ module called `_thread` that can be used to run code on both cores.  This can be
 features a lot of mathematical calculations (e.g. floating point operations, trigonometry (e.g. `sin` or `cos`)) that
 must be run quickly, but also features a complex GUI to render to the OLED.
 
+## WARNING
+
+Multi-threading is considered an experimental feature, and is intended for advanced programmers only. Adding threads to
+your program can introduce many hard-to-debug errors and requires some understanding of some advanced topics not
+covered here, including:
+- thread safety
+- concurrency
+- semaphores & mutexes
+
+Unless you're certain you need the additional processing power offered by the EuroPi CPU's second core, it is
+_strongly_ recommended that you write your program using a single thread.
+
 ## Using `_thread`
 
 To use the `_thread` library you must first import it into your program:
