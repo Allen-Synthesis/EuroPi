@@ -22,50 +22,14 @@ import time
 
 import _thread
 
-class DigitalInputMonitor:
-    """Helper class to work around the fact that _thread doesn't play nicely with ISRs
-    Used by the main thread to check the state of the buttons + din and indicate if rising/falling
-    edges are detected
-    """
-    def __init__(self):
-        self.din_rising = False
-        self.din_falling = False
-        self.b1_rising = False
-        self.b1_falling = False
-        self.b2_rising = False
-        self.b2_falling = False
-
-        self.din_high = False
-        self.b1_high = False
-        self.b2_high = False
-
-        self.b1_last_pressed = 0
-        self.b2_last_pressed = 0
-
-    def check(self):
-        din_state = din.value() != 0
-        b1_state = b1.value() != 0
-        b2_state = b2.value() != 0
-
-        self.din_rising = not self.din_high and din_state
-        self.din_falling = self.din_high and not din_state
-
-        self.b1_rising = not self.b1_high and b1_state
-        self.b1_falling = self.b1_high and not b1_state
-
-        self.b2_rising = not self.b2_high and b2_state
-        self.b2_falling = self.b2_high and not b2_state
-
-        self.din_high = din_state
-        self.b1_high = b1_state
-        self.b2_high = b2_state
-
-        if self.b1_rising:
-            self.b1_last_pressed = time.ticks_ms()
-        if self.b2_rising:
-            self.b2_last_pressed = time.ticks_ms()
+from experimental.thread import DigitalInputHelper
 
 class WaveGenerator:
+    """Generates the output wave forms and sets the voltage going to one of the output jacks
+
+    5 wave shapes are supported, with the cycle time expressed in "ticks." These ticks have no 1:1 relationship
+    with any real-world time unit, and are simply defined by each iteration through the script's main loop.
+    """
 
     ## Supported wave shapes
     WAVE_SHAPES_NAMES = [
@@ -102,11 +66,11 @@ class WaveGenerator:
 
     IMAGE_SIZE = (12, 12)
 
-    """Generates the output wave forms
-
-    We give the generator the desired ticks for 1 complete wave shape
-    """
     def __init__(self, cv_output):
+        """Constructor
+
+        @param cv_output  The CV output jack that the generated wave gets output on
+        """
         self.cv_output = cv_output
         self.shape = 0
 
@@ -163,18 +127,27 @@ class WaveGenerator:
         return volts
 
 class Lutra(EuroPiScript):
+    """The main class for this script; handles running the main loop, configuring I/O, loading, and saving state.
+    """
+
+    # We support CV control over either LFO speed OR LFO spread via AIN.  This option is not exposed through a menu
+    # and must be configured via the config file.  See lutra.md for details
     AIN_MODE_SPREAD = 0
     AIN_MODE_SPEED = 1
-
     AIN_MODE_NAMES = [
         "Spread",
         "Speed"
     ]
 
+    # The maximum and minimum cycle time for the LFOs
     MIN_CYCLE_TICKS = 250
     MAX_CYCLE_TICKS = 10000
 
     def __init__(self):
+        """Constructor
+        """
+        super().__init__()
+
         self.waves = [
             WaveGenerator(cv) for cv in cvs
         ]
@@ -182,7 +155,12 @@ class Lutra(EuroPiScript):
         self.hold_low = False
         self.last_wave_change_at = time.ticks_ms()
 
-        self.digital_input_state = DigitalInputMonitor()
+        # Connect the B2 handler to our digital input helper
+        # B1 and DIN are handled differently since they interact with each other
+        # See @wave_generator_thread
+        self.digital_input_state = DigitalInputHelper(
+            on_b2_rising = self.on_b2_rising
+        )
 
         # Save the last screen width's worth of output voltages converted to pixel heights
         # This speeds up rendering
@@ -225,6 +203,33 @@ class Lutra(EuroPiScript):
         self.save_state_json(cfg)
         self.config_dirty = False
 
+    def on_digital_in_rising(self):
+        """Called when either B1 or DIN goes high
+
+        Signals the wave generator thread that all outputs should be forced low
+        """
+        self.hold_low = True
+
+    def on_digital_in_falling(self):
+        """Called when both B1 and DIN are low
+
+        Signals the wave generator thread that all outputs should reset
+        """
+        self.hold_low = False
+        for wave in self.waves:
+                wave.reset()
+
+    def on_b2_rising(self):
+        """Called when either B2 goes high
+
+        Cycles through the active wave shape
+        """
+        shape = (self.waves[0].shape + 1) % WaveGenerator.NUM_WAVE_SHAPES
+        for wave in self.waves:
+            wave.shape = shape
+        self.last_wave_change_at = time.ticks_ms()
+        self.config_dirty = True
+
     def gui_render_thread(self):
         """A thread function that handles drawing the GUI
         """
@@ -240,29 +245,17 @@ class Lutra(EuroPiScript):
                 oled.blit(WaveGenerator.WAVE_SHAPE_IMAGES[self.waves[0].shape], 0, 0)
             oled.show()
 
-    def on_digital_in_rising(self):
-        self.hold_low = True
-
-    def on_digital_in_falling(self):
-        self.hold_low = False
-        for wave in self.waves:
-                wave.reset()
-
-    def on_b2_rising(self):
-        shape = (self.waves[0].shape + 1) % WaveGenerator.NUM_WAVE_SHAPES
-        for wave in self.waves:
-            wave.shape = shape
-        self.last_wave_change_at = time.ticks_ms()
-        self.config_dirty = True
-
     def wave_generation_thread(self):
         """A thread function that handles the underlying math of generating the waveforms
         """
 
         while True:
             # Read the digital inputs
-            self.digital_input_state.check()
+            self.digital_input_state.update()
 
+            # Manually handle B1 and DIN rising & falling
+            # If either goes high, signal that we want to old the outputs low
+            # If both become low, signal that all outputs should reset & output normally
             if self.digital_input_state.b1_rising or self.digital_input_state.din_rising:
                 self.on_digital_in_rising()
             elif (
@@ -270,9 +263,6 @@ class Lutra(EuroPiScript):
                 (self.digital_input_state.din_falling and not self.digital_input_state.b1_high)
             ):
                 self.on_digital_in_falling()
-
-            if self.digital_input_state.b2_rising:
-                self.on_b2_rising()
 
             # Read the CV inputs and apply them
             # Round to 2 decimal places to reduce noise
