@@ -15,6 +15,7 @@ class DigitalInputHelper:
     In your main loop you must call `.update()` to read the current state of the inputs & invoke the callback
     functions
     """
+
     def __init__(
         self,
         on_din_rising=lambda: None,
