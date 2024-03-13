@@ -66,7 +66,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: rename firmware file with version info
-        run: cp micropython/ports/rp2/build-PICO/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
+        run: cp micropython/ports/rp2/build-RPI_PICO/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
 
       - name: create github release
         uses: "marvinpinto/action-automatic-releases@v1.2.1"
