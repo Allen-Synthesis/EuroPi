@@ -121,7 +121,10 @@ class OledWithScreensaver:
         else:
             self.show_blank = False
             self.show_screensaver = False
-            oled.show()
+            try:
+                oled.show()
+            except OSError:
+                pass
 
     # The following are just wrappers for the functions in the Display class to allow 1:1 access
     # See europi.Display for documentation details

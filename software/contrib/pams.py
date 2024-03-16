@@ -11,7 +11,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
-from experimental.knobs import KnobBank
+from experimental.knobs import BufferedKnob
 from experimental.quantizer import CommonScales, Quantizer, SEMITONE_LABELS, SEMITONES_PER_OCTAVE
 from experimental.screensaver import OledWithScreensaver
 
@@ -27,18 +27,6 @@ import _thread
 
 ## Screensaver-enabled display
 ssoled = OledWithScreensaver()
-
-## Lockable knob bank for K2 to make menu navigation a little easier
-#
-#  Note that this does mean _sometimes_ you'll need to sweep the knob all the way left/right
-#  to unlock it
-k2_bank = (
-    KnobBank.builder(k2)
-    .with_unlocked_knob("main_menu")
-    .with_locked_knob("submenu", initial_percentage_value=0)
-    .with_locked_knob("choice", initial_percentage_value=0)
-    .build()
-)
 
 ## Vertical screen offset for placing user input
 SELECT_OPTION_Y = 16
@@ -475,6 +463,9 @@ CV_INS = {
     "KNOB": AnalogInReader(k1),
     "AIN": AnalogInReader(ain)
 }
+
+## Wrapped copy of the knob used for interacting with the main menu
+menu_knob = BufferedKnob(k2)
 
 class MasterClock:
     """The main clock that ticks and runs the outputs
@@ -1178,10 +1169,10 @@ class SettingChooser:
             if self.is_writable:
                 if type(self.option_gfx) is dict or\
                    type(self.option_gfx) is OrderedDict:
-                    key = k2_bank.current.choice(list(self.option_gfx.keys()))
+                    key = menu_knob.choice(list(self.option_gfx.keys()))
                     img = self.option_gfx[key]
                 else:
-                    img = k2_bank.current.choice(self.option_gfx)
+                    img = menu_knob.choice(self.option_gfx)
             else:
                 key = self.setting.get_value()
                 img = self.option_gfx[key]
@@ -1194,7 +1185,7 @@ class SettingChooser:
 
         if self.is_writable:
             # draw the selection in inverted text
-            selected_item = k2_bank.current.choice(self.setting.display_options)
+            selected_item = menu_knob.choice(self.setting.display_options)
             choice_text = f"{selected_item}"
             text_width = len(choice_text)*CHAR_WIDTH
 
@@ -1209,7 +1200,7 @@ class SettingChooser:
     def on_click(self):
         if self.is_writable:
             self.set_editable(False)
-            selected_index = k2_bank.current.choice(list(range(len(self.setting))))
+            selected_index = menu_knob.choice(list(range(len(self.setting))))
             self.setting.choose(selected_index)
         else:
             self.set_editable(True)
@@ -1264,7 +1255,7 @@ class PamsMenu:
         self.active_items = self.items
 
         ## The item we're actually drawing to the screen _right_now_
-        self.visible_item = k2_bank.current.choice(self.get_active_items())
+        self.visible_item = menu_knob.choice(self.get_active_items())
 
     def get_active_items(self):
         """Return a list of the visible items in the active_items for this menu layer
@@ -1280,23 +1271,15 @@ class PamsMenu:
         # toggle between the two menu levels
         if self.active_items == self.items:
             self.active_items = self.visible_item.submenu
-            k2_bank.set_current("submenu")
         else:
             self.active_items = self.items
-            k2_bank.set_current("main_menu")
 
     def on_click(self):
         self.visible_item.on_click()
-        if self.visible_item.is_writable:
-            k2_bank.set_current("choice")
-        elif self.active_items == self.items:
-            k2_bank.set_current("main_menu")
-        else:
-            k2_bank.set_current("submenu")
 
     def draw(self):
         if not self.visible_item.is_editable():
-            self.visible_item = k2_bank.current.choice(self.get_active_items(), samples=2048)
+            self.visible_item = menu_knob.choice(self.get_active_items(), samples=2048)
 
         self.visible_item.draw()
 
@@ -1538,11 +1521,7 @@ class PamsWorkout(EuroPiScript):
         last_gc_at = time.ticks_ms()
 
         while True:
-            now = time.ticks_ms()
-            for cv in CV_INS.values():
-                cv.update()
-
-            # simulate the ISRs manually
+            # handle digital inputs
             self.digital_input_state.check()
             if self.digital_input_state.b1_rising:
                 self.on_b1_press()
@@ -1559,7 +1538,13 @@ class PamsWorkout(EuroPiScript):
             elif self.digital_input_state.din_falling:
                 self.on_din_falling()
 
+            # handle analogue inputs
+            menu_knob.update(1024)   # more samples to reduce GUI flickering
+            for cv in CV_INS.values():
+                cv.update()
+
             # Force garbage collection at regular intervals
+            now = time.ticks_ms()
             if time.ticks_diff(last_gc_at, now) > GC_INTERVAL_MS:
                 gc.collect()
                 gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
