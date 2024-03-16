@@ -210,7 +210,7 @@ class EuroPiTuringMachine(EuroPiScript):
         self.tm = TuringMachine(
             bit_count=bit_count,
             max_output_voltage=max_output_voltage,
-            clear_on_write=self.config["write_value"] == 0,
+            clear_on_write=self.config.WRITE_VALUE == 0,
             length=initial_length,
             scale=MAX_OUTPUT_VOLTAGE * initial_scale_percent,
         )
@@ -232,9 +232,9 @@ class EuroPiTuringMachine(EuroPiScript):
             .build()
         )
 
-        self.cv1_pulse_bit = self.config["cv1_pulse_bit"]
-        self.cv2_pulse_bit = self.config["cv2_pulse_bit"]
-        self.cv3_pulse_bit = self.config["cv3_pulse_bit"]
+        self.cv1_pulse_bit = self.config.CV1_PULSE_BIT
+        self.cv2_pulse_bit = self.config.CV2_PULSE_BIT
+        self.cv3_pulse_bit = self.config.CV3_PULSE_BIT
 
         @din.handler
         def clock():
@@ -297,11 +297,11 @@ class EuroPiTuringMachine(EuroPiScript):
         bitcount_range = range(1, min(DEFAULT_BIT_COUNT, 8))
 
         return [
-            configuration.choice(name="write_value", choices=[0, 1], default=0),
+            configuration.choice(name="WRITE_VALUE", choices=[0, 1], default=0),
             # simulate the actual bits available in the pulses expander (1-7)
-            configuration.integer(name="cv1_pulse_bit", range=bitcount_range, default=1),
-            configuration.integer(name="cv2_pulse_bit", range=bitcount_range, default=2),
-            configuration.integer(name="cv3_pulse_bit", range=bitcount_range, default=4),
+            configuration.integer(name="CV1_PULSE_BIT", range=bitcount_range, default=1),
+            configuration.integer(name="CV2_PULSE_BIT", range=bitcount_range, default=2),
+            configuration.integer(name="CV3_PULSE_BIT", range=bitcount_range, default=4),
         ]
 
     def main(self):

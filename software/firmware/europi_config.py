@@ -6,22 +6,16 @@ from configuration import ConfigFile, ConfigSpec
 PICO_DEFAULT_CPU_FREQ = 125_000_000
 OVERCLOCKED_CPU_FREQ = 250_000_000
 
-# Moog/Eurorack standard is 1.0 volts per octave
-MOOG_VOLTS_PER_OCTAVE = 1.0
-
-# Buchla standard is 1.2 volts per octave (0.1 volts per semitone)
-BUCHLA_VOLTS_PER_OCTAVE = 1.2
-
 
 class EuroPiConfig:
     """This class provides EuroPi's global config points.
 
-    To override the default values, create /config/config_EuroPiConfig.json on the Raspberry Pi Pico
+    To override the default values, create /config/EuroPiConfig.json on the Raspberry Pi Pico
     and populate it with a JSON object. e.g. if your build has the oled mounted upside-down compared
-    to normal, the contents of /config/config_EuroPiConfig.json should look like this:
+    to normal, the contents of /config/EuroPiConfig.json should look like this:
 
     {
-        "rotate_display": true
+        "ROTATE_DISPLAY": true
     }
     """
 
@@ -31,68 +25,68 @@ class EuroPiConfig:
         return [
             # EuroPi revision -- this is currently unused, but reserved for future expansion
             configuration.choice(
-                name="europi_model",
+                name="EUROPI_MODEL",
                 choices = ["europi"],
                 default="europi"
             ),
 
             # CPU & board settings
             configuration.choice(
-                name="pico_model",
+                name="PICO_MODEL",
                 choices=["pico", "pico w"],
                 default="pico"
             ),
             configuration.choice(
-                name="cpu_freq",
+                name="CPU_FREQ",
                 choices=[PICO_DEFAULT_CPU_FREQ, OVERCLOCKED_CPU_FREQ],
                 default=OVERCLOCKED_CPU_FREQ,
             ),
 
             # Display settings
             configuration.boolean(
-                name="rotate_display",
+                name="ROTATE_DISPLAY",
                 default=False
             ),
             configuration.integer(
-                name="display_width",
+                name="DISPLAY_WIDTH",
                 range=range(8, 1024),
                 default=128
             ),
             configuration.integer(
-                name="display_height",
+                name="DISPLAY_HEIGHT",
                 range=range(8, 1024),
                 default=32
             ),
             configuration.choice(
-                name="display_sda",
+                name="DISPLAY_SDA",
                 choices=[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 26],
                 default=0,
             ),
             configuration.choice(
-                name="display_scl",
+                name="DISPLAY_SCL",
                 choices=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 27],
                 default=1,
             ),
             configuration.integer(
-                name="display_channel",
+                name="DISPLAY_CHANNEL",
                 range=range(0, 2),
                 default=0
             ),
 
             # Synthesizer family settings
             configuration.integer(
-                name="max_output_voltage",
+                name="MAX_OUTPUT_VOLTAGE",
                 range=range(1, 11),
                 default=10
             ),
             configuration.integer(
-                name="max_input_voltage",
+                name="MAX_INPUT_VOLTAGE",
                 range=range(1, 13),
                 default=12
             ),
             configuration.integer(
-                name="gate_voltage",
-                range=range(1, 13),
+                name="GATE_VOLTAGE",
+                range=range(1, 11),
                 default=5
             ),
         ]

@@ -7,7 +7,7 @@
 from europi import experimental_config, MAX_OUTPUT_VOLTAGE
 
 ## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
-VOLTS_PER_OCTAVE = experimental_config["volts_per_octave"]
+VOLTS_PER_OCTAVE = experimental_config.VOLTS_PER_OCTAVE
 
 ## Standard western music scale has 12 semitones per octave
 SEMITONES_PER_OCTAVE = 12

@@ -118,10 +118,10 @@ class EuroPiScript:
             return [configuration.choice(name="language", choices=["english", "french"], default="english")]
 
     Our main method could then use the value of this configuration to display its greeting in the
-    configured language::
+    configured language:
 
         def main(self):
-            if self.config["language"] == "french":
+            if self.config.LANGUAGE == "french":
                 oled.centre_text("Bonjour le monde")
             else:
                 oled.centre_text("Hello world")

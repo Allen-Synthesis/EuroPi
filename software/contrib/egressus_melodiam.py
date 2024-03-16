@@ -62,7 +62,7 @@ slewGeneratorObjects[] contains 6 object (one for each output)
 Each slewGeneratorObjects[] object is a reference to a copy of the self.slewGenerator() function.
 The self.slewGenerator() function receives a buffer filled with samples and yields one sample each time it is called using next()
 
-In order to maintain the best balance of smooth waves and Rpi pico memory usage, an algorithm is used to vary the 
+In order to maintain the best balance of smooth waves and Rpi pico memory usage, an algorithm is used to vary the
 sample rate automatically based on the selected output division.
 This causes the sample rate to be at minium when there is a slow clock and high output division.
 Conversely, when there is a fast clock and low output division a higher sample rate is used to avoid unwanted steps
@@ -91,7 +91,7 @@ KNOB_CHANGE_TOLERANCE = 0.999
 
 # Set the maximum CV voltage using a global config value
 # Important: Needs firmware v0.12.1 or higher
-MAX_CV_VOLTAGE = europi_config["max_output_voltage"]
+MAX_CV_VOLTAGE = europi_config.MAX_OUTPUT_VOLTAGE
 
 MAX_STEP_LENGTH = 32
 
@@ -316,7 +316,7 @@ class EgressusMelodiam(EuroPiScript):
 
     def generateNewRandomCVPattern(self, new=True, activePatternOnly=False):
         """Generate new CV pattern for existing bank or create a new bank
-        
+
         @param new  If true, create a new pattern/overwrite the existing one. Otherwise re-use the existing pattern
         @param activePatternOnly  If true, generate pattern for selected output. Otherwise generate pattern for all outputs
 
@@ -435,7 +435,7 @@ class EgressusMelodiam(EuroPiScript):
 
                         # Update the last sample output time
                         self.lastSlewVoltageOutputTime[idx] = ticks_ms()
-                
+
                     except StopIteration:
                         continue
 
@@ -717,7 +717,7 @@ class EgressusMelodiam(EuroPiScript):
 
     def stepUpStepDown(self, start, stop, num, buffer):
         """Produces step up, step down
-        
+
         @param start  Starting value
         @param stop   Target value
         @param num    Number of samples required
@@ -741,7 +741,7 @@ class EgressusMelodiam(EuroPiScript):
 
     def linspace(self, start, stop, num, buffer):
         """Produces a linear transition
-        
+
         @param start  Starting value
         @param stop   Target value
         @param num    Number of samples required
@@ -760,7 +760,7 @@ class EgressusMelodiam(EuroPiScript):
 
     def logUpStepDown(self, start, stop, num, buffer):
         """Produces a log up/step down transition
-        
+
         @param start  Starting value
         @param stop   Target value
         @param num    Number of samples required
@@ -793,7 +793,7 @@ class EgressusMelodiam(EuroPiScript):
 
     def stepUpExpDown(self, start, stop, num, buffer):
         """Produces a step up, exponential down transition
-        
+
         @param start  Starting value
         @param stop   Target value
         @param num    Number of samples required
@@ -816,7 +816,7 @@ class EgressusMelodiam(EuroPiScript):
 
     def smooth(self, start, stop, num, buffer):
         """Produces smooth curve using half a cosine wave
-        
+
         @param start  Starting value
         @param stop   Target value
         @param num    The number of samples required
@@ -848,7 +848,7 @@ class EgressusMelodiam(EuroPiScript):
 
     def expUpexpDown(self, start, stop, num, buffer):
         """Produces pointy exponential wave using a quarter cosine up and a quarter cosine down
-        
+
         @param start  Starting value
         @param stop   Target value
         @param num    The number of samples required
@@ -886,7 +886,7 @@ class EgressusMelodiam(EuroPiScript):
     def sharkTooth(self, start, stop, num, buffer):
         """Produces a sharktooth wave with an approximate log curve up and approximate
         exponential curve down
-        
+
         @param start  Starting value
         @param stop   Target value
         @param num    The number of samples required
@@ -924,7 +924,7 @@ class EgressusMelodiam(EuroPiScript):
     def sharkToothReverse(self, start, stop, num, buffer):
         """Produces a reverse sharktooth wave with an approximate exponential curve up and approximate
         log curve down
-        
+
         @param start  Starting value
         @param stop   Target value
         @param num    The number of samples required

@@ -166,8 +166,8 @@ class ConfigFile:
 
     @staticmethod
     def config_filename(cls):
-        """Returns the filename for teh config file for the given class."""
-        return f"config/config_{cls.__qualname__}.json"
+        """Returns the filename for the config file for the given class."""
+        return f"config/{cls.__qualname__}.json"
 
     @staticmethod
     def save_config(cls, data: dict):
@@ -189,8 +189,9 @@ class ConfigFile:
 
     @staticmethod
     def load_config(cls, config_spec: ConfigSpec):
-        """If this class has config points, this method validates and returns the config dictionary
-        as saved in this class's config file, else, returns an empty dict."""
+        """If this class has config points, this method validates and returns the ConfigSettings object
+        representing the class's config file.  Otherwise an empty ConfigSettings object is returned.
+        """
         if len(config_spec):
             saved_config = load_json_file(ConfigFile.config_filename(cls))
             config = config_spec.default_config()
@@ -200,12 +201,65 @@ class ConfigFile:
                 raise ValueError(validation.message)
 
             config.update(saved_config)
-
-            return config
+            return ConfigSettings(config)
         else:
-            return {}
+            return ConfigSettings({})
 
     @staticmethod
     def delete_config(cls):
         """Deletes the config file, effectively resetting to defaults."""
         delete_file(ConfigFile.config_filename(cls))
+
+
+class ConfigSettings:
+    """Collects the configuration settings into an object with attributes instead of a dict with keys"""
+
+    def __init__(self, d):
+        """Constructor
+
+        @param d  The raw dict loaded from the configuration file
+        """
+        self.__dict__ = {}  # required for getattr & setattr
+
+        for k in d.keys():
+            self.validate_key(k)
+            setattr(self, k, d[k])
+
+    def validate_key(self, key):
+        """Ensures that a `dict` key is a valid attribute name
+
+        @param key  The string to check
+        @return     True if the key is valid. Otherwise an exception is raised
+
+        @exception  ValueError if the key contains invalid characters; only letters, numbers, hyphens, and underscores
+                    are permitted. They key cannot be length 0, nor can it begin with a number
+        """
+        key = key.strip()
+        for ch in key:
+            if not (ch.isalpha() or ch.isdigit() or ch == "_"):
+                raise ValueError(
+                    f"Invalid attribute name: {key}. Keys cannot contain the character {ch}"
+                )
+
+        if len(key) == 0:
+            raise ValueError("Invalid attribute name: key cannot be empty")
+        elif key[0].isdigit():
+            raise ValueError("Invalid attribute name: key cannot start with a number")
+
+        return True
+
+    def __eq__(self, that):
+        """Allows comparing the config object directly to either another config object or a dict
+
+        @param that  The object we're comparing to, either a dict or another ConfigSettings object
+
+        @return True if the two objects are equivalent, otherwise False
+        """
+        if type(that) is dict:
+            try:
+                that = ConfigSettings(that)
+                return self == that
+            except ValueError:
+                return False
+        elif type(that) is ConfigSettings:
+            return self.__dict__ == that.__dict__
