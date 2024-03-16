@@ -1509,6 +1509,9 @@ class PamsWorkout(EuroPiScript):
             ssoled.blit(imgFB, OLED_WIDTH - STATUS_IMG_WIDTH, 0)
             ssoled.show()
 
+            # Keep a small delay between frames
+            time.sleep(0.01)
+
     def voltage_thread(self):
         """The main thread; handles all CV I/O. The main clock timer runs on this thread on core 0
 
