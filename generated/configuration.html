@@ -138,7 +138,7 @@ validation result, as well as an error message containing the reason for a valid
 <dl class="py method">
 <dt class="sig sig-object py" id="configuration.ConfigFile.config_filename">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigFile.config_filename" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the filename for teh config file for the given class.</p>
+<dd><p>Returns the filename for the config file for the given class.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -150,8 +150,8 @@ validation result, as well as an error message containing the reason for a valid
 <dl class="py method">
 <dt class="sig sig-object py" id="configuration.ConfigFile.load_config">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#configuration.ConfigSpec" title="configuration.ConfigSpec"><span class="pre">ConfigSpec</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigFile.load_config" title="Permalink to this definition"></a></dt>
-<dd><p>If this class has config points, this method validates and returns the config dictionary
-as saved in this class’s config file, else, returns an empty dict.</p>
+<dd><p>If this class has config points, this method validates and returns the ConfigSettings object
+representing the class’s config file.  Otherwise an empty ConfigSettings object is returned.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -187,6 +187,24 @@ adding a time since last save check to reduce save frequency.</p>
 <span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.Validation" title="configuration.Validation"><span class="pre">Validation</span></a></span></span><a class="headerlink" href="#configuration.ConfigPoint.validate" title="Permalink to this definition"></a></dt>
 <dd><p>Validates the given value with this ConfigPoint. Returns a <cite>Validation</cite> containing the
 validation result, as well as an error message containing the reason for a validation failure.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="configuration.ConfigSettings">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ConfigSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigSettings" title="Permalink to this definition"></a></dt>
+<dd><p>Collects the configuration settings into an object with attributes instead of a dict with keys</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="configuration.ConfigSettings.validate_key">
+<span class="sig-name descname"><span class="pre">validate_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigSettings.validate_key" title="Permalink to this definition"></a></dt>
+<dd><p>Ensures that a <cite>dict</cite> key is a valid attribute name</p>
+<p>&#64;param key  The string to check
+&#64;return     True if the key is valid. Otherwise an exception is raised</p>
+<dl class="simple">
+<dt>&#64;exception  ValueError if the key contains invalid characters; only letters, numbers, hyphens, and underscores</dt><dd><p>are permitted. They key cannot be length 0, nor can it begin with a number</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

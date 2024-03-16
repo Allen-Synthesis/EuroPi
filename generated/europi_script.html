@@ -189,13 +189,17 @@ example, our hello world script could configure its language:</p>
 </div>
 <p>Our main method could then use the value of this configuration to display its greeting in the
 configured language:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;language&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;french&quot;</span><span class="p">:</span>
-        <span class="n">oled</span><span class="o">.</span><span class="n">centre_text</span><span class="p">(</span><span class="s2">&quot;Bonjour le monde&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">oled</span><span class="o">.</span><span class="n">centre_text</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<blockquote>
+<div><dl class="simple">
+<dt>def main(self):</dt><dd><dl class="simple">
+<dt>if self.config.LANGUAGE == “french”:</dt><dd><p>oled.centre_text(“Bonjour le monde”)</p>
+</dd>
+<dt>else:</dt><dd><p>oled.centre_text(“Hello world”)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
 <p>Configuration files are validated, so scripts do not need to worry about invalid values. Validation
 failures raise exceptions with messages that will help the user correct their configurations.</p>
 <p>Users can create and edit configuration files in order to change a script’s configuration. The
