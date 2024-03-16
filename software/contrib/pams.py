@@ -485,7 +485,7 @@ class MasterClock:
     MIN_BPM = 1
 
     ## The absolute fastest the clock can go
-    MAX_BPM = 240
+    MAX_BPM = 300
 
     def __init__(self, bpm):
         """Create the main clock to run at a given bpm
@@ -1497,8 +1497,6 @@ class PamsWorkout(EuroPiScript):
         Handles drawing the GUI to the screen
         """
         while True:
-            now = time.ticks_ms()
-
             ssoled.fill(0)
             with self.menu_lock:
                 self.main_menu.draw()
@@ -1509,7 +1507,6 @@ class PamsWorkout(EuroPiScript):
             else:
                 imgFB = FrameBuffer(STATUS_IMG_PAUSE, STATUS_IMG_WIDTH, STATUS_IMG_HEIGHT, MONO_HLSB)
             ssoled.blit(imgFB, OLED_WIDTH - STATUS_IMG_WIDTH, 0)
-
             ssoled.show()
 
     def voltage_thread(self):
