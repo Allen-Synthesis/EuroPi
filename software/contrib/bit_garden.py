@@ -3,25 +3,38 @@ try:
     from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH, OLED_WIDTH
     from software.firmware.europi import din, k1, k2, oled, b1, b2, cvs
     from software.firmware.europi_script import EuroPiScript
+    from software.firmware.experimental import custom_font, freesans20
+
+
 except ImportError:
     # Device import path
     from europi import *
+    from experimental import custom_font, freesans20
     from europi_script import EuroPiScript
 
 from random import random, seed
-from time import time_ns
+from time import ticks_diff, ticks_ms
 
 
 DEFAULT_SEQUENCE_LENGTH = 16
 DEFAULT_SEED = 0x8F26
 DEFAULT_PROBABILITIES = [0.92, 0.86, 0.64, 0.48, 0.32, 0.18]
 MAX_STEPS = 32
+LONG_PRESS_MS = 500
+
+# Use the Custom Font wrapper for oled display.
+oled = custom_font.oled
 
 
 class TriggerMode:
     TRIGGER = 1
     GATE = 2
     FLIP = 3
+
+class Page:
+    MAIN = 1
+    EDIT_PROBABILITY = 2
+    EDIT_SEED = 3
 
 
 class Output:
@@ -115,6 +128,7 @@ class BitGarden(EuroPiScript):
         self.pattern_index = 0
 
         # Private class instance variables
+        self._page = Page.MAIN
         self._update_display = True
         self._prev_k1 = DEFAULT_SEQUENCE_LENGTH
         self._prev_k2 = 0
@@ -122,9 +136,8 @@ class BitGarden(EuroPiScript):
         # Attach IRQ Handlers
         din.handler(self.digital_rising)
         din.handler_falling(self.digital_falling)
-        b1.handler(self.toggle_mode)
-        b2.handler(self.new_seed)
-
+        b1.handler_falling(self.b1_handler)
+        b2.handler_falling(self.b2_handler)
 
     @classmethod
     def display_name(cls):
@@ -132,10 +145,6 @@ class BitGarden(EuroPiScript):
     
     def save_state(self):
         """Save the current state variables as JSON."""
-        # Don't save if it has been less than 5 seconds since last save.
-        if self.last_saved() < 5000:
-            return
-
         self.state.update({
             "sequence_length": self.sequence_length,
             "seed": self.packet.seed,
@@ -156,6 +165,32 @@ class BitGarden(EuroPiScript):
         """Tell the SeedPacket the digital input has gone low for Trigger mode."""
         self.packet.trigger_off()
 
+    def b1_handler(self):
+        self._update_display = True
+        # If on Edit Probability page, b1 press will return home.
+        if self._page == Page.EDIT_PROBABILITY:
+            self._page = Page.MAIN
+            return
+
+        # Short press vs Long press
+        if ticks_diff(ticks_ms(), b1.last_pressed()) < LONG_PRESS_MS:
+            self.toggle_mode()
+        else:
+            self._page = Page.EDIT_PROBABILITY
+
+    def b2_handler(self):
+        self._update_display = True
+        # If on Edit Seed page, b2 press will return home.
+        if self._page == Page.EDIT_SEED:
+            self._page = Page.MAIN
+            return
+        
+        # Short press vs Long press
+        if ticks_diff(ticks_ms(), b2.last_pressed()) < LONG_PRESS_MS:
+            self.new_seed()
+        else:
+            self._page = Page.EDIT_SEED
+
     def toggle_mode(self):
         """Change the current output mode."""
         if self.packet.mode == TriggerMode.TRIGGER:
@@ -164,15 +199,16 @@ class BitGarden(EuroPiScript):
             self.packet.set_mode(TriggerMode.FLIP)
         elif self.packet.mode == TriggerMode.FLIP:
             self.packet.set_mode(TriggerMode.TRIGGER)
-        self._update_display = True
         self.save_state()
-
+    
     def new_seed(self):
         """Generate a new seed to produce a new pseudo-random trigger sequence."""
         self.state.update({"seed": self.packet.new_seed()})
         self.save_state()
-        self._update_display = True
     
+    def edit_seed(self):
+        self._page = Page.EDIT_PROBABILITY
+
     def update_sequence_length(self):
         """Check if the knob has changed value and update the sequence length accordingly."""
         read = k1.range(MAX_STEPS-1) + 2  # range of 2..MAX_STEPS
@@ -207,7 +243,12 @@ class BitGarden(EuroPiScript):
         self._update_display = False
 
         oled.fill(0)
-        self.display_pattern(self.packet.outputs[self.pattern_index].pattern)
+        if self._page == Page.MAIN:
+            self.display_pattern(self.packet.outputs[self.pattern_index].pattern)
+        elif self._page == Page.EDIT_PROBABILITY:
+            pass
+        elif self._page == Page.EDIT_SEED:
+            self.display_edit_seed()
         oled.show()
 
         return
@@ -218,7 +259,8 @@ class BitGarden(EuroPiScript):
         left = start
         boxSize = 8
         trigSize = 2
-        padding = 2
+        tpadding = 3
+        lpadding = 3
         wrap = 8
 
         for i in range(self.sequence_length):
@@ -227,8 +269,12 @@ class BitGarden(EuroPiScript):
                 _top += 8
             elif self.sequence_length <= 16:
                 _top += 6
+                tpadding = 2
             elif self.sequence_length <= 24:
                 _top += 4
+                tpadding = 1
+            else:
+                tpadding = 0
 
             # Step boxes
             oled.rect(left, _top, boxSize, boxSize, 1)
@@ -244,26 +290,36 @@ class BitGarden(EuroPiScript):
                 else:
                     oled.rect(left+3, _top+3, trigSize, trigSize, 1, 1)
 
-            left += boxSize + padding + 1
+            left += boxSize + lpadding
 
             # Wrap the box draw cursor if we hit wrap count.
             if (i+1) % wrap == 0:
-                top += boxSize + padding
+                top += boxSize + tpadding
                 left = start
         
-        oled.text(f"CV: {self.pattern_index+1}", OLED_WIDTH-(CHAR_WIDTH*5), 0, 1)
+        oled.text(f"CV:{self.pattern_index+1}", OLED_WIDTH-(CHAR_WIDTH*4), 0, 1)
         oled.text(f"{self.mode_text()}", OLED_WIDTH-(CHAR_WIDTH*4), CHAR_HEIGHT, 1)
         oled.text(f"{self.packet.seed:04X}", OLED_WIDTH-(CHAR_WIDTH*4), CHAR_HEIGHT*2, 1)
         oled.text(f"{self.step_counter+1:>2}/{self.sequence_length:>2} ", OLED_WIDTH-(5*CHAR_WIDTH), CHAR_HEIGHT*3, 1)
 
+    def display_edit_seed(self):
+        oled.text(f"{self.packet.seed:04X}", 32, 6, font=freesans20)
 
     def main(self):
         """Main loop for detecing knob changes and updating display."""
         while True:
-            self.update_sequence_length()
-            self.update_selected_pattern()
+            # Current page determines which input methods is called.
+            if self._page == Page.MAIN:
+                self.update_sequence_length()
+                self.update_selected_pattern()
+            elif self._page == Page.EDIT_PROBABILITY:
+                pass
+            elif self._page == Page.EDIT_SEED:
+                pass
             self.update_display()
 
 
 if __name__ == "__main__":
     BitGarden().main()
+
+
