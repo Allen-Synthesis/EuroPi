@@ -9,8 +9,8 @@ assignees: ''
 
 # Project Suggestion
 
-**Describe your suggestion or idea**  
+**Describe your suggestion or idea**
 Text here
 
-**Images**  
+**Images**
 If applicable, add screenshots or photos to help explain your problem.

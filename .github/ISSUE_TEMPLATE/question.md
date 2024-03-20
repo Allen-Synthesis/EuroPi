@@ -12,7 +12,7 @@ assignees: ''
 **Ask your question**
 Text here
 
-**Images**  
+**Images**
 If applicable, add screenshots or photos to help explain your question.
 
 **Any other comments**

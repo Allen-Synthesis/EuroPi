@@ -1,5 +1,5 @@
 """
-Rory Allen 19/11/2021 Apache License Version 2.0
+Rory Allen 2024 Apache License Version 2.0
 
 Before using any of this library, follow the instructions in
 `programming_instructions.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/programming_instructions.md>`_
@@ -13,6 +13,8 @@ For example::
 
 Will set the CV output 3 to a voltage of 4.5V.
 """
+
+import ssd1306
 import sys
 import time
 
@@ -27,8 +29,10 @@ from ssd1306 import SSD1306_I2C
 
 from version import __version__
 
+from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB
 from europi_config import load_europi_config
+from experimental.experimental_config import load_experimental_config
 
 if sys.implementation.name == "micropython":
     TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
@@ -54,10 +58,17 @@ except ImportError:
     ]
 
 
+# Initialize EuroPi global singleton instance variables
+europi_config = load_europi_config()
+experimental_config = load_experimental_config()
+
+
 # OLED component display dimensions.
-OLED_WIDTH = 128
-OLED_HEIGHT = 32
-I2C_CHANNEL = 0
+OLED_WIDTH = europi_config.DISPLAY_WIDTH
+OLED_HEIGHT = europi_config.DISPLAY_HEIGHT
+I2C_SDA = europi_config.DISPLAY_SDA
+I2C_SCL = europi_config.DISPLAY_SCL
+I2C_CHANNEL = europi_config.DISPLAY_CHANNEL
 I2C_FREQUENCY = 400000
 
 # Standard max int consts.
@@ -65,12 +76,12 @@ MAX_UINT16 = 65535
 
 # Analogue voltage read range.
 MIN_INPUT_VOLTAGE = 0
-MAX_INPUT_VOLTAGE = 12
+MAX_INPUT_VOLTAGE = europi_config.MAX_INPUT_VOLTAGE
 DEFAULT_SAMPLES = 32
 
 # Output voltage range
 MIN_OUTPUT_VOLTAGE = 0
-MAX_OUTPUT_VOLTAGE = 10
+MAX_OUTPUT_VOLTAGE = europi_config.MAX_OUTPUT_VOLTAGE
 
 # PWM Frequency
 PWM_FREQ = 100_000
@@ -83,6 +94,20 @@ CHAR_HEIGHT = 8
 HIGH = 1
 LOW = 0
 
+# Pin assignments
+PIN_DIN = 22
+PIN_AIN = 26
+PIN_K1 = 27
+PIN_K2 = 28
+PIN_B1 = 4
+PIN_B2 = 5
+PIN_CV1 = 21
+PIN_CV2 = 20
+PIN_CV3 = 16
+PIN_CV4 = 17
+PIN_CV5 = 18
+PIN_CV6 = 19
+PIN_USB_CONNECTED = 24
 
 # Helper functions.
 
@@ -92,17 +117,26 @@ def clamp(value, low, high):
     return max(min(value, high), low)
 
 
+def turn_off_all_cvs():
+    """Calls cv.off() for every cv in cvs. This is done commonly enough in
+    contrib scripts that a function seems useful.
+    """
+    for cv in cvs:
+        cv.off()
+
+
 def reset_state():
     """Return device to initial state with all components off and handlers reset."""
     if not TEST_ENV:
         oled.fill(0)
-    [cv.off() for cv in cvs]
-    [d.reset_handler() for d in (b1, b2, din)]
+    turn_off_all_cvs()
+    for d in (b1, b2, din):
+        d.reset_handler()
 
 
 def bootsplash():
     """Display the EuroPi version when booting."""
-    image = b"\x00\x00\x00\x01\xf0\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x02\x08\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x04\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\xc4\x04\x00\x18\x00\x00\x00p\x07\x00\x00\x00\x00\x00\x00\x0c$\x02\x00~\x0c\x18\xb9\x8c8\xc3\x00\x00\x00\x00\x00\x10\x14\x01\x00\xc3\x0c\x18\xc3\x060c\x00\x00\x00\x00\x00\x10\x0b\xc0\x80\x81\x8c\x18\xc2\x020#\x00\x00\x00\x00\x00 \x04\x00\x81\x81\x8c\x18\x82\x02 #\x00\x00\x00\x00\x00A\x8a|\x81\xff\x0c\x18\x82\x02 #\x00\x00\x00\x00\x00FJC\xc1\x80\x0c\x18\x82\x02 #\x00\x00\x00\x00\x00H\x898\x00\x80\x0c\x18\x83\x060c\x00\x00\x00\x00\x00S\x08\x87\x00\xc3\x060\x81\x8c8\xc3\x00\x00\x00\x00\x00d\x08\x00\xc0<\x01\xc0\x80p7\x03\x00\x00\x00\x00\x00X\x08p \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00#\x88H \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00L\xb8& \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\x91P\x11 \x00\x00\x00\x00\x000\x00\x00\x00\x00\x00\x00\xa6\x91\x08\xa0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc9\x12\x84`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x12\x12C\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00$\x11 \x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00H\x0c\x90\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x12\x88\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00 \x12F\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x10A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10  \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08  \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04@@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc6\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x008\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    image = b"\x00\x00\x00\x03\xe0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\xf8\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06\x1c\x00\x00\x00\x00\x00\x00\x00\x01\x80\x00\x00\x00\x00\x00\x07\x0f\xe0\x00\x00\x00\x00\x00\x00\x01\x80\x00\x00\x00\x00\x00\x03\x07\xf0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x800\x00\xc0\x00\x00\x0e\x01\xc0\x00\x00\x00\x00\x00\x07\xe0\xc0p\x03\xf0\xc1\x971\x8e1\x80\x00\x00\x00\x00\x1f\xf8\xc1\xe0\x06\x18\xc1\x98`\xcc\x19\x80\x00\x00\x00\x00\x1c\x1f\xc3\x83\x04\x0c\xc1\x98@L\t\x80\x00\x00\x00\x000\x07\x87\x07\x0c\x0c\xc1\x90@H\t\x80\x00\x00\x00\x000\x00\x0e\x0e\x0f\xf8\xc1\x90@H\t\x80\x00\x00\x00\x008\x00\x1c\x0c\x0c\x00\xc1\x90@H\t\x80\x00\x00\x00\x00\x1f\x808\x0e\x04\x00\xc1\x90`\xcc\x19\x80\x00\x00\x00\x00\x0f\xe01\xc7\x06\x18c\x101\x8e1\x80\x00\x00\x00\x00\x00ps\xe3\x01\xe0\x1c\x10\x0e\r\xc1\x80\x00\x00\x00\x00\x00\x18c1\x80\x00\x00\x00\x00\x0c\x00\x00\x00\x00\x00\x00\x00\x18\xe31\x80\x00\x00\x00\x00\x0c\x00\x00\x00\x00\x00\x00\x008\xc1\x99\x80\x00\x00\x00\x00\x0c\x00\x00\x00\x00\x00\x00\x0e1\xc1\x99\x80\x00\x00\x00\x00\x0c\x00\x00\x00\x00\x00\x00\x1f\xe3\x80\xcf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00;\xc7\x00\xc6\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x000\x0e\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x000\x1c\x00`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00xp`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf0\xf80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xc1\xd80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x83\x980\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x07\x180\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x86\x0c`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xfe\x0e\xe0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00|\x07\xc0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     TH = bytearray(image)
     fb = FrameBuffer(TH, 128, 32, MONO_HLSB)
     oled.blit(fb, 0, 0)
@@ -193,6 +227,10 @@ class AnalogueInput(AnalogueReader):
     want to process at the maximum speed you can use as little as 1, and the
     processor won't bog down until you get way up into the thousands if you
     wan't incredibly accurate (but quite slow) readings.
+
+    The percent function takes an optional parameter ``deadzone``. However this
+    parameter is ignored and just present to be compatible with the percent
+    function of the AnalogueReader and Knob classes
     """
 
     def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
@@ -209,7 +247,7 @@ class AnalogueInput(AnalogueReader):
                 )
         self._gradients.append(self._gradients[-1])
 
-    def percent(self, samples=None):
+    def percent(self, samples=None, deadzone=None):
         """Current voltage as a relative percentage of the component's range."""
         # Determine the percent value from the max calibration value.
         reading = self._sample_adc(samples) - INPUT_CALIBRATION_VALUES[0]
@@ -464,8 +502,8 @@ class Display(SSD1306_I2C):
 
     def __init__(
         self,
-        sda,
-        scl,
+        sda=I2C_SDA,
+        scl=I2C_SCL,
         width=OLED_WIDTH,
         height=OLED_HEIGHT,
         channel=I2C_CHANNEL,
@@ -481,23 +519,47 @@ class Display(SSD1306_I2C):
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
                 )
         super().__init__(self.width, self.height, i2c)
+        self.rotate(europi_config.ROTATE_DISPLAY)
 
-    def centre_text(self, text):
-        """Split the provided text across 3 lines of display."""
-        self.fill(0)
+    def rotate(self, rotate):
+        """Flip the screen from its default orientation
+
+        @param rotate  True or False, indicating whether we want to flip the screen from its default orientation
+        """
+        # From a hardware perspective, the default screen orientation of the display _is_ rotated
+        # But logically we treat this as right-way-up.
+        if rotate:
+            rotate = 0
+        else:
+            rotate = 1
+        if not TEST_ENV:
+            self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
+            self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
+
+    def centre_text(self, text, clear_first=True, auto_show=True):
+        """Display one or more lines of text centred both horizontally and vertically.
+
+        @param text  The text to display
+        @param clear_first  If true, the screen buffer is cleared before rendering the text
+        @param auto_show  If true, oled.show() is called after rendering the text. If false, you must call oled.show() yourself
+        """
+        if clear_first:
+            self.fill(0)
         # Default font is 8x8 pixel monospaced font which can be split to a
-        # maximum of 4 lines on a 128x32 display, but we limit it to 3 lines
-        # for readability.
+        # maximum of 4 lines on a 128x32 display, but the maximum_lines variable
+        # is rounded down for readability
         lines = str(text).split("\n")
         maximum_lines = round(self.height / CHAR_HEIGHT)
         if len(lines) > maximum_lines:
             raise Exception("Provided text exceeds available space on oled display.")
-        padding_top = (self.height - (len(lines) * 9)) / 2
+        padding_top = (self.height - (len(lines) * (CHAR_HEIGHT + 1))) / 2
         for index, content in enumerate(lines):
-            x_offset = int((self.width - ((len(content) + 1) * 7)) / 2) - 1
-            y_offset = int((index * 9) + padding_top) - 1
+            x_offset = int((self.width - ((len(content) + 1) * (CHAR_WIDTH - 1))) / 2) - 1
+            y_offset = int((index * (CHAR_HEIGHT + 1)) + padding_top) - 1
             self.text(content, x_offset, y_offset)
-        self.show()
+
+        if auto_show:
+            self.show()
 
 
 class Output:
@@ -517,6 +579,7 @@ class Output:
         self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
+        self.gate_voltage = clamp(europi_config.GATE_VOLTAGE, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
         self._gradients = []
         for index, value in enumerate(OUTPUT_CALIBRATION_VALUES[:-1]):
@@ -538,7 +601,7 @@ class Output:
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
-        self.voltage(5)
+        self.voltage(self.gate_voltage)
 
     def off(self):
         """Set the voltage LOW at 0 volts."""
@@ -559,31 +622,27 @@ class Output:
             self.off()
 
 
-## Initialize EuroPi global singleton instance variables.
-
-europi_config = load_europi_config()
-
 # Define all the I/O using the appropriate class and with the pins used
-din = DigitalInput(22)
-ain = AnalogueInput(26)
-k1 = Knob(27)
-k2 = Knob(28)
-b1 = Button(4)
-b2 = Button(5)
+din = DigitalInput(PIN_DIN)
+ain = AnalogueInput(PIN_AIN)
+k1 = Knob(PIN_K1)
+k2 = Knob(PIN_K2)
+b1 = Button(PIN_B1)
+b2 = Button(PIN_B2)
 
-oled = Display(0, 1)
-cv1 = Output(21)
-cv2 = Output(20)
-cv3 = Output(16)
-cv4 = Output(17)
-cv5 = Output(18)
-cv6 = Output(19)
+oled = Display()
+cv1 = Output(PIN_CV1)
+cv2 = Output(PIN_CV2)
+cv3 = Output(PIN_CV3)
+cv4 = Output(PIN_CV4)
+cv5 = Output(PIN_CV5)
+cv6 = Output(PIN_CV6)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
-usb_connected = DigitalReader(24, 0)
+usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
 
 # Overclock the Pico for improved performance.
-freq(europi_config["cpu_freq"])
+freq(europi_config.CPU_FREQ)
 
 # Reset the module state upon import.
 reset_state()

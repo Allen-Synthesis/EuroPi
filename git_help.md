@@ -1,5 +1,5 @@
-# Making a Pull Request to submit changes or new scripts to the official repository  
-  
+# Making a Pull Request to submit changes or new scripts to the official repository
+
 
 |||
 | --- | --- |
@@ -29,4 +29,4 @@
 ||
 | Once the Pull Request is merged, tell everyone about your cool new script or change in the Discord server!|[Join the Allen Synthesis Discord](https://discord.gg/JaQwtCnBV5)|
 ||
-  
+

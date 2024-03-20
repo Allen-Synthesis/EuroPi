@@ -19,11 +19,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: micropython/micropython
-          ref: v1.19.1
+          ref: v1.22.2
           path: micropython
 
       - name: install os deps
-        run: sudo apt-get install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
+        run: sudo apt-get update; sudo apt-get install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
 
       - name: prepare micropython build
         working-directory: micropython
@@ -66,7 +66,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: rename firmware file with version info
-        run: cp micropython/ports/rp2/build-PICO/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
+        run: cp micropython/ports/rp2/build-RPI_PICO/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}.uf2
 
       - name: create github release
         uses: "marvinpinto/action-automatic-releases@v1.2.1"

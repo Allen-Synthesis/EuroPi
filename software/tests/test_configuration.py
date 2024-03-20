@@ -104,7 +104,7 @@ def test_helper_int():
 
 
 def test_config_file_name(class_with_config):
-    assert ConfigFile.config_filename(class_with_config) == "config/config_AClassWithConfig.json"
+    assert ConfigFile.config_filename(class_with_config) == "config/AClassWithConfig.json"
 
 
 def test_load_config_no_config(class_with_config):

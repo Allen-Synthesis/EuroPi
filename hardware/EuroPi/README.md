@@ -3,7 +3,7 @@
 ## Outputs
 - 1k Output Impedance
 - RC filter smoothed PWM
-- 33Hz Maximum usable frequency (without changing RC values)
+- ~1.5kHz Maximum usable frequency (without changing RC values)
 - 0.000176V Maximum ripple peak-to-peak
 - 0.0108s Settle time from 0% to 90% duty cycle
 - 0-10V

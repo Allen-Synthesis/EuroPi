@@ -9,7 +9,7 @@ author: Sean Bechhofer (github.com/seanbechhofer)
 date: 2022-03-26
 labels: sample & hold, trigger & hold
 
-Two channels of sample and hold/trigger and hold. 
+Two channels of sample and hold/trigger and hold.
 
 Digital in: Gate
 Analog in: CV
@@ -31,7 +31,7 @@ knob_2: Not used
 button_1: Not used
 button_2: Not used
 
-output_1: gate 
+output_1: gate
 output_2: s&h
 output_3: t&h
 output_4: inverted gate
@@ -51,7 +51,7 @@ class NoddyHolder(EuroPiScript):
         # channel
         self.channel_1 = [0,-1]
         self.channel_2 = [0,-1]
-        
+
         # Triggered when din goes HIGH.
         @din.handler
         def dinTrigger():
@@ -67,7 +67,7 @@ class NoddyHolder(EuroPiScript):
             cv2.voltage(sample)
             self.channel_1[0] = sample
             # Channel 1 is now tracking
-            
+
             self.channel_1[1] = -1
             # Set T&H of inverted gate to sample
             cv6.voltage(sample)
@@ -102,14 +102,14 @@ class NoddyHolder(EuroPiScript):
             # Pass sample to T&H
             cv3.voltage(sample)
         else:
-            # Pass sample to inverted T&H 
+            # Pass sample to inverted T&H
             cv6.voltage(sample)
 
     def main(self):
         self.update_screen()
         while True:
             self.update()
-            
+
     def update_screen(self):
         oled.fill(0)
         oled.text(f"Noddy v{VERSION}",0,0,1)
@@ -120,7 +120,7 @@ class NoddyHolder(EuroPiScript):
             oled.fill_rect(10,8,10,6,1)
         else:
             oled.fill_rect(10,16,10,6,1)
-            
+
         oled.text(f"S:{self.channel_1[0]:.2f}",25,8,1)
         oled.text(f"S:{self.channel_2[0]:.2f}",25,16,1)
 

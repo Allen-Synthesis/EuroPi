@@ -14,7 +14,7 @@ is exercised.
 - each button press rotates the voltages amongst the six outputs, which helps to test the LEDs.
 - Inputs can be tested by self-patching the various CV outputs.
 - The boundary of the screen is outlined.
-- Temperature, as read by the Pico's onboard temperature sensor, is shown on screen; in degrees fahrenheit when a button 
+- Temperature, as read by the Pico's onboard temperature sensor, is shown on screen; in degrees fahrenheit when a button
     is pressed and degrees celsius otherwise.
 
 Inputs and Outputs:

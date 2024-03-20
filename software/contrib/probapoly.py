@@ -33,7 +33,7 @@ output_6: Gate lower polyrhythm (50% probability)
 
 class Probapoly(EuroPiScript):
     def __init__(self):
-        
+
         # Needed if using europi_script
         super().__init__()
 
@@ -58,7 +58,7 @@ class Probapoly(EuroPiScript):
         self.manualPatternLength = 32  # Default manual pattern length when self.manualPatternLengthFeature is first True
         self.UPPER_BUTTON_PRESS_TIME_LIMIT = 3000 # Used as a workaround to stop phantom button presses (Issue 132)
         self.SHORT_BUTTON_PRESS_TIME_THRESHOLD = 500
-        
+
         # Todo: Make this mode accessible from the UI
         # Mode 1: Analogue input toggles double time feature
         # Mode 2: Analogue input voltage adjusts the upper poly value
@@ -115,9 +115,9 @@ class Probapoly(EuroPiScript):
                     self.patternLength = self.manualPatternLength
 
     def handleClock(self):
-        
+
         # Play upper gate
-        if self.step % self.upper == 0:    
+        if self.step % self.upper == 0:
             cv1.value(1)
 
         # Output trigger with fixed and unrelated probabilities
@@ -169,7 +169,7 @@ class Probapoly(EuroPiScript):
         rectLeftX = 20
         rectRightX = 44
         rectLength = 20
- 
+
         # Calculate where the steps should be using left justification
         if self.step <= 9:
             stepLeftX = 86
@@ -204,7 +204,7 @@ class Probapoly(EuroPiScript):
 
     def main(self):
         while True:
-            self.getLower() 
+            self.getLower()
             self.getUpper()
             self.getAinValue()
             self.updateScreen()

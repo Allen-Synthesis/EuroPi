@@ -14,10 +14,10 @@ labels: triggers, maths
 Triggers based on the Fibonacci sequence
 
 digital_in: clock in
-analog_in: 
+analog_in:
 
-knob_1: 
-knob_2: 
+knob_1:
+knob_2:
 
 button_1: Short Press: Move window on sequence left. Long Press: Rotate values left
 button_2: Short Press: Move window on sequence to the right. Long Press: Rotate values right
@@ -109,7 +109,7 @@ class Piconacci(EuroPiScript):
 
     def main(self):
         # Reset all outputs
-        [cv.off() for cv in cvs]
+        turn_off_all_cvs()
         while True:
             # If the state has changed, update display
             if self.display_update_required:

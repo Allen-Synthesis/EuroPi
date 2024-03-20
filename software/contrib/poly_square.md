@@ -1,6 +1,6 @@
 # Poly Square
 
-author: Tyler Schreiber (github.com/t-schreibs)  
+author: Tyler Schreiber (github.com/t-schreibs)
 date: 2022-05-10
 labels: oscillator, poly
 

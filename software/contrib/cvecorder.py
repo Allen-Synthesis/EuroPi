@@ -36,7 +36,7 @@ Ideas / to do:
 # Needed if using europi_script
 class CVecorder(EuroPiScript):
     def __init__(self):
-        
+
         # Needed if using europi_script
         super().__init__()
 
@@ -162,7 +162,7 @@ class CVecorder(EuroPiScript):
             oled.text(f'Clear bank {bank}?', 0, 0, 1)
         oled.text('CONFIRM: Hold B1', 0, 15, 1)
         oled.show()
-        
+
         # Wait for button 1
         while b1.value() != 1:
             sleep_ms(250)
@@ -170,7 +170,7 @@ class CVecorder(EuroPiScript):
     def handleClock(self):
 
         # Sample input to 2 decimal places
-        self.CvIn = round(20 * ain.percent(), 2)
+        self.CvIn = round(ain.read_voltage(), 2)
 
         # Start recording if pending and on first step
         if self.step == 0 and self.CvRecording[self.ActiveCvr] == 'pending':
@@ -217,7 +217,7 @@ class CVecorder(EuroPiScript):
 
     # Currently not used, but keeping in this script for future use
     def initCvrs(self):
-        for b in range(self.numCVRBanks+1): 
+        for b in range(self.numCVRBanks+1):
             self.CVR.append([])
             for i in range(self.numCVR+1):
                 self.CVR[b].append([])
@@ -328,7 +328,7 @@ class CVecorder(EuroPiScript):
                         for channel in self.CVR[b]:
                             self.CVR[b][i] = [x / 100 if x > 0 else 0 for x in self.CVR[b][i]]
                             i += 1
-                        
+
                         # read OK, break from while loop
                         break
 
@@ -389,13 +389,13 @@ class CVecorder(EuroPiScript):
 
     # Rotate log files to avoid filling up storage
     def rotateLog(self):
-        
-        self.logFileList = os.listdir() 
+
+        self.logFileList = os.listdir()
 
         # Delete the oldest allowed logfile if it exists
         if self.maxLogFileName in self.logFileList:
             os.remove(self.maxLogFileName)
-        
+
         # Rename other log files if they exist 4 becomes 5 etc
         # Note: when this while loop exits self.currentLogFile is the name of the log file used by writeToDebugLog
         self.logFileNum = self.maxLogFiles - 1
@@ -431,7 +431,7 @@ class CVecorder(EuroPiScript):
 
     def showLoadingScreen(self, bank):
         # push the bytearray of the Rpi logo into a 32 x 32 framebuffer, then show on the screen
-        
+
         buffer = bytearray(b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00|?\x00\x01\x86@\x80\x01\x01\x80\x80\x01\x11\x88\x80\x01\x05\xa0\x80\x00\x83\xc1\x00\x00C\xe3\x00\x00~\xfc\x00\x00L'\x00\x00\x9c\x11\x00\x00\xbf\xfd\x00\x00\xe1\x87\x00\x01\xc1\x83\x80\x02A\x82@\x02A\x82@\x02\xc1\xc2@\x02\xf6>\xc0\x01\xfc=\x80\x01\x18\x18\x80\x01\x88\x10\x80\x00\x8c!\x00\x00\x87\xf1\x00\x00\x7f\xf6\x00\x008\x1c\x00\x00\x0c \x00\x00\x03\xc0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
         fb = framebuf.FrameBuffer(buffer, 32, 32, framebuf.MONO_HLSB)
         oled.fill(0)
@@ -442,7 +442,7 @@ class CVecorder(EuroPiScript):
     def updateScreen(self):
         # Clear the screen
         oled.fill(0)
-                
+
         # Visualize each CV channel
         lPadding = 4
         # oled.fill_rect(x, y, width, height)
@@ -461,10 +461,10 @@ class CVecorder(EuroPiScript):
             oled.text('.' + self.errorString + '.', 71, 25, 1)
         else:
             oled.text(' ' + self.errorString + ' ', 71, 25, 1)
-        
+
         # Active recording channel
         oled.text(str(self.ActiveBank+1) + ':' + str(self.ActiveCvr+1), 100, 25, 1)
-        
+
         # Current step
         oled.rect(lPadding-1, 26, 64, 6, 1)
         oled.fill_rect(lPadding-1, 26, self.step, 6, 1)

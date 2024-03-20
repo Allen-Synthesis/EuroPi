@@ -49,12 +49,12 @@ class Diagnostic(EuroPiScript):
             5,
             10,  # max
         ]
-        self.temp_units = self.config["temp_units"]
+        self.temp_units = self.config.TEMP_UNITS
         self.use_fahrenheit = self.temp_units == "F"
 
     @classmethod
     def config_points(cls):
-        return [configuration.choice(name="temp_units", choices=["C", "F"], default="C")]
+        return [configuration.choice(name="TEMP_UNITS", choices=["C", "F"], default="C")]
 
     def calc_temp(self):
         # see the pico's datasheet for the details of this calculation

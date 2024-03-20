@@ -9,11 +9,11 @@ assignees: ''
 
 # Documentation Suggestion
 
-**Describe the issue or suggestion**  
+**Describe the issue or suggestion**
 Text here
 
-**Images**  
+**Images**
 If applicable, add screenshots or photos to help explain your problem.
 
-**Additional context**  
+**Additional context**
 Add any other context about the problem here.
