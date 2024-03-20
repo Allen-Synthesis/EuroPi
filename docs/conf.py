@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath("../software/firmware/"))
 # -- Project information -----------------------------------------------------
 
 project = "EuroPi"
-copyright = "2022, Rory Allen"
+copyright = "2024, Rory Allen"
 author = "Rory Allen"
 
 

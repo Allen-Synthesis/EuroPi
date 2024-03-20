@@ -32,6 +32,8 @@ Options:
     - ping-pong: port changes in order 1->2->3->4->5->6->5->4->...
     - random: port changes randomly, with a 1/n chance of repeating
       the current port
+    - shift: instead of a traditional sequential switch, treat the module as a
+      sample & hold shift register
 
 After 20 minutes of idle time the screen will go blank. While blank the module
 will continue to operate normally.
@@ -39,6 +41,16 @@ will continue to operate normally.
 Pressing button 1 while the screen is blank will wake the module up
 _and_ advance the output.  Pressing button 2 will only wake up the screen.
 
+
+## Shift Mode
+
+When operating in shift mode, every time `b1` is pressed or a trigger is read on `din`,
+the current value from `ain` is read and inserted into the first position of a shift register.
+Outputs 1-N (where N is the number of outputs set in the menu) are set to the first N items
+in the shift register. In other words, `cv1` is the most-recent S&H reading, `cv2` is the
+second most recent, `cv3` is the third most recent, and so on.
+
+Unused outputs (e.g. if the number of outputs is 4, `cv5` and `cv6`) are set to zero.
 
 ## Limitations
 

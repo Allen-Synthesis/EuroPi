@@ -1,16 +1,16 @@
 """A collection of classes and functions for dealing with configuration data. There are two main
 types of configuration data: the `dict` configuration itself, and the `ConfigSpec`.
 
-The configuration is represented by `Dict(str, Any)`, where the string key represents the config 
+The configuration is represented by `Dict(str, Any)`, where the string key represents the config
 point's name, pointing to a value that may be of any type.
 
-The `ConfgSpec` is a collection of `ConfigPoints`. Each ConfigPoint consists of a name and description 
+The `ConfgSpec` is a collection of `ConfigPoints`. Each ConfigPoint consists of a name and description
 of the valid values that it may have. There are several different types of COnfigPoints available.
 """
 
 import os
 import json
-from file_utils import load_file, delete_file, load_json_data
+from file_utils import load_file, delete_file, load_json_file
 from collections import namedtuple
 
 Validation = namedtuple("Validation", "is_valid message")
@@ -82,6 +82,17 @@ class IntegerConfigPoint(ChoiceConfigPoint):
         super().__init__(name=name, choices=list(range), default=default)
 
 
+class BooleanConfigPoint(ChoiceConfigPoint):
+    """A `ConfigPoint` that allows True/False values.
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to look up the configured value.
+    :param default: The default value
+    """
+
+    def __init__(self, name: str, default: bool):
+        super().__init__(name=name, choices=[False, True], default=default)
+
+
 def choice(name: str, choices: "List", default) -> ChoiceConfigPoint:
     """A helper function to simplify the creation of ChoiceConfigPoints. Requires selection from a
     limited number of choices. The default value must exist in the given choices.
@@ -101,6 +112,15 @@ def integer(name: str, range: range, default: int) -> IntegerConfigPoint:
     :param default: The default value
     """
     return IntegerConfigPoint(name=name, range=range, default=default)
+
+
+def boolean(name: str, default: bool) -> BooleanConfigPoint:
+    """A helper function to simplify the creation of BooleanConfigPoints.
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
+    :param default: The default value
+    """
+    return BooleanConfigPoint(name=name, default=default)
 
 
 class ConfigSpec:
@@ -146,8 +166,8 @@ class ConfigFile:
 
     @staticmethod
     def config_filename(cls):
-        """Returns the filename for teh config file for the given class."""
-        return f"config/config_{cls.__qualname__}.json"
+        """Returns the filename for the config file for the given class."""
+        return f"config/{cls.__qualname__}.json"
 
     @staticmethod
     def save_config(cls, data: dict):
@@ -169,27 +189,77 @@ class ConfigFile:
 
     @staticmethod
     def load_config(cls, config_spec: ConfigSpec):
-        """If this class has config points, this method validates and returns the config dictionary
-        as saved in this class's config file, else, returns an empty dict."""
+        """If this class has config points, this method validates and returns the ConfigSettings object
+        representing the class's config file.  Otherwise an empty ConfigSettings object is returned.
+        """
         if len(config_spec):
-            data = load_file(ConfigFile.config_filename(cls))
+            saved_config = load_json_file(ConfigFile.config_filename(cls))
             config = config_spec.default_config()
-            if not data:
-                return config
-            else:
-                saved_config = load_json_data(data)
-                validation = config_spec.validate(saved_config)
+            validation = config_spec.validate(saved_config)
 
-                if not validation.is_valid:
-                    raise ValueError(validation.message)
+            if not validation.is_valid:
+                raise ValueError(validation.message)
 
-                config.update(saved_config)
-
-                return config
+            config.update(saved_config)
+            return ConfigSettings(config)
         else:
-            return {}
+            return ConfigSettings({})
 
     @staticmethod
     def delete_config(cls):
         """Deletes the config file, effectively resetting to defaults."""
         delete_file(ConfigFile.config_filename(cls))
+
+
+class ConfigSettings:
+    """Collects the configuration settings into an object with attributes instead of a dict with keys"""
+
+    def __init__(self, d):
+        """Constructor
+
+        @param d  The raw dict loaded from the configuration file
+        """
+        self.__dict__ = {}  # required for getattr & setattr
+
+        for k in d.keys():
+            self.validate_key(k)
+            setattr(self, k, d[k])
+
+    def validate_key(self, key):
+        """Ensures that a `dict` key is a valid attribute name
+
+        @param key  The string to check
+        @return     True if the key is valid. Otherwise an exception is raised
+
+        @exception  ValueError if the key contains invalid characters; only letters, numbers, hyphens, and underscores
+                    are permitted. They key cannot be length 0, nor can it begin with a number
+        """
+        key = key.strip()
+        for ch in key:
+            if not (ch.isalpha() or ch.isdigit() or ch == "_"):
+                raise ValueError(
+                    f"Invalid attribute name: {key}. Keys cannot contain the character {ch}"
+                )
+
+        if len(key) == 0:
+            raise ValueError("Invalid attribute name: key cannot be empty")
+        elif key[0].isdigit():
+            raise ValueError("Invalid attribute name: key cannot start with a number")
+
+        return True
+
+    def __eq__(self, that):
+        """Allows comparing the config object directly to either another config object or a dict
+
+        @param that  The object we're comparing to, either a dict or another ConfigSettings object
+
+        @return True if the two objects are equivalent, otherwise False
+        """
+        if type(that) is dict:
+            try:
+                that = ConfigSettings(that)
+                return self == that
+            except ValueError:
+                return False
+        elif type(that) is ConfigSettings:
+            return self.__dict__ == that.__dict__

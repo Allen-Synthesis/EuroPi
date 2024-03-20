@@ -35,8 +35,8 @@ def script_for_testing_with_config():
 
 
 def test_save_state(script_for_testing):
-    script_for_testing._save_state("test state")
-    assert script_for_testing._load_state() == "test state"
+    script_for_testing.save_state_json({"spam": "eggs"})
+    assert script_for_testing.load_state_json() == {"spam": "eggs"}
 
 
 def test_state_file_name(script_for_testing):
@@ -78,4 +78,4 @@ def test_load_config_defaults(script_for_testing_with_config):
 
 
 def test_load_europi_config(script_for_testing_with_config):
-    assert script_for_testing_with_config.europi_config["pico_model"] == "pico"
+    assert script_for_testing_with_config.europi_config.PICO_MODEL == "pico"

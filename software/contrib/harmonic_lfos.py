@@ -21,10 +21,10 @@ class HarmonicLFOs(EuroPiScript):
 
     def __init__(self):
         super().__init__()
-        
+
         # Retreive saved state information from file
         state = self.load_state_json()
-        
+
         # Use the saved values for the LFO divisions and mode if found in the save state file, using defaults if not
         self.divisions = state.get("divisions", [1, 3, 5, 7, 11, 13])
         self.modes = state.get("modes", [self.MODES_SHAPES['SINE']] * 6)
@@ -71,25 +71,25 @@ class HarmonicLFOs(EuroPiScript):
         """Save the current set of divisions to file"""
         if self.last_saved() < 5000:
             return
-        
+
         self.save_state_json({
             "divisions": self.divisions,
             "modes": self.modes,
         })
-        
+
     def update_display(self):
         """Update the OLED display every 10 cycles (degrees)"""
         oled.scroll(-1, 0)
 
         if round(self.degree, -1) % 10 == 0:
             oled.show()
-            
+
     def increment(self):
         """Increment the current degree and determine new values of delay and increment_value"""
         self.degree += self.increment_value
         self.delay, self.increment_value = self.get_delay_increment_value()
         sleep_ms(int(self.delay))
-        
+
     def draw_wave(self):
         shape = self.modes[self.selected_lfo]
 
@@ -190,13 +190,13 @@ class HarmonicLFOs(EuroPiScript):
         oled.fill_rect(0, 0, 20, 32, 0)
         oled.fill_rect(0, 0, 20, 9, 1)
         oled.text(f'{self.selected_lfo + 1}', 6, 1, 0)
-        
+
         number = self.divisions[self.selected_lfo]
         x = 2 if number >= 10 else 6
         oled.text(f'{number}', x, 12, 1)
-        
+
         self.draw_wave()
-        
+
     def calculate_voltage(self, cv, multiplier):
         """Determine the voltage based on current degree, wave shape, and MAX_VOLTAGE"""
         three_sixty = 360 * multiplier
@@ -218,7 +218,7 @@ class HarmonicLFOs(EuroPiScript):
             voltage = MAX_VOLTAGE * randint(0, int((1000 / MAX_HARMONIC) * multiplier)) / 1000
 
         return voltage
-        
+
     def display_graphic_lines(self):
         """Draw the lines displaying each LFO's voltage to the OLED display"""
         self.rad = radians(self.degree)
@@ -240,13 +240,13 @@ class HarmonicLFOs(EuroPiScript):
     def main(self):
         while True:
             self.check_change_clock_division()
-            
+
             self.display_graphic_lines()
-            
+
             self.display_selected_lfo()
-            
+
             self.update_display()
-            
+
             self.increment()
 
 

@@ -212,7 +212,8 @@ class PolyrhythmSeq(EuroPiScript):
         @din.handler_falling
         def triggers_off():
             # Turn off all of the trigger CV outputs.
-            [seq.trigger_cv.off() for seq in self.seqs]
+            for seq in self.seqs:
+                seq.trigger_cv.off()
             self.trigger_and.off()
             self.trigger_xor.off()
 
@@ -258,13 +259,14 @@ class PolyrhythmSeq(EuroPiScript):
         self.seqs[1].set_state(_state.seq2)
         self.polys = list(_state.polys)
         self.seq_poly = list(_state.seq_poly)
-    
+
     def reset_check(self):
         """Reset the sequences and triggers when no clock pulse detected for specified time."""
         if self.counter != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
             self.step = 0
             self.counter = 0
-            [s.reset() for s in self.seqs]
+            for s in self.seqs:
+                s.reset()
             self.trigger_and.off()
             self.trigger_xor.off()
 
@@ -336,7 +338,7 @@ class PolyrhythmSeq(EuroPiScript):
 
             if self.page == 2:
                 self.edit_poly()
-            
+
             self.reset_check()
 
             self.show_menu_header()

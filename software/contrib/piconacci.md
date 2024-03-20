@@ -15,7 +15,7 @@ Long button presses will rotate the values, e.g. to 3, 5, 8, 13, 21, and 2.
 Credits:
 - The Europi hardware and firmware was designed by Allen Synthesis:
 https://github.com/Allen-Synthesis/EuroPi
-- The name was suggested by @djmjr on the EuroPi Discord. 
+- The name was suggested by @djmjr on the EuroPi Discord.
 
 # Controls
 
@@ -51,16 +51,16 @@ button presses.
 
 In the diagrams below, the green boxes indicate the values in the
 Fibonacci series. The blue boxes indicate the active "window" with the
-numbers showing which division is used for each output. 
+numbers showing which division is used for each output.
 
 ![pico drawio](https://user-images.githubusercontent.com/1035997/168587520-de2286af-1ae4-45be-a0f4-0aeb8128c4a9.png)
 
 # Limitations
 
-The code has a limit on the number of values used (50). In practice this is unlikely to be an issue and probably works for most sensible circumstances. The 50th value (disregarding 0, 1) is 20,365,011,074. At a BPM of 120, that'll be a trigger every 300 years which is pretty slow even for glacial ambient. 
+The code has a limit on the number of values used (50). In practice this is unlikely to be an issue and probably works for most sensible circumstances. The 50th value (disregarding 0, 1) is 20,365,011,074. At a BPM of 120, that'll be a trigger every 300 years which is pretty slow even for glacial ambient.
 
 Trigger length is coupled to the incoming clock.
 
 # Known bugs / Interesting features
 
-Probably. 
+Probably.

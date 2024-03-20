@@ -1,10 +1,10 @@
-# Menu 
-A Menu which allows the user to select and execute one of the scripts available to this EuroPi. The menu will 
+# Menu
+A Menu which allows the user to select and execute one of the scripts available to this EuroPi. The menu will
 include the ``EuroPiScripts`` included in the ``EUROPI_SCRIPTS`` List. Button press handlers are added that allow
-the user to exit the script and return to the menu by holding both buttons down for a short period of time. If the 
+the user to exit the script and return to the menu by holding both buttons down for a short period of time. If the
 module is restarted while a script is running it will boot right back into that same script.
 
-In the menu: 
+In the menu:
 
 * **Button 1:** choose the selected item
 * **Button 2:** choose the selected item
@@ -76,7 +76,7 @@ class HelloWorld(EuroPiScript):
             if self.enabled:
                 self.counter += 1
                 self.save_state()  # 4
-        
+
         @b1.handler
         def toggle_enablement():
             self.enabled = not self.enabled
@@ -93,7 +93,7 @@ class HelloWorld(EuroPiScript):
             "enabled": self.enabled,
         }
         self.save_state_json(state)
-    
+
     def main(self):
         oled.centre_text("Hello world")
 ```

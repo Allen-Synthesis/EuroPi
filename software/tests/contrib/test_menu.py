@@ -15,5 +15,7 @@ def mock_time_module(monkeypatch):
 def test_menu_imports(mock_time_module):
     """User the bootloader code to test that every script declared in EUROPI_SCRIPTS can be imported."""
     bootloader = BootloaderMenu(EUROPI_SCRIPTS)
-    classes = bootloader.load_script_classes(bootloader.scripts)
-    assert EUROPI_SCRIPTS == list(classes.keys()), "Some EUROPI_SCRIPTs were not able to be loaded."
+    for display_name in EUROPI_SCRIPTS.keys():
+        class_name = EUROPI_SCRIPTS[display_name]
+        clazz = bootloader.get_class_for_name(class_name)
+        assert bootloader._is_europi_script(clazz), f"{class_name} is not a EuroPiScript"
