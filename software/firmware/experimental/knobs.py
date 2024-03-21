@@ -334,3 +334,23 @@ class KnobBank:
     @staticmethod
     def builder(knob: Knob) -> Builder:
         return KnobBank.Builder(knob)
+
+
+class BufferedKnob(Knob):
+    """A knob whose value remains fixed until .update(...) is called
+
+    This allows multiple uses of .percent(), .choice(...), etc... without forcing a re-read of
+    the ADC value
+
+    :param knob:  The knob to wrap
+    """
+
+    def __init__(self, knob):
+        super().__init__(knob.pin_id)
+        self.value = 0
+
+    def _sample_adc(self, samples=None):
+        return self.value
+
+    def update(self, samples=None):
+        self.value = super()._sample_adc(samples)
