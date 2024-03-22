@@ -3,17 +3,15 @@ try:
     from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH, OLED_WIDTH
     from software.firmware.europi import din, k1, k2, oled, b1, b2, cvs
     from software.firmware.europi_script import EuroPiScript
-    from software.firmware.experimental import custom_font, freesans20
-
-
+    from software.firmware.experimental import custom_font, ubuntumono20
 except ImportError:
     # Device import path
     from europi import *
-    from experimental import custom_font, freesans20
+    from experimental import custom_font, ubuntumono20
     from europi_script import EuroPiScript
 
-from random import random, seed
-from time import ticks_diff, ticks_ms
+from random import random, seed, randint
+from time import sleep_ms, ticks_diff, ticks_ms
 
 
 DEFAULT_SEQUENCE_LENGTH = 16
@@ -38,11 +36,9 @@ class Page:
 
 
 class Output:
-
-    def __init__(self, cv, probability, mode):
+    def __init__(self, cv, probability):
         self.cv = cv
         self.probability = probability
-        self.mode = mode
         self.pattern = [0] * MAX_STEPS
         self.build_pattern()
 
@@ -50,24 +46,20 @@ class Output:
         for i in range(MAX_STEPS):
             self.pattern[i] = random() < self.probability
 
-    def trigger(self, step):
+    def trigger(self, step, mode):
         """Input trigger has gone high. Change the cv state based on mode for given step."""
-        if self.mode == TriggerMode.GATE:
-            self.cv.off()
-
         # If random is greater than the probability range, return without triggering.
         if not self.pattern[step]:
             return
 
-        if self.mode == TriggerMode.FLIP:
+        if mode == TriggerMode.FLIP:
             self.cv.toggle()
         else:
             self.cv.on()
 
     def trigger_off(self):
         """Input trigger has gone low. Turn off when in 'trigger' mode."""
-        if self.mode == TriggerMode.TRIGGER:
-           self.cv.off()
+        self.cv.off()
 
 
 class SeedPacket:
@@ -76,31 +68,34 @@ class SeedPacket:
         self.mode = mode
         self.outputs = []
         for cv, prob in zip(outputs, probabilities):
-            self.outputs.append(Output(cv, prob, mode))
+            self.outputs.append(Output(cv, prob))
 
     def new_seed(self):
         """Seed the pseudo-random number generator with a new random seed and generate new patterns."""
-        self.seed = int(random() * 65535.)
+        self.seed = randint(0,0xFFFF)
         seed(self.seed)
         for out in self.outputs:
             out.build_pattern()
         return self.seed
-    
+
     def trigger(self, step):
         """Input trigger has gone high."""
+        if self.mode == TriggerMode.GATE:
+            for out in self.outputs:
+                out.trigger_off()
+            # Brief low period between gates.
+            sleep_ms(5)
+
         for out in self.outputs:
-            out.trigger(step)
+            out.trigger(step, self.mode)
 
     def trigger_off(self):
         """Input trigger has gone low."""
+        if self.mode != TriggerMode.TRIGGER:
+            return
+
         for out in self.outputs:
             out.trigger_off()
-    
-    def set_mode(self, mode):
-        """Set the output mode."""
-        self.mode = mode
-        for out in self.outputs:
-            out.mode = mode
 
     @property
     def probabilities(self):
@@ -109,7 +104,6 @@ class SeedPacket:
 
 
 class BitGarden(EuroPiScript):
-
     def __init__(self):
         super().__init__()
         # Default initial state
@@ -130,8 +124,9 @@ class BitGarden(EuroPiScript):
         # Private class instance variables
         self._page = Page.MAIN
         self._update_display = True
-        self._prev_k1 = DEFAULT_SEQUENCE_LENGTH
-        self._prev_k2 = 0
+        self._prev_k1 = None
+        self._prev_k2 = None
+        self._seed_index = 0
 
         # Attach IRQ Handlers
         din.handler(self.digital_rising)
@@ -142,7 +137,7 @@ class BitGarden(EuroPiScript):
     @classmethod
     def display_name(cls):
         return "Bit Garden"
-    
+
     def save_state(self):
         """Save the current state variables as JSON."""
         self.state.update({
@@ -156,9 +151,7 @@ class BitGarden(EuroPiScript):
     def digital_rising(self):
         """Advance the pseudo-random sequence step counter."""
         self.step_counter = (self.step_counter + 1) % self.sequence_length
-
         self.packet.trigger(self.step_counter)
-
         self._update_display = True
 
     def digital_falling(self):
@@ -167,45 +160,58 @@ class BitGarden(EuroPiScript):
 
     def b1_handler(self):
         self._update_display = True
+
+        # Short press  to toggle modde, long press to switch to edit probability page.
+        if self._page == Page.MAIN:
+            if ticks_diff(ticks_ms(), b1.last_pressed()) < LONG_PRESS_MS:
+                self.toggle_mode()
+            else:
+                self._page = Page.EDIT_PROBABILITY
+
         # If on Edit Probability page, b1 press will return home.
-        if self._page == Page.EDIT_PROBABILITY:
+        elif self._page == Page.EDIT_PROBABILITY:
             self._page = Page.MAIN
             return
 
-        # Short press vs Long press
-        if ticks_diff(ticks_ms(), b1.last_pressed()) < LONG_PRESS_MS:
-            self.toggle_mode()
-        else:
-            self._page = Page.EDIT_PROBABILITY
+        # Change seed edit index.
+        elif self._page == Page.EDIT_SEED:
+            self._seed_index = (self._seed_index + 1) % 4
 
     def b2_handler(self):
         self._update_display = True
-        # If on Edit Seed page, b2 press will return home.
-        if self._page == Page.EDIT_SEED:
+
+        if self._page == Page.MAIN:
+            # Short press vs Long press
+            if ticks_diff(ticks_ms(), b2.last_pressed()) < LONG_PRESS_MS:
+                self.new_seed()
+            else:
+                self._page = Page.EDIT_SEED
+                self._temp_seed = self.packet.seed
+                self._prev_k2 = None
+
+        elif self._page == Page.EDIT_PROBABILITY:
             self._page = Page.MAIN
-            return
-        
-        # Short press vs Long press
-        if ticks_diff(ticks_ms(), b2.last_pressed()) < LONG_PRESS_MS:
-            self.new_seed()
-        else:
-            self._page = Page.EDIT_SEED
+
+        elif self._page == Page.EDIT_SEED:
+            # If on Edit Seed page, b2 press will return home.
+            self.packet.seed = self._temp_seed
+            self._page = Page.MAIN
 
     def toggle_mode(self):
         """Change the current output mode."""
         if self.packet.mode == TriggerMode.TRIGGER:
-            self.packet.set_mode(TriggerMode.GATE)
+            self.packet.mode = TriggerMode.GATE
         elif self.packet.mode == TriggerMode.GATE:
-            self.packet.set_mode(TriggerMode.FLIP)
+            self.packet.mode = TriggerMode.FLIP
         elif self.packet.mode == TriggerMode.FLIP:
-            self.packet.set_mode(TriggerMode.TRIGGER)
+            self.packet.mode = TriggerMode.TRIGGER
         self.save_state()
-    
+
     def new_seed(self):
         """Generate a new seed to produce a new pseudo-random trigger sequence."""
         self.state.update({"seed": self.packet.new_seed()})
         self.save_state()
-    
+
     def edit_seed(self):
         self._page = Page.EDIT_PROBABILITY
 
@@ -217,14 +223,39 @@ class BitGarden(EuroPiScript):
             self.sequence_length = read
             self.step_counter = min(self.step_counter, self.sequence_length)
             self._update_display = True
-    
+
     def update_selected_pattern(self):
         """Change which pattern is currently displayed."""
         index = k2.range(len(self.packet.outputs))
-        if index != self._prev_k2:
+        if index == self._prev_k2 or self._prev_k2 is None:
             self._prev_k2 = index
-            self.pattern_index = index
-            self._update_display = True
+            return
+        self._prev_k2 = index
+        self.pattern_index = index
+        self._update_display = True
+
+    def update_seed_digit(self):
+        """Update the seed digit for selected digit index."""
+        value = k2.range(16)
+        if value == self._prev_k2 or self._prev_k2 is None:
+            self._prev_k2 = value
+            return
+        self._prev_k2 = value
+
+        if self._seed_index == 0:
+            position = 0x1000
+            clear = 0x0FFF
+        elif self._seed_index == 1:
+            position = 0x0100
+            clear = 0xF0FF
+        elif self._seed_index == 2:
+            position = 0x0010
+            clear = 0xFF0F
+        elif self._seed_index == 3:
+            position = 0x0001
+            clear = 0xFFF0
+        self._temp_seed = (self._temp_seed & clear) + (int(position) * value)
+        self._update_display = True
 
     def mode_text(self):
         """Return the display text for current Trigger Mode."""
@@ -239,7 +270,6 @@ class BitGarden(EuroPiScript):
         """If UI state has changed, update the display."""
         if not self._update_display:
             return
-
         self._update_display = False
 
         oled.fill(0)
@@ -296,14 +326,20 @@ class BitGarden(EuroPiScript):
             if (i+1) % wrap == 0:
                 top += boxSize + tpadding
                 left = start
-        
+
         oled.text(f"CV:{self.pattern_index+1}", OLED_WIDTH-(CHAR_WIDTH*4), 0, 1)
         oled.text(f"{self.mode_text()}", OLED_WIDTH-(CHAR_WIDTH*4), CHAR_HEIGHT, 1)
         oled.text(f"{self.packet.seed:04X}", OLED_WIDTH-(CHAR_WIDTH*4), CHAR_HEIGHT*2, 1)
         oled.text(f"{self.step_counter+1:>2}/{self.sequence_length:>2} ", OLED_WIDTH-(5*CHAR_WIDTH), CHAR_HEIGHT*3, 1)
 
     def display_edit_seed(self):
-        oled.text(f"{self.packet.seed:04X}", 32, 6, font=freesans20)
+        """Display the editable seed and digit indicator."""
+        start = 40
+        top = 6
+        charw = ubuntumono20.max_width()
+        charh = ubuntumono20.height()
+        oled.text(f"{self._temp_seed:04X}", start, top, font=ubuntumono20)
+        oled.hline(start + (self._seed_index * charw), top+charh, charw, 1)
 
     def main(self):
         """Main loop for detecing knob changes and updating display."""
@@ -315,7 +351,7 @@ class BitGarden(EuroPiScript):
             elif self._page == Page.EDIT_PROBABILITY:
                 pass
             elif self._page == Page.EDIT_SEED:
-                pass
+                self.update_seed_digit()
             self.update_display()
 
 
