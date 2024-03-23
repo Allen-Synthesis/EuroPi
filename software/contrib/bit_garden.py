@@ -4,14 +4,16 @@ try:
     from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH
     from software.firmware.europi import ain, din, k1, k2, oled, b1, b2, cvs
     from software.firmware.europi_script import EuroPiScript
-    from software.firmware.experimental import custom_font, ubuntumono20
     from software.firmware.experimental.a_to_d import AnalogReaderDigitalWrapper
+    from software.firmware.experimental.custom_font import CustomFontDisplay
+    from software.firmware.experimental.fonts import ubuntumono20
 
 except ImportError:
     # Device import path
     import europi_config
     from europi import *
-    from experimental import custom_font, ubuntumono20
+    from experimental.custom_font import CustomFontDisplay
+    from experimental.fonts import ubuntumono20
     from experimental.a_to_d import AnalogReaderDigitalWrapper
     from europi_script import EuroPiScript
 
@@ -28,7 +30,7 @@ MAX_STEPS = 32
 LONG_PRESS_MS = 500
 
 # Use the Custom Font wrapper for oled display.
-oled = custom_font.oled
+oled = CustomFontDisplay()
 
 
 class TriggerMode:
