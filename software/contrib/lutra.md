@@ -40,7 +40,17 @@ Turning `k2` fully anticlockwise will set the spread to zero; every output will 
 depending on previous settings and random noise) they may be phase-shifted from each other.
 
 Turning `k2`clockwise will gradually increase the spread of clock speeds. `cv1` will always stay locked to the base
-clock speed, with `cv2-6` becoming progressively faster.
+clock speed, with `cv2-6` becoming progressively faster.  At maximum spread, the outpts follow common harmonic intervals
+relative to the speed of `cv`:
+
+| CV Output | Ratio w/ `cv1 | Max speed multiplier |
+|-----------|---------------|----------------------|
+| `cv1`     | 1:1           | x1                   |
+| `cv2`     | 6:5           | x1.2                 |
+| `cv3`     | 5:4           | x1.25                |
+| `cv4`     | 4:3           | x1.3333...           |
+| `cv5`     | 3:2           | x1.5                 |
+| `cv6`     | 2:1           | x2                   |
 
 ## Re-syncing
 

@@ -24,6 +24,16 @@ import _thread
 
 from experimental.thread import DigitalInputHelper
 
+def rescale(x, old_min, old_max, new_min, new_max):
+    """Convert x in [old_min, old_max] -> y in [new_min, new_max]
+    """
+    if x < old_min:
+        return new_min
+    elif x > old_max:
+        return new_max
+    else:
+        return (x - old_min) * (new_max - new_min) / (old_max - old_min) + new_min
+
 class WaveGenerator:
     """Generates the output wave forms and sets the voltage going to one of the output jacks
 
@@ -142,6 +152,16 @@ class Lutra(EuroPiScript):
     # The maximum and minimum cycle time for the LFOs
     MIN_CYCLE_TICKS = 250
     MAX_CYCLE_TICKS = 10000
+
+    # Maximum wave speed multipliers relative to cv1
+    MAX_SPEED_MULTIPLIERS = [
+        1/1,
+        6/5,
+        5/4,
+        4/3,
+        3/2,
+        2/1
+    ]
 
     def __init__(self):
         """Constructor
@@ -279,8 +299,9 @@ class Lutra(EuroPiScript):
 
             base_ticks = int((1.0 - k_speed) * (self.MAX_CYCLE_TICKS - self.MIN_CYCLE_TICKS) + self.MIN_CYCLE_TICKS)
             for i in range(len(cvs)):
-                spread_adjust = int(base_ticks * i * k_spread / 10)
-                self.waves[i].change_cycle_length(base_ticks - spread_adjust)
+                base_tick_multiplier = rescale(k_spread, 0, 1, 1, self.MAX_SPEED_MULTIPLIERS[i])
+                spread_ticks = int(base_ticks / base_tick_multiplier)
+                self.waves[i].change_cycle_length(spread_ticks)
 
             for i in range(len(cvs)):
                 pixel_height = OLED_HEIGHT - 1
