@@ -1,7 +1,7 @@
 try:
     # Local development
     from software.firmware import europi_config
-    from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH
+    from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH, OLED_WIDTH
     from software.firmware.europi import ain, din, k1, k2, oled, b1, b2, cvs
     from software.firmware.europi_script import EuroPiScript
     from software.firmware.experimental.a_to_d import AnalogReaderDigitalWrapper
@@ -10,18 +10,14 @@ try:
 
 except ImportError:
     # Device import path
-    import europi_config
     from europi import *
+    from europi_script import EuroPiScript
+    from experimental.a_to_d import AnalogReaderDigitalWrapper
     from experimental.custom_font import CustomFontDisplay
     from experimental.fonts import ubuntumono20
-    from experimental.a_to_d import AnalogReaderDigitalWrapper
-    from europi_script import EuroPiScript
 
 from random import random, seed, randint
 from time import sleep_ms, ticks_diff, ticks_ms
-
-OLED_WIDTH = europi_config.get('display_width', 128)
-OLED_HEIGHT = europi_config.get('display_height', 32)
 
 DEFAULT_SEQUENCE_LENGTH = 16
 DEFAULT_SEED = 0x8F26

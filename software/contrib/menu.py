@@ -1,6 +1,6 @@
 """See menu.md for details."""
 # Reset the module state and display bootsplash screen.
-from europi import bootsplash, usb_connected
+from europi import bootsplash
 
 
 bootsplash()
