@@ -1,18 +1,25 @@
 try:
     # Local development
-    from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH, OLED_WIDTH
-    from software.firmware.europi import din, k1, k2, oled, b1, b2, cvs
+    from software.firmware import europi_config
+    from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH
+    from software.firmware.europi import ain, din, k1, k2, oled, b1, b2, cvs
     from software.firmware.europi_script import EuroPiScript
     from software.firmware.experimental import custom_font, ubuntumono20
+    from software.firmware.experimental.a_to_d import AnalogReaderDigitalWrapper
+
 except ImportError:
     # Device import path
+    import europi_config
     from europi import *
     from experimental import custom_font, ubuntumono20
+    from experimental.a_to_d import AnalogReaderDigitalWrapper
     from europi_script import EuroPiScript
 
 from random import random, seed, randint
 from time import sleep_ms, ticks_diff, ticks_ms
 
+OLED_WIDTH = europi_config.get('display_width', 128)
+OLED_HEIGHT = europi_config.get('display_height', 32)
 
 DEFAULT_SEQUENCE_LENGTH = 16
 DEFAULT_SEED = 0x8F26
@@ -28,6 +35,7 @@ class TriggerMode:
     TRIGGER = 1
     GATE = 2
     FLIP = 3
+
 
 class Page:
     MAIN = 1
@@ -102,6 +110,11 @@ class SeedPacket:
         """Return the list of output probability between 0 and 1."""
         return [out.probability for out in self.outputs]
 
+    def update_probability(self, index, prob):
+        """Update the probability and pattern for the given output."""
+        self.outputs[index].probability = prob
+        self.outputs[index].build_pattern()
+
 
 class BitGarden(EuroPiScript):
     def __init__(self):
@@ -127,12 +140,15 @@ class BitGarden(EuroPiScript):
         self._prev_k1 = None
         self._prev_k2 = None
         self._seed_index = 0
+        self._prob_index = 0
 
         # Attach IRQ Handlers
         din.handler(self.digital_rising)
         din.handler_falling(self.digital_falling)
         b1.handler_falling(self.b1_handler)
         b2.handler_falling(self.b2_handler)
+        self.din2 = AnalogReaderDigitalWrapper(ain, cb_rising=self.digital2_rising)
+
 
     @classmethod
     def display_name(cls):
@@ -157,6 +173,10 @@ class BitGarden(EuroPiScript):
     def digital_falling(self):
         """Tell the SeedPacket the digital input has gone low for Trigger mode."""
         self.packet.trigger_off()
+    
+    def digital2_rising(self):
+        self.packet.new_seed()
+        self._update_display = True
 
     def b1_handler(self):
         self._update_display = True
@@ -166,12 +186,12 @@ class BitGarden(EuroPiScript):
             if ticks_diff(ticks_ms(), b1.last_pressed()) < LONG_PRESS_MS:
                 self.toggle_mode()
             else:
+                self._prev_k2 = None
                 self._page = Page.EDIT_PROBABILITY
 
         # If on Edit Probability page, b1 press will return home.
         elif self._page == Page.EDIT_PROBABILITY:
-            self._page = Page.MAIN
-            return
+            self._prob_index = (self._prob_index + 1) % 6
 
         # Change seed edit index.
         elif self._page == Page.EDIT_SEED:
@@ -185,9 +205,9 @@ class BitGarden(EuroPiScript):
             if ticks_diff(ticks_ms(), b2.last_pressed()) < LONG_PRESS_MS:
                 self.new_seed()
             else:
-                self._page = Page.EDIT_SEED
                 self._temp_seed = self.packet.seed
                 self._prev_k2 = None
+                self._page = Page.EDIT_SEED
 
         elif self._page == Page.EDIT_PROBABILITY:
             self._page = Page.MAIN
@@ -211,9 +231,6 @@ class BitGarden(EuroPiScript):
         """Generate a new seed to produce a new pseudo-random trigger sequence."""
         self.state.update({"seed": self.packet.new_seed()})
         self.save_state()
-
-    def edit_seed(self):
-        self._page = Page.EDIT_PROBABILITY
 
     def update_sequence_length(self):
         """Check if the knob has changed value and update the sequence length accordingly."""
@@ -257,6 +274,15 @@ class BitGarden(EuroPiScript):
         self._temp_seed = (self._temp_seed & clear) + (int(position) * value)
         self._update_display = True
 
+    def update_selected_prob(self):
+        value = k2.range(100)
+        if value == self._prev_k2 or self._prev_k2 is None:
+            self._prev_k2 = value
+            return
+        self._prev_k2 = value
+        self.packet.update_probability(self._prob_index, k2.percent())
+        self._update_display = True
+
     def mode_text(self):
         """Return the display text for current Trigger Mode."""
         if self.packet.mode == TriggerMode.TRIGGER:
@@ -274,16 +300,16 @@ class BitGarden(EuroPiScript):
 
         oled.fill(0)
         if self._page == Page.MAIN:
-            self.display_pattern(self.packet.outputs[self.pattern_index].pattern)
+            self.display_main(self.packet.outputs[self.pattern_index].pattern)
         elif self._page == Page.EDIT_PROBABILITY:
-            pass
+            self.display_edit_probability()
         elif self._page == Page.EDIT_SEED:
             self.display_edit_seed()
         oled.show()
 
         return
 
-    def display_pattern(self, pattern):
+    def display_main(self, pattern):
         start = 2
         top = 0
         left = start
@@ -340,16 +366,40 @@ class BitGarden(EuroPiScript):
         charh = ubuntumono20.height()
         oled.text(f"{self._temp_seed:04X}", start, top, font=ubuntumono20)
         oled.hline(start + (self._seed_index * charw), top+charh, charw, 1)
+    
+    def display_edit_probability(self):
+        """Display each output probability as a vertical filled bar with edit indicator."""
+        top = 0
+        left = 16
+        barWidth = 10
+        barHeight = 30
+        padding = 8
+
+        for i, prob in enumerate(self.packet.probabilities):
+            # Draw output probability bar.
+            oled.rect(left, top, barWidth, barHeight, 1)
+
+            # Fill current bar probability.
+            probFill = int(float(barHeight) * prob)
+            probTop = top + barHeight - probFill
+            oled.rect(left, probTop, barWidth, probFill, 1, 1)
+
+            # Show selected output.
+            if i == self._prob_index:
+                oled.text(">", left - CHAR_WIDTH, probTop, 1)
+
+            left += barWidth + padding
 
     def main(self):
         """Main loop for detecing knob changes and updating display."""
         while True:
+            self.din2.update()
             # Current page determines which input methods is called.
             if self._page == Page.MAIN:
                 self.update_sequence_length()
                 self.update_selected_pattern()
             elif self._page == Page.EDIT_PROBABILITY:
-                pass
+                self.update_selected_prob()
             elif self._page == Page.EDIT_SEED:
                 self.update_seed_digit()
             self.update_display()
@@ -357,5 +407,3 @@ class BitGarden(EuroPiScript):
 
 if __name__ == "__main__":
     BitGarden().main()
-
-
