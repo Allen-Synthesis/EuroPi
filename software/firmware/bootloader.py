@@ -160,6 +160,10 @@ class BootloaderMenu(EuroPiScript):
             europi.b2._handler_both(europi.b1, self.exit_to_menu)
 
             try:
+                if europi.europi_config.MENU_AFTER_POWER_ON:
+                    # Remove the last-launched file to force the module back to the menu after it powers-on next time
+                    self.save_state_json({})
+
                 script_class().main()
             except Exception as err:
                 # set all outputs to zero for safety

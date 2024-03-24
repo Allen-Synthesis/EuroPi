@@ -17,7 +17,8 @@ default configuration:
     "DISPLAY_CHANNEL": 0,
     "MAX_OUTPUT_VOLTAGE": 10,
     "MAX_INPUT_VOLTAGE": 12,
-    "GATE_VOLTAGE": 5
+    "GATE_VOLTAGE": 5,
+    "MENU_AFTER_POWER_ON": false
 }
 ```
 
@@ -36,7 +37,8 @@ default configuration:
   The hardware is capable of 12V maximum
 - `GATE_VOLTAGE` is an integer in the range `[0, 10]` indicating the voltage that an output will produce when `cvx.on()`
   is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`
-
+- `MENU_AFTER_POWER_ON` is a boolean indicating whether or not the module should always return to the main menu when
+  it powers on.  By default the EuroPi will re-launch the last-used program instead of returning to the main menu.
 
 
 # Experimental configuration
@@ -121,6 +123,7 @@ customizations described in the sections above. Below is a detailed summary of t
   'GATE_VOLTAGE',
   'MAX_INPUT_VOLTAGE',
   'MAX_OUTPUT_VOLTAGE',
+  'MENU_AFTER_POWER_ON',
   'PICO_MODEL',
   'ROTATE_DISPLAY'
 ]
