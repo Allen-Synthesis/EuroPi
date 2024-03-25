@@ -161,8 +161,8 @@ class BootloaderMenu(EuroPiScript):
 
             try:
                 if (
-                    europi.europi_config.MENU_AFTER_POWER_ON or
-                    script_class_name == "calibrate.Calibrate"
+                    europi.europi_config.MENU_AFTER_POWER_ON
+                    or script_class_name == "calibrate.Calibrate"
                 ):
                     # Remove the last-launched file to force the module back to the menu after it powers-on next time
                     self.save_state_json({})
