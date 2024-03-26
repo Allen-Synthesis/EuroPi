@@ -17,6 +17,7 @@ Lutra: a genus of otters, including L. lutra, the eurasian otter and L. sumatran
 from europi import *
 from europi_script import EuroPiScript
 
+import configuration
 import math
 import time
 
@@ -165,6 +166,9 @@ class Lutra(EuroPiScript):
 
     def __init__(self):
         """Constructor
+
+        This creates all of the necessary objects, but does not create the separate thread for handling the GUI;
+        see @main for that.
         """
         super().__init__()
 
@@ -188,24 +192,26 @@ class Lutra(EuroPiScript):
             [] for cv in cvs
         ]
 
+        # To coordinate access to self.display_pixels between threads we need a mutex to make sure
+        # we don't read the array while it's being modified
         self.pixel_lock = _thread.allocate_lock()
 
         self.load()
 
+    @classmethod
+    def config_points(cls):
+        """Return the static configuration options for this class
+        """
+        return [
+            configuration.choice(name="AIN_MODE", choices=["spread", "speed"], default="spread")
+        ]
+
     def load(self):
-        """Load and apply the saved configuration
+        """Load and apply the saved state
 
         @exception  ValueError if the configuration contains invalid values
         """
         cfg = self.load_state_json()
-        ain_mode = cfg.get("ain", "spread").lower()
-        if ain_mode == "spread":
-            self.ain_mode = self.AIN_MODE_SPREAD
-        elif ain_mode == "speed":
-            self.ain_mode = self.AIN_MODE_SPEED
-        else:
-            raise ValueError(f"Unknown AIN mode: {ain_mode}")
-
         shape = cfg.get("wave", "sine").lower()
         if shape in WaveGenerator.WAVE_SHAPES_NAMES_TO_SHAPES.keys():
             for wave in self.waves:
@@ -214,10 +220,9 @@ class Lutra(EuroPiScript):
             raise ValueError(f"Unknown wave shape: {shape}")
 
     def save(self):
-        """Write the configuration file & set config_dirty to False
+        """Write the saved-state file & set config_dirty to False
         """
         cfg = {
-            "ain": self.AIN_MODE_NAMES[self.ain_mode].lower(),
             "wave": WaveGenerator.WAVE_SHAPES_NAMES[self.waves[0].shape].lower()
         }
         self.save_state_json(cfg)
@@ -290,7 +295,7 @@ class Lutra(EuroPiScript):
             k1_percent = round(k1.percent(), 2)
             k2_percent = round(k2.percent(), 2)
 
-            if self.ain_mode == self.AIN_MODE_SPREAD:
+            if self.config.AIN_MODE == self.AIN_MODE_SPREAD:
                 k_speed = k1_percent
                 k_spread = clamp(k2_percent + ain_percent, 0, 1)
             else:

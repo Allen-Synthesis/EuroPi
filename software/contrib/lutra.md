@@ -5,23 +5,10 @@ Lutra is a re-imagining of [Expert Sleepers' Otterly](https://expert-sleepers.co
 Each output channel is a free running LFO with a subtly different clock speed. The spread of clock speeds is controlled
 by `k2` (and optionally `ain` -- see configuration below)
 
-## Configuration
+## Wave Shapes
 
-The functionality of `ain` can be configured by creating/editing `/saved_state_Lutra.txt` on the module. This JSON file
-contains the saved configuration for the script.  The default values for this file are shown below:
-
-```json
-{
-    "ain": "spread",
-    "wave": "sine"
-}
-```
-
-- `ain`: sets the mode for `ain`. Must be one of `spread` or `speed`.  If set to `spread` the spread of clock speeds
-  of the outputs is controlled by `ain`.  If set to `speed` the master clock speed is controlled by `ain`.
-- `wave`: sets the ouptut wave shape. Must be one of: `sine`, `square`, `triangle`, `saw`, or `ramp`.
-
-The wave shape is shown in the upper-left corner of the display:
+The shape of the output wave can be changed by pressing `b2` while the module is running. This choice is saved to
+the module and will be re-loaded every time `Lutra` starts. Available wave shapes are:
 - ![Sine Wave](./lutra-docs/wave_sine.png) Sine
 - ![Square Wave](./lutra-docs/wave_square.png) Square
 - ![Triangle Wave](./lutra-docs/wave_triangle.png) Triangle
@@ -31,17 +18,39 @@ The wave shape is shown in the upper-left corner of the display:
 When pressing `b2` to select the wave shape, the selected shape will briefly appear in the upper left corner of the
 screen.
 
+## CV Input Configuration
+
+By default CV signals applied to `ain` will adjust the spread of the output waves.  If preferred, this can be changed
+to control the overall speed of the waves instead by creating/editing `/config/Lutra.json` on the module.
+
+```json
+{
+    "AIN_MODE": "spread"
+}
+```
+
+- `AIN_MODE`: sets the mode for `ain`. Must be one of `spread` or `speed`.  If set to `spread` the spread of clock
+  speeds of the outputs is controlled by `ain`.  If set to `speed` the master clock speed is controlled by `ain`.
+
+`ain` is expected to receive signals from zero to `MAX_INPUT_VOLTAGE` (default 12V -- see
+[EuroPi configuration](/software/CONFIGURATION.md)).  Increasing the voltage will increase the speed or spread of
+the LFOs.  Decreasing the speed/spread is not allowed, as EuroPi cannot accept negative voltages.  Instead it is
+recommended to set `k1` and `k2` to set the minimum desired speed & spread with `ain` unpatched. Then send an
+attenuated signal into `ain` to increase the speed/spread as desired.
+
 ## Knob Control
 
 Turning `k1` fully anticlockwise will set the clock speed to the slowest setting. Turning `k1` fully clockwise will set
 the clock speed to the fastest setting.
 
-Turning `k2` fully anticlockwise will set the spread to zero; every output will have the same clock speed, (though
-depending on previous settings and random noise) they may be phase-shifted from each other.
+Turning `k2` fully anticlockwise will set the spread of the waves to zero; every output will have the same clock speed,
+(though depending on previous settings and random noise) they may be phase-shifted from each other.
 
-Turning `k2`clockwise will gradually increase the spread of clock speeds. `cv1` will always stay locked to the base
-clock speed, with `cv2-6` becoming progressively faster.  At maximum spread, the outpts follow common harmonic intervals
-relative to the speed of `cv`:
+Turning `k2` clockwise will gradually increase the speed of `cv2-6`, with each output becoming slightly faster than
+the previous one. i.e. `cv2` will be faster than `cv1`, `cv3` will be faster than `cv2`, etc...
+
+At the maximum clockwise position, the speeds of `cv2-6` will be common harmonic intervals from `cv1`, as shown on the
+table below:
 
 | CV Output | Ratio w/ `cv1 | Max speed multiplier |
 |-----------|---------------|----------------------|
@@ -54,16 +63,7 @@ relative to the speed of `cv`:
 
 ## Re-syncing
 
-When `b1` or `din` receive a high voltage all CV outputs are temporarily halted.  Once the input drops low again
-all output LFOs will start again from the reset state.  In this way a very short gate(trigger) can be used to reset
-the LFOs, or a longer gate can hold them in a reset state for as long as desired.
-
-Note that if a gate signal is connected to `din` then both `din` and `b1` must be low for the LFOs to oscillate.
-
-## CV Control
-
-`ain` is expected to receive signals from zero to `MAX_INPUT_VOLTAGE` (default 12V -- see
-[EuroPi configuration](/software/CONFIGURATION.md)).  Increasing the voltage will increase the speed or spread of
-the LFOs.  Decreasing the speed/spread is not allowed, as EuroPi cannot accept negative voltages.  Instead it is
-recommended to set `k1` and `k2` to set the minimum desired speed & spread with `ain` unpatched. Then send an
-attenuated signal into `ain` to increase the speed/spread as desired.
+When `b1` is pressed or `din` receives a high voltage all CV outputs are temporarily halted. Once `b1` is released
+_and_ the signal on `din` drops back to `0.0V` the output signals will begin again, starting in their initial,
+synchronized state. This allows a very short gate (trigger) signal to reset all of the waves to re-synchronize them,
+or a longer gate can be used to hold the outputs at zero for as long as desired.
