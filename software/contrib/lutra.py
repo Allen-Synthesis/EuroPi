@@ -43,6 +43,13 @@ class WaveGenerator:
     """
 
     ## Supported wave shapes
+    WAVE_SHAPE_SINE = 0
+    WAVE_SHAPE_SQUARE = 1
+    WAVE_SHAPE_TRIANGLE = 2
+    WAVE_SHAPE_SAW = 3
+    WAVE_SHAPE_RAMP = 4
+    NUM_WAVE_SHAPES = 5
+
     WAVE_SHAPES_NAMES = [
         "Sine",
         "Square",
@@ -52,19 +59,12 @@ class WaveGenerator:
     ]
 
     WAVE_SHAPES_NAMES_TO_SHAPES = {
-        "sine": 0,
-        "square": 1,
-        "triangle": 2,
-        "saw": 3,
-        "ramp": 4,
+        "sine": WAVE_SHAPE_SINE,
+        "square": WAVE_SHAPE_SQUARE,
+        "triangle": WAVE_SHAPE_TRIANGLE,
+        "saw": WAVE_SHAPE_SAW,
+        "ramp": WAVE_SHAPE_RAMP,
     }
-
-    WAVE_SHAPE_SINE = 0
-    WAVE_SHAPE_SQUARE = 1
-    WAVE_SHAPE_TRIANGLE = 2
-    WAVE_SHAPE_SAW = 3
-    WAVE_SHAPE_RAMP = 4
-    NUM_WAVE_SHAPES = 5
 
     ## 12x12 pixel images of the wave shapes
     WAVE_SHAPE_IMAGES = [
@@ -285,7 +285,7 @@ class Lutra(EuroPiScript):
                 self.on_digital_in_rising()
             elif (
                 (self.digital_input_state.b1_falling and not self.digital_input_state.din_high) or
-                (self.digital_input_state.din_falling and not self.digital_input_state.b1_high)
+                (self.digital_input_state.din_falling and not self.digital_input_state.b1_pressed)
             ):
                 self.on_digital_in_falling()
 

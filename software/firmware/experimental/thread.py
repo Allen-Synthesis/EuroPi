@@ -14,6 +14,23 @@ class DigitalInputHelper:
 
     In your main loop you must call `.update()` to read the current state of the inputs & invoke the callback
     functions
+
+    Calling `.update()` will populate the following fields of the DigitalInputHelper:
+    - b1_last_pressed: the ms tick time that b1 was last pressed
+    - b1_last_released: the ms tick time that b1 was last released
+    - b1_pressed: True if b1 is currently pressed down, otherwise False
+    - b1_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
+    - b1_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
+    - b2_last_pressed: the ms tick time that b2 was last pressed
+    - b2_last_released: the ms tick time that b2 was last released
+    - b2_pressed: True if b2 is currently pressed down, otherwise False
+    - b2_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
+    - b2_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
+    - din_last_rise: the ms tick time that din last received a rising signal
+    - din_last_fall: the ms tick time that din last received a falling signal
+    - din_high: True if din is currently high, otherwise False
+    - din_rising: True if din transitioned to the high state during the last update() call, otherwise False
+    - din_falling: True if b1 transitioned to the low state during the last update() call, otherwise False
     """
 
     def __init__(
@@ -52,8 +69,8 @@ class DigitalInputHelper:
 
         # High/low flags for each input
         self.din_high = False
-        self.b1_high = False
-        self.b2_high = False
+        self.b1_pressed = False
+        self.b2_pressed = False
 
         # MS ticks when events were last recorded
         self.b1_last_pressed = 0
@@ -75,15 +92,15 @@ class DigitalInputHelper:
         self.din_rising = not self.din_high and din_state
         self.din_falling = self.din_high and not din_state
 
-        self.b1_rising = not self.b1_high and b1_state
-        self.b1_falling = self.b1_high and not b1_state
+        self.b1_rising = not self.b1_pressed and b1_state
+        self.b1_falling = self.b1_pressed and not b1_state
 
-        self.b2_rising = not self.b2_high and b2_state
-        self.b2_falling = self.b2_high and not b2_state
+        self.b2_rising = not self.b2_pressed and b2_state
+        self.b2_falling = self.b2_pressed and not b2_state
 
         self.din_high = din_state
-        self.b1_high = b1_state
-        self.b2_high = b2_state
+        self.b1_pressed = b1_state
+        self.b2_pressed = b2_state
 
         if self.b1_rising:
             self.b1_last_pressed = time.ticks_ms()
