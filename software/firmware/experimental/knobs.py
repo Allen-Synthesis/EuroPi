@@ -337,20 +337,44 @@ class KnobBank:
 
 
 class BufferedKnob(Knob):
-    """A knob whose value remains fixed until .update(...) is called
+    """A wrapper for a Knob instance whose value remains fixed until .update(...) is called
 
     This allows multiple uses of .percent(), .choice(...), etc... without forcing a re-read of
     the ADC value
-
-    :param knob:  The knob to wrap
     """
 
     def __init__(self, knob):
+        """Create a buffered wrapper for the given analogue input
+
+        The parameter @knob can be any Knob instance, including:
+        - europi.k1
+        - europi.k2
+
+        Until the .update() method is called, this class will return a value of 0.
+
+        @param knob The analogue input to wrap e.g.:
+                    ```python
+                    from europi import *
+                    from experimental.knobs import *
+                    k1_buffered = BufferedKnob(k1)
+                    ```
+        """
         super().__init__(knob.pin_id)
         self.value = 0
 
     def _sample_adc(self, samples=None):
+        """Overrides the internal function that samples the ADC
+
+        Instead of sampling we simply return the most recent sample value
+
+        @param samples  Ignored, but needed by the _sample_adc API used by AnalogueReader
+        """
         return self.value
 
     def update(self, samples=None):
+        """Re-read the ADC and update the buffered value
+
+        @param samples  Specifies the number of samples to average to de-noise the ADC reading
+                        See europi.AnalogueReader for details on ADC sampling
+        """
         self.value = super()._sample_adc(samples)
