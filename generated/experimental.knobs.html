@@ -82,6 +82,60 @@
   <section id="module-experimental.knobs">
 <span id="experimental-knobs"></span><h1>experimental.knobs<a class="headerlink" href="#module-experimental.knobs" title="Permalink to this heading"></a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="experimental.knobs.BufferedKnob">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">BufferedKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for a Knob instance whose value remains fixed until .update(…) is called</p>
+<p>This allows multiple uses of .percent(), .choice(…), etc… without forcing a re-read of
+the ADC value</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.choice">
+<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.choice" title="Permalink to this definition"></a></dt>
+<dd><p>Return a value from a list chosen by the current voltage value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.percent">
+<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.percent" title="Permalink to this definition"></a></dt>
+<dd><p>Return the knob’s position as relative percentage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.range">
+<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.range" title="Permalink to this definition"></a></dt>
+<dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.read_position">
+<span class="sig-name descname"><span class="pre">read_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.read_position" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the position as a value between zero and provided integer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.set_deadzone">
+<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.set_deadzone" title="Permalink to this definition"></a></dt>
+<dd><p>Override the default deadzone with the given value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.set_samples">
+<span class="sig-name descname"><span class="pre">set_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.set_samples" title="Permalink to this definition"></a></dt>
+<dd><p>Override the default number of sample reads with the given value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.update" title="Permalink to this definition"></a></dt>
+<dd><p>Re-read the ADC and update the buffered value</p>
+<dl class="simple">
+<dt>&#64;param samples  Specifies the number of samples to average to de-noise the ADC reading</dt><dd><p>See europi.AnalogueReader for details on ADC sampling</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">DisabledKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob" title="Permalink to this definition"></a></dt>
 <dd><p>A <a class="reference internal" href="#experimental.knobs.LockableKnob" title="experimental.knobs.LockableKnob"><code class="xref py py-class docutils literal notranslate"><span class="pre">LockableKnob</span></code></a> that cannot be unlocked and whose value is unimportant. Useful when
