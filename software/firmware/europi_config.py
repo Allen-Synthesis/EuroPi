@@ -73,7 +73,7 @@ class EuroPiConfig:
                 default=0
             ),
 
-            # Synthesizer family settings
+            # I/O voltage settings
             configuration.integer(
                 name="MAX_OUTPUT_VOLTAGE",
                 range=range(1, 11),
@@ -88,6 +88,12 @@ class EuroPiConfig:
                 name="GATE_VOLTAGE",
                 range=range(1, 11),
                 default=5
+            ),
+
+            # Menu settings
+            configuration.boolean(
+                name="MENU_AFTER_POWER_ON",
+                default=False
             ),
         ]
         # fmt: on

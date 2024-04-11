@@ -17,26 +17,28 @@ default configuration:
     "DISPLAY_CHANNEL": 0,
     "MAX_OUTPUT_VOLTAGE": 10,
     "MAX_INPUT_VOLTAGE": 12,
-    "GATE_VOLTAGE": 5
+    "GATE_VOLTAGE": 5,
+    "MENU_AFTER_POWER_ON": false
 }
 ```
 
-- `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported
-- `PICO_MODEL` must be one of `"pico"` or `"pico w"`
-- `CPU_FREQ` must be one of `250000000` or `125000000`
-- `ROTATE_DISPLAY` must be one of `false` or `true`
-- `DISPLAY_WIDTH` is the width of the screen in pixels. The standard EuroPi screen is 128 pixels wide
-- `DISPLAY_HEIGHT` is the height of the screen in pixels. The standard EuroPi screen is 32 pixels tall
-- `DISPLAY_SDA` is the I²C SDA pin used for the display. Only SDA capable pins can be selected
-- `DISPLAY_SCL` is the I²C SCL pin used for the display. Only SCL capable pins can be selected
-- `DISPLAY_CHANNEL` is the I²C channel used for the display, either 0 or 1.
-- `MAX_OUTPUT_VOLTAGE` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate.
+- `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported. Default: `"europi"`
+- `PICO_MODEL` must be one of `"pico"` or `"pico w"`. Default: `"pico"`
+- `CPU_FREQ` must be one of `250000000` or `125000000`. Default: `"250000000"`
+- `ROTATE_DISPLAY` must be one of `false` or `true`. Default: `false`
+- `DISPLAY_WIDTH` is the width of the screen in pixels. The standard EuroPi screen is 128 pixels wide. Default: `128`
+- `DISPLAY_HEIGHT` is the height of the screen in pixels. The standard EuroPi screen is 32 pixels tall. Default: `32`
+- `DISPLAY_SDA` is the I²C SDA pin used for the display. Only SDA capable pins can be selected. Default: `0`
+- `DISPLAY_SCL` is the I²C SCL pin used for the display. Only SCL capable pins can be selected. Default: `1`
+- `DISPLAY_CHANNEL` is the I²C channel used for the display, either 0 or 1. Default: `0`
+- `MAX_OUTPUT_VOLTAGE` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate. Default: `10`
   The hardware is capable of 10V maximum
 - `MAX_INPUT_VOLTAGE` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
-  The hardware is capable of 12V maximum
+  The hardware is capable of 12V maximum. Default: `12`
 - `GATE_VOLTAGE` is an integer in the range `[0, 10]` indicating the voltage that an output will produce when `cvx.on()`
-  is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`
-
+  is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`. Default: `5`
+- `MENU_AFTER_POWER_ON` is a boolean indicating whether or not the module should always return to the main menu when
+  it powers on.  By default the EuroPi will re-launch the last-used program instead of returning to the main menu. Default: `false`
 
 
 # Experimental configuration
@@ -52,7 +54,7 @@ shows the default configuration:
 }
 ```
 
-- `VOLTS_PER_OCTAVE` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard)
+- `VOLTS_PER_OCTAVE` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard). Default: `1.0`
 
 
 # Accessing config members in Python code
@@ -121,6 +123,7 @@ customizations described in the sections above. Below is a detailed summary of t
   'GATE_VOLTAGE',
   'MAX_INPUT_VOLTAGE',
   'MAX_OUTPUT_VOLTAGE',
+  'MENU_AFTER_POWER_ON',
   'PICO_MODEL',
   'ROTATE_DISPLAY'
 ]
@@ -141,3 +144,11 @@ import europi
 # A voltage range we can select from in a user menu
 VOLTAGE_RANGE = range(0, europi.europi_config.MAX_OUTPUT_VOLTAGE)
 ```
+
+# Note on Booleans
+
+Python uses `True` and `False` to represent boolean values (starting with upper-case letters), but JSON uses `true` and
+`false` (starting with lower-case letters).
+
+This is an unavoidable inconsistency between the configuration file and the Python source code. When modifying the JSON
+file to modify your configuration, make sure to use correct JSON boolean names, not Python names.
