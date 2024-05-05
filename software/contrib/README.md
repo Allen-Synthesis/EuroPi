@@ -68,6 +68,12 @@ the duration of the output signals.
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: gates, triggers</i>
 
+### Gate Phaser \[ [documentation](/software/contrib/gate_phaser.md) | [script](/software/contrib/gate_phaser.py) \]
+A script which attempts to answer the question "What would Steve Reich do if he had a EuroPi?"
+
+<i>Author: [gamecat69](https://github.com/gamecat69)</i>
+<br><i>Labels: sequencer, gates</i>
+
 ### Hamlet \[ [documentation](/software/contrib/hamlet.md) | [script](/software/contrib/hamlet.py) \]
 A variation of the Consequencer script specifically geared towards driving voices
 
