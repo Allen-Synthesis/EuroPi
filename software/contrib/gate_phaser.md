@@ -41,12 +41,12 @@ percussions elements, emvelopes, sequencer clocks or samples.
 
 Each output then sends a gate using the following formula:
 
-Delay Time * Gate Delay Multiple
+Cycle Time + (Delay Time * Gate Delay Multiple)
 
 Therefore:
 
 - Output 1 sends a gate every 1000ms 
-- Output 2 sends a gate every 500ms
+- Output 2 sends a gate every 1500ms
 - Output 3 sends a gate every 2000ms
 - Output 4 sends a gate every 2500ms
 - Output 5 sends a gate every 3000ms
@@ -54,12 +54,12 @@ Therefore:
 
 Which results in the following:
 
-| Output |   t0    | 500ms   | 1000ms  | 1500ms  | 2000ms  | 2500ms  | 3000ms  | 3500ms  |
-|--------|---------|---------|---------|---------|---------|---------|---------|---------|
-|   1    |    x    |         |    x    |         |    x    |         |    x    |         |
-|   2    |         |    x    |    x    |    x    |    x    |    x    |    x    |    x    |
-|   3    |         |         |         |         |    x    |         |         |         |
-|   4    |         |         |         |         |         |    x    |         |         |
-|   5    |         |         |         |         |         |         |    x    |         |
-|   6    |         |         |         |         |         |         |         |    x    |
+| Output |   t0    | 500ms   | 1000ms  | 1500ms  | 2000ms  | 2500ms  | 3000ms  | 3500ms  | 4000ms  |
+|--------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+|   1    |    x    |         |    x    |         |    x    |         |    x    |         |    x    |
+|   2    |         |         |         |    x    |         |         |    x    |         |         |
+|   3    |         |         |         |         |    x    |         |         |         |    x    |
+|   4    |         |         |         |         |         |    x    |         |         |         |
+|   5    |         |         |         |         |         |         |    x    |         |         |
+|   6    |         |         |         |         |         |         |         |    x    |         |
 
