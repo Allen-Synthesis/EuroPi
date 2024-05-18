@@ -12,6 +12,10 @@ from experimental.knobs import KnobBank
 from math import floor
 
 
+# This script operates in microseconds, so for convenience define one second as a constant
+ONE_SECOND = 1000000
+
+
 def ljust(s, length):
     """Re-implements the str.ljust method from standard Python
 
@@ -31,38 +35,38 @@ class ClockOutput:
         @param output_port  One of the six output CV ports, e.g. cv1, cv2, etc... that this class will control
         @param modifier     The initial clock modifier for this output channel
         """
-        self.last_external_clock_at = time.ticks_ms()
-        self.last_interval_ms = 0
+        self.last_external_clock_at = time.ticks_us()
+        self.last_interval_us = 0
         self.modifier = modifier
         self.output_port = output_port
 
         self.is_high = False
-        self.last_state_change_at = time.ticks_ms()
+        self.last_state_change_at = time.ticks_us()
 
-    def set_external_clock(self, ticks_ms):
+    def set_external_clock(self, ticks_us):
         """Notify this output when the last external clock signal was received.
 
         The calculate_state function will use this to calculate the duration of the high/low phases
         of the output gate
         """
-        if self.last_external_clock_at != ticks_ms:
-            self.last_interval_ms = time.ticks_diff(ticks_ms, self.last_external_clock_at)
-            self.last_external_clock_at = ticks_ms
+        if self.last_external_clock_at != ticks_us:
+            self.last_interval_us = time.ticks_diff(ticks_us, self.last_external_clock_at)
+            self.last_external_clock_at = ticks_us
 
-    def calculate_state(self, ms):
+    def calculate_state(self, us):
         """Calculate whether this output should be high or low based on the current time
 
         Must be called before calling set_output_voltage
 
-        @param ms  The current time in ms; passed as a parameter to synchronize multiple channels
+        @param us  The current time in us; passed as a parameter to synchronize multiple channels
         """
-        gate_duration_ms = self.last_interval_ms / self.modifier
-        hi_lo_duration_ms = gate_duration_ms / 2
+        gate_duration_us = self.last_interval_us / self.modifier
+        hi_lo_duration_us = gate_duration_us / 2
 
-        elapsed_ms = time.ticks_diff(ms, self.last_state_change_at)
+        elapsed_us = time.ticks_diff(us, self.last_state_change_at)
 
-        if elapsed_ms > hi_lo_duration_ms:
-            self.last_state_change_at = ms
+        if elapsed_us > hi_lo_duration_us:
+            self.last_state_change_at = us
             if self.is_high:
                 self.is_high = False
 
@@ -85,12 +89,13 @@ class ClockOutput:
         """
         self.is_high = False
         self.output_port.off()
-        self.last_state_change_at = time.ticks_ms()
+        self.last_state_change_at = time.ticks_us()
 
 class ClockModifier(EuroPiScript):
     """The main script class; multiplies and divides incoming clock signals
     """
     def __init__(self):
+        self.ui_dirty = False
         state = self.load_state_json()
 
         self.k1_bank = (
@@ -152,6 +157,7 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[0] = ' '
             self.channel_markers[1] = '>'
             self.channel_markers[2] = ' '
+            self.ui_dirty = True
 
         @b2.handler
         def b2_rising():
@@ -162,6 +168,7 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[0] = ' '
             self.channel_markers[1] = ' '
             self.channel_markers[2] = '>'
+            self.ui_dirty = True
 
         @b1.handler_falling
         def b1_falling():
@@ -173,6 +180,7 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
             self.state_dirty = True
+            self.ui_dirty = True
 
         @b2.handler_falling
         def b2_falling():
@@ -184,12 +192,13 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
             self.state_dirty = True
+            self.ui_dirty = True
 
         @din.handler
         def on_din():
             """Record the start time of our rising edge
             """
-            self.last_clock_at = time.ticks_ms()
+            self.last_clock_at = time.ticks_us()
 
         def on_ain():
             """Reset all channels when AIN goes high
@@ -219,6 +228,16 @@ class ClockModifier(EuroPiScript):
         """The main loop
         """
         knob_choices = list(self.clock_modifiers.keys())
+
+        prev_mods = [
+            knob_choices[0],
+            knob_choices[0],
+            knob_choices[0],
+            knob_choices[0],
+            knob_choices[0],
+            knob_choices[0],
+        ]
+
         while True:
             # update AIN so its rising edge callback can fire
             self.d_ain.update()
@@ -241,8 +260,8 @@ class ClockModifier(EuroPiScript):
                 self.outputs[i].modifier = self.clock_modifiers[mods[i]]
 
             # if we don't get an external signal within 1s, stop
-            now = time.ticks_ms()
-            if time.ticks_diff(now, self.last_clock_at) < 1000:
+            now = time.ticks_us()
+            if time.ticks_diff(now, self.last_clock_at) < ONE_SECOND:
                 # separate calculating the high/low state and setting the output voltage into two loops
                 # this helps reduce phase-shifting across outputs
                 for output in self.outputs:
@@ -256,17 +275,24 @@ class ClockModifier(EuroPiScript):
                     output.reset()
 
             # Update the GUI
-            # Yes, this is a very long string, but it centers nicely
-            # It looks something like this:
-            #
-            #    > 1: x1   4: /2
-            #      2: x2   5: x3
-            #      3: /4   6: /3
-            #
-            oled.fill(0)
-            oled.centre_text(
-                f"{self.channel_markers[0]} 1:{ljust(mods[0], 3)} 4:{ljust(mods[3], 3)}\n{self.channel_markers[1]} 2:{ljust(mods[1], 3)} 5:{ljust(mods[4], 3)}\n{self.channel_markers[2]} 3:{ljust(mods[2], 3)} 6:{ljust(mods[5], 3)}"
-            )
+            # This only needs to be done if the modifiers have changed or a button has been pressed/released
+            self.ui_dirty = self.ui_dirty or any([mods[i] != prev_mods[i] for i in range(len(mods))])
+            if self.ui_dirty:
+                # Yes, this is a very long string, but it centers nicely
+                # It looks something like this:
+                #
+                #    > 1: x1   4: /2
+                #      2: x2   5: x3
+                #      3: /4   6: /3
+                #
+                oled.fill(0)
+                oled.centre_text(
+                    f"{self.channel_markers[0]} 1:{ljust(mods[0], 3)} 4:{ljust(mods[3], 3)}\n{self.channel_markers[1]} 2:{ljust(mods[1], 3)} 5:{ljust(mods[4], 3)}\n{self.channel_markers[2]} 3:{ljust(mods[2], 3)} 6:{ljust(mods[5], 3)}"
+                )
+                self.ui_dirty = False
+
+            for i in range(len(mods)):
+                prev_mods[i] = mods[i]
 
 if __name__=="__main__":
     ClockModifier().main()
