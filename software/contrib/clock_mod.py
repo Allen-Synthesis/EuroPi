@@ -67,12 +67,7 @@ class ClockOutput:
 
         if elapsed_us > hi_lo_duration_us:
             self.last_state_change_at = us
-            if self.is_high:
-                self.is_high = False
-
-            else:
-                self.is_high = True
-                self.output_port.on()
+            self.is_high = not self.is_high
 
     def set_output_voltage(self):
         """Set the output voltage either high or low.
