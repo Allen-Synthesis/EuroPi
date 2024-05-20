@@ -26,6 +26,7 @@ def ljust(s, length):
     n_spaces = max(0, length - len(s))
     return s + ' '*n_spaces
 
+
 class ClockOutput:
     """A control class that handles a single output
     """
@@ -53,20 +54,20 @@ class ClockOutput:
             self.last_interval_us = time.ticks_diff(ticks_us, self.last_external_clock_at)
             self.last_external_clock_at = ticks_us
 
-    def calculate_state(self, us):
+    def calculate_state(self, ticks_us):
         """Calculate whether this output should be high or low based on the current time
 
         Must be called before calling set_output_voltage
 
-        @param us  The current time in us; passed as a parameter to synchronize multiple channels
+        @param ticks_us  The current time in microseconds; passed as a parameter to synchronize multiple channels
         """
         gate_duration_us = self.last_interval_us / self.modifier
         hi_lo_duration_us = gate_duration_us / 2
 
-        elapsed_us = time.ticks_diff(us, self.last_state_change_at)
+        elapsed_us = time.ticks_diff(ticks_us, self.last_state_change_at)
 
         if elapsed_us > hi_lo_duration_us:
-            self.last_state_change_at = us
+            self.last_state_change_at = ticks_us
             self.is_high = not self.is_high
 
     def set_output_voltage(self):
@@ -85,6 +86,7 @@ class ClockOutput:
         self.is_high = False
         self.output_port.off()
         self.last_state_change_at = time.ticks_us()
+
 
 class ClockModifier(EuroPiScript):
     """The main script class; multiplies and divides incoming clock signals
