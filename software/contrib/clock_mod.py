@@ -15,6 +15,10 @@ from math import floor
 # This script operates in microseconds, so for convenience define one second as a constant
 ONE_SECOND = 1000000
 
+# Automatically reset if we receive no input clocks after 5 seconds
+# This lets us handle resonably slow input clocks, while also providing some reasonable timing
+CLOCK_IN_TIMEOUT = 5 * ONE_SECOND
+
 
 def ljust(s, length):
     """Re-implements the str.ljust method from standard Python
@@ -41,8 +45,11 @@ class ClockOutput:
         self.modifier = modifier
         self.output_port = output_port
 
+        # Should the output be high or low?
         self.is_high = False
-        self.last_state_change_at = time.ticks_us()
+
+        # Used to implement basic gate-skipping for clock divisions
+        self.input_gate_counter = 0
 
     def set_external_clock(self, ticks_us):
         """Notify this output when the last external clock signal was received.
@@ -53,6 +60,7 @@ class ClockOutput:
         if self.last_external_clock_at != ticks_us:
             self.last_interval_us = time.ticks_diff(ticks_us, self.last_external_clock_at)
             self.last_external_clock_at = ticks_us
+            self.input_gate_counter += 1
 
     def calculate_state(self, ticks_us):
         """Calculate whether this output should be high or low based on the current time
@@ -61,14 +69,22 @@ class ClockOutput:
 
         @param ticks_us  The current time in microseconds; passed as a parameter to synchronize multiple channels
         """
-        gate_duration_us = self.last_interval_us / self.modifier
-        hi_lo_duration_us = gate_duration_us / 2
+        if self.modifier >= 1:
+            # We're in clock multiplication mode; calculate the duration of output gates and set high/low state
+            gate_duration_us = self.last_interval_us / self.modifier
+            hi_lo_duration_us = gate_duration_us / 2
 
-        elapsed_us = time.ticks_diff(ticks_us, self.last_state_change_at)
+            # The time elapsed since our last external clock
+            elapsed_us = time.ticks_diff(ticks_us, self.last_external_clock_at)
 
-        if elapsed_us > hi_lo_duration_us:
-            self.last_state_change_at = ticks_us
-            self.is_high = not self.is_high
+            # The number of phases that have happened since the last incoming clock
+            n_phases = elapsed_us // hi_lo_duration_us
+
+            self.is_high = n_phases % 2 == 0
+        else:
+            # We're in clock division mode; just do a simple gate-skip to stay in sync with the input
+            n_gates = round(1.0 / self.modifier)
+            self.is_high = self.input_gate_counter % (n_gates * 2) < n_gates
 
     def set_output_voltage(self):
         """Set the output voltage either high or low.
@@ -85,7 +101,7 @@ class ClockOutput:
         """
         self.is_high = False
         self.output_port.off()
-        self.last_state_change_at = time.ticks_us()
+        self.input_gate_counter = 0
 
 
 class ClockModifier(EuroPiScript):
@@ -256,9 +272,9 @@ class ClockModifier(EuroPiScript):
             for i in range(len(mods)):
                 self.outputs[i].modifier = self.clock_modifiers[mods[i]]
 
-            # if we don't get an external signal within 1s, stop
+            # if we don't get an external signal within the timeout duration, reset the outputs
             now = time.ticks_us()
-            if time.ticks_diff(now, self.last_clock_at) < ONE_SECOND:
+            if time.ticks_diff(now, self.last_clock_at) <= CLOCK_IN_TIMEOUT:
                 # separate calculating the high/low state and setting the output voltage into two loops
                 # this helps reduce phase-shifting across outputs
                 for output in self.outputs:
