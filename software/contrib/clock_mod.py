@@ -34,6 +34,11 @@ def ljust(s, length):
 class ClockOutput:
     """A control class that handles a single output
     """
+    ## The smallest common multiple of the allowed clock divisions (2, 3, 4, 5, 6, 8, 12)
+    #
+    #  Used to reset the input gate counter to avoid integer overflows/performance degredation with large values
+    MAX_GATE_COUNT = 120
+
     def __init__(self, output_port, modifier):
         """Constructor
 
@@ -60,7 +65,10 @@ class ClockOutput:
         if self.last_external_clock_at != ticks_us:
             self.last_interval_us = time.ticks_diff(ticks_us, self.last_external_clock_at)
             self.last_external_clock_at = ticks_us
+
             self.input_gate_counter += 1
+            if self.input_gate_counter >= self.MAX_GATE_COUNT:
+                self.input_gate_counter = 0
 
     def calculate_state(self, ticks_us):
         """Calculate whether this output should be high or low based on the current time
