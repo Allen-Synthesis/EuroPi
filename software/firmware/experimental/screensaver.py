@@ -30,9 +30,11 @@ class Screensaver:
 
     ## Standard duration before we activate the screensaver
     ACTIVATE_TIMEOUT_MS = 1000 * 60 * 5
+    ACTIVATE_TIMEOUT_US = ACTIVATE_TIMEOUT_MS * 1000
 
     ## Standard duration before we blank the screen
     BLANK_TIMEOUT_MS = 1000 * 60 * 20
+    BLANK_TIMEOUT_US = BLANK_TIMEOUT_MS * 1000
 
     def __init__(self):
         self.last_logo_reposition_at = 0

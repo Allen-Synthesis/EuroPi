@@ -9,6 +9,7 @@ from europi import *
 from europi_script import EuroPiScript
 from experimental.a_to_d import AnalogReaderDigitalWrapper
 from experimental.knobs import KnobBank
+from experimental.screensaver import Screensaver
 from math import floor
 
 
@@ -248,6 +249,9 @@ class ClockModifier(EuroPiScript):
     def main(self):
         """The main loop
         """
+        screensaver = Screensaver()
+        last_render_at = time.ticks_us()
+
         knob_choices = list(self.clock_modifiers.keys())
 
         prev_mods = [
@@ -311,9 +315,17 @@ class ClockModifier(EuroPiScript):
                     f"{self.channel_markers[0]} 1:{ljust(mods[0], 3)} 4:{ljust(mods[3], 3)}\n{self.channel_markers[1]} 2:{ljust(mods[1], 3)} 5:{ljust(mods[4], 3)}\n{self.channel_markers[2]} 3:{ljust(mods[2], 3)} 6:{ljust(mods[5], 3)}"
                 )
                 self.ui_dirty = False
+                last_render_at = time.ticks_us()
+            elif time.ticks_diff(now, last_render_at) > screensaver.ACTIVATE_TIMEOUT_US:
+                screensaver.draw()
+            elif time.ticks_diff(now, last_render_at) > screensaver.BLANK_TIMEOUT_US:
+                screensaver.draw_blank()
 
             for i in range(len(mods)):
                 prev_mods[i] = mods[i]
+
+
+
 
 if __name__=="__main__":
     ClockModifier().main()
