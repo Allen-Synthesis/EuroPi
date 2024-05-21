@@ -21,11 +21,17 @@ rising/falling edge triggers.
 | `cv5`         | Toggle output; changes state on every incoming rising edge        |
 | `cv6`         | Trigger output for the falling edge of `cv5`                      |
 
-The gate output on `cv1` has a normal range of 10ms to 2s, depending on the position of `k1`.  CV input to `ain` can
-increase this duration.
+Gate/trigger input on `din` should be at least 0.8V. Ideally the trigger duration should
+be at least 10ms, though shorter triggers may be usable.
 
 `ain` expects an input range of 0-10V.  `k2` acts as an attenuverter for this input signal.
 
+The gate output on `cv1` has a range of 50ms to 1s, depending on the position of `k1`.  The
+knob response is quadratic, giving finer precision at the higher (clockwise) end.
+
+When `ain` receives maximum voltage and `k2` is set to maximum gain, the duration of the gate on
+`cv1` is increased by 2 seconds, giving an absolute maximum gate duration of 3 seconds.  When
+`k2` is set to negative gain the minimum gate duration remains 50ms.
 
 ## Timing Diagram
 
@@ -72,3 +78,12 @@ ____________________________| |_______________________
 
 We assume that between the first and second pulses, the combined CV input via `k1`, `k2`, and `ain` has changed,
 resulting in different gate lengths (`L1` and `L2`, above)
+
+## Delayed Triggers
+
+If you need a delayed trigger, `cv4` can be used; set the gate duration of `cv1` to the desired delay
+duration.  `cv4` will fire a 10ms trigger on the falling edge of `cv1`, which will correspond with the
+rising edge of `din` plus the delay.  Note that using `cv4` in this way will limit the usefulness of `cv1`
+and `cv3`, as the gate length will be used to control the delay.
+
+There is no way to add a delay between the signal received from `din` or `b1` and the rising edge of the gate on `cv1`.
