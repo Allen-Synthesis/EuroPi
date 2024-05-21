@@ -81,9 +81,6 @@ class GatesAndTriggers(EuroPiScript):
         self.toggle_out = cv5
         self.toggle_fall_out = cv6
 
-        self.k1_percent = 0
-        self.k2_percent = 0
-
         turn_off_all_cvs()
 
         self.last_rise_at = 0
@@ -141,6 +138,10 @@ class GatesAndTriggers(EuroPiScript):
         toggle_on = False
         toggle_fall_at = 0
 
+        last_k1_percent = 0
+        last_k2_percent = 0
+        last_gate_duration = 0
+
         while(True):
             # read the knobs with higher samples
             # keep 1 decimal place
@@ -148,15 +149,14 @@ class GatesAndTriggers(EuroPiScript):
             k2_percent = round(self.k2.percent() * 100) / 100   # 0-1
             cv_percent = round(self.ain.percent() * 100) / 100  # 0-1
 
-            new_gate_duration = max(
+            gate_duration = max(
                 round(self.quadratic_knob(k1_percent) + cv_percent * k2_percent * 2000),
                 TRIGGER_DURATION_MS
             )
 
             # Refresh the GUI if the knobs have moved or the gate duration has changed
-            ui_dirty = self.k1_percent != k1_percent or self.k2_percent != k2_percent or gate_duration != new_gate_duration
+            ui_dirty = last_k1_percent != k1_percent or last_k2_percent != k2_percent or last_gate_duration != gate_duration
 
-            gate_duration = new_gate_duration
             now = time.ticks_ms()
             time_since_rise = time.ticks_diff(now, self.last_rise_at)
             time_since_fall = time.ticks_diff(now, self.last_fall_at)
@@ -214,8 +214,9 @@ class GatesAndTriggers(EuroPiScript):
             else:
                 self.toggle_fall_out.off()
 
-            self.k1_percent = k1_percent
-            self.k2_percent = k2_percent
+            last_k1_percent = k1_percent
+            last_k2_percent = k2_percent
+            last_gate_duration = gate_duration
 
             if ui_dirty:
                 self.last_user_interaction_at = now
