@@ -32,6 +32,19 @@ knob response is quadratic, giving finer precision at the higher (clockwise) end
 When `ain` receives maximum voltage and `k2` is set to maximum gain, the duration of the gate on
 `cv1` is increased by 2 seconds, giving an absolute maximum gate duration of 3 seconds.
 
+## Fine-tuning Gate Duration
+
+`k1` offers fairly coarse control over the gate length of `cv1`, especially at low values.  If you need to fine-tune
+a gate duration in the 50-150ms range you should set `k1` to its minimum value and use a combination of a constant
+voltage into `ain` and a relatively low gain set on `k2`.  By adjusting the value of your input voltage and turning `k2`
+you should be able to fine-tune the gate duration much more accurately.
+
+For example to accurately achieve 60ms gates, patch the output from an adjustable voltage source such as Intellijel's
+Quadratt (0-5V) or Molten Modular's Motion Meter (0-10V) into `ain`. Turn `k1` to its minimum setting and leave it
+there. Slowly increase `k2` and your voltage source while keeping an eye on EuroPi's display. When the display reads
+`Gate: 60ms` stop adjusting `k2` and the input voltage.  While fiddly, this method will provide much finer control
+for short gate durations.
+
 
 ## Timing Diagram
 
