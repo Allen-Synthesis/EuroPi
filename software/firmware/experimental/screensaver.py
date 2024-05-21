@@ -51,7 +51,8 @@ class Screensaver:
         LOGO_UPDATE_INTERVAL = 2000
 
         now = utime.ticks_ms()
-        if force or time.ticks_diff(now, self.last_logo_reposition_at) > LOGO_UPDATE_INTERVAL:
+        elapsed_ms = time.ticks_diff(now, self.last_logo_reposition_at)
+        if force or abs(elapsed_ms) >= LOGO_UPDATE_INTERVAL:
             self.last_logo_reposition_at = now
             x = random.randint(0, OLED_WIDTH - self.LOGO_WIDTH)
             y = random.randint(0, OLED_HEIGHT - self.LOGO_HEIGHT)
