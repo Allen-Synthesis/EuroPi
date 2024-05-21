@@ -19,7 +19,48 @@ from experimental.screensaver import Screensaver
 ## Trigger outputs are 10ms long (rising/falling edges of gate signals)
 TRIGGER_DURATION_MS = 10
 
-KNOB_SAMPLES = 500
+def median(l):
+    """Get the median value from an array
+
+    This is a cheater median, as we always choose the lower value if the length is even
+    """
+    if len(l) == 0:
+        return 0
+    arr = [i for i in l]
+    arr.sort()
+    return arr[len(arr) // 2]
+
+class MedianAnalogInput:
+    """A wrapper for an analogue input (e.g. knob, ain) that provides additional smoothing & debouncing
+    """
+
+    ## How many samples do we use when reading the raw input?
+    HW_SAMPLES = 500
+
+    ## The number of samples in our median window
+    WINDOW_SIZE = 5
+
+    def __init__(self, analog_in):
+        """Create the wrapper
+
+        @param analog_in  The input we're wrapping
+        """
+        self.analog_in = analog_in
+
+        self.samples = []
+
+    def percent(self):
+        """Read the hardware percentage and apply our additional smoothing
+
+        Smoothing is done using a simple 5-window median filter
+        """
+        self.samples.append(self.analog_in.percent(self.HW_SAMPLES))
+
+        if len(self.samples) > self.WINDOW_SIZE:
+            self.samples.pop(0)
+
+        return median(self.samples)
+
 
 class GatesAndTriggers(EuroPiScript):
     def __init__(self):
@@ -27,6 +68,10 @@ class GatesAndTriggers(EuroPiScript):
 
         self.on_incoming_rise_start_time = 0
         self.on_incoming_fall_start_time = 0
+
+        self.ain = MedianAnalogInput(ain)
+        self.k1 = MedianAnalogInput(k1)
+        self.k2 = MedianAnalogInput(k2)
 
         # assign each of the CV outputs to specific duties
         self.gate_out = cv1
@@ -99,16 +144,19 @@ class GatesAndTriggers(EuroPiScript):
         while(True):
             # read the knobs with higher samples
             # keep 1 decimal place
-            k1_percent = round(k1.percent(samples=KNOB_SAMPLES) * 100)
-            k2_percent = round(k2.percent(samples=KNOB_SAMPLES) * 100)
+            k1_percent = round(self.k1.percent() * 100)         # 0-100
+            k2_percent = round(self.k2.percent() * 100) / 100   # 0-1
+            cv_percent = round(self.ain.percent() * 100) / 100  # 0-1
 
-            # Refresh the GUI if the knobs have moved
-            ui_dirty = self.k1_percent != k1_percent or self.k2_percent != k2_percent
+            new_gate_duration = max(
+                round(self.quadratic_knob(k1_percent) + cv_percent * k2_percent * 2000),
+                TRIGGER_DURATION_MS
+            )
 
-            knob_lvl = k1_percent
-            cv_lvl = ain.percent(100) * (k2_percent * 0.02 - 1)
-            gate_duration = round(max(self.quadratic_knob(knob_lvl) + cv_lvl * 2000, TRIGGER_DURATION_MS))
+            # Refresh the GUI if the knobs have moved or the gate duration has changed
+            ui_dirty = self.k1_percent != k1_percent or self.k2_percent != k2_percent or gate_duration != new_gate_duration
 
+            gate_duration = new_gate_duration
             now = time.ticks_ms()
             time_since_rise = time.ticks_diff(now, self.last_rise_at)
             time_since_fall = time.ticks_diff(now, self.last_fall_at)

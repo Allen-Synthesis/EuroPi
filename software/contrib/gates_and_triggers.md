@@ -13,7 +13,7 @@ rising/falling edge triggers.
 | `b1`          | Manual input equivalent to `din`                                  |
 | `b2`          | Manual toggle input                                               |
 | `k1`          | Primary gate duration control                                     |
-| `k2`          | Attenuverter for CV input on `ain`                                |
+| `k2`          | Attenuator for CV input on `ain`                                  |
 | `cv1`         | Gate output for `din`/`b1`                                        |
 | `cv2`         | Trigger output for the rising edge of `din`/`b1`                  |
 | `cv3`         | Trigger output for the falling edge of `din`/`b1`                 |
@@ -24,14 +24,14 @@ rising/falling edge triggers.
 Gate/trigger input on `din` should be at least 0.8V. Ideally the trigger duration should
 be at least 10ms, though shorter triggers may be usable.
 
-`ain` expects an input range of 0-10V.  `k2` acts as an attenuverter for this input signal.
+`ain` expects an input range of 0-10V.  `k2` acts as an attenuator for this input signal.
 
 The gate output on `cv1` has a range of 50ms to 1s, depending on the position of `k1`.  The
 knob response is quadratic, giving finer precision at the higher (clockwise) end.
 
 When `ain` receives maximum voltage and `k2` is set to maximum gain, the duration of the gate on
-`cv1` is increased by 2 seconds, giving an absolute maximum gate duration of 3 seconds.  When
-`k2` is set to negative gain the minimum gate duration remains 50ms.
+`cv1` is increased by 2 seconds, giving an absolute maximum gate duration of 3 seconds.
+
 
 ## Timing Diagram
 
@@ -42,42 +42,43 @@ minimum).
 ```
 DIN or B1
          __________          __________
-________|          |________|          |______________
-
-B2
-                                                   __
-__________________________________________________|  |
-        .          .        .          .          .
-        .          .        .          .          .
-CV1     .          .        .          .          .
-        .______    .        .__________________   .
-________|      |____________|          .       |______
-        .  L1  .   .        .       L2 .       .  .
-        .      .   .        .          .       .  .
-CV2     .      .   .        .          .       .  .
-        ._     .   .        ._         .       .  .
-________| |_________________| |_______________________
-        .      .   .        .          .       .  .
-        .      .   .        .          .       .  .
-CV3     .      .   .        .          .       .  .
-        .      .   ._       .          ._      .  .
-___________________| |_________________| |___________
-        .      .            .                  .  .
-CV4     .      .            .                  .  .
-        .      ._           .                  ._ .
-_______________| |_____________________________| |___
-        .                   .                     .
-CV5     .                   .                     .
-        .___________________.                     .__
-________|                   |_____________________|
-                            .
-CV6                         .
-                            ._
-____________________________| |_______________________
+________|          |________|          |___________________
+        .          .        .          .
+B2      .          .        .          .
+        .          .        .          .           __   _
+__________________________________________________|  |_| |_
+        .          .        .          .          .    .
+        .          .        .          .          .    .
+CV1     .          .        .          .          .    .
+        .______    .        .__________________   .    .
+________|      |____________|          .       |____________
+        .  L1  .   .        .       L2 .       .  .    .
+        .      .   .        .          .       .  .    .
+CV2     .      .   .        .          .       .  .    .
+        ._     .   .        ._         .       .  .    .
+________| |_________________| |_____________________________
+        .T     .   .        .T         .       .  .    .
+        .      .   .        .          .       .  .    .
+CV3     .      .   .        .          .       .  .    .
+        .      .   ._       .          ._      .  .    .
+___________________| |_________________| |_________________
+        .      .    T       .           T      .  .    .
+CV4     .      .            .                  .  .    .
+        .      ._           .                  ._ .    .
+_______________| |_____________________________| |_________
+        .       T           .                   T .    .
+CV5     .                   .                     .    .
+        .___________________.                     .____.
+________|                   |_____________________|    |___
+                            .                          .
+CV6                         .                          .
+                            ._                         ._
+____________________________| |________________________| |_
+                             T                          T
 ```
 
 We assume that between the first and second pulses, the combined CV input via `k1`, `k2`, and `ain` has changed,
-resulting in different gate lengths (`L1` and `L2`, above)
+resulting in different gate lengths (`L1` and `L2`, above).  The trigger durations marked with `T` are 10ms.
 
 ## Delayed Triggers
 
