@@ -316,8 +316,6 @@ class ClockModifier(EuroPiScript):
                 )
                 self.ui_dirty = False
                 last_render_at = time.ticks_us()
-            elif time.ticks_diff(now, last_render_at) > screensaver.BLANK_TIMEOUT_US:
-                screensaver.draw_blank()
             elif time.ticks_diff(now, last_render_at) > screensaver.ACTIVATE_TIMEOUT_US:
                 screensaver.draw()
 
