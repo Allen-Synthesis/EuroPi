@@ -39,11 +39,10 @@ percussions elements, emvelopes, sequencer clocks or samples.
 - Gate Delay Time: 500ms
 - Gate Delay Multiples: 0:1:2:3:4:5
 
-Each output then sends a gate using the following formula:
+The initial output is sent after "Gate Delay Time * Gate Delay Multiple" milliseconds.
+Each subsequent output is sent after "Cycle Time + (Delay Time * Gate Delay Multiple)" milliseconds.
 
-Cycle Time + (Delay Time * Gate Delay Multiple)
-
-Therefore:
+Therefore after the initial gate output from each output:
 
 - Output 1 sends a gate every 1000ms 
 - Output 2 sends a gate every 1500ms
@@ -57,9 +56,9 @@ Which results in the following:
 | Output |   t0    | 500ms   | 1000ms  | 1500ms  | 2000ms  | 2500ms  | 3000ms  | 3500ms  | 4000ms  |
 |--------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
 |   1    |    x    |         |    x    |         |    x    |         |    x    |         |    x    |
-|   2    |         |         |         |    x    |         |         |    x    |         |         |
-|   3    |         |         |         |         |    x    |         |         |         |    x    |
-|   4    |         |         |         |         |         |    x    |         |         |         |
-|   5    |         |         |         |         |         |         |    x    |         |         |
-|   6    |         |         |         |         |         |         |         |    x    |         |
+|   2    |         |    x    |         |         |    x    |         |         |    x    |         |
+|   3    |         |         |    x    |         |         |         |    x    |         |         |
+|   4    |         |         |         |    x    |         |         |         |         |    x    |
+|   5    |         |         |         |         |    x    |         |         |         |         |
+|   6    |         |         |         |         |         |    x    |         |         |         |
 
