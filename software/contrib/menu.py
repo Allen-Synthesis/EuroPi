@@ -37,6 +37,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["KnobPlayground",    "contrib.knob_playground.KnobPlayground"],
     ["Kompari",           "contrib.kompari.Kompari"],
     ["Logic",             "contrib.logic.Logic"],
+    ["Lutra",             "contrib.lutra.Lutra"],
     ["MasterClock",       "contrib.master_clock.MasterClock"],
     ["NoddyHolder",       "contrib.noddy_holder.NoddyHolder"],
     ["Pam's Workout",     "contrib.pams.PamsWorkout"],
