@@ -35,7 +35,7 @@ class MedianAnalogInput:
     """
 
     ## How many samples do we use when reading the raw input?
-    HW_SAMPLES = 500
+    HW_SAMPLES = 100
 
     ## The number of samples in our median window
     WINDOW_SIZE = 5
@@ -158,11 +158,11 @@ class GatesAndTriggers(EuroPiScript):
             ui_dirty = last_k1_percent != k1_percent or last_k2_percent != k2_percent or last_gate_duration != gate_duration
 
             now = time.ticks_ms()
-            time_since_rise = time.ticks_diff(now, self.last_rise_at)
-            time_since_fall = time.ticks_diff(now, self.last_fall_at)
+            time_since_din_rise = time.ticks_diff(now, self.last_rise_at)
+            time_since_din_fall = time.ticks_diff(now, self.last_fall_at)
 
             # CV1: gate output based on rising edge of din/b1
-            if time_since_rise >= 0 and time_since_rise < gate_duration:
+            if time_since_din_rise >= 0 and time_since_din_rise <= gate_duration:
                 self.gate_out.on()
                 if not gate_on:
                     gate_on = True
@@ -175,13 +175,13 @@ class GatesAndTriggers(EuroPiScript):
                 self.gate_out.off()
 
             # CV2: trigger output for the rising edge of din/b1
-            if time_since_rise >= 0 and time_since_rise <= TRIGGER_DURATION_MS:
+            if time_since_din_rise >= 0 and time_since_din_rise <= TRIGGER_DURATION_MS:
                 self.incoming_rise_out.on()
             else:
                 self.incoming_rise_out.off()
 
             # CV3: trigger output for falling edge if din/b1
-            if time_since_fall >= 0 and time_since_fall <= TRIGGER_DURATION_MS:
+            if time_since_din_fall >= 0 and time_since_din_fall <= TRIGGER_DURATION_MS:
                 self.incoming_fall_out.on()
             else:
                 self.incoming_fall_out.off()
