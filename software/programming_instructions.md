@@ -33,6 +33,10 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
+> **_NOTE:_** Some users have reported issues downloading the correct firmware, OLED library, and EuroPi libraries when using Thonny
+`4.*.*` (e.g. `4.1.4`). If Thonny's package manager shows no results when searching for `micropython-europi` or `ssd1306` try downgrading
+to Thonny `3.3.*` (e.g. `3.3.13`).
+
 ### Installing the firmware
 1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.22.2`.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
