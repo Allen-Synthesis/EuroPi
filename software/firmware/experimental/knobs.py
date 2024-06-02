@@ -385,6 +385,10 @@ class BufferedKnob(Knob):
 
 class MedianAnalogInput:
     """A wrapper for an analogue input (e.g. knob, ain) that provides additional smoothing & debouncing
+
+    This class uses a window of the n latest samples from the underlying input and uses the median of
+    those samples. Larger window sizes will produce a more stable output, but at the cost of slowing
+    down reaction time to changes.
     """
 
     def __init__(self, analog_in, samples = 100, window_size = 5):
