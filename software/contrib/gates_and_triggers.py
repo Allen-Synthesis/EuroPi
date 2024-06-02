@@ -5,7 +5,7 @@ Also outputs a toggle input which changes state every time an incoming gate is r
 pressed.
 
 @author Chris Iverach-Brereton <ve4cib@gmail.com>
-@year   2023
+@year   2023-4
 """
 
 import time
@@ -14,21 +14,17 @@ from europi import *
 from europi_script import EuroPiScript
 from math import sqrt
 
+from experimental.math import median
 from experimental.screensaver import Screensaver
 
 ## Trigger outputs are 10ms long (rising/falling edges of gate signals)
 TRIGGER_DURATION_MS = 10
 
-def median(l):
-    """Get the median value from an array
+# Gate outputs have a range of 50ms to 1s normally
+# Maximum actual value can be increased via CV
+MIN_GATE_DURATION_MS = 50
+MAX_GATE_DURATION_MS = 1000
 
-    This is a cheater median, as we always choose the lower value if the length is even
-    """
-    if len(l) == 0:
-        return 0
-    arr = [i for i in l]
-    arr.sort()
-    return arr[len(arr) // 2]
 
 class MedianAnalogInput:
     """A wrapper for an analogue input (e.g. knob, ain) that provides additional smoothing & debouncing
@@ -122,12 +118,11 @@ class GatesAndTriggers(EuroPiScript):
 
         @param x  The value of the knob in the range [0, 100]
         """
-        MIN_GATE = 50
-        MAX_GATE = 1000
         if x <= 0:
-            return MIN_GATE
+            return MIN_GATE_DURATION_MS
 
-        return (MAX_GATE - MIN_GATE)/10 * sqrt(x) + MIN_GATE  # 10 = sqrt(x) at maximum value
+        # /10 == sqrt(x) at maximum value
+        return (MAX_GATE_DURATION_MS - MIN_GATE_DURATION_MS)/10 * sqrt(x) + MIN_GATE_DURATION_MS
 
     def main(self):
         ui_dirty = True
@@ -151,7 +146,7 @@ class GatesAndTriggers(EuroPiScript):
 
             gate_duration = max(
                 round(self.quadratic_knob(k1_percent) + cv_percent * k2_percent * 2000),
-                TRIGGER_DURATION_MS
+                MIN_GATE_DURATION_MS
             )
 
             # Refresh the GUI if the knobs have moved or the gate duration has changed
