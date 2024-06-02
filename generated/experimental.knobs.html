@@ -418,6 +418,22 @@ before the knob unlocks, the unlock is aborted.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.knobs.MedianAnalogInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">MedianAnalogInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analog_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.MedianAnalogInput" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for an analogue input (e.g. knob, ain) that provides additional smoothing &amp; debouncing</p>
+<p>This class uses a window of the n latest samples from the underlying input and uses the median of
+those samples. Larger window sizes will produce a more stable output, but at the cost of slowing
+down reaction time to changes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.MedianAnalogInput.percent">
+<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.MedianAnalogInput.percent" title="Permalink to this definition"></a></dt>
+<dd><p>Read the hardware percentage and apply our additional smoothing</p>
+<p>Smoothing is done using a simple 5-window median filter</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
