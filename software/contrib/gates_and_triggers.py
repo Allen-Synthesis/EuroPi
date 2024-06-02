@@ -14,7 +14,7 @@ from europi import *
 from europi_script import EuroPiScript
 from math import sqrt
 
-from experimental.math import median
+from experimental.knobs import MedianAnalogInput
 from experimental.screensaver import Screensaver
 
 ## Trigger outputs are 10ms long (rising/falling edges of gate signals)
@@ -24,38 +24,6 @@ TRIGGER_DURATION_MS = 10
 # Maximum actual value can be increased via CV
 MIN_GATE_DURATION_MS = 50
 MAX_GATE_DURATION_MS = 1000
-
-
-class MedianAnalogInput:
-    """A wrapper for an analogue input (e.g. knob, ain) that provides additional smoothing & debouncing
-    """
-
-    ## How many samples do we use when reading the raw input?
-    HW_SAMPLES = 100
-
-    ## The number of samples in our median window
-    WINDOW_SIZE = 5
-
-    def __init__(self, analog_in):
-        """Create the wrapper
-
-        @param analog_in  The input we're wrapping
-        """
-        self.analog_in = analog_in
-
-        self.samples = []
-
-    def percent(self):
-        """Read the hardware percentage and apply our additional smoothing
-
-        Smoothing is done using a simple 5-window median filter
-        """
-        self.samples.append(self.analog_in.percent(self.HW_SAMPLES))
-
-        if len(self.samples) > self.WINDOW_SIZE:
-            self.samples.pop(0)
-
-        return median(self.samples)
 
 
 class GatesAndTriggers(EuroPiScript):

@@ -1,6 +1,9 @@
 from collections import OrderedDict
 from europi import Knob, MAX_UINT16
 
+from experimental.math import median
+
+
 DEFAULT_THRESHOLD = 0.05
 
 
@@ -378,3 +381,35 @@ class BufferedKnob(Knob):
                         See europi.AnalogueReader for details on ADC sampling
         """
         self.value = super()._sample_adc(samples)
+
+
+class MedianAnalogInput:
+    """A wrapper for an analogue input (e.g. knob, ain) that provides additional smoothing & debouncing
+    """
+
+    ## How many samples do we use when reading the raw input?
+    HW_SAMPLES = 100
+
+    ## The number of samples in our median window
+    WINDOW_SIZE = 5
+
+    def __init__(self, analog_in):
+        """Create the wrapper
+
+        @param analog_in  The input we're wrapping
+        """
+        self.analog_in = analog_in
+
+        self.samples = []
+
+    def percent(self):
+        """Read the hardware percentage and apply our additional smoothing
+
+        Smoothing is done using a simple 5-window median filter
+        """
+        self.samples.append(self.analog_in.percent(self.HW_SAMPLES))
+
+        if len(self.samples) > self.WINDOW_SIZE:
+            self.samples.pop(0)
+
+        return median(self.samples)
