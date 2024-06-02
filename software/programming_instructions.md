@@ -33,10 +33,6 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
-> **_NOTE:_** Some users have reported issues downloading the correct firmware, OLED library, and EuroPi libraries when using Thonny
-`4.*.*` (e.g. `4.1.4`). If Thonny's package manager shows no results when searching for `micropython-europi` or `ssd1306` try downgrading
-to Thonny `3.3.*` (e.g. `3.3.13`).
-
 ### Installing the firmware
 1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.22.2`.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
@@ -62,7 +58,7 @@ to Thonny `3.3.*` (e.g. `3.3.13`).
     ![image](https://user-images.githubusercontent.com/79809962/196224993-70a7a662-90ca-45df-90f6-a2c1f1f70a9e.png)
 
 6. Click Tools -> Manage Packages to open the package manager.
-7. Type 'ssd1306' into the search box and click 'Search on PyPi'
+7. Type 'micropython-ssd1306' into the search box and click 'Search on PyPi'
 8. Click the result named 'micropython-ssd1306'.
 
     ![ssd1306 library](https://i.imgur.com/7t2mWHh.jpg)
@@ -75,7 +71,7 @@ to Thonny `3.3.*` (e.g. `3.3.13`).
 ### Installing the EuroPi library
 
 Use the exact same process as for the ssd1306 library to install the europi library:
-1. Type 'europi' into the search box and click 'Search on PyPi'
+1. Type 'micropython-europi' into the search box and click 'Search on PyPi'
 2. Click the result named 'micropython-europi'.
 
     ![image](https://user-images.githubusercontent.com/79809962/156630180-7f727567-89b1-4b8a-a3e0-63f2da3ea30c.png)
