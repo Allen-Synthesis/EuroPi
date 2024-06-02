@@ -387,18 +387,16 @@ class MedianAnalogInput:
     """A wrapper for an analogue input (e.g. knob, ain) that provides additional smoothing & debouncing
     """
 
-    ## How many samples do we use when reading the raw input?
-    HW_SAMPLES = 100
-
-    ## The number of samples in our median window
-    WINDOW_SIZE = 5
-
-    def __init__(self, analog_in):
+    def __init__(self, analog_in, samples = 100, window_size = 5):
         """Create the wrapper
 
-        @param analog_in  The input we're wrapping
+        @param analog_in    The input we're wrapping (e.g. k1, k2, ain)
+        @param samples      The number of samples to use when reading from analog_in
+        @param window_size  The number of samples used for calculating the median
         """
         self.analog_in = analog_in
+        self.n_samples = samples
+        self.window_size = window_size
 
         self.samples = []
 
@@ -407,9 +405,9 @@ class MedianAnalogInput:
 
         Smoothing is done using a simple 5-window median filter
         """
-        self.samples.append(self.analog_in.percent(self.HW_SAMPLES))
+        self.samples.append(self.analog_in.percent(self.n_samples))
 
-        if len(self.samples) > self.WINDOW_SIZE:
+        if len(self.samples) > self.window_size:
             self.samples.pop(0)
 
         return median(self.samples)
