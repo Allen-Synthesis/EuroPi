@@ -391,7 +391,7 @@ class MedianAnalogInput:
     down reaction time to changes.
     """
 
-    def __init__(self, analog_in, samples = 100, window_size = 5):
+    def __init__(self, analog_in, samples=100, window_size=5):
         """Create the wrapper
 
         @param analog_in    The input we're wrapping (e.g. k1, k2, ain)
