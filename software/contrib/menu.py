@@ -1,6 +1,6 @@
 """See menu.md for details."""
 # Reset the module state and display bootsplash screen.
-from europi import bootsplash, usb_connected
+from europi import bootsplash
 
 
 bootsplash()
@@ -21,6 +21,7 @@ from collections import OrderedDict
 EUROPI_SCRIPTS = OrderedDict([
 #   ["0123456789abcdef",  "contrib.spam.Eggs"],
     ["Bernoulli Gates",   "contrib.bernoulli_gates.BernoulliGates"],
+    ["Bit Garden",        "contrib.bit_garden.BitGarden"],
     ["Clock Modifier",    "contrib.clock_mod.ClockModifier"],
     ["Coin Toss",         "contrib.coin_toss.CoinToss"],
     ["Consequencer",      "contrib.consequencer.Consequencer"],
@@ -31,12 +32,14 @@ EUROPI_SCRIPTS = OrderedDict([
     ["EnvelopeGen",       "contrib.envelope_generator.EnvelopeGenerator"],
     ["Euclid",            "contrib.euclid.EuclideanRhythms"],
     ["Gates & Triggers",  "contrib.gates_and_triggers.GatesAndTriggers"],
+    ["Gate Phaser",       "contrib.gate_phaser.GatePhaser"],
     ["Hamlet",            "contrib.hamlet.Hamlet"],
     ["HarmonicLFOs",      "contrib.harmonic_lfos.HarmonicLFOs"],
     ["HelloWorld",        "contrib.hello_world.HelloWorld"],
     ["KnobPlayground",    "contrib.knob_playground.KnobPlayground"],
     ["Kompari",           "contrib.kompari.Kompari"],
     ["Logic",             "contrib.logic.Logic"],
+    ["Lutra",             "contrib.lutra.Lutra"],
     ["MasterClock",       "contrib.master_clock.MasterClock"],
     ["NoddyHolder",       "contrib.noddy_holder.NoddyHolder"],
     ["Pam's Workout",     "contrib.pams.PamsWorkout"],

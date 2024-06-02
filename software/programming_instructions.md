@@ -58,7 +58,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
     ![image](https://user-images.githubusercontent.com/79809962/196224993-70a7a662-90ca-45df-90f6-a2c1f1f70a9e.png)
 
 6. Click Tools -> Manage Packages to open the package manager.
-7. Type 'ssd1306' into the search box and click 'Search on PyPi'
+7. Type 'micropython-ssd1306' into the search box and click 'Search on PyPi'
 8. Click the result named 'micropython-ssd1306'.
 
     ![ssd1306 library](https://i.imgur.com/7t2mWHh.jpg)
@@ -71,7 +71,7 @@ To start with, you'll need to download the [Thonny IDE](https://thonny.org/). Th
 ### Installing the EuroPi library
 
 Use the exact same process as for the ssd1306 library to install the europi library:
-1. Type 'europi' into the search box and click 'Search on PyPi'
+1. Type 'micropython-europi' into the search box and click 'Search on PyPi'
 2. Click the result named 'micropython-europi'.
 
     ![image](https://user-images.githubusercontent.com/79809962/156630180-7f727567-89b1-4b8a-a3e0-63f2da3ea30c.png)

@@ -68,6 +68,12 @@ the duration of the output signals.
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: gates, triggers</i>
 
+### Gate Phaser \[ [documentation](/software/contrib/gate_phaser.md) | [script](/software/contrib/gate_phaser.py) \]
+A script which attempts to answer the question "What would Steve Reich do if he had a EuroPi?"
+
+<i>Author: [gamecat69](https://github.com/gamecat69)</i>
+<br><i>Labels: sequencer, gates</i>
+
 ### Hamlet \[ [documentation](/software/contrib/hamlet.md) | [script](/software/contrib/hamlet.py) \]
 A variation of the Consequencer script specifically geared towards driving voices
 
@@ -100,6 +106,15 @@ Treats both inputs as digital on/off signals and outputs the results of binary A
 
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: logic, gates, binary operators</i>
+
+### Lutra \[ [documentation](/software/contrib/lutra.md) | [script](/software/contrib/lutra.py) \]
+
+Six syncable LFOs with variable wave shapes. The clock speed of each LFO is slightly different, with an adjustable base speed and CV-controllable spread.
+
+Inspired by [Expert Sleepers' Otterly](https://expert-sleepers.co.uk/otterley.html) module.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: lfo</i>
 
 ### Noddy Holder \[ [documentation](/software/contrib/noddy_holder.md) | [script](/software/contrib/noddy_holder.py) \]
 Two channels of sample/track and hold based on a single trigger and CV source
