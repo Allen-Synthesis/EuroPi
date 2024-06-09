@@ -1,9 +1,25 @@
-from time import sleep
-from europi import oled, din, cv1, cv2, cv3, k1, k2, b1, b2, ain, OLED_WIDTH, OLED_HEIGHT, europi_config
+from europi import *
 from europi_script import EuroPiScript
 
-from time import sleep_ms, ticks_ms, ticks_diff
+from time import sleep, sleep_ms, ticks_ms, ticks_diff
 from math import log
+
+
+#Output a 10ms trigger to indicate end-of-rise and end-of-fall on CV5/6
+TRIGGER_DURATION_MS = 10
+
+#Constants for tracking the direction of the envelope's voltage
+DIRECTION_RISING = 1
+DIRECTION_FALLING = 0
+DIRECTION_SUSTAIN = 3
+
+#Sustain modes
+SUSTAIN_MODE_AR = 0
+SUSTAIN_MODE_ASR = 1
+
+#Looping modes
+LOOPING_MODE_LOOP = 1
+LOOPING_MODE_ONCE = 0
 
 
 class EnvelopeGenerator(EuroPiScript):
@@ -11,8 +27,12 @@ class EnvelopeGenerator(EuroPiScript):
         super().__init__()
         state = self.load_state_json()
 
-        self.sustain_mode = state.get("sustain_mode", 1)
-        self.looping_mode = state.get("looping_mode", 0)
+        self.sustain_mode = state.get("sustain_mode", SUSTAIN_MODE_ASR)
+        self.looping_mode = state.get("looping_mode", LOOPING_MODE_ONCE)
+
+        #Milliscond tick of of the most recent end-of-rise and end-of-fall
+        self.last_rise_end_at = 0
+        self.last_fall_end_at = 0
 
         self.max_output_voltage = europi_config.MAX_OUTPUT_VOLTAGE
 
@@ -35,12 +55,16 @@ class EnvelopeGenerator(EuroPiScript):
 
         self.envelope_display_bounds = [0, 0, int(OLED_WIDTH), int(OLED_HEIGHT / 2)]
 
-        self.direction = 3  # Rising = 1, Falling = 0, Sustain = 3
+        self.direction = DIRECTION_SUSTAIN  # DIRECTION_RISING, DIRECTION_FALLING, or DIRECTION_SUSTAIN
         self.envelope_value = 0
 
         self.envelope_out = cv2
         self.envelope_inverted_out = cv3
         self.din_copy_out = cv1
+
+        self.sustain_gate = cv4
+        self.eor_trigger = cv5
+        self.eof_trigger = cv6
 
         din.handler(self.receive_trigger_rise)
         din.handler_falling(self.receive_trigger_fall)
@@ -58,7 +82,10 @@ class EnvelopeGenerator(EuroPiScript):
         self.direction = 1
 
     def receive_trigger_fall(self):
-        self.direction = 0
+        if self.direction == DIRECTION_RISING:
+            # Interrupted rise; output the trigger because we've risen as high as we're going to
+            self.last_rise_end_at = time.ticks_ms()
+        self.direction = DIRECTION_FALLING
 
     def change_sustain_mode(self):
         self.sustain_mode = 1 - self.sustain_mode
@@ -85,28 +112,30 @@ class EnvelopeGenerator(EuroPiScript):
 
     def update_envelope_value(self):
         #Envelope rising
-        if self.direction == 1:
+        if self.direction == DIRECTION_RISING:
             increment = self.difference(self.envelope_value, self.max_output_voltage) / self.increment_factor[0]
             self.envelope_value += increment
             if self.difference(self.envelope_value, self.max_output_voltage) <= self.voltage_threshold:
                 self.envelope_value = self.max_output_voltage
                 if self.sustain_mode == 1 and self.looping_mode == 0:
-                    self.direction = 3
+                    self.direction = DIRECTION_SUSTAIN
                 else:
-                    self.direction = 0
+                    self.direction = DIRECTION_FALLING
+                self.last_rise_end_at = time.ticks_ms()
             else:
                 sleep_ms(self.increment_delay)
 
         #Envelope falling
-        elif self.direction == 0:
+        elif self.direction == DIRECTION_FALLING:
             increment = self.difference(0, self.envelope_value) / self.increment_factor[1]
             self.envelope_value -= increment
             if self.difference(0, self.envelope_value) <= self.voltage_threshold:
                 self.envelope_value = 0
-                if self.looping_mode == 0:
-                    self.direction = 3
+                if self.looping_mode == LOOPING_MODE_ONCE:
+                    self.direction = DIRECTION_SUSTAIN
                 else:
-                    self.direction = 1
+                    self.direction = DIRECTION_RISING
+                self.last_fall_end_at = time.ticks_ms()
             else:
                 sleep_ms(self.increment_delay)
 
@@ -117,6 +146,22 @@ class EnvelopeGenerator(EuroPiScript):
     def update_output_voltage(self):
         self.envelope_out.voltage(self.envelope_value)
         self.envelope_inverted_out.voltage(self.max_output_voltage - self.envelope_value)
+
+        if self.direction == DIRECTION_SUSTAIN:
+            self.sustain_gate.on()
+        else:
+            self.sustain_gate.off()
+
+        now = time.ticks_ms()
+        if time.ticks_diff(now, self.last_rise_end_at) <= TRIGGER_DURATION_MS:
+            self.eor_trigger.on()
+        else:
+            self.eor_trigger.off()
+
+        if time.ticks_diff(now, self.last_fall_end_at) <= TRIGGER_DURATION_MS:
+            self.eof_trigger.on()
+        else:
+            self.eof_trigger.off()
 
     def update_display(self):
         if ticks_diff(ticks_ms(), self.last_refreshed_display) >= self.display_refresh_rate:
@@ -164,9 +209,9 @@ class EnvelopeGenerator(EuroPiScript):
 
                 #Draw current envelope position
                 current_envelope_position = 0
-                if self.direction == 1 or self.direction == 3:
+                if self.direction == DIRECTION_RISING or self.direction == DIRECTION_SUSTAIN:
                     current_envelope_position = int((self.envelope_value / self.max_output_voltage) * rise_width_pixels)
-                elif self.direction == 0:
+                elif self.direction == DIRECTION_FALLING:
                     current_envelope_position = self.envelope_display_bounds[2] - 1 - int((self.envelope_value / self.max_output_voltage) * (self.envelope_display_bounds[2] - rise_width_pixels))
                 oled.vline(current_envelope_position, self.envelope_display_bounds[1], (self.envelope_display_bounds[3] - 1), 1)
             else:
@@ -175,25 +220,25 @@ class EnvelopeGenerator(EuroPiScript):
                 oled.vline((self.envelope_display_bounds[2] - 1), self.envelope_display_bounds[1], self.envelope_display_bounds[3], 1)
 
             #Display current envelope direction
-            if self.direction == 1:
+            if self.direction == DIRECTION_RISING:
                 direction_text = 'rise'
-            elif self.direction == 0:
+            elif self.direction == DIRECTION_FALLING:
                 direction_text = 'fall'
-            elif self.direction == 3 and self.envelope_value == self.max_output_voltage:
+            elif self.direction == DIRECTION_SUSTAIN and self.envelope_value == self.max_output_voltage:
                 direction_text = 'hold'
             else:
                 direction_text = 'off'
             oled.text(direction_text, 0, 20, 1)
 
             #Display current envelope mode (AR or ASR)
-            if self.sustain_mode == 0:
+            if self.sustain_mode == SUSTAIN_MODE_AR:
                 sustain_mode_text = 'ar'
             else:
                 sustain_mode_text = 'asr'
             oled.text(sustain_mode_text, 50 + (4 if sustain_mode_text == 'ar' else 0), 20, 1)
 
             #Display current envelope looping mode
-            if self.looping_mode == 0:
+            if self.looping_mode == LOOPING_MODE_ONCE:
                 looping_mode_text = 'once'
             else:
                 looping_mode_text = 'loop'

@@ -18,3 +18,6 @@ Inputs and Outputs:
 - **cv 1:** a copy of the digital input
 - **cv 2:** the generated envelope
 - **cv 3:** the inversion of the generated envelope
+- **cv 4:** a gate that is high whenever the envelope is in a sustain state
+- **cv 5:** a 10ms end-of-rise trigger
+- **cv 6:** a 10ms end-of-fall trigger
