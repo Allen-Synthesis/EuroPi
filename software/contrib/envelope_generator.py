@@ -31,8 +31,9 @@ class EnvelopeGenerator(EuroPiScript):
         self.looping_mode = state.get("looping_mode", LOOPING_MODE_ONCE)
 
         #Milliscond tick of of the most recent end-of-rise and end-of-fall
-        self.last_rise_end_at = 0
-        self.last_fall_end_at = 0
+        #initialized to be 2x trigger duration in the past on startup to prevent roll-over issues
+        self.last_rise_end_at = time.ticks_add(time.ticks_ms(), -2*TRIGGER_DURATION_MS)
+        self.last_fall_end_at = self.last_rise_end_at
 
         self.max_output_voltage = europi_config.MAX_OUTPUT_VOLTAGE
 
