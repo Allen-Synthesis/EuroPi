@@ -26,8 +26,8 @@ class Logic(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        self.b1_high = False
-        self.b2_high = False
+        self.b1_high = 0
+        self.b2_high = 0
 
     @classmethod
     def display_name(cls):
