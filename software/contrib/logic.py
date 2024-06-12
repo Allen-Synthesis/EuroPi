@@ -26,9 +26,8 @@ class Logic(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        # keep track of the last time the user interacted with the module
-        # if we're idle for too long, start the screensaver
-        self.last_interaction_time = time.ticks_ms()
+        self.b1_high = False
+        self.b2_high = False
 
     @classmethod
     def display_name(cls):
@@ -44,16 +43,26 @@ class Logic(EuroPiScript):
         @b1.handler
         def on_b1_press():
             ssoled.notify_user_interaction()
+            self.b1_high = 1
 
         @b2.handler
         def on_b2_press():
             ssoled.notify_user_interaction()
+            self.b2_high = 1
+
+        @b1.handler_falling
+        def on_b1_release():
+            self.b1_high = 0
+
+        @b2.handler_falling
+        def on_b2_release():
+            self.b2_high = 0
 
         while True:
 
             # read both inputs as 0/1
-            x = din.value()
-            y = 1 if ain.read_voltage() > AIN_VOLTAGE_CUTOFF else 0
+            x = (din.value() or self.b1_high) | self.b1_high
+            y = (1 if ain.read_voltage() > AIN_VOLTAGE_CUTOFF else 0) | self.b2_high
 
             x_and_y = x & y
             x_or_y = x | y
