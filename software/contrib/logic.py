@@ -61,7 +61,7 @@ class Logic(EuroPiScript):
         while True:
 
             # read both inputs as 0/1
-            x = (din.value() or self.b1_high) | self.b1_high
+            x = din.value() | self.b1_high
             y = (1 if ain.read_voltage() > AIN_VOLTAGE_CUTOFF else 0) | self.b2_high
 
             x_and_y = x & y
