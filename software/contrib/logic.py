@@ -26,9 +26,6 @@ class Logic(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        self.b1_high = 0
-        self.b2_high = 0
-
     @classmethod
     def display_name(cls):
         return "Logic"
@@ -43,26 +40,16 @@ class Logic(EuroPiScript):
         @b1.handler
         def on_b1_press():
             ssoled.notify_user_interaction()
-            self.b1_high = 1
 
         @b2.handler
         def on_b2_press():
             ssoled.notify_user_interaction()
-            self.b2_high = 1
-
-        @b1.handler_falling
-        def on_b1_release():
-            self.b1_high = 0
-
-        @b2.handler_falling
-        def on_b2_release():
-            self.b2_high = 0
 
         while True:
 
             # read both inputs as 0/1
-            x = din.value() | self.b1_high
-            y = (1 if ain.read_voltage() > AIN_VOLTAGE_CUTOFF else 0) | self.b2_high
+            x = din.value() | b1.value()
+            y = (1 if ain.read_voltage() > AIN_VOLTAGE_CUTOFF else 0) | b2.value()
 
             x_and_y = x & y
             x_or_y = x | y
