@@ -58,12 +58,12 @@ class Quantizer:
 
     def __len__(self):
         return len(self.notes)
-    
+
     def __str__(self):
         if self.name:
             return self.name
         else:
-            return "".join(['1' if self.notes[i] else '0' for i in range(len(self.notes))])
+            return "".join(["1" if self.notes[i] else "0" for i in range(len(self.notes))])
 
     def quantize(self, analog_in, root=0):
         """Take an analog input voltage and round it to the nearest note on our scale
