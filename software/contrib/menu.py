@@ -20,7 +20,7 @@ from collections import OrderedDict
 # fmt: off
 EUROPI_SCRIPTS = OrderedDict([
 #   ["0123456789abcdef",  "contrib.spam.Eggs"],
-    ["Arpeggiator",       "contrib.arp.Arpeggiator"]
+    ["Arpeggiator",       "contrib.arp.Arpeggiator"],
     ["Bernoulli Gates",   "contrib.bernoulli_gates.BernoulliGates"],
     ["Bit Garden",        "contrib.bit_garden.BitGarden"],
     ["Clock Modifier",    "contrib.clock_mod.ClockModifier"],
