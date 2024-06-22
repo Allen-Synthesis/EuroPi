@@ -147,14 +147,7 @@ class Arpeggiator(EuroPiScript):
         if self.scale_changed:
             self.scale_changed = False
             self.set_scale()
-
-        # Increment the note & octave counter
-        self.n_notes_played += 1
-        if self.n_notes_played >= len(self.arps[0]):
-            self.current_octave += 1
-            self.n_notes_played = 0
-            if self.current_octave >= self.n_octaves:
-                self.current_octave = 0
+            self.save()
 
         # apply the output voltages; each one is slightly unique
 
@@ -182,6 +175,13 @@ class Arpeggiator(EuroPiScript):
         volts = random.randint(self.root_octave, self.root_octave + self.n_octaves) * VOLTS_PER_OCTAVE + (self.root + self.arps[5].next_note()) * VOLTS_PER_SEMITONE
         cv6.voltage(volts)
 
+        # Increment the note & octave counter
+        self.n_notes_played += 1
+        if self.n_notes_played >= len(self.arps[0]):
+            self.current_octave += 1
+            self.n_notes_played = 0
+            if self.current_octave >= self.n_octaves:
+                self.current_octave = 0
 
     def main(self):
         while True:
@@ -189,14 +189,16 @@ class Arpeggiator(EuroPiScript):
             self.n_octaves = int(k2.percent() * 5) + 1
             self.root = int(ain.read_voltage() / VOLTS_PER_SEMITONE) % SEMITONES_PER_OCTAVE
 
+            if self.current_octave >= self.n_octaves:
+                self.current_octave = 0
+
             if self.trigger_recvd:
                 self.trigger_recvd = False
                 self.tick()
 
             oled.fill(0)
             oled.centre_text(f"""{SEMITONE_LABELS[self.root]}{self.root_octave}
-{self.scales[self.current_scale_index]}
-{self.current_octave+1}/{self.n_octaves}""")
+{self.scales[self.current_scale_index]}""")
             oled.show()
 
 
