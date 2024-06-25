@@ -59,6 +59,9 @@ class Arpeggiator(EuroPiScript):
     def __init__(self):
         super().__init__()
 
+        ## Indicates if the GUI needs to be refreshed
+        self.ui_dirty = True
+
         ## The available scales to be played
         self.scales = [
             CommonScales.Chromatic,
@@ -92,9 +95,16 @@ class Arpeggiator(EuroPiScript):
         ## Should we change the scale on the next trigger?
         self.scale_changed = False
 
+        ## What octave range are we playing (minimum 1)
         self.n_octaves = 1
+
+        ## What is the current octave we're playing (range [0, n_octaves))
         self.current_octave = 0
+
+        ## What is the root note of our scale (semitone, default C=0)
         self.root = 0
+
+        ## What is the lowest octave we play
         self.root_octave = 0
 
         @din.handler
@@ -105,11 +115,13 @@ class Arpeggiator(EuroPiScript):
         def on_b1_press():
             self.current_scale_index = (self.current_scale_index - 1) % len(self.scales)
             self.scale_changed = True
+            self.ui_dirty = True
 
         @b2.handler
         def on_b2_press():
             self.current_scale_index = (self.current_scale_index + 1) % len(self.scales)
             self.scale_changed = True
+            self.ui_dirty = True
 
         self.load()
         self.set_scale()
@@ -184,22 +196,44 @@ class Arpeggiator(EuroPiScript):
                 self.current_octave = 0
 
     def main(self):
+        prev_root_octave = self.root_octave
+        prev_n_octaves = self.n_octaves
+        prev_root = self.root
+
         while True:
+            # Update the desired root, octave, and octave range according to the analogue inputs
             self.root_octave = int(k1.percent() * 5)
             self.n_octaves = int(k2.percent() * 5) + 1
             self.root = int(ain.read_voltage() / VOLTS_PER_SEMITONE) % SEMITONES_PER_OCTAVE
 
-            if self.current_octave >= self.n_octaves:
-                self.current_octave = 0
-
+            # Update the CV outputs if we've received a clock signal
             if self.trigger_recvd:
                 self.trigger_recvd = False
                 self.tick()
 
-            oled.fill(0)
-            oled.centre_text(f"""{SEMITONE_LABELS[self.root]}{self.root_octave}
+            # Re-render the OLED if needed
+            # This should only occur if we've pressed a button or the analogue inputs have changed
+            self.ui_dirty = (self.ui_dirty or
+                prev_root_octave != self.root_octave or
+                prev_n_octaves != self.n_octaves or
+                prev_root != self.root
+            )
+            if self.ui_dirty:
+                self.ui_dirty = False
+                oled.fill(0)
+                # OLED displays something like:
+                # +--------------+
+                # |     C0-3     |   <- Root note, root octave, highest octave (adjust: AIN, K1, K2)
+                # |   Min 1356   |   <- Current scale/arpeggio selection (adjust: B1/B2)
+                # +--------------+
+                oled.centre_text(f"""{SEMITONE_LABELS[self.root]}{self.root_octave}-{self.root_octave + self.n_octaves - 1}
 {self.scales[self.current_scale_index]}""")
-            oled.show()
+                oled.show()
+
+            # Keep track of previous analogue settings so we can update the GUI again if needed
+            prev_root_octave = self.root_octave
+            prev_n_octaves = self.n_octaves
+            prev_root = self.root
 
 
 if __name__ == "__main__":
