@@ -16,6 +16,19 @@ MODE_ASCENDING = 0
 MODE_DESCENDING = 1
 MODE_RANDOM = 2
 
+def shuffle(l):
+    """Shuffle a list randomly
+
+    Replacement for random.shuffle, which doesn't exist in micropython
+
+    @param l  The list to shuffle
+    """
+    for i in range(len(l)):
+        n = random.randint(i, len(l)-1)
+        tmp = l[i]
+        l[i] = l[n]
+        l[n] = tmp
+
 class Arpeggio:
     def __init__(self, scale, mode):
         """Create an arpeggio using the notes from the given scale
@@ -23,8 +36,8 @@ class Arpeggio:
         @param scale  A quantizer scales whose notes will be used
         @param mode   One of ascending, descending, or random
         """
-        self.change_scale(scale)
         self.mode = mode
+        self.change_scale(scale)
 
     def change_scale(self, scale):
         """Change the current scale
@@ -37,7 +50,7 @@ class Arpeggio:
         if self.mode == MODE_RANDOM:
             # shuffle so we have a chance to choose the last note first
             # see @next_node
-            random.shuffle(self.semitones)
+            shuffle(self.semitones)
 
     def next_note(self):
         """Get the next note that should be played
