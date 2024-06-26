@@ -5,6 +5,12 @@ directory, specifically [the section on contrib scripts](/contributing.md#contri
 
 # List of packaged scripts
 
+### Arpeggiator \[ [documentation](/software/contrib/arp.md) | [script](/software/contrib/arp.py) \]
+A quantized scale/arpeggio generator
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: quantizer, scale, arpeggio</i>
+
 ### Bernoulli Gates \[ [documentation](/software/contrib/bernoulli_gates.md) | [script](/software/contrib/bernoulli_gates.py) \]
 A probability script based on Mutable Instruments Branches
 
@@ -17,7 +23,7 @@ Two channels of probability-based routing, where the digital input will be route
 A clock multiplier or divider. Each channel has an independently-controllable modifier, multiplying or dividing an external clock signal on `din`.
 
 <i>Author: [chrisib](https://github.com/chrisib)</i>
-<br><i>Labels: clock, clock multiplier, clock divider, gates>/i>
+<br><i>Labels: clock, clock multiplier, clock divider, gates</i>
 
 ### Consequencer \[ [documentation](/software/contrib/consequencer.md) | [script](/software/contrib/consequencer.md) \]
 A gate and CV sequencer inspired by Mutable Instruments Grids and the Music Thing Modular Turing Machine
