@@ -34,6 +34,10 @@ class Arpeggio:
         self.semitones = [
             i for i in range(len(scale.notes)) if scale[i]
         ]
+        if self.mode == MODE_RANDOM:
+            # shuffle so we have a chance to choose the last note first
+            # see @next_node
+            random.shuffle(self.semitones)
 
     def next_note(self):
         """Get the next note that should be played
@@ -47,7 +51,11 @@ class Arpeggio:
             semitone = self.semitones.pop(-1)
             self.semitones.insert(0, semitone)
         else:
-            semitone = random.choice(self.semitones)
+            # never choose the _last_ note in the array
+            # move the chosen note to the end of the list to avoid repeats
+            n = random.randint(0, len(self.semitones)-2)
+            semitone = self.semitones.pop(n)
+            self.semitones.append(n)
 
         return semitone
 
@@ -223,7 +231,7 @@ class Arpeggiator(EuroPiScript):
                 oled.fill(0)
                 # OLED displays something like:
                 # +--------------+
-                # |     C0-3     |   <- Root note, root octave, highest octave (adjust: AIN, K1, K2)
+                # |    F#1-3     |   <- Root note, root octave, highest octave (adjust: AIN, K1, K2)
                 # |   Min 1356   |   <- Current scale/arpeggio selection (adjust: B1/B2)
                 # +--------------+
                 oled.centre_text(f"""{SEMITONE_LABELS[self.root]}{self.root_octave}-{self.root_octave + self.n_octaves - 1}
