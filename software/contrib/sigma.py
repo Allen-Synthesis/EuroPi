@@ -10,7 +10,13 @@ Inspired by Magnetic Freak's Gaussian module.
 from europi import *
 from europi_script import EuroPiScript
 
+import configuration
+import time
+
+from experimental.knobs import *
 from experimental.random_extras import normal
+from experimental.screensaver import Screensaver
+
 
 def bisect_left(a, x, lo=0, hi=None, *, key=None):
     """Return the index where to insert item x in list a, assuming a is sorted.
@@ -50,7 +56,32 @@ def bisect_left(a, x, lo=0, hi=None, *, key=None):
     return lo
 
 
-class VoltageBin:
+class OutputBin:
+    """Generic class for different output modes"""
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return self.name
+
+    def closest(self, v):
+        """Abstract function to be implemented by subclasses
+
+        @param v  The input voltage to assign to a bin
+        """
+        raise Exception("Not implemented")
+
+
+class ContinuousBin(OutputBin):
+    """Smooth, continuous output"""
+    def __init__(self, name):
+        super().__init__(name)
+
+    def closest(self, v):
+        return v
+
+
+class VoltageBin(OutputBin):
     """Quantizes a random voltage to the closest bin"""
     def __init__(self, name, bins):
         """Create a new set of bins
@@ -58,12 +89,9 @@ class VoltageBin:
         @param name  The human-readable display name for this set of bins
         @param bins  A list of voltages we are allowed to output
         """
-        self.name = name
+        super().__init__(name)
         self.bins = [float(b) for b in bins]
         self.bins.sort()
-
-    def __str__(self):
-        return self.name
 
     def closest(self, v):
         """Quantize an input voltage to the closest bin. If two bins are equally close, choose the lower one.
@@ -92,21 +120,195 @@ class Sigma(EuroPiScript):
     Handles all I/O, renders the UI
     """
 
-    ## Voltage bins for bin mode
-    voltage_bins = [
-        VoltageBin("Bin 2", [0, 10]),
-        VoltageBin("Bin 3", [0, 5, 10]),
-        VoltageBin("Bin 6", [0, 2, 4, 6, 8, 10]),
-        VoltageBin("Bin 7", [0, 1.7, 3.4, 5, 6.6, 8.3, 10]),
-        VoltageBin("Bin 9", [0, 1.25, 2.5, 3.75, 5, 6.25, 7.5, 8.75, 10])
+    AIN_ROUTE_NONE = 0
+    AIN_ROUTE_MEAN = 1
+    AIN_ROUTE_STDEV = 2
+    AIN_ROUTE_JITTER = 3
+    AIN_ROUTE_BIN = 4
+    N_AIN_ROUNTES = 5
+
+    AIN_ROUTE_NAMES = [
+        "None",
+        "Mean",
+        "Spread",
+        "Jitter",
+        "Bin"
     ]
 
     def __init__(self):
         super().__init__()
 
-    def main(self):
-        while True:
+        ## Voltage bins for bin mode
+        self.voltage_bins = [
+            ContinuousBin("Continuous"),
+            VoltageBin("Bin 2", [0, 10]),
+            VoltageBin("Bin 3", [0, 5, 10]),
+            VoltageBin("Bin 6", [0, 2, 4, 6, 8, 10]),
+            VoltageBin("Bin 7", [0, 1.7, 3.4, 5, 6.6, 8.3, 10]),
+            VoltageBin("Bin 9", [0, 1.25, 2.5, 3.75, 5, 6.25, 7.5, 8.75, 10])
+        ]
+
+        # create bins for the quantized 1V/oct modes
+        VOLTS_PER_TONE = 1.0 / 6
+        VOLTS_PER_SEMITONE = 1.0 / 12
+        VOLTS_PER_QUARTERTONE = 1.0 / 24
+        tones = []
+        semitones = []
+        quartertones = []
+        for oct in range(10):
+            for tone in range(6):
+                tones.append(oct + VOLTS_PER_TONE * tone)
+
+            for semitone in range(12):
+                semitones.append(oct + VOLTS_PER_SEMITONE * semitone)
+
+            for quartertone in range(24):
+                quartertones.append(oct + VOLTS_PER_QUARTERTONE * quartertone)
+
+        self.voltage_bins.append(VoltageBin("Tone", tones))
+        self.voltage_bins.append(VoltageBin("Semitone", semitones))
+        self.voltage_bins.append(VoltageBin("Quartertone", quartertones))
+
+        cfg = self.load_state_json()
+
+        self.mean = cfg.get("mean", 0.5)
+        self.stdev = cfg.get("stdev", 0.5)
+        self.ain_route = cfg.get("ain_route", 0)
+        self.voltage_bin = cfg.get("bin", 0)
+        self.jitter = cfg.get("jitter", 0)
+
+        # create the lockable knobs
+        #  Note that this does mean _sometimes_ you'll need to sweep the knob all the way left/right
+        #  to unlock it
+        self.k1_bank = (
+            KnobBank.builder(k1)
+            .with_unlocked_knob("mean")
+            .with_locked_knob("jitter", initial_percentage_value=cfg.get("jitter", 0.5))
+            .build()
+        )
+        self.k2_bank = (
+            KnobBank.builder(k2)
+            .with_unlocked_knob("stdev")
+            .with_locked_knob("bin", initial_percentage_value=int(self.voltage_bin / len(self.voltage_bins)))
+            .build()
+        )
+
+        self.config_dirty = False
+        self.output_dirty = False
+
+        self.last_interaction_at = time.ticks_ms()
+        self.screensaver = Screensaver()
+
+        @b1.handler
+        def on_b1_rise():
+            self.k1_bank.next()
+            self.k2_bank.next()
+            self.last_interaction_at = time.ticks_ms()
+
+        @b1.handler_falling
+        def on_b1_fall():
+            self.k1_bank.next()
+            self.k2_bank.next()
+            self.config_dirty = True
+
+        @b2.handler
+        def on_b2_rise():
+            self.ain_route = (self.ain_route + 1) % self.N_AIN_ROUNTES
+            self.config_dirty = True
+            self.last_interaction_at = time.ticks_ms()
+
+        @din.handler
+        def on_din_rise():
+            self.output_dirty = True
+
+        @din.handler_falling
+        def on_din_fall():
             pass
+
+    def save(self):
+        """Save the current state to the persistence file"""
+        self.config_dirty = False
+        cfg = {
+            "ain_route": self.ain_route,
+            "mean": self.mean,
+            "jitter": self.jitter,
+            "stdev": self.stdev,
+            "bin": self.voltage_bin,
+        }
+        self.save_state_json(cfg)
+
+    def read_inputs(self):
+        self.mean = self.k1_bank["mean"].percent()
+        self.stdev = self.k2_bank["stdev"].percent()
+        self.jitter = self.k1_bank["jitter"].percent()
+        self.voltage_bin = int(self.k2_bank["bin"].percent() * len(self.voltage_bins))
+
+        # Apply attenuation to our CV-controlled input
+        if self.ain_route == self.AIN_ROUTE_MEAN:
+            self.mean = self.mean * ain.percent()
+        elif self.ain_route == self.AIN_ROUTE_STDEV:
+            self.stdev = self.stdev * ain.percent()
+        elif self.ain_route == self.AIN_ROUTE_JITTER:
+            self.jitter = self.jitter * ain.percent()
+        elif self.ain_route == self.AIN_ROUTE_BIN:
+            self.voltage_bin = int(self.k2_bank["bin"].percent() * ain.percent() * len(self.voltage_bins))
+
+        if self.voltage_bin == len(self.voltage_bins):
+            self.voltage_bin = self.voltage_bin - 1  # keep the index in bounds if we reach 1.0
+
+    def set_outputs(self):
+        if self.output_dirty:
+            self.output_dirty = False
+            for cv in cvs:
+                x = normal(mean = self.mean * MAX_OUTPUT_VOLTAGE, stdev = self.stdev * 2)
+                v = self.voltage_bins[self.voltage_bin].closest(x)
+                cv.voltage(v)
+
+    def main(self):
+        turn_off_all_cvs()
+
+        self.ui_dirty = True
+
+        DISPLAY_PRECISION = 100
+        prev_mean = int(self.mean * DISPLAY_PRECISION)
+        prev_stdev = int(self.stdev * DISPLAY_PRECISION)
+        prev_jitter = int(self.jitter * DISPLAY_PRECISION)
+
+        while True:
+            now = time.ticks_ms()
+            self.read_inputs()
+            self.set_outputs()
+
+            new_mean = int(self.mean * DISPLAY_PRECISION)
+            new_stdev = int(self.stdev * DISPLAY_PRECISION)
+            new_jitter = int(self.jitter * DISPLAY_PRECISION)
+
+            self.ui_dirty = (self.ui_dirty or
+                self.config_dirty or
+                new_mean != prev_mean or
+                new_stdev != prev_stdev or
+                new_jitter != prev_jitter
+            )
+
+            if self.ui_dirty:
+                self.last_interaction_at = now
+
+            prev_mean = new_mean
+            prev_stdev = new_stdev
+            prev_jitter = new_jitter
+
+            if self.config_dirty:
+                self.save()
+
+            if time.ticks_diff(now, self.last_interaction_at) > self.screensaver.ACTIVATE_TIMEOUT_MS:
+                self.screensaver.draw()
+                last_interaction_at = time.ticks_add(now, -self.screensaver.ACTIVATE_TIMEOUT_MS*2)
+            elif self.ui_dirty:
+                self.ui_dirty = False
+                oled.fill(0)
+                oled.centre_text(f"""{self.mean:0.2f} {self.stdev:0.2f} {self.jitter:0.2f}
+{self.voltage_bins[self.voltage_bin]}
+CV: {self.AIN_ROUTE_NAMES[self.ain_route]}""")
 
 if __name__ == "__main__":
     Sigma().main()

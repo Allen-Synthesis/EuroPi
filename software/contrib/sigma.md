@@ -17,11 +17,13 @@ Greek letter Sigma in statistics.
 Inputs:
 - `din`: an external clock signal to trigger sampling. The pulse width of this signal controls the output
   pulse width
-- `ain`: CV control over spread
-- `b1`: manual trigger input (used instead of or in addition to `din`)
-- `b2`: cycles through the binning modes (see below)
-- `k1`: spread control
-- `k2`: mean control
+- `ain`: assignable CV control
+- `b1`: shift button; hold to change `k1` and `k2` modes
+- `b2`: cycles through `ain` routing
+- `k1`: mean control / shift: jitter control
+- `k2`: spread control / shift: binning/quantizer mode select
+
+`k1` or `k2` will act as an attenuator for the assigned control (mean/spread/jitter/binning).
 
 `cv1`-`6` output 0-10V CV signals whose value is determined by the normal distribution & binning.
 - `cv1`
