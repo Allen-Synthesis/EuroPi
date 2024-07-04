@@ -194,6 +194,12 @@ A 2-6 output sequential switch.  The analogue input is mirrored to one of the ou
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: random, sequential switch</i>
 
+### Sigma \[ [documentation](/software/contrib/sigma.md) | [script](/software/contrib/sigma.py) \]
+Random CV, optionally quantized, voltages based on controllable normal distributions. Inspired by Magnetic Freak's Gaussian module.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: random, quantizer</i>
+
 ### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
 Random CV with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw.
 
