@@ -26,18 +26,16 @@ Inputs:
 `k1` or `k2` will act as an attenuator for the assigned control (mean/spread/jitter/binning).
 
 `cv1`-`6` output 0-10V CV signals whose value is determined by the normal distribution & binning.
-- `cv1`
-- `cv2`
-- `cv3`
-- `cv4`
-- `cv5`
-- `cv6`
 
 ## Distrubution Control
 
-`k1` and `k2` control the mean and standard deviation of the normal distribution at the heart of this script.
+The following description assumes the binning mode is set to `continuous`.
 
-...
+Changing `k1` will move the average output voltage of the outputs.  Keeping the knob near-vertical will keep the
+averate output close to 5V.
+
+Increasing `k2` will increase the standard deviation of the outputs.  At the lowest setting the outputs will be
+effectively locked to the mean set by `k1`.  As `k2` increases the spread of output voltages increases.
 
 ## Spread Control
 
