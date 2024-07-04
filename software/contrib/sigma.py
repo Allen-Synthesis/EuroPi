@@ -114,6 +114,40 @@ class VoltageBin(OutputBin):
             return prev
 
 
+class DelayedOutput:
+    """A class that handles setting a CV output on or after a given tick"""
+
+    STATE_IDLE = 0
+    STATE_WAITING = 1
+
+    def __init__(self, cv):
+        self.cv = cv
+        self.state = self.STATE_IDLE
+
+    def process(self, now=None):
+        if self.state == self.STATE_IDLE:
+            return
+
+        if now is None:
+            now = time.ticks_ms()
+
+        if time.ticks_diff(now, self.target_tick) >= 0:
+            self.cv.voltage(self.target_volts)
+            self.state = self.STATE_IDLE
+
+    def voltage_at(self, v, tick):
+        """Specify the voltage we want to apply at the desired tick
+
+        Call @process() to actually apply the voltage if needed
+
+        @param v     The desired voltags (volts)
+        @param tick  The tick (ms) we want the voltage to change at
+        """
+        self.state = self.STATE_WAITING
+        self.target_volts = v
+        self.target_tick = tick
+
+
 class Sigma(EuroPiScript):
     """The main class for this script
 
@@ -137,6 +171,10 @@ class Sigma(EuroPiScript):
 
     def __init__(self):
         super().__init__()
+
+        self.outputs = [
+            DelayedOutput(cv) for cv in cvs
+        ]
 
         ## Voltage bins for bin mode
         self.voltage_bins = [
@@ -199,6 +237,10 @@ class Sigma(EuroPiScript):
         self.last_interaction_at = time.ticks_ms()
         self.screensaver = Screensaver()
 
+        self.last_clock_at = time.ticks_ms()
+
+        self.clock_duration_ms = 0
+
         @b1.handler
         def on_b1_rise():
             self.k1_bank.next()
@@ -220,10 +262,9 @@ class Sigma(EuroPiScript):
         @din.handler
         def on_din_rise():
             self.output_dirty = True
-
-        @din.handler_falling
-        def on_din_fall():
-            pass
+            now = time.ticks_ms()
+            self.clock_duration_ms = time.ticks_diff(now, self.last_clock_at)
+            self.last_clock_at = now
 
     def save(self):
         """Save the current state to the persistence file"""
@@ -256,13 +297,25 @@ class Sigma(EuroPiScript):
         if self.voltage_bin == len(self.voltage_bins):
             self.voltage_bin = self.voltage_bin - 1  # keep the index in bounds if we reach 1.0
 
-    def set_outputs(self):
-        if self.output_dirty:
-            self.output_dirty = False
-            for cv in cvs:
-                x = normal(mean = self.mean * MAX_OUTPUT_VOLTAGE, stdev = self.stdev * 2)
-                v = self.voltage_bins[self.voltage_bin].closest(x)
-                cv.voltage(v)
+    def set_outputs(self, now):
+        for cv in self.outputs:
+            cv.process(now)
+
+    def calculate_jitter(self, now):
+        self.output_dirty = False
+
+        for cv in self.outputs:
+            if cv == self.outputs[0]:
+                target_tick = now
+            else:
+                target_tick = time.ticks_add(now, int(abs(normal(mean = 0, stdev = self.jitter) * self.clock_duration_ms / 4)))
+
+            x = normal(mean = self.mean * MAX_OUTPUT_VOLTAGE, stdev = self.stdev * 2)
+            v = self.voltage_bins[self.voltage_bin].closest(x)
+            cv.voltage_at(
+                v,
+                target_tick
+            )
 
     def main(self):
         turn_off_all_cvs()
@@ -276,8 +329,11 @@ class Sigma(EuroPiScript):
 
         while True:
             now = time.ticks_ms()
+
             self.read_inputs()
-            self.set_outputs()
+            if self.output_dirty:
+                self.calculate_jitter(now)
+            self.set_outputs(now)
 
             new_mean = int(self.mean * DISPLAY_PRECISION)
             new_stdev = int(self.stdev * DISPLAY_PRECISION)
