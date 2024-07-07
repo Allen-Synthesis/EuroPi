@@ -60,9 +60,6 @@ In Bin mode the output voltage will oscillate between values chosen from the lev
 |    7   | 0V, 1.7V, 3.4V, 5V, 6.6V, 8.3V, 10V                 | 1.7V      |
 |    9   | 0V, 1.25V, 2.5V, 3.75V, 5V, 6.25V, 7.5V, 8.75V, 10V | 1.25V     |
 
-To use the outputs as gate triggers, use `Bin 2` mode; this will output 10V triggers. If your module requires
-lower trigger voltage, use an external attenuator.
-
 In Quantize mode, the output voltage will be quantized to 1V/Octave scales with the following resolution:
 
 | Quantize Mode | Delta (V) |
