@@ -25,7 +25,9 @@ Inputs:
 
 `k1` or `k2` will act as an attenuator for the assigned control (mean/spread/jitter/binning).
 
-`cv1`-`6` output 0-10V CV signals whose value is determined by the normal distribution & binning.
+Outputs are divided into 3 pairs: `cv1 & cv 4`, `cv2 & cv 5`, and `cv3 & cv 6`.  `cv1-3` output gate signals
+with a duration equivalent to the duty cycle of the incoming clock on `din`.  `cv4-6` output random control
+voltages according to the spread & mean controls and the binning mode.
 
 ## Distrubution Control
 
@@ -37,11 +39,11 @@ averate output close to 5V.
 Increasing `k2` will increase the standard deviation of the outputs.  At the lowest setting the outputs will be
 effectively locked to the mean set by `k1`.  As `k2` increases the spread of output voltages increases.
 
-## Spread Control
+## Jitter Control
 
 By default all six output channels update simultaneously. By applying positive voltage to `ain` the outputs can be
-desynchronized, updating at random intervals. `cv1` will always trigger in-time with the clock on `din`, but `cv2`-`5`
-will trigger at normally-distributed intervals after `cv1`.
+desynchronized, updating at random intervals. `cv1 & 4` will always trigger in-time with the clock on `din`,
+but the other pairs will trigger at normally-distributed intervals after `cv1`.
 
 ## Binning and Quantize modes
 

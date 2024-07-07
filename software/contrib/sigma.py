@@ -117,35 +117,55 @@ class VoltageBin(OutputBin):
 class DelayedOutput:
     """A class that handles setting a CV output on or after a given tick"""
 
+    # We're not currently queued to do any output
     STATE_IDLE = 0
+
+    # We've been assigned a time in the future to set the voltage
     STATE_WAITING = 1
 
-    def __init__(self, cv):
+    # The voltage has been applied and the gate is currently high
+    STATE_GATE_HIGH = 2
+
+    def __init__(self, cv, gate):
+        """Create a new delayed output manager
+
+        @param cv                The output for CV voltage
+        @param gate              The output for a gate voltage
+        """
         self.cv = cv
+        self.gate = gate
         self.state = self.STATE_IDLE
 
-    def process(self, now=None):
-        if self.state == self.STATE_IDLE:
-            return
+        self.gate_high_tick = time.ticks_ms()
+        self.gate_low_tick = time.ticks_ms()
 
+    def process(self, now=None):
         if now is None:
             now = time.ticks_ms()
 
-        if time.ticks_diff(now, self.target_tick) >= 0:
+        if self.state == self.STATE_WAITING and time.ticks_diff(now, self.gate_high_tick) >= 0:
             self.cv.voltage(self.target_volts)
+            self.gate.on()
+            self.state = self.STATE_GATE_HIGH
+
+        elif self.state == self.STATE_GATE_HIGH and time.ticks_diff(now, self.gate_low_tick) >= 0:
+            self.gate.off()
             self.state = self.STATE_IDLE
 
-    def voltage_at(self, v, tick):
+    def voltage_at(self, v, tick, gate_duration_ms=10):
         """Specify the voltage we want to apply at the desired tick
 
         Call @process() to actually apply the voltage if needed
 
         @param v     The desired voltags (volts)
         @param tick  The tick (ms) we want the voltage to change at
+        @param gate_duration_ms  The desired duration of the high cycle of the output gate
         """
+
         self.state = self.STATE_WAITING
         self.target_volts = v
-        self.target_tick = tick
+        self.gate_high_tick = tick
+        self.gate_low_tick = time.ticks_add(self.gate_high_tick, gate_duration_ms)
 
 
 class Sigma(EuroPiScript):
@@ -173,7 +193,9 @@ class Sigma(EuroPiScript):
         super().__init__()
 
         self.outputs = [
-            DelayedOutput(cv) for cv in cvs
+            DelayedOutput(cv4, cv1),
+            DelayedOutput(cv5, cv2),
+            DelayedOutput(cv6, cv3)
         ]
 
         ## Voltage bins for bin mode
@@ -240,6 +262,7 @@ class Sigma(EuroPiScript):
         self.last_clock_at = time.ticks_ms()
 
         self.clock_duration_ms = 0
+        self.clock_duty_cycle_ms = 0
 
         @b1.handler
         def on_b1_rise():
@@ -265,6 +288,11 @@ class Sigma(EuroPiScript):
             now = time.ticks_ms()
             self.clock_duration_ms = time.ticks_diff(now, self.last_clock_at)
             self.last_clock_at = now
+
+        @din.handler_falling
+        def on_din_fall():
+            now = time.ticks_ms()
+            self.clock_duty_cycle_ms = time.ticks_diff(now, self.last_clock_at)
 
     def save(self):
         """Save the current state to the persistence file"""
@@ -314,7 +342,8 @@ class Sigma(EuroPiScript):
             v = self.voltage_bins[self.voltage_bin].closest(x)
             cv.voltage_at(
                 v,
-                target_tick
+                target_tick,
+                self.clock_duty_cycle_ms
             )
 
     def main(self):
