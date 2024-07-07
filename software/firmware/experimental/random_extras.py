@@ -30,7 +30,7 @@ def normal(mean=0.0, stdev=1.0):
     while True:
         x = random.random() * 2.0 - 1.0
         y = random.random() * 2.0 - 1.0
-        z = x ** 2 + y ** 2
+        z = x**2 + y**2
 
         if 0 < z and z <= 1.0:
             break
@@ -46,7 +46,7 @@ def shuffle(l):
     @param l  The list to shuffle
     """
     for i in range(len(l)):
-        n = random.randint(i, len(l)-1)
+        n = random.randint(i, len(l) - 1)
         tmp = l[i]
         l[i] = l[n]
         l[n] = tmp
