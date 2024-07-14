@@ -93,7 +93,6 @@ def test_helper_int():
     assert config_points.default_config() == {"a": 2, "b": 0}
     assert config_points.points["a"].type == int
     assert config_points.points["b"].type == int
-    assert config_points.points["c"].type == int
     assert config_points.points["a"].minimum == 0
     assert config_points.points["a"].maximum == 4
     assert config_points.points["b"].minimum == -5
