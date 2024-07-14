@@ -74,20 +74,23 @@ class EuroPiConfig:
             ),
 
             # I/O voltage settings
-            configuration.integer(
+            configuration.floatingPoint(
                 name="MAX_OUTPUT_VOLTAGE",
-                range=range(1, 11),
-                default=10
+                minimum=1.0,
+                maximum=10.0,
+                default=10.0
             ),
-            configuration.integer(
+            configuration.floatingPoint(
                 name="MAX_INPUT_VOLTAGE",
-                range=range(1, 13),
-                default=12
+                minimum=1.0,
+                maximum=12.0,
+                default=12.0
             ),
-            configuration.integer(
+            configuration.floatingPoint(
                 name="GATE_VOLTAGE",
-                range=range(1, 11),
-                default=5
+                minimum=1.0,
+                maximum=10.0,
+                default=5.0
             ),
 
             # Menu settings

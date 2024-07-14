@@ -44,6 +44,82 @@ class ConfigPoint:
         raise NotImplementedError
 
 
+class FloatConfigPoint(ConfigPoint):
+    """A `ConfigPoint` that requires the selection from a range of floats.  The default value
+    must lie within the specified range
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
+    :param minimum: The minimum allowed value
+    :param maximum: The maximum allowed value
+    :param default: The default value
+    """
+
+    def __init__(self, name: str, minimum: float, maximum: float, default: float):
+        super().__init__(name=name, type=float, default=default)
+        self.maximum = maximum
+        self.minimum = minimum
+
+        if default < minimum or default > maximum:
+            raise Exception(f"Defaulf {default} is out of range")
+
+    def validate(self, value) -> Validation:
+        """Validates the given value with this ConfigPoint. Returns a `Validation` containing the
+        validation result, as well as an error message containing the reason for a validation failure.
+        """
+        # Silently caste integers into floats, so we don't crash if someone writes e.g. "0" instead of "0.0"
+        if type(value) is int:
+            value = float(value)
+        if type(value) is float:
+            if value >= self.minimum and value <= self.maximum:
+                return VALID
+            else:
+                return Validation(
+                    is_valid=False,
+                    message=f"Value {value} is out of range"
+                )
+        else:
+            return Validation(
+                is_valid=False,
+                message=f"Value {value} is not a number"
+            )
+
+
+class IntegerConfigPoint(ConfigPoint):
+    """A `ConfigPoint` that requires selection from a range of integers. The default value
+    must lie within the specified range
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
+    :param range: The range of valid integers
+    :param default: The default value
+    """
+
+    def __init__(self, name: str, range: range, default: int):
+        super().__init__(name=name, type=int, default=default)
+        self.minimum = range[0]
+        self.maximum = range[-1]
+
+        if default < self.minimum or default > self.maximum:
+            raise Exception(f"Default {default} is out of range")
+
+    def validate(self, value) -> Validation:
+        """Validates the given value with this ConfigPoint. Returns a `Validation` containing the
+        validation result, as well as an error message containing the reason for a validation failure.
+        """
+        if type(value) is int:
+            if value >= self.minimum and value <= self.maximum:
+                return VALID
+            else:
+                return Validation(
+                    is_valid=False,
+                    message=f"Value {value} is out of range"
+                )
+        else:
+            return Validation(
+                is_valid=False,
+                message=f"Value {value} is not a number"
+            )
+
+
 class ChoiceConfigPoint(ConfigPoint):
     """A `ConfigPoint` that requires selection from a limited number of choices. The default value
     must exist in the given choices.
@@ -69,19 +145,6 @@ class ChoiceConfigPoint(ConfigPoint):
         return VALID
 
 
-class IntegerConfigPoint(ChoiceConfigPoint):
-    """A `ConfigPoint` that requires selection from a range of integers. The default value must
-    exist in the given choices.
-
-    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
-    :param range: The range of valid integers
-    :param default: The default value
-    """
-
-    def __init__(self, name: str, range: range, default: int):
-        super().__init__(name=name, choices=list(range), default=default)
-
-
 class BooleanConfigPoint(ChoiceConfigPoint):
     """A `ConfigPoint` that allows True/False values.
 
@@ -93,6 +156,14 @@ class BooleanConfigPoint(ChoiceConfigPoint):
         super().__init__(name=name, choices=[False, True], default=default)
 
 
+def boolean(name: str, default: bool) -> BooleanConfigPoint:
+    """A helper function to simplify the creation of BooleanConfigPoints.
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
+    :param default: The default value
+    """
+    return BooleanConfigPoint(name=name, default=default)
+
 def choice(name: str, choices: "List", default) -> ChoiceConfigPoint:
     """A helper function to simplify the creation of ChoiceConfigPoints. Requires selection from a
     limited number of choices. The default value must exist in the given choices.
@@ -103,24 +174,27 @@ def choice(name: str, choices: "List", default) -> ChoiceConfigPoint:
     return ChoiceConfigPoint(name=name, choices=choices, default=default)
 
 
+def floatingPoint(name: str, minimum: float, maximum: float, default: float) -> FloatConfigPoint:
+    """A helper function to simplify the creation of FloatConfigPoints. Requires selection from a
+    range of floats. The default value must exist in the given range.
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
+    :param minumum: The minumum allowed value
+    :param maximum: The maximum allowed value
+    :param default: The default value
+    """
+    return FloatConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default)
+
+
 def integer(name: str, range: range, default: int) -> IntegerConfigPoint:
     """A helper function to simplify the creation of IntegerConfigPoints. Requires selection from a
-    range of integers. The default value must exist in the given choices.
+    range of integers. The default value must exist in the given range.
 
     :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
     :param range: The range of valid integers
     :param default: The default value
     """
     return IntegerConfigPoint(name=name, range=range, default=default)
-
-
-def boolean(name: str, default: bool) -> BooleanConfigPoint:
-    """A helper function to simplify the creation of BooleanConfigPoints.
-
-    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
-    :param default: The default value
-    """
-    return BooleanConfigPoint(name=name, default=default)
 
 
 class ConfigSpec:
