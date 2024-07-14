@@ -51,6 +51,8 @@ The following fields may be set:
 - `AIN_MODE` -- changes what parameter voltage to `ain` controls. Must be one of `curve` or `frequency`. Default: `frequency`
 - `LOGIC_MODE` -- sets the logical operation used to determine the gate output of `cv6`. Must be one of
    `and`, `or`, `xor`, `nand`, `nor`, or `xnor`. Default: `xor`.
+- `MIN_FREQUENCY` -- the minumum frequency (Hz) for choosing new random values. Must be between 0.001 and 10.0. Default: 0.01
+- `MAX_FREQUENCY` -- the maximum frequency (Hz) for choosing new random values. Must be between 0.001 and 10.0. Default: 1.0
 
 Note that the maximum and minimum voltages must be defined such that:
 - `MIN_VOLTAGE` is less than `MAX_VOLTAGE`
@@ -64,3 +66,8 @@ The output can behave in one of 3 ways if the output wave moves outside the defi
 - `limit` -- the output is clipped to the maximum/minimum value
 - `fold` -- the output is flipped such that the shape of the curve is reflected
 - `thru` -- the output wraps around through the opposite end of the range
+
+## Curve Shapes
+
+The following graph shows an example of the generated curves with different values set for `k1`:
+![Bezier Curves](./bezier-docs/curves.png)

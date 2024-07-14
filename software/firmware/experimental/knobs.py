@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from europi import Knob, MAX_UINT16
 
-from experimental.math import median
+from experimental.math_extras import median
 
 
 DEFAULT_THRESHOLD = 0.05
