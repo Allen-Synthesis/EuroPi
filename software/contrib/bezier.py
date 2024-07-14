@@ -18,32 +18,32 @@ class LogicalOperator:
     def compare(self, a, b):
         raise Exception("Not implemented")
 
-def LogicalAnd(LogicalOperator):
+class LogicalAnd(LogicalOperator):
     """Binary AND operator"""
     def compare(self, a, b):
         return a and b
 
-def LogicalOr(LogicalOperator):
+class LogicalOr(LogicalOperator):
     """Binary OR operator"""
     def compare(self, a, b):
         return a or b
 
-def LogicalXor(LogicalOperator):
+class LogicalXor(LogicalOperator):
     """Binary XOR operator"""
     def compare(self, a, b):
         return (a or b) and not (a and b)
 
-def LogicalNand(LogicalOperator):
+class LogicalNand(LogicalOperator):
     """Binary NAND operator"""
     def compare(self, a, b):
         return not (a and b)
 
-def LogicalNor(LogicalOperator):
+class LogicalNor(LogicalOperator):
     """Binary Nor operator"""
     def compare(self, a, b):
         return not (a or b)
 
-def LogicalXnor(LogicalOperator):
+class LogicalXnor(LogicalOperator):
     """Binary XNOR operator"""
     def compare(self, a, b):
         return (a and not b) or (not a and b)
@@ -87,6 +87,17 @@ class Bezier(EuroPiScript):
         # Are the settings dirty & need saving?
         self.settings_dirty = False
 
+        @b2.handler
+        def on_b2_press():
+            self.curve_in.next()
+            self.frequency_in.next()
+
+        @b2.handler_falling
+        def on_b2_release():
+            self.curve_in.next()
+            self.frequency_in.next()
+            self.settings_dirty = True
+
     @classmethod
     def config_points(cls):
         """Return the static configuration options for this class
@@ -101,11 +112,16 @@ class Bezier(EuroPiScript):
     def save(self):
         """Write the persistent settings file
         """
-        pass
+        cfg = {
+
+        }
+        self.save_settings_json(cfg)
+        self.settings_dirty = False
 
     def main(self):
         while True:
-            pass
+            if self.settings_dirty:
+                self.save()
 
 if __name__ == "__main__":
     Bezier().main()
