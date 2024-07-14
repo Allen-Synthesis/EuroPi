@@ -73,15 +73,9 @@ class FloatConfigPoint(ConfigPoint):
             if value >= self.minimum and value <= self.maximum:
                 return VALID
             else:
-                return Validation(
-                    is_valid=False,
-                    message=f"Value {value} is out of range"
-                )
+                return Validation(is_valid=False, message=f"Value {value} is out of range")
         else:
-            return Validation(
-                is_valid=False,
-                message=f"Value {value} is not a number"
-            )
+            return Validation(is_valid=False, message=f"Value {value} is not a number")
 
 
 class IntegerConfigPoint(ConfigPoint):
@@ -109,15 +103,9 @@ class IntegerConfigPoint(ConfigPoint):
             if value >= self.minimum and value <= self.maximum:
                 return VALID
             else:
-                return Validation(
-                    is_valid=False,
-                    message=f"Value {value} is out of range"
-                )
+                return Validation(is_valid=False, message=f"Value {value} is out of range")
         else:
-            return Validation(
-                is_valid=False,
-                message=f"Value {value} is not a number"
-            )
+            return Validation(is_valid=False, message=f"Value {value} is not a number")
 
 
 class ChoiceConfigPoint(ConfigPoint):
@@ -163,6 +151,7 @@ def boolean(name: str, default: bool) -> BooleanConfigPoint:
     :param default: The default value
     """
     return BooleanConfigPoint(name=name, default=default)
+
 
 def choice(name: str, choices: "List", default) -> ChoiceConfigPoint:
     """A helper function to simplify the creation of ChoiceConfigPoints. Requires selection from a
