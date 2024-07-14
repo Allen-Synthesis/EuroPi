@@ -83,7 +83,8 @@ class IntegerConfigPoint(ConfigPoint):
     must lie within the specified range
 
     :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
-    :param range: The range of valid integers
+    :param range: The range of valid integers. Note that only the maximum and minimum values are considered;
+                  step values within the range are discarded.
     :param default: The default value
     """
 
