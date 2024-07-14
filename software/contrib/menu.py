@@ -21,6 +21,7 @@ from collections import OrderedDict
 EUROPI_SCRIPTS = OrderedDict([
 #   ["0123456789abcdef",  "contrib.spam.Eggs"],
     ["Bernoulli Gates",   "contrib.bernoulli_gates.BernoulliGates"],
+    ["Bezier Curves",     "contrib.bezier.Bezier"],
     ["Bit Garden",        "contrib.bit_garden.BitGarden"],
     ["Clock Modifier",    "contrib.clock_mod.ClockModifier"],
     ["Coin Toss",         "contrib.coin_toss.CoinToss"],
