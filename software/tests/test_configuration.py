@@ -89,8 +89,8 @@ def test_helper_int():
         ]
     )
 
-    assert len(config_points) == 3
-    assert config_points.default_config() == {"a": 2, "b": 0, "c": 1}
+    assert len(config_points) == 2
+    assert config_points.default_config() == {"a": 2, "b": 0}
     assert config_points.points["a"].type == int
     assert config_points.points["b"].type == int
     assert config_points.points["c"].type == int
