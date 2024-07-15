@@ -262,9 +262,39 @@ class OutputChannel:
 
         self.voltage_out = self.curve.value_at(elapsed_ms / t, k) * (self.script.config.MAX_VOLTAGE - self.script.config.MIN_VOLTAGE) + self.script.config.MIN_VOLTAGE
 
-        # TODO: apply clipping mode
+        if clip_mode == CLIP_MODE_LIMIT:
+            self.voltage_out = self.clip_limit(self.voltage_out)
+        elif clip_mode == CLIP_MODE_FOLD:
+            self.voltage_out = self.clip_fold(self.voltage_out)
+        elif clip_mode == CLIP_MODE_THRU:
+            self.voltage_out = self.clip_thru(self.voltage_out)
+
 
         self.cv_out.voltage(self.voltage_out)
+
+    def clip_limit(self, v):
+        if v < self.script.config.MIN_VOLTAGE:
+            return self.script.MIN_VOLTAGE
+        elif v > self.script.config.MAX_VOLTAGE:
+            return self.script.config.MAX_VOLTAGE
+        else:
+            return v
+
+    def clip_fold(self, v):
+        if v < self.script.config.MIN_VOLTAGE:
+            return self.script.config.MIN_VOLTAGE - v
+        elif v > self.script.config.MAX_VOLTAGE:
+            return self.script.config.MAX_VOLTAGE + (self.script.config.MAX_VOLTAGE - v)
+        else:
+            return v
+
+    def clip_thru(self, v):
+        if v < self.script.config.MIN_VOLTAGE:
+            return self.script.config.MAX_VOLTAGE - (self.script.config.MIN_VOLTAGE - v)
+        elif v > self.script.config.MAX_VOLTAGE:
+            return self.script.config.MIN_VOLTAGE - (self.script.config.MAX_VOLTAGE - v)
+        else:
+            return v
 
 
 class Bezier(EuroPiScript):
