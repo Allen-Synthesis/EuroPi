@@ -10,6 +10,11 @@ from europi_script import EuroPiScript
 
 from experimental.knobs import *
 
+import configuration
+import math
+import random
+import time
+
 class LogicalOperator:
     """Abstract class used for saving the gate outputs' logical operation
 
@@ -64,6 +69,57 @@ class Point2D:
         return f"{self.x},{self.y}"
 
 
+def linear_interpolate(x1, x2, t):
+    """Linearly interpolate from one value to another
+
+    @param x1 The initial value of x
+    @param x2 The final value of x
+    @param t  The time [0, 1]
+
+    @return   The interpolated value of x
+    """
+    return x1 * (1-t) + x2 * t
+
+
+def solve_linear_system(m):
+    """
+    Use gaussian elimination to solve a series of linear equations
+
+    @param m  The augmented matrix representation of the series of equations. This array is mangled in the process
+              of calculation
+    @return   A matrix of the coefficients of the equation
+    """
+    n_eqs = len(m)
+
+    # sort the rows
+    for i in range(n_eqs):
+        for j in range(i+1, n_eqs):
+            if abs(m[i][i]) < abs(m[j][i]):
+                # swap rows i and j with each other
+                for k in range(n_eqs+1):
+                    tmp = m[j][k]
+                    m[j][k] = m[i][k]
+                    m[i][k] = tmp
+
+    # gaussian elimination
+    for i in range(n_eqs-1):
+        for j in range(i+1, n_eqs):
+            f = m[j][i] / m[i][i]
+            for k in range(n_eqs+1):
+                m[j][k] = m[j][k] - f * m[i][k]
+
+    # back substitution
+    results = list(range(n_eqs))
+    for i in range(n_eqs - 1, -1, -1):
+        results[i] = m[i][n_eqs]
+        for j in range(i+1, n_eqs):
+            if i != j:
+                results[i] = results[i] - m[i][j] * results[j]
+        results[i] = results[i] / m[i][i]
+
+    return results
+
+
 class BezierCurve:
     """Calculates 2D bezier curves using quadratic interpolation
 
@@ -79,48 +135,143 @@ class BezierCurve:
         self.origin.y = self.next_point.y
         self.next_point.y = y
 
+    def value_at(self, t, k):
+        """Get the value of the bezier curve for a given time
+
+        @param t  The time [0, 1]
+        @param k  The curve constant, in the range [-1, 1]  See @interpolate for details on the curve constant
+        """
+        # Get 4 points on the curve so we can create a cubic equation for the curve
+        p1 = self.interpolate(0, k)
+        p2 = self.interpolate(1/3, k)
+        p3 = self.interpolate(2/3, k)
+        p4 = self.interpolate(1, k)
+
+        # matrix representation
+        m = [
+            [p1.x**3, p1.x**2, p1.x, 1, p1.y],
+            [p2.x**3, p2.x**2, p2.x, 1, p2.y],
+            [p3.x**3, p3.x**2, p3.x, 1, p3.y],
+            [p4.x**3, p4.x**2, p4.x, 1, p4.y],
+        ]
+
+        coeffs = solve_linear_system(m)
+        return coeffs[0] * t**3 + coeffs[1] * t**2 + coeffs[2] * t + coeffs[3]
+
+
     def interpolate(self, t, k):
         """Calculate the 2D position for the given time
 
         See https://en.wikipedia.org/wiki/Bezier_curve#Cubic_curves for details on the math.
 
         @param t  The current interpolated time, between 0 and 1
-        @param k  A constant indicating our progression from horizontal endpoints (smoothest) @ 0.0 to
-                  linear @ 0.5 to vertical endpoints (spikiest) @ 1.0
+        @param k  A constant indicating our progression from horizontal endpoints (smoothest) @ -1.0 to
+                  linear @ 0.0 to vertical endpoints (spikiest) @ 1.0
         @return   The interpolated 2D point on the bezier curve
         """
-        # calculate everything as if we're going from 0 to 1, and then invert/rescale as needed
-        sin_x = math.sin(math.pi/2 * k)
-        cos_x = math.cos(math.pi/2 * k)
-        c1 = 0
-        c2 = 0.5 * cos_x
-        c3 = 1.0 - 0.5 * cos_x
-        c4 = 1
-        v1 = 0
-        v4 = 1
-        v2 = v1 + 0.5 * sin_x
-        v3 = v4 - 0.5 * sin_x
-        def X(t):
-            return (1-t)**3 * c1 + 3 * t * (1-t)**2 * c2 + 3 * t**2 * (1-t)*c3 + t**3 * c4
-        def Y(t):
-            return (1-t)**3 * v1 + 3 * t * (1-t)**2 * v2 + 3 * t**2 * (1-t) * v3 + t**3 * v4
-        q = Point2D(X(t), Y(t))
+        # Define 2 intermediate points, which are either horizontally or vertically aligned with the start and end points
+        p0 = self.origin
+        p1 = Point2D(0,0)
+        p2 = Point2D(0,0)
+        p3 = self.next_point
 
-        # invert vertically if needed
-        if self.next_point.y < self.origin.y:
-            q.y = 1.0 - q.y
+        if k <= 0:
+            # start/endpoints aligned horizontally with intermediate points
+            # /3 results in slightly smoother results; /2 was giving cusps on sharp peaks & valleys
+            p1.x = p0.x - k/3
+            p2.x = p3.x + k/3
+            p1.y = p0.y
+            p2.y = p3.y
+        else:
+            # start/endpoints aligned vertically with intermediate points
+            p1.x = p0.x
+            p2.x = p3.x
 
-        # re-scale the Y axis
-        q.y = rescale(q.y, 0, 1, min(self.origin.y, self.next_point.y), max(self.origin.y, self.next_point.y))
+            dy = abs(p0.y - p3.y)
 
-        return q
+            if p0.y < p3.y:
+                # p1 goes up, p2 goes down
+                p1.y = p1.y + dy * k/2
+                p2.y = p3.y - dy * k/2
+            else:
+                # p1 goes down, p2 goes up
+                p1.y = p1.y - dy * k/2
+                p2.y = p3.y + dy * k/2
+
+        q0 = Point2D(
+            linear_interpolate(p0.x, p1.x, t),
+            linear_interpolate(p0.y, p1.y, t)
+        )
+        q1 = Point2D(
+            linear_interpolate(p1.x, p2.x, t),
+            linear_interpolate(p1.y, p2.y, t)
+        )
+        q2 = Point2D(
+            linear_interpolate(p2.x, p3.x, t),
+            linear_interpolate(p2.y, p3.y, t)
+        )
+
+        r0 = Point2D(
+            linear_interpolate(q0.x, q1.x, t),
+            linear_interpolate(q0.y, q1.y, t)
+        )
+        r1 = Point2D(
+            linear_interpolate(q1.x, q2.x, t),
+            linear_interpolate(q1.y, q2.y, t)
+        )
+
+        b = Point2D(
+            linear_interpolate(r0.x, r1.x, t),
+            linear_interpolate(r0.y, r1.y, t)
+        )
+
+        return b
+
+
+class OutputChannel:
+    """Wrapper for a CV output channel
+    """
+    def __init__(self, script, frequency_in, curve_in, cv_out):
+        self.script = script
+        self.curve = BezierCurve()
+
+        self.cv_out = cv_out
+        self.frequency_in = frequency_in
+        self.curve_in = curve_in
+
+        self.voltage_out = 0
+        self.cv_out.off()
+        self.last_tick_at = time.ticks_ms()
+        self.change_voltage()
+
+    def change_voltage(self):
+        self.curve.set_next_value(random.random())
+
+    def update(self, clip_mode=CLIP_MODE_LIMIT):
+        now = time.ticks_ms()
+
+        k = self.curve_in.percent()
+        f = self.frequency_in.percent() * (self.script.config.MAX_FREQUENCY - self.script.config.MIN_FREQUENCY) + self.script.config.MIN_FREQUENCY
+        t = 1000.0/f  # Hz -> ms
+
+        elapsed_ms = time.ticks_diff(now, self.last_tick_at)
+        if elapsed_ms >= t:
+            self.change_voltage()
+            self.last_tick_at = now
+            elapsed_ms = 0
+
+        self.voltage_out = self.curve.value_at(elapsed_ms / t, k) * (self.script.config.MAX_VOLTAGE - self.script.config.MIN_VOLTAGE) + self.script.config.MIN_VOLTAGE
+
+        # TODO: apply clipping mode
+
+        self.cv_out.voltage(self.voltage_out)
 
 
 class Bezier(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        cfg = self.load_settings_json()
+        cfg = self.load_state_json()
 
         self.frequency_in = (
             KnobBank.builder(k2)
@@ -161,6 +312,9 @@ class Bezier(EuroPiScript):
         # Do we need to re-render the GUI?
         self.ui_dirty = True
 
+        self.curve_a = OutputChannel(self, self.frequency_in["channel_a"], self.curve_in["channel_a"], cv1)
+        self.curve_b = OutputChannel(self, self.frequency_in["channel_b"], self.curve_in["channel_b"], cv2)
+
         @b1.handler
         def on_b1_press():
             self.clip_mode = (self.clip_mode + 1) % N_CLIP_MODES
@@ -198,13 +352,52 @@ class Bezier(EuroPiScript):
             "channel_b_frequency": self.frequency_in_in["channel_b"].percent(),
             "clip_mode": self.clip_mode
         }
-        self.save_settings_json(cfg)
+        self.save_state_json(cfg)
         self.settings_dirty = False
 
     def main(self):
+        GATE_DURATION = 0
+        HALF_VOLTAGE = (self.config.MIN_VOLTAGE + self.config.MAX_VOLTAGE) / 2
+
+        gate_a = False
+        gate_b = False
         while True:
+            now = time.ticks_ms()
+
+            # set the main outputs, calculate the bezier curves
+            self.curve_a.update()
+            self.curve_b.update()
+
+            # set cv3 to the average of the channels
+            cv3.voltage((self.curve_a.voltage_out + self.curve_b.voltage_out) / 2)
+
+            # set the trigger state for cv4
+            if time.ticks_diff(now, self.curve_a.last_tick_at) <= GATE_DURATION:
+                cv4.on()
+                gate_a = True
+            else:
+                cv4.off()
+                gate_a = False
+
+            # set cv5 high/low, depending on the value of channel b
+            if self.curve_b.voltage_out >= HALF_VOLTAGE:
+                cv5.on()
+                gate_b = True
+            else:
+                cv5.off()
+                gate_b = False
+
+            logic_gate_on = self.gate_logic.compare(gate_a, gate_b)
+            if logic_gate_on:
+                cv6.on()
+            else:
+                cv6.off()
+
+            # save settings if needed
             if self.settings_dirty:
                 self.save()
+
+            # TODO: GUI
 
 if __name__ == "__main__":
     Bezier().main()
