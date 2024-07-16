@@ -9,11 +9,14 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.knobs import *
+from experimental.screensaver import OledWithScreensaver
 
 import configuration
 import math
 import random
 import time
+
+ssoled = OledWithScreensaver()
 
 class LogicalOperator:
     """Abstract class used for saving the gate outputs' logical operation
@@ -260,7 +263,11 @@ class OutputChannel:
         self.vizualization_samples = []
 
     def change_voltage(self):
-        self.curve.set_next_value(random.random())
+        """Pick a random value between -0.1 and 1.1 and use it as the goal point for the bezier curve
+
+        We intentionally overshoot the [0, 1] range in order to force the occasional effect from the clipping mode.
+        """
+        self.curve.set_next_value(random.random() * 1.2 - 0.1)
 
     def update(self, clip_mode=CLIP_MODE_LIMIT):
         now = time.ticks_ms()
@@ -300,7 +307,7 @@ class OutputChannel:
 
     def clip_limit(self, v):
         if v < self.script.config.MIN_VOLTAGE:
-            return self.script.MIN_VOLTAGE
+            return self.script.config.MIN_VOLTAGE
         elif v > self.script.config.MAX_VOLTAGE:
             return self.script.config.MAX_VOLTAGE
         else:
@@ -368,21 +375,31 @@ class Bezier(EuroPiScript):
         self.curve_a = OutputChannel(self, self.frequency_in["channel_a"], self.curve_in["channel_a"], cv1)
         self.curve_b = OutputChannel(self, self.frequency_in["channel_b"], self.curve_in["channel_b"], cv2)
 
+        # If DIN receives a signal, force the curves to change target value
+        self.force_voltage_change = False
+
+        @din.handler
+        def on_din_rise():
+            self.force_voltage_change = True
+
         @b1.handler
         def on_b1_press():
             self.clip_mode = (self.clip_mode + 1) % N_CLIP_MODES
             self.settings_dirty = True
+            ssoled.notify_user_interaction()
 
         @b2.handler
         def on_b2_press():
             self.curve_in.set_current("channel_b")
             self.frequency_in.set_current("channel_b")
+            ssoled.notify_user_interaction()
 
         @b2.handler_falling
         def on_b2_release():
             self.curve_in.set_current("channel_a")
             self.frequency_in.set_current("channel_a")
             self.settings_dirty = True
+            ssoled.notify_user_interaction()
 
     @classmethod
     def config_points(cls):
@@ -412,16 +429,24 @@ class Bezier(EuroPiScript):
     def draw_graph(self, curve):
         # draw the live graphs
         for i in range(len(curve.vizualization_samples)):
-            oled.pixel(i+OLED_WIDTH//2, OLED_HEIGHT - 1 - curve.vizualization_samples[i], 1)
+            ssoled.pixel(i+OLED_WIDTH//2, OLED_HEIGHT - 1 - curve.vizualization_samples[i], 1)
 
     def main(self):
         GATE_DURATION = 0
         HALF_VOLTAGE = (self.config.MIN_VOLTAGE + self.config.MAX_VOLTAGE) / 2
 
-        gate_a = False
-        gate_b = False
+        # Used to detect user interaction with the knobs
+        UI_DEADZONE = 0.01
+        prev_freq_value = self.frequency_in.current.percent()
+        prev_curve_value = self.curve_in.current.percent()
+
         while True:
             now = time.ticks_ms()
+
+            if self.force_voltage_change:
+                self.force_voltage_change = False
+                self.curve_a.change_voltage()
+                self.curve_b.change_voltage()
 
             # set the main outputs, calculate the bezier curves
             self.curve_a.update()
@@ -456,30 +481,39 @@ class Bezier(EuroPiScript):
             if self.settings_dirty:
                 self.save()
 
+            # check if we've moved the knobs manually
+            # Wake up from the screensaver if we have
+            current_freq_value = self.frequency_in.current.percent()
+            current_curve_value = self.curve_in.current.percent()
+            if abs(current_freq_value - prev_freq_value) >= UI_DEADZONE or abs(current_curve_value - prev_curve_value) >= UI_DEADZONE:
+                ssoled.notify_user_interaction()
+            prev_freq_value = current_freq_value
+            prev_curve_value = current_curve_value
+
             # UI:
             # +------------------------+
             # | A AA.AAHz  +kA.AA      |
             # | B BB.BBHz  -kB.BB      |
             # | Fold      ...--^-.--^  |
             # +------------------------+
-            oled.fill(0)
+            ssoled.fill(0)
 
             # Highlight either the first or second row to indicate it's being edited
             channel_a_active = self.curve_in.current == self.curve_in["channel_a"]
 
             if channel_a_active:
-                oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT+2, 1)
+                ssoled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT+2, 1)
             else:
-                oled.fill_rect(0, CHAR_HEIGHT+1, OLED_WIDTH, CHAR_HEIGHT+2, 1)
+                ssoled.fill_rect(0, CHAR_HEIGHT+1, OLED_WIDTH, CHAR_HEIGHT+2, 1)
 
-            oled.text(f"A {self.curve_a.frequency:0.2f}Hz  {self.curve_a.curve_k:+0.2f}", 1, 1, 0 if channel_a_active else 1)
-            oled.text(f"B {self.curve_b.frequency:0.2f}Hz  {self.curve_b.curve_k:+0.2f}", 1, CHAR_HEIGHT+2, 1 if channel_a_active else 0)
-            oled.text(f"{CLIP_MODE_NAMES[self.clip_mode]}", 1, 2*CHAR_HEIGHT + 4, 1)
+            ssoled.text(f"A {self.curve_a.frequency:0.2f}Hz  {self.curve_a.curve_k:+0.2f}", 1, 1, 0 if channel_a_active else 1)
+            ssoled.text(f"B {self.curve_b.frequency:0.2f}Hz  {self.curve_b.curve_k:+0.2f}", 1, CHAR_HEIGHT+2, 1 if channel_a_active else 0)
+            ssoled.text(CLIP_MODE_NAMES[self.clip_mode], 1, 2*CHAR_HEIGHT + 4, 1)
 
             self.draw_graph(self.curve_a)
             self.draw_graph(self.curve_b)
 
-            oled.show()
+            ssoled.show()
 
 if __name__ == "__main__":
     Bezier().main()

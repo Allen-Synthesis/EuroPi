@@ -17,7 +17,8 @@ previous positions, so you may need to sweep the knob to unlock it.
 - `k1` -- set the frequency of channel A or B
 - `k2` -- set the curve of channel A or B
 - `ain` -- configurable CV input to control either the frequency or curve (see below for how to set routing)
-- `din` -- unused
+- `din` -- on a rising edge, force channels A and B to choose new goal voltages. This will not generate an output gate
+   on `cv4` (see below), but may change the gate state on `cv5` and `cv6`.
 
 - `cv1` -- CV output from channel A
 - `cv2` -- CV output from channel B
@@ -30,6 +31,10 @@ Gate outputs are different for channels A and B:
 - Channel A (`cv4`) outputs a 10ms trigger every time a new sample is generated (determined by the frequency)
 - Channel B (`cv5`) is high whenever its voltage output is higher than 50%. e.g. if the range is set to 0-10V, `cv5`
   will be high if `cv2` is 5V or more.
+
+Patching a clock/gate/trigger signal into `din` will force the output channels to choose a new goal voltage. This can
+(and frequently will) cause an abrupt change in the CV output of channels A and B, rather than the smoothly changing
+voltages they normally output.
 
 ## Additional Configuration
 
@@ -61,7 +66,16 @@ Note that the maximum and minimum voltages must be defined such that:
 - `MIN_VOLTAGE` is less than `MAX_VOLTAGE`
 - `MIN_VOLTAGE` and `MAX_VOLTAGE` are positive
 - `MIN_VOLTAGE` and `MAX_VOLTAGE` do not fall outside the range defined by the module's master configuration
-  (see [Configuration](/software/CONFIGURATION.md) for more information)
+- `MAX_INPUT_VOLTAGE` is less than the module's master configuration.
+
+See [Configuration](/software/CONFIGURATION.md) for more information on input & output voltage options for the
+entire module.
+
+If you plan on using CV to control Bezier, make sure you set the maximum input voltage according to your modules'
+output.  For example if you plan on connecting it to an LFO that outputs 0-5V, you may find it helpful to set the
+`MAX_INPUT_VOLTAGE` to `5.0` to allow the full modulation range.  If your LFO is bipolar (e.g. `+/-5V`), the input
+will be clamped at 0 as EuroPi does not support bipolar CV input.  In this case, the use of a voltage rectifier is
+recommended.
 
 ## Clipping mode
 
@@ -72,18 +86,25 @@ The output can behave in one of 3 ways if the output wave moves outside the defi
 
 ## Curve Shapes
 
-The following graph shows an example of the generated curves with different values set for `k1`:
-![Bezier Curves](./bezier-docs/curves.png)
+The shape of the bezier curves is defined by the "curve constant" `k`. This value lies in the range `[-1, 1]`, and is
+interpreted as follows:
+- `0.0` -- linear interpolation between voltages
+- `k < 0` -- horizontal approach to each new voltage
+- `k > 0` -- vertical approach to each new voltage
+
+The following image illustrates this concept, copied from the ADDAC507 manual:
+![Bezier Curves](bezier-docs/curve-knob.png.png)
+
+Negative values of `k` will generally result in a smoother overall shape to the output voltage. Positive values will
+have more abrupt changes in voltage whenever a new goal value is generated.
 
 ## CV Control
 
-If CV control is set to `frequency` (the default), `ain` will accept 0-10V, increasing the frequency of both channels
-as voltage increases.
+If CV control is set to `frequency` (the default), `ain` will accept positive voltage, increasing the frequency of both
+channels as voltage increases.
 
-If CV control is set to `curve`, `ain` will accept 0-10V, changing the curve constant of both channels. The channels'
-curve constants are set to the average between the knob value (`[-1, 1]`) and the CV value:
+If CV control is set to `curve`, `ain` will accept positive voltage, changing the curve constant of both channels. The
+channels' curve constants are set to the average between the knob value (`[-1, 1]`) and the CV value:
 - `0V` is equivalent to a curve constant of `-1`
-- `5V` is equivalent to a curve constant of `0`
-- `10V` is equivalent to a curve constant of `+1`
-
-The voltage range of 0-10V can be configured (see above) if your system cannot generate 10V voltages
+- `50%` of `MAX_INPUT_VOLTAGE` is equivalent to a curve constant of `0`
+- `100%` of `MAX_INPUT_VOLTAGE` is equivalent to a curve constant of `+1`
