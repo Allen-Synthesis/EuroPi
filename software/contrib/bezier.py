@@ -59,6 +59,12 @@ CLIP_MODE_FOLD = 1
 CLIP_MODE_THRU = 2
 N_CLIP_MODES = 3
 
+CLIP_MODE_NAMES = [
+    "Limit",
+    "Fold",
+    "Thru"
+]
+
 
 class Point2D:
     def __init__(self, x, y):
@@ -244,15 +250,19 @@ class OutputChannel:
         self.last_tick_at = time.ticks_ms()
         self.change_voltage()
 
+        self.frequency = 0.0
+        self.curve_k = 0.0
+        self.voltage_out = 0.0
+
     def change_voltage(self):
         self.curve.set_next_value(random.random())
 
     def update(self, clip_mode=CLIP_MODE_LIMIT):
         now = time.ticks_ms()
 
-        k = self.curve_in.percent()
-        f = self.frequency_in.percent() * (self.script.config.MAX_FREQUENCY - self.script.config.MIN_FREQUENCY) + self.script.config.MIN_FREQUENCY
-        t = 1000.0/f  # Hz -> ms
+        self.curve_k = self.curve_in.percent() * 2 -1  # [-1, 1]
+        self.frequency = self.frequency_in.percent() * (self.script.config.MAX_FREQUENCY - self.script.config.MIN_FREQUENCY) + self.script.config.MIN_FREQUENCY
+        t = 1000.0/self.frequency  # Hz -> ms
 
         elapsed_ms = time.ticks_diff(now, self.last_tick_at)
         if elapsed_ms >= t:
@@ -260,7 +270,7 @@ class OutputChannel:
             self.last_tick_at = now
             elapsed_ms = 0
 
-        self.voltage_out = self.curve.value_at(elapsed_ms / t, k) * (self.script.config.MAX_VOLTAGE - self.script.config.MIN_VOLTAGE) + self.script.config.MIN_VOLTAGE
+        self.voltage_out = self.curve.value_at(elapsed_ms / t, self.curve_k) * (self.script.config.MAX_VOLTAGE - self.script.config.MIN_VOLTAGE) + self.script.config.MIN_VOLTAGE
 
         if clip_mode == CLIP_MODE_LIMIT:
             self.voltage_out = self.clip_limit(self.voltage_out)
@@ -268,7 +278,6 @@ class OutputChannel:
             self.voltage_out = self.clip_fold(self.voltage_out)
         elif clip_mode == CLIP_MODE_THRU:
             self.voltage_out = self.clip_thru(self.voltage_out)
-
 
         self.cv_out.voltage(self.voltage_out)
 
@@ -304,7 +313,7 @@ class Bezier(EuroPiScript):
         cfg = self.load_state_json()
 
         self.frequency_in = (
-            KnobBank.builder(k2)
+            KnobBank.builder(k1)
             .with_unlocked_knob("channel_a")
             .with_locked_knob("channel_b", initial_percentage_value=cfg.get("channel_b_freq", 0.5))
             .build()
@@ -338,9 +347,6 @@ class Bezier(EuroPiScript):
 
         # Are the settings dirty & need saving?
         self.settings_dirty = False
-
-        # Do we need to re-render the GUI?
-        self.ui_dirty = True
 
         self.curve_a = OutputChannel(self, self.frequency_in["channel_a"], self.curve_in["channel_a"], cv1)
         self.curve_b = OutputChannel(self, self.frequency_in["channel_b"], self.curve_in["channel_b"], cv2)
@@ -379,7 +385,7 @@ class Bezier(EuroPiScript):
         """
         cfg = {
             "channel_b_curve": self.curve_in["channel_b"].percent(),
-            "channel_b_frequency": self.frequency_in_in["channel_b"].percent(),
+            "channel_b_frequency": self.frequency_in["channel_b"].percent(),
             "clip_mode": self.clip_mode
         }
         self.save_state_json(cfg)
@@ -427,7 +433,27 @@ class Bezier(EuroPiScript):
             if self.settings_dirty:
                 self.save()
 
-            # TODO: GUI
+            # UI:
+            # +------------------------+
+            # | A AA.AAHz  +kA.AA      |
+            # | B BB.BBHz  -kB.BB      |
+            # | Fold                   |
+            # +------------------------+
+            oled.fill(0)
+
+            # Highlight either the first or second row to indicate it's being edited
+            channel_a_active = self.curve_in.current == self.curve_in["channel_a"]
+
+            if channel_a_active:
+                oled.fill_rect(0, 0, OLED_WIDTH, CHAR_HEIGHT+2, 1)
+            else:
+                oled.fill_rect(0, CHAR_HEIGHT+1, OLED_WIDTH, CHAR_HEIGHT+2, 1)
+
+            oled.text(f"A {self.curve_a.frequency:0.2f}Hz  {self.curve_a.curve_k:+0.2f}", 1, 1, 0 if channel_a_active else 1)
+            oled.text(f"B {self.curve_b.frequency:0.2f}Hz  {self.curve_b.curve_k:+0.2f}", 1, CHAR_HEIGHT+2, 1 if channel_a_active else 0)
+            oled.text(f"{CLIP_MODE_NAMES[self.clip_mode]}", 1, 2*CHAR_HEIGHT + 4, 1)
+
+            oled.show()
 
 if __name__ == "__main__":
     Bezier().main()

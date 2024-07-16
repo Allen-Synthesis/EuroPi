@@ -17,6 +17,7 @@ previous positions, so you may need to sweep the knob to unlock it.
 - `k1` -- set the frequency of channel A or B
 - `k2` -- set the curve of channel A or B
 - `ain` -- configurable CV input to control either the frequency or curve (see below for how to set routing)
+- `din` -- unused
 
 - `cv1` -- CV output from channel A
 - `cv2` -- CV output from channel B
