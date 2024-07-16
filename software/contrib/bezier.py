@@ -254,6 +254,8 @@ class OutputChannel:
         self.curve_k = 0.0
         self.voltage_out = 0.0
 
+        self.vizualization_samples = []
+
     def change_voltage(self):
         self.curve.set_next_value(random.random())
 
@@ -280,6 +282,10 @@ class OutputChannel:
             self.voltage_out = self.clip_thru(self.voltage_out)
 
         self.cv_out.voltage(self.voltage_out)
+
+        self.vizualization_samples.append(int((self.voltage_out - self.script.config.MIN_VOLTAGE) / (self.script.config.MAX_VOLTAGE - self.script.config.MIN_VOLTAGE) * OLED_HEIGHT/3))
+        if len(self.vizualization_samples) > OLED_WIDTH // 2:
+            self.vizualization_samples.pop(0)
 
     def clip_limit(self, v):
         if v < self.script.config.MIN_VOLTAGE:
@@ -315,7 +321,7 @@ class Bezier(EuroPiScript):
         self.frequency_in = (
             KnobBank.builder(k1)
             .with_unlocked_knob("channel_a")
-            .with_locked_knob("channel_b", initial_percentage_value=cfg.get("channel_b_freq", 0.5))
+            .with_locked_knob("channel_b", initial_percentage_value=cfg.get("channel_b_frequency", 0.5))
             .build()
         )
 
@@ -358,13 +364,13 @@ class Bezier(EuroPiScript):
 
         @b2.handler
         def on_b2_press():
-            self.curve_in.next()
-            self.frequency_in.next()
+            self.curve_in.set_current("channel_b")
+            self.frequency_in.set_current("channel_b")
 
         @b2.handler_falling
         def on_b2_release():
-            self.curve_in.next()
-            self.frequency_in.next()
+            self.curve_in.set_current("channel_a")
+            self.frequency_in.set_current("channel_a")
             self.settings_dirty = True
 
     @classmethod
@@ -390,6 +396,11 @@ class Bezier(EuroPiScript):
         }
         self.save_state_json(cfg)
         self.settings_dirty = False
+
+    def draw_graph(self, curve):
+        # draw the live graphs
+        for i in range(len(curve.vizualization_samples)):
+            oled.pixel(i+OLED_WIDTH//2, OLED_HEIGHT - 1 - curve.vizualization_samples[i], 1)
 
     def main(self):
         GATE_DURATION = 0
@@ -437,7 +448,7 @@ class Bezier(EuroPiScript):
             # +------------------------+
             # | A AA.AAHz  +kA.AA      |
             # | B BB.BBHz  -kB.BB      |
-            # | Fold                   |
+            # | Fold      ...--^-.--^  |
             # +------------------------+
             oled.fill(0)
 
@@ -452,6 +463,9 @@ class Bezier(EuroPiScript):
             oled.text(f"A {self.curve_a.frequency:0.2f}Hz  {self.curve_a.curve_k:+0.2f}", 1, 1, 0 if channel_a_active else 1)
             oled.text(f"B {self.curve_b.frequency:0.2f}Hz  {self.curve_b.curve_k:+0.2f}", 1, CHAR_HEIGHT+2, 1 if channel_a_active else 0)
             oled.text(f"{CLIP_MODE_NAMES[self.clip_mode]}", 1, 2*CHAR_HEIGHT + 4, 1)
+
+            self.draw_graph(self.curve_a)
+            self.draw_graph(self.curve_b)
 
             oled.show()
 
