@@ -41,7 +41,8 @@ values for this file are below:
     "MIN_VOLTAGE": 0.0,
     "MAX_VOLTAGE": 10.0,
     "AIN_MODE": "frequency",
-    "LOGIC_MODE": "xor"
+    "LOGIC_MODE": "xor",
+    "MAX_INPUT_VOLTAGE": 10.0
 }
 ```
 
@@ -54,6 +55,7 @@ The following fields may be set:
    `and`, `or`, `xor`, `nand`, `nor`, or `xnor`. Default: `xor`.
 - `MIN_FREQUENCY` -- the minumum frequency (Hz) for choosing new random values. Must be between 0.001 and 10.0. Default: 0.01
 - `MAX_FREQUENCY` -- the maximum frequency (Hz) for choosing new random values. Must be between 0.001 and 10.0. Default: 1.0
+- `MAX_INPUT_VOLTAGE` -- the maximum CV input voltage (default: 10.0)
 
 Note that the maximum and minimum voltages must be defined such that:
 - `MIN_VOLTAGE` is less than `MAX_VOLTAGE`
@@ -72,3 +74,16 @@ The output can behave in one of 3 ways if the output wave moves outside the defi
 
 The following graph shows an example of the generated curves with different values set for `k1`:
 ![Bezier Curves](./bezier-docs/curves.png)
+
+## CV Control
+
+If CV control is set to `frequency` (the default), `ain` will accept 0-10V, increasing the frequency of both channels
+as voltage increases.
+
+If CV control is set to `curve`, `ain` will accept 0-10V, changing the curve constant of both channels. The channels'
+curve constants are set to the average between the knob value (`[-1, 1]`) and the CV value:
+- `0V` is equivalent to a curve constant of `-1`
+- `5V` is equivalent to a curve constant of `0`
+- `10V` is equivalent to a curve constant of `+1`
+
+The voltage range of 0-10V can be configured (see above) if your system cannot generate 10V voltages

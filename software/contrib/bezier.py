@@ -65,6 +65,9 @@ CLIP_MODE_NAMES = [
     "Thru"
 ]
 
+AIN_MODE_FREQUENCY = "frequency"
+AIN_MODE_CURVE = "curve"
+
 
 class Point2D:
     def __init__(self, x, y):
@@ -264,6 +267,14 @@ class OutputChannel:
 
         self.curve_k = self.curve_in.percent() * 2 -1  # [-1, 1]
         self.frequency = self.frequency_in.percent() * (self.script.config.MAX_FREQUENCY - self.script.config.MIN_FREQUENCY) + self.script.config.MIN_FREQUENCY
+
+        if self.script.config.AIN_MODE == AIN_MODE_FREQUENCY:
+            # increase the frequency according to the voltage on AIN
+            self.frequency = self.frequency + ain.read_voltage() / self.script.config.MAX_INPUT_VOLTAGE * (self.script.config.MAX_FREQUENCY - self.script.config.MIN_FREQUENCY) + self.script.config.MIN_FREQUENCY
+        elif self.script.config.AIN_MODE == AIN_MODE_CURVE:
+            ain_k = ain.read_voltage() / self.script.config.MAX_INPUT_VOLTAGE * 2 -1  # [-1, 1]
+            self.curve_k = (self.curve_k + ain_k) / 2
+
         t = 1000.0/self.frequency  # Hz -> ms
 
         elapsed_ms = time.ticks_diff(now, self.last_tick_at)
@@ -378,6 +389,7 @@ class Bezier(EuroPiScript):
         """Return the static configuration options for this class
         """
         return [
+            configuration.floatingPoint(name="MAX_INPUT_VOLTAGE", minimum=0.0, maximum=europi_config.MAX_INPUT_VOLTAGE, default=10.0),
             configuration.floatingPoint(name="MIN_VOLTAGE", minimum=0.0, maximum=europi_config.MAX_OUTPUT_VOLTAGE, default=0.0),
             configuration.floatingPoint(name="MAX_VOLTAGE", minimum=0.0, maximum=europi_config.MAX_OUTPUT_VOLTAGE, default=europi_config.MAX_OUTPUT_VOLTAGE),
             configuration.floatingPoint(name="MIN_FREQUENCY", minimum=0.001, maximum=10.0, default=0.01),
