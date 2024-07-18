@@ -49,12 +49,14 @@ class EuroPiConfig:
             ),
             configuration.integer(
                 name="DISPLAY_WIDTH",
-                range=range(8, 1024),
+                minimum=8,
+                maximum=1024,
                 default=128
             ),
             configuration.integer(
                 name="DISPLAY_HEIGHT",
-                range=range(8, 1024),
+                minimum=8,
+                maximum=1024,
                 default=32
             ),
             configuration.choice(
@@ -69,7 +71,8 @@ class EuroPiConfig:
             ),
             configuration.integer(
                 name="DISPLAY_CHANNEL",
-                range=range(0, 2),
+                minimum=0,
+                maximum=1,
                 default=0
             ),
 

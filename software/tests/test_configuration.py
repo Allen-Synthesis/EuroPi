@@ -19,7 +19,7 @@ def simple_config_spec():
     return ConfigSpec(
         [
             config.choice(name="a", choices=[1, 2, 3], default=2),
-            config.integer(name="b", range=range(5), default=3),
+            config.integer(name="b", minimum=0, maximum=4, default=3),
         ]
     )
 
@@ -84,8 +84,8 @@ def test_helper_choice():
 def test_helper_int():
     config_points = ConfigSpec(
         [
-            config.integer(name="a", range=range(5), default=2),
-            config.integer(name="b", range=range(-5, 6), default=0),
+            config.integer(name="a", minimum=0, maximum=4, default=2),
+            config.integer(name="b", minimum=-5, maximum=5, default=0),
         ]
     )
 

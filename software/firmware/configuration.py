@@ -83,15 +83,15 @@ class IntegerConfigPoint(ConfigPoint):
     must lie within the specified range
 
     :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
-    :param range: The range of valid integers. Note that only the maximum and minimum values are considered;
-                  step values within the range are discarded.
+    :param minimum: The minimum allowed value
+    :param maximum: The maximum allowed value
     :param default: The default value
     """
 
-    def __init__(self, name: str, range: range, default: int):
+    def __init__(self, name: str, minimum: int, maximum: int, default: int):
         super().__init__(name=name, type=int, default=default)
-        self.minimum = range[0]
-        self.maximum = range[-1]
+        self.minimum = minimum
+        self.maximum = maximum
 
         if default < self.minimum or default > self.maximum:
             raise Exception(f"Default {default} is out of range")
@@ -106,7 +106,7 @@ class IntegerConfigPoint(ConfigPoint):
             else:
                 return Validation(is_valid=False, message=f"Value {value} is out of range")
         else:
-            return Validation(is_valid=False, message=f"Value {value} is not a number")
+            return Validation(is_valid=False, message=f"Value {value} is not an integer")
 
 
 class ChoiceConfigPoint(ConfigPoint):
@@ -176,15 +176,16 @@ def floatingPoint(name: str, minimum: float, maximum: float, default: float) -> 
     return FloatConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default)
 
 
-def integer(name: str, range: range, default: int) -> IntegerConfigPoint:
+def integer(name: str, minimum: int, maximum: int, default: int) -> IntegerConfigPoint:
     """A helper function to simplify the creation of IntegerConfigPoints. Requires selection from a
     range of integers. The default value must exist in the given range.
 
     :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
-    :param range: The range of valid integers
+    :param minimum: The minimum allowed value
+    :param maximum: The maximum allowed value
     :param default: The default value
     """
-    return IntegerConfigPoint(name=name, range=range, default=default)
+    return IntegerConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default)
 
 
 class ConfigSpec:
