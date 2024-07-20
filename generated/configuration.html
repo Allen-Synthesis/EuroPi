@@ -230,15 +230,40 @@ validation result, as well as an error message containing the reason for a valid
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="configuration.IntegerConfigPoint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">IntegerConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.IntegerConfigPoint" title="Permalink to this definition"></a></dt>
-<dd><p>A <cite>ConfigPoint</cite> that requires selection from a range of integers. The default value must
-exist in the given choices.</p>
+<dt class="sig sig-object py" id="configuration.FloatConfigPoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">FloatConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.FloatConfigPoint" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>ConfigPoint</cite> that requires the selection from a range of floats.  The default value
+must lie within the specified range</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
-<li><p><strong>range</strong> – The range of valid integers</p></li>
+<li><p><strong>minimum</strong> – The minimum allowed value</p></li>
+<li><p><strong>maximum</strong> – The maximum allowed value</p></li>
+<li><p><strong>default</strong> – The default value</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="configuration.FloatConfigPoint.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.Validation" title="configuration.Validation"><span class="pre">Validation</span></a></span></span><a class="headerlink" href="#configuration.FloatConfigPoint.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validates the given value with this ConfigPoint. Returns a <cite>Validation</cite> containing the
+validation result, as well as an error message containing the reason for a validation failure.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="configuration.IntegerConfigPoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">IntegerConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.IntegerConfigPoint" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>ConfigPoint</cite> that requires selection from a range of integers. The default value
+must lie within the specified range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
+<li><p><strong>minimum</strong> – The minimum allowed value</p></li>
+<li><p><strong>maximum</strong> – The maximum allowed value</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
 </ul>
 </dd>
@@ -328,15 +353,33 @@ limited number of choices. The default value must exist in the given choices.</p
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="configuration.integer">
-<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">integer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.IntegerConfigPoint" title="configuration.IntegerConfigPoint"><span class="pre">IntegerConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.integer" title="Permalink to this definition"></a></dt>
-<dd><p>A helper function to simplify the creation of IntegerConfigPoints. Requires selection from a
-range of integers. The default value must exist in the given choices.</p>
+<dt class="sig sig-object py" id="configuration.floatingPoint">
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">floatingPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.FloatConfigPoint" title="configuration.FloatConfigPoint"><span class="pre">FloatConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.floatingPoint" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to simplify the creation of FloatConfigPoints. Requires selection from a
+range of floats. The default value must exist in the given range.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
-<li><p><strong>range</strong> – The range of valid integers</p></li>
+<li><p><strong>minumum</strong> – The minumum allowed value</p></li>
+<li><p><strong>maximum</strong> – The maximum allowed value</p></li>
+<li><p><strong>default</strong> – The default value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="configuration.integer">
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">integer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.IntegerConfigPoint" title="configuration.IntegerConfigPoint"><span class="pre">IntegerConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.integer" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to simplify the creation of IntegerConfigPoints. Requires selection from a
+range of integers. The default value must exist in the given range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
+<li><p><strong>minimum</strong> – The minimum allowed value</p></li>
+<li><p><strong>maximum</strong> – The maximum allowed value</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
 </ul>
 </dd>
