@@ -49,12 +49,14 @@ class EuroPiConfig:
             ),
             configuration.integer(
                 name="DISPLAY_WIDTH",
-                range=range(8, 1024),
+                minimum=8,
+                maximum=1024,
                 default=128
             ),
             configuration.integer(
                 name="DISPLAY_HEIGHT",
-                range=range(8, 1024),
+                minimum=8,
+                maximum=1024,
                 default=32
             ),
             configuration.choice(
@@ -69,25 +71,29 @@ class EuroPiConfig:
             ),
             configuration.integer(
                 name="DISPLAY_CHANNEL",
-                range=range(0, 2),
+                minimum=0,
+                maximum=1,
                 default=0
             ),
 
             # I/O voltage settings
-            configuration.integer(
+            configuration.floatingPoint(
                 name="MAX_OUTPUT_VOLTAGE",
-                range=range(1, 11),
-                default=10
+                minimum=1.0,
+                maximum=10.0,
+                default=10.0
             ),
-            configuration.integer(
+            configuration.floatingPoint(
                 name="MAX_INPUT_VOLTAGE",
-                range=range(1, 13),
-                default=12
+                minimum=1.0,
+                maximum=12.0,
+                default=12.0
             ),
-            configuration.integer(
+            configuration.floatingPoint(
                 name="GATE_VOLTAGE",
-                range=range(1, 11),
-                default=5
+                minimum=1.0,
+                maximum=10.0,
+                default=5.0
             ),
 
             # Menu settings

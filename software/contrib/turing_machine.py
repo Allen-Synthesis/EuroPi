@@ -294,14 +294,15 @@ class EuroPiTuringMachine(EuroPiScript):
 
     @classmethod
     def config_points(cls):
-        bitcount_range = range(1, min(DEFAULT_BIT_COUNT, 8))
+        range_min = 0
+        range_max = min(DEFAULT_BIT_COUNT, 8) - 1
 
         return [
             configuration.choice(name="WRITE_VALUE", choices=[0, 1], default=0),
             # simulate the actual bits available in the pulses expander (1-7)
-            configuration.integer(name="CV1_PULSE_BIT", range=bitcount_range, default=1),
-            configuration.integer(name="CV2_PULSE_BIT", range=bitcount_range, default=2),
-            configuration.integer(name="CV3_PULSE_BIT", range=bitcount_range, default=4),
+            configuration.integer(name="CV1_PULSE_BIT", minimum=range_min, maximum=range_max, default=1),
+            configuration.integer(name="CV2_PULSE_BIT", minimum=range_min, maximum=range_max, default=2),
+            configuration.integer(name="CV3_PULSE_BIT", minimum=range_min, maximum=range_max, default=4),
         ]
 
     def main(self):
