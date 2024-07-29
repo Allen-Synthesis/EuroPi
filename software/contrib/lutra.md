@@ -1,6 +1,6 @@
 # Lutra
 
-Lutra is a re-imagining of [Expert Sleepers' Otterly](https://expert-sleepers.co.uk/otterley.html) module.
+Lutra is a re-imagining of [Expert Sleepers' Otterley](https://expert-sleepers.co.uk/otterley.html) module.
 
 Each output channel is a free running LFO with a subtly different clock speed. The spread of clock speeds is controlled
 by `k2` (and optionally `ain` -- see configuration below)
