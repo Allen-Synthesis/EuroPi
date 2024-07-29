@@ -111,7 +111,7 @@ Treats both inputs as digital on/off signals and outputs the results of binary A
 
 Six syncable LFOs with variable wave shapes. The clock speed of each LFO is slightly different, with an adjustable base speed and CV-controllable spread.
 
-Inspired by [Expert Sleepers' Otterly](https://expert-sleepers.co.uk/otterley.html) module.
+Inspired by [Expert Sleepers' Otterley](https://expert-sleepers.co.uk/otterley.html) module.
 
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: lfo</i>
