@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lutra -- A EuroPi reimagining of Expert Sleepers' Otterly
+"""Lutra -- A EuroPi reimagining of Expert Sleepers' Otterley
 
 This script is a free-running, syncable LFO with variable shapes.  Each output channel's clock speed is slightly
 different, with the spread being controlled by K2 (and optionally AIN).  The overall speed is controlled by
