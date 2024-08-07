@@ -17,11 +17,14 @@ def bisect_left(a, x, lo=0, hi=None, *, key=None):
 
     A custom key function can be supplied to customize the sort order.
 
-    Copied from https://github.com/python/cpython/blob/3.12/Lib/bisect.py
+    Copied from https://github.com/python/cpython/blob/3.12/Lib/bisect.py with some modifications
+    noted below
     """
 
     if lo < 0:
-        raise ValueError('lo must be non-negative')
+        # EDIT: force lo to be non-zero to avoid raising a potentially unhandled exception
+        # raise ValueError('lo must be non-negative')
+        lo = 0
     if hi is None:
         hi = len(a)
     # Note, the comparison uses "<" to match the
