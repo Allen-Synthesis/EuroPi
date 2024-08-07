@@ -12,7 +12,7 @@ Inputs:
   indicated scale are played
 - `din` is a trigger input that changes the current note of the arpeggio
 - `ain` is a CV output that takes 0-10V, allowing transposition control
-  over the root noote. Note that the octave of the transposition is
+  over the root note. Note that the octave of the transposition is
   ignored; only the quantized semitone is applied
 - `k1` sets the root octave (0-5 octaves)
 - `k2` changes the octave range (1-5 octaves)
