@@ -5,6 +5,7 @@ A replacement for the standard bisect Python library
 Currently only supports a subset of the full module
 """
 
+
 def bisect_left(a, x, lo=0, hi=None, *, key=None):
     """Return the index where to insert item x in list a, assuming a is sorted.
 
