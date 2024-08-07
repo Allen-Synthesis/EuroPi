@@ -249,7 +249,7 @@ class Sigma(EuroPiScript):
         self.k2_bank = (
             KnobBank.builder(k2)
             .with_unlocked_knob("stdev")
-            .with_locked_knob("bin", initial_percentage_value=int(self.voltage_bin / len(self.voltage_bins)))
+            .with_locked_knob("bin", initial_percentage_value=self.voltage_bin / len(self.voltage_bins))
             .build()
         )
 
@@ -266,14 +266,14 @@ class Sigma(EuroPiScript):
 
         @b1.handler
         def on_b1_rise():
-            self.k1_bank.next()
-            self.k2_bank.next()
+            self.k1_bank.set_current("jitter")
+            self.k2_bank.set_current("bin")
             self.last_interaction_at = time.ticks_ms()
 
         @b1.handler_falling
         def on_b1_fall():
-            self.k1_bank.next()
-            self.k2_bank.next()
+            self.k1_bank.set_current("mean")
+            self.k2_bank.set_current("stdev")
             self.config_dirty = True
 
         @b2.handler
@@ -323,7 +323,7 @@ class Sigma(EuroPiScript):
             self.voltage_bin = int(self.k2_bank["bin"].percent() * ain.percent() * len(self.voltage_bins))
 
         if self.voltage_bin == len(self.voltage_bins):
-            self.voltage_bin = self.voltage_bin - 1  # keep the index in bounds if we reach 1.0
+            self.voltage_bin = len(self.voltage_bins) - 1  # keep the index in bounds if we reach 1.0
 
     def set_outputs(self, now):
         for cv in self.outputs:
@@ -355,6 +355,7 @@ class Sigma(EuroPiScript):
         prev_mean = int(self.mean * DISPLAY_PRECISION)
         prev_stdev = int(self.stdev * DISPLAY_PRECISION)
         prev_jitter = int(self.jitter * DISPLAY_PRECISION)
+        prev_bin = self.voltage_bin
 
         while True:
             now = time.ticks_ms()
@@ -372,7 +373,8 @@ class Sigma(EuroPiScript):
                 self.config_dirty or
                 new_mean != prev_mean or
                 new_stdev != prev_stdev or
-                new_jitter != prev_jitter
+                new_jitter != prev_jitter or
+                self.voltage_bin != prev_bin
             )
 
             if self.ui_dirty:
@@ -381,6 +383,7 @@ class Sigma(EuroPiScript):
             prev_mean = new_mean
             prev_stdev = new_stdev
             prev_jitter = new_jitter
+            prev_bin = self.voltage_bin
 
             if self.config_dirty:
                 self.save()
