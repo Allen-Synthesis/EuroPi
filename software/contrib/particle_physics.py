@@ -7,6 +7,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.knobs import KnobBank
+from experimental.math_extras import rescale
 
 import math
 import time
@@ -27,14 +28,6 @@ MAX_ELASTICITY = 0.9
 
 ## If a bounce reaches no higher than this, assume we've come to rest
 ASSUME_STOP_PEAK = 0.002
-
-def rescale(x, old_min, old_max, new_min, new_max):
-    if x <= old_min:
-        return new_min
-    elif x >= old_max:
-        return new_max
-    else:
-        return (x - old_min) / (old_max - old_min) * (new_max - new_min) + new_min
 
 
 class Particle:
