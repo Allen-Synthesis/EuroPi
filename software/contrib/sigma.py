@@ -142,7 +142,7 @@ class Sigma(EuroPiScript):
     AIN_ROUTE_STDEV = 2
     AIN_ROUTE_JITTER = 3
     AIN_ROUTE_BIN = 4
-    N_AIN_ROUNTES = 5
+    N_AIN_ROUTES = 5
 
     AIN_ROUTE_NAMES = [
         "None",
@@ -241,7 +241,7 @@ class Sigma(EuroPiScript):
 
         @b2.handler
         def on_b2_rise():
-            self.ain_route = (self.ain_route + 1) % self.N_AIN_ROUNTES
+            self.ain_route = (self.ain_route + 1) % self.N_AIN_ROUTES
             self.config_dirty = True
             self.last_interaction_at = time.ticks_ms()
 
