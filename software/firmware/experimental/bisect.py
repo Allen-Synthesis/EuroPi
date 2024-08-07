@@ -39,7 +39,7 @@ def bisect_right(a, x, lo=0, hi=None, *, key=None):
 
     if lo < 0:
         # EDIT
-        #raise ValueError('lo must be non-negative')
+        # raise ValueError('lo must be non-negative')
         lo = 0
     if hi is None:
         hi = len(a)
