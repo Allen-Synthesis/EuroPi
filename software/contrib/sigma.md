@@ -17,7 +17,7 @@ Greek letter Sigma in statistics.
 Inputs:
 - `din`: an external clock signal to trigger sampling. The pulse width of this signal controls the output
   pulse width
-- `ain`: assignable CV control
+- `ain`: assignable CV control (see below)
 - `b1`: shift button; hold to change `k1` and `k2` modes
 - `b2`: cycles through `ain` routing
 - `k1`: mean control / shift: jitter control
