@@ -53,6 +53,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["RadioScanner",      "contrib.radio_scanner.RadioScanner"],
     ["Scope",             "contrib.scope.Scope"],
     ["Seq. Switch",       "contrib.sequential_switch.SequentialSwitch"],
+    ["Sigma",             "contrib.sigma.Sigma"],
     ["Smooth Rnd Volts",  "contrib.smooth_random_voltages.SmoothRandomVoltages"],
     ["StrangeAttractor",  "contrib.strange_attractor.StrangeAttractor"],
     ["Traffic",           "contrib.traffic.Traffic"],

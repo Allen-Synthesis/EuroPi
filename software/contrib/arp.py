@@ -9,6 +9,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.quantizer import CommonScales, SEMITONE_LABELS, VOLTS_PER_OCTAVE, VOLTS_PER_SEMITONE, SEMITONES_PER_OCTAVE
+from experimental.random_extras import shuffle
 
 import random
 
@@ -16,18 +17,6 @@ MODE_ASCENDING = 0
 MODE_DESCENDING = 1
 MODE_RANDOM = 2
 
-def shuffle(l):
-    """Shuffle a list randomly
-
-    Replacement for random.shuffle, which doesn't exist in micropython
-
-    @param l  The list to shuffle
-    """
-    for i in range(len(l)):
-        n = random.randint(i, len(l)-1)
-        tmp = l[i]
-        l[i] = l[n]
-        l[n] = tmp
 
 class Arpeggio:
     def __init__(self, scale, mode):
