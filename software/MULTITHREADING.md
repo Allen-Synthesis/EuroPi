@@ -33,8 +33,12 @@ import _thread
 
 def my_second_thread():
     """The secondary thread; toggles CV2 on and off at 0.5Hz
+
+    To allow the Python shell to connect when the USB is connected, we must terminate this thread
+    when the USB state changes. Otherwise the secondary thread will continue running, blocking the shell
     """
-    while True:
+    usb_connected_at_start = europi.usb_connected.value()
+    while eurpi.usb_connected.value() == usb_connected_at_start:
         cv2.on()
         time.sleep(1)
         cv2.off()
@@ -42,6 +46,9 @@ def my_second_thread():
 
 def main():
     """The main thread; creates the secondary thread and then toggles CV1 at 1Hz
+
+    This thread will automatically die if the USB is connected for debugging, so we don't
+    need to check the USB state here.
     """
 
     # Start the second thread
@@ -77,7 +84,8 @@ class BasicThreadingDemo1(EuroPiScript):
     def secondary_thread(self):
         """The secondary thread; toggles CV2 on and off at 0.5Hz
         """
-        while True:
+        usb_connected_at_start = europi.usb_connected.value()
+        while eurpi.usb_connected.value() == usb_connected_at_start:
             cv2.on()
             time.sleep(1)
             cv2.off()
@@ -191,7 +199,8 @@ class BasicThreadingDemo2(EuroPiScript):
     def secondary_thread(self):
         """The secondary thread; toggles CV2 on and off at 0.5Hz
         """
-        while True:
+        usb_connected_at_start = europi.usb_connected.value()
+        while eurpi.usb_connected.value() == usb_connected_at_start:
             cv2.on()
             time.sleep(1)
             cv2.off()
@@ -265,7 +274,8 @@ class BasicThreadingDemo3(EuroPiScript):
     def gui_thread(self):
         """Draw the wave shapes to the screen
         """
-        while True:
+        usb_connected_at_start = europi.usb_connected.value()
+        while eurpi.usb_connected.value() == usb_connected_at_start:
             # clear the screen
             oled.fill(0)
 
