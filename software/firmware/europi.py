@@ -31,7 +31,7 @@ from version import __version__
 
 from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB
-from europi_config import load_europi_config
+from europi_config import load_europi_config, CPU_FREQS
 from experimental.experimental_config import load_experimental_config
 
 if sys.implementation.name == "micropython":
@@ -639,10 +639,15 @@ cv5 = Output(PIN_CV5)
 cv6 = Output(PIN_CV6)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
+# Helper object to detect if the USB cable is connected or not
 usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
 
-# Overclock the Pico for improved performance.
-freq(europi_config.CPU_FREQ)
+# Set the desired clock speed according to the configuration
+# By default this will overclock the CPU, but some users may not want to
+# e.g. to lower power consumption on a very power-constrained system
+freq(
+    CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ]
+)
 
 # Reset the module state upon import.
 reset_state()

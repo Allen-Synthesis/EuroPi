@@ -1,10 +1,30 @@
 import configuration
 from configuration import ConfigFile, ConfigSpec
 
-# Pico machine CPU freq.
-# Default pico CPU freq is 125_000_000 (125mHz)
-PICO_DEFAULT_CPU_FREQ = 125_000_000
-OVERCLOCKED_CPU_FREQ = 250_000_000
+
+# sub-key constants for CPU_FREQS dict (see below)
+OVERCLOCKED_FREQ = "overclocked"
+DEFAULT_FREQ = "normal"           # the Europi default is to overclock, so to avoid confusion about the default
+                                  # not being "default" just use a different word
+
+
+# Default & overclocked CPU frequencies for supported boards
+# Key: board type (corresponds to EUROPI_MODEL setting)
+# Sub-key: "default" or "overclocked"
+CPU_FREQS = {
+    "pico": {
+        DEFAULT_FREQ: 125_000_000,     # Pico default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000  # Overclocked frequency is 250MHz
+    },
+    "pico2": {
+        DEFAULT_FREQ: 150_000_000,     # Pico2 default frequency is 150MHz
+        OVERCLOCKED_FREQ: 300_000_000  # Overclocked frequency is 300MHz
+    },
+    "pico w": {
+        DEFAULT_FREQ: 125_000_000,     # Pico W default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000  # Overclocked frequency is 250MHz
+    }
+}
 
 
 class EuroPiConfig:
@@ -33,13 +53,16 @@ class EuroPiConfig:
             # CPU & board settings
             configuration.choice(
                 name="PICO_MODEL",
-                choices=["pico", "pico w"],
+                choices=["pico", "pico w", "pico2"],
                 default="pico"
             ),
             configuration.choice(
                 name="CPU_FREQ",
-                choices=[PICO_DEFAULT_CPU_FREQ, OVERCLOCKED_CPU_FREQ],
-                default=OVERCLOCKED_CPU_FREQ,
+                choices=[
+                    DEFAULT_FREQ,
+                    OVERCLOCKED_FREQ
+                ],
+                default=OVERCLOCKED_FREQ,
             ),
 
             # Display settings
