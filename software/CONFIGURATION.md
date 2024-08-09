@@ -8,7 +8,7 @@ default configuration:
 {
     "EUROPI_MODEL": "europi",
     "PICO_MODEL": "pico",
-    "CPU_FREQ": 250000000,
+    "CPU_FREQ": "overclocked",
     "ROTATE_DISPLAY": false,
     "DISPLAY_WIDTH": 128,
     "DISPLAY_HEIGHT": 32,
@@ -24,7 +24,8 @@ default configuration:
 
 - `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported. Default: `"europi"`
 - `PICO_MODEL` must be one of `"pico"` or `"pico w"`. Default: `"pico"`
-- `CPU_FREQ` must be one of `250000000` or `125000000`. Default: `"250000000"`
+- `CPU_FREQ` specifies whether or not the CPU should be overclocked. Must be one of `"overclocked"` or `"normal"`.
+  Default: `"overclocked"`
 - `ROTATE_DISPLAY` must be one of `false` or `true`. Default: `false`
 - `DISPLAY_WIDTH` is the width of the screen in pixels. The standard EuroPi screen is 128 pixels wide. Default: `128`
 - `DISPLAY_HEIGHT` is the height of the screen in pixels. The standard EuroPi screen is 32 pixels tall. Default: `32`
