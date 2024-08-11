@@ -28,13 +28,16 @@ The quickest way to get your EuroPi flashed with the latest firmware is to head 
 
 ## Setting Up
 
+This section assumes you are using the Raspberry Pi Pico (or a compatible clone) featuring the RP2040 processor.  If you
+are using the newer Raspberry Pi Pico 2, with the RP2350 processor, see [below](#pico-2-setup).
+
 ### Downloading Thonny
 To start with, you'll need to download the [Thonny IDE](https://thonny.org/). This is what you will use to program and debug the module.
 
 ![Thonny](https://i.imgur.com/UX4uQDO.jpg)
 
 ### Installing the firmware
-1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.22.2`.
+1. Download the [most recent firmware](https://micropython.org/download/rp2-pico/) from the MicroPython website. The latest supported version is `1.23.0`.
 2. Holding down the white button labeled 'BOOTSEL' on the Raspberry Pi Pico, connect the module to your computer via the USB cable.
 
     ![_DSC2400](https://user-images.githubusercontent.com/79809962/148647201-52b0d279-fc1e-4615-9e65-e51543605e15.jpg)
@@ -89,7 +92,21 @@ The EuroPi Contrib library will make user-contributed software available on your
     ![Screenshot from 2023-07-14 03-02-02](https://github.com/Allen-Synthesis/EuroPi/assets/5189714/6690e1e3-56e1-49d6-8701-6f5912d10ba1)
 
 1. Click 'Install'.
-1. You will now see a 'contrib' folder inside the 'lib' folder which contains several software options with the extension `.py`.
+1. You will now see a `contrib` folder inside the `lib` folder which contains several software options with the extension `.py`.
+
+## Pico 2 Setup
+
+If you are using the Raspberry Pi Pico 2, or a compatible clone, with the RP2350 processor, you must download the
+MicroPython firmware for that board:
+- [Download here](https://micropython.org/download/RPI_PICO2/). At the time of writing, the latest supported version is 1.24.0
+
+Once the firmware is installed, continue installing the rest of the software:
+1. [Installing the OLED library](#installing-the-oled-library)
+2. [Installing the EuroPi library](#installing-the-oled-library)
+3. [Installing the EuroPi Contrib library](#optional-installing-the-europi-contrib-library)
+
+Once the software is installed, you will need to [configure the software](/software/CONFIGURATION.md) to finish setting up
+the Pico 2.
 
 
 ## Next Steps

@@ -22,8 +22,8 @@ default configuration:
 }
 ```
 
-- `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported. Default: `"europi"`
-- `PICO_MODEL` must be one of `"pico"` or `"pico w"`. Default: `"pico"`
+- `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported. Default: `"europi"`.
+- `PICO_MODEL` must be one of `"pico"`, `"pico2"`, or `"pico w"`. Default: `"pico"`.
 - `CPU_FREQ` specifies whether or not the CPU should be overclocked. Must be one of `"overclocked"` or `"normal"`.
   Default: `"overclocked"`
 - `ROTATE_DISPLAY` must be one of `false` or `true`. Default: `false`
@@ -40,6 +40,9 @@ default configuration:
   is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`. Default: `5`
 - `MENU_AFTER_POWER_ON` is a boolean indicating whether or not the module should always return to the main menu when
   it powers on.  By default the EuroPi will re-launch the last-used program instead of returning to the main menu. Default: `false`
+
+If you assembled your module with the Raspberry Pi Pico 2 (or a clone featuring the RP2350 microcontroller) make sure to
+set the `PICO_MODEL` setting to `"pico2"`.
 
 
 # Experimental configuration
