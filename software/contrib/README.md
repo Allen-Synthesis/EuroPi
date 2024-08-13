@@ -206,6 +206,12 @@ Random CV, optionally quantized, voltages based on controllable normal distribut
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: random, quantizer</i>
 
+### Sigma \[ [documentation](/software/contrib/slopes.md) | [script](/software/contrib/slopes.py) \]
+CV analyzer that produces gates & CV outputs based on the slope of the incoming signal
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: gates, CV</i>
+
 ### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
 Random CV with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw.
 
