@@ -254,7 +254,7 @@ This configuration setup allows you to tell the module which display you are usi
 TPH: VCC, GND, SDA, SCL
 CPC: SDA, SCL, VCC, GND
 
-Don't ask my why there is still not a standard for I²C pin layout in the year 2021, but here we are. Here is how to configure your EuroPi to work with whichever layout you are using:
+Don't ask me why there is still not a standard for I²C pin layout in the year 2024, but here we are. Here is how to configure your EuroPi to work with whichever layout you are using:
 
 #### Snip some resistor legs and bend them over the end of something small and round, such as needle-nose pliers
 ![_DSC2410](https://user-images.githubusercontent.com/79809962/148679661-a7d45646-1bf8-4c26-bbe6-112b9564b67d.jpg)
