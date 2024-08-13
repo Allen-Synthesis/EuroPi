@@ -198,12 +198,12 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 |1k Resistor|8|
 |4.7k Resistor|6|
 |100nF Capacitor|2|
-|LEDs|6|
+|LED|6|
 |4x2 Male Header|2|
-|Jumper Wires|4|
-|Push Buttons|2|
-|Potentiometers|2|
-|TS Jacks|8|
+|Jumper Wire (discarded resistor legs)|4|
+|Push Button|2|
+|Potentiometer|2|
+|Thonkiconn 3.5mm Mono Jack|8|
 |OLED Display|1|
 
 ---
