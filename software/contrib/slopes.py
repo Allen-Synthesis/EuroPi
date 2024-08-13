@@ -48,7 +48,7 @@ class Slopes(EuroPiScript):
             n_bins = round(denoise_percent * (self.MAX_BINS - self.MIN_BINS) + self.MIN_BINS)
             n_samples = round(denoise_percent * (self.MAX_SAMPLES - self.MIN_SAMPLES) + self.MIN_SAMPLES)
             deadzone = self.DEAD_ZONE * denoise_percent
-            output_attenuation_percent = self.output_attenuator.percent()
+            output_attenuation_percent = self.output_attenuator.percent() * 2
 
             # calculate the previous sample based on our current noise filter size
             prev_volts = self.denoise(n_bins)
