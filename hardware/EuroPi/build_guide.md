@@ -192,6 +192,20 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 |-----|----|
 |![DSC2406](https://user-images.githubusercontent.com/79809962/148679028-98e41fce-fe47-40d5-b833-9d615c923592.jpg)|![DSC2407](https://user-images.githubusercontent.com/79809962/148679039-b93381e4-b30d-47a6-935f-a1ab66642e18.jpg)|
 
+#### Required Components for Jack PCB
+|Component|Quantity|
+|---------|--------|
+|1k Resistor|8|
+|4.7k Resistor|6|
+|100nF Capacitor|2|
+|LED|6|
+|4x2 Male Header|2|
+|Jumper Wire (discarded resistor legs)|4|
+|Push Button|2|
+|Potentiometer|2|
+|Thonkiconn 3.5mm Mono Jack|8|
+|OLED Display|1|
+
 ---
 
 ### Resistors
@@ -240,7 +254,7 @@ This configuration setup allows you to tell the module which display you are usi
 TPH: VCC, GND, SDA, SCL
 CPC: SDA, SCL, VCC, GND
 
-Don't ask my why there is still not a standard for I²C pin layout in the year 2021, but here we are, and here is how to tell the module which layout you are using:
+Don't ask me why there is still not a standard for I²C pin layout in the year 2024, but here we are. Here is how to configure your EuroPi to work with whichever layout you are using:
 
 #### Snip some resistor legs and bend them over the end of something small and round, such as needle-nose pliers
 ![_DSC2410](https://user-images.githubusercontent.com/79809962/148679661-a7d45646-1bf8-4c26-bbe6-112b9564b67d.jpg)
