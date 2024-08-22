@@ -1,6 +1,6 @@
 # 3D printed OLED stands
 
-A simple small stand for your OLED display. This helps hold it in place while soldering and keeps it snug against the face of the module. 
+A simple small stand for your OLED display. This helps hold it in place while soldering and keeps it snug against the face of the module.
 
 > There are two versions of the stand, one for the CPC style OLED and one for the TPH (the Pi Hut) style OLED.
 
@@ -22,9 +22,9 @@ The TPH (the Pi Hut) OLED needs a different stand because it has a chunky connec
 
  <img src="OLED_Stand_Pi_Hut_01.jpg" width="600" title="OLED Pi Hut style">
 
-- Slide your OLED into the groove. 
+- Slide your OLED into the groove.
 - Place the stand with OLED into position on the PCB (hold in place using bluetack).
-- Solder the four vertical wires. 
+- Solder the four vertical wires.
 
 The stand has a notch to avoid certain soldering points. You should keep the stand permanently in your EuroPi for added stability of the screen.
 

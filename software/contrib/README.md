@@ -5,6 +5,12 @@ directory, specifically [the section on contrib scripts](/contributing.md#contri
 
 # List of packaged scripts
 
+### Arpeggiator \[ [documentation](/software/contrib/arp.md) | [script](/software/contrib/arp.py) \]
+A quantized scale/arpeggio generator
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: quantizer, scale, arpeggio</i>
+
 ### Bernoulli Gates \[ [documentation](/software/contrib/bernoulli_gates.md) | [script](/software/contrib/bernoulli_gates.py) \]
 A probability script based on Mutable Instruments Branches
 
@@ -17,7 +23,7 @@ Two channels of probability-based routing, where the digital input will be route
 A clock multiplier or divider. Each channel has an independently-controllable modifier, multiplying or dividing an external clock signal on `din`.
 
 <i>Author: [chrisib](https://github.com/chrisib)</i>
-<br><i>Labels: clock, clock multiplier, clock divider, gates>/i>
+<br><i>Labels: clock, clock multiplier, clock divider, gates</i>
 
 ### Consequencer \[ [documentation](/software/contrib/consequencer.md) | [script](/software/contrib/consequencer.md) \]
 A gate and CV sequencer inspired by Mutable Instruments Grids and the Music Thing Modular Turing Machine
@@ -68,6 +74,12 @@ the duration of the output signals.
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: gates, triggers</i>
 
+### Gate Phaser \[ [documentation](/software/contrib/gate_phaser.md) | [script](/software/contrib/gate_phaser.py) \]
+A script which attempts to answer the question "What would Steve Reich do if he had a EuroPi?"
+
+<i>Author: [gamecat69](https://github.com/gamecat69)</i>
+<br><i>Labels: sequencer, gates</i>
+
 ### Hamlet \[ [documentation](/software/contrib/hamlet.md) | [script](/software/contrib/hamlet.py) \]
 A variation of the Consequencer script specifically geared towards driving voices
 
@@ -100,6 +112,15 @@ Treats both inputs as digital on/off signals and outputs the results of binary A
 
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: logic, gates, binary operators</i>
+
+### Lutra \[ [documentation](/software/contrib/lutra.md) | [script](/software/contrib/lutra.py) \]
+
+Six syncable LFOs with variable wave shapes. The clock speed of each LFO is slightly different, with an adjustable base speed and CV-controllable spread.
+
+Inspired by [Expert Sleepers' Otterley](https://expert-sleepers.co.uk/otterley.html) module.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: lfo</i>
 
 ### Noddy Holder \[ [documentation](/software/contrib/noddy_holder.md) | [script](/software/contrib/noddy_holder.py) \]
 Two channels of sample/track and hold based on a single trigger and CV source
@@ -172,6 +193,12 @@ A 2-6 output sequential switch.  The analogue input is mirrored to one of the ou
 
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: random, sequential switch</i>
+
+### Sigma \[ [documentation](/software/contrib/sigma.md) | [script](/software/contrib/sigma.py) \]
+Random CV, optionally quantized, voltages based on controllable normal distributions. Inspired by Magnetic Freak's Gaussian module.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: random, quantizer</i>
 
 ### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
 Random CV with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw.

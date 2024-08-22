@@ -18,7 +18,7 @@ The EuroPi is a fully user reprogrammable module based on the [Raspberry Pi Pico
   <a href="https://github.com/Allen-Synthesis/EuroPi/releases/">
         <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/Allen-Synthesis/Europi">
   </a>
-  
+
 </p>
 
 ---
@@ -64,8 +64,8 @@ The EuroPi firmware API documentation can be found at https://allen-synthesis.gi
 If you would like to extend any of the features of the EuroPi software, you can view the firmware source code at [europi.py](software/firmware/europi.py).
 
 ### Issues
-If you find any bugs, either in the software, the hardware, or the documentation, please create an Issue by clicking the 'Issue' tab along the top.  
-Please feel free to create any issue you see fit, I'll either attempt to fix it or explain it.  
+If you find any bugs, either in the software, the hardware, or the documentation, please create an Issue by clicking the 'Issue' tab along the top.
+Please feel free to create any issue you see fit, I'll either attempt to fix it or explain it.
 There are Issue templates available, so please choose whichever is most relevant, depending on if your Issue is a hardware or software bug, if it's a documentation error or suggestion, if it's a question about the project as a whole, or a suggestion about the project as a whole.
 
 
@@ -79,9 +79,9 @@ This module, and any documentation included in this repository, is entirely "fre
 
 Anyone is welcome to design their own versions of the idea, or modify my designs.
 The only thing I would ask is that you refrain from using the brand name 'Allen Synthesis' on your DIY builds if they have modified my files in any way, just to prevent any confusion if they end up being re-sold or distributed. This is in line with section 8.2 of the CERN license. You may use the brand name if you have simply copied the files from this repository to replicate without modification.
-  
+
 If you have a bug fix or improvement that you think is worth sharing, then feel free to send over any pictures or documentation and it can be merged with the main project!
- 
+
 ### Disclaimer
- 
+
 Recreate any of the files found in this repository at your own risk; I will attempt to solve any issues that you might have with my designs, but I can't guarantee that there are not minor bugs in any of the documents, both hardware and software.

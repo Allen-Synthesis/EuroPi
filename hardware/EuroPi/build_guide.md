@@ -1,18 +1,18 @@
 # Build Guide
 
 #### Introduction
-This document will go through the assembly of the EuroPi module.  
-If you have bought only a Panel + PCB kit, you will need to also buy all of the components found in the [bill of materials](/hardware/EuroPi/bill_of_materials.md).  
-  
-This build is entirely through-hole (not even any pre-soldered SMD components!) so don't worry if you're fairly new to DIY, these instructions should be all you need to make your module.  
-  
-This guide should explain every step in enough detail, but there are some things left out for simplicity's sake, such as the fact that after each step any long legs will need to be snipped using your wire snips or scissors. This is only necessary for components with long legs, so resistors, capacitors, and LEDs. You don't need to snip anything off any of the headers, the 7805, the jacks, potentiometers, or IC sockets.  
- 
-#### Skiff Friendly Build 
+This document will go through the assembly of the EuroPi module.
+If you have bought only a Panel + PCB kit, you will need to also buy all of the components found in the [bill of materials](/hardware/EuroPi/bill_of_materials.md).
+
+This build is entirely through-hole (not even any pre-soldered SMD components!) so don't worry if you're fairly new to DIY, these instructions should be all you need to make your module.
+
+This guide should explain every step in enough detail, but there are some things left out for simplicity's sake, such as the fact that after each step any long legs will need to be snipped using your wire snips or scissors. This is only necessary for components with long legs, so resistors, capacitors, and LEDs. You don't need to snip anything off any of the headers, the 7805, the jacks, potentiometers, or IC sockets.
+
+#### Skiff Friendly Build
 There are two options for some of the build, one of which makes the module more skiff friendly (37mm deep as opposed to 45mm). If you wish to make the thinner version, simply click the links that say [Skiff Friendly Option](), and follow the instructions to guide you back into the normal build at the right points. Simply ignore these links if you don't mind the module being slightly deeper.
 
 ![1 all](https://user-images.githubusercontent.com/79809962/147943816-3ac2098c-14cf-4fac-8896-1ba1f2c7397f.jpg)
-  
+
 ## Required tools
 - Soldering Iron + Solder
 - Wire Snips / Scissors
@@ -29,7 +29,7 @@ There are two options for some of the build, one of which makes the module more 
 
 ## Pico PCB
 
-The 'Pico PCB' is the PCB with the outline of the Pico on it.  
+The 'Pico PCB' is the PCB with the outline of the Pico on it.
 The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it, and the 'back' is the side with the transistor outline on it.
 
 |Front|Back|
@@ -178,19 +178,33 @@ The 'front' of the Pico PCB is the side with the actual Raspberry Pi Pico on it,
 [Skiff Friendly Option](skiff_friendly_instructions.md#step-2)
 
 #### Solder the 7805 power regulator to the front, with the metal side in line with the white stripe on the PCB
-  
+
 ![_DSC2361](https://user-images.githubusercontent.com/79809962/148646604-5add0541-0e27-4e8b-b558-8c35df24b997.jpg)
 
 ---
 
 ## Jack PCB
 
-The 'Jack PCB' is the remaining board, with the outlines for the front panel components.  
+The 'Jack PCB' is the remaining board, with the outlines for the front panel components.
 The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines, and the 'back' is the side with the OLED configuration diagram.
 
 |Front|Back|
 |-----|----|
 |![DSC2406](https://user-images.githubusercontent.com/79809962/148679028-98e41fce-fe47-40d5-b833-9d615c923592.jpg)|![DSC2407](https://user-images.githubusercontent.com/79809962/148679039-b93381e4-b30d-47a6-935f-a1ab66642e18.jpg)|
+
+#### Required Components for Jack PCB
+|Component|Quantity|
+|---------|--------|
+|1k Resistor|8|
+|4.7k Resistor|6|
+|100nF Capacitor|2|
+|LED|6|
+|4x2 Male Header|2|
+|Jumper Wire (discarded resistor legs)|4|
+|Push Button|2|
+|Potentiometer|2|
+|Thonkiconn 3.5mm Mono Jack|8|
+|OLED Display|1|
 
 ---
 
@@ -233,15 +247,15 @@ The 'front' of the Jack PCB is the side with the OLED, jack, and button outlines
 ---
 
 #### OLED Configuration
-There are two pin configurations that the OLED used in this build commonly comes in, which are labelled on the board 'TPH' (The Pi Hut), and 'CPC' (CPC, AliExpress, most other suppliers).  
-The Pi Hut display is preferable as it does not have pre-soldered headers, so is easier to mount on the board. However the CPC display is still entirely usable.  
-  
-This configuration setup allows you to tell the module which display you are using, as their pins are ordered differently:  
-TPH: VCC, GND, SDA, SCL  
+There are two pin configurations that the OLED used in this build commonly comes in, which are labelled on the board 'TPH' (The Pi Hut), and 'CPC' (CPC, AliExpress, most other suppliers).
+The Pi Hut display is preferable as it does not have pre-soldered headers, so is easier to mount on the board. However the CPC display is still entirely usable.
+
+This configuration setup allows you to tell the module which display you are using, as their pins are ordered differently:
+TPH: VCC, GND, SDA, SCL
 CPC: SDA, SCL, VCC, GND
-  
-Don't ask my why there is still not a standard for I²C pin layout in the year 2021, but here we are, and here is how to tell the module which layout you are using:
-  
+
+Don't ask me why there is still not a standard for I²C pin layout in the year 2024, but here we are. Here is how to configure your EuroPi to work with whichever layout you are using:
+
 #### Snip some resistor legs and bend them over the end of something small and round, such as needle-nose pliers
 ![_DSC2410](https://user-images.githubusercontent.com/79809962/148679661-a7d45646-1bf8-4c26-bbe6-112b9564b67d.jpg)
 
@@ -259,9 +273,9 @@ Don't ask my why there is still not a standard for I²C pin layout in the year 2
 
 #### Solder the OLED Display to the front
 This is quite an awkward operation as the distance the headers need to occupy is not standard to the lengths that 2.54mm headers come in. If you are using a CPC display, your headers are probably pre-soldered, in which case you need to prop the display up somehow while you solder one pin, then go on to solder the rest once you're sure it's straight.
-  
-If your display is CPC, the pins will be flush with the PCB if it's at the correct height, which is difficult but possible to solder.  
-  
+
+If your display is CPC, the pins will be flush with the PCB if it's at the correct height, which is difficult but possible to solder.
+
 If your display is TPH, you can either solder pins and do it the same way as the CPC method, or use extra-long pin headers instead which will make the soldering process easier, as they will protrude far enough to get a better solder joint.
 
 ![_DSC2375](https://user-images.githubusercontent.com/79809962/148646695-8a2f9e91-3963-4d17-b010-45cf7d577ef7.jpg)
@@ -315,7 +329,7 @@ Don't over-tighten so hard that you damage the PCB, but you also don't want this
 ![_DSC2389](https://user-images.githubusercontent.com/79809962/148646795-981506b6-4cf5-4c02-a21a-cf87ed0cefc4.jpg)
 
 
-#### Screw all of the nuts on to hold the components to the front panel. 
+#### Screw all of the nuts on to hold the components to the front panel.
 If your potentiometer came with nuts, use them, otherwise just screw on the jacks.
 Also pop on the knobs.
 ![_DSC2390](https://user-images.githubusercontent.com/79809962/148646798-515a2e9f-a8b3-4853-904e-e0e3da5470fc.jpg)
@@ -342,7 +356,7 @@ If there is continuity on any checks where there shouldn't be then make sure you
 ![_DSC2396](https://user-images.githubusercontent.com/79809962/148646814-3383e7d1-eda9-4995-a31d-01db47aaaa4e.jpg)
 
 Make sure the cable is connected so that the 'key' on the cable slots into the notch on the header, and the red stripe is on the bottom side of the module.
-Turn on your power supply and check for any smoke or discolouration of the PCB around the power connector, and immediately unplug if either occur.  
+Turn on your power supply and check for any smoke or discolouration of the PCB around the power connector, and immediately unplug if either occur.
 If all is groovy, the congratulations, you've finished building your EuroPi!
 
 ---

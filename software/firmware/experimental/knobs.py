@@ -1,6 +1,9 @@
 from collections import OrderedDict
 from europi import Knob, MAX_UINT16
 
+from experimental.math import median
+
+
 DEFAULT_THRESHOLD = 0.05
 
 
@@ -334,3 +337,81 @@ class KnobBank:
     @staticmethod
     def builder(knob: Knob) -> Builder:
         return KnobBank.Builder(knob)
+
+
+class BufferedKnob(Knob):
+    """A wrapper for a Knob instance whose value remains fixed until .update(...) is called
+
+    This allows multiple uses of .percent(), .choice(...), etc... without forcing a re-read of
+    the ADC value
+    """
+
+    def __init__(self, knob):
+        """Create a buffered wrapper for the given analogue input
+
+        The parameter @knob can be any Knob instance, including:
+        - europi.k1
+        - europi.k2
+
+        Until the .update() method is called, this class will return a value of 0.
+
+        @param knob The analogue input to wrap e.g.:
+                    ```python
+                    from europi import *
+                    from experimental.knobs import *
+                    k1_buffered = BufferedKnob(k1)
+                    ```
+        """
+        super().__init__(knob.pin_id)
+        self.value = 0
+
+    def _sample_adc(self, samples=None):
+        """Overrides the internal function that samples the ADC
+
+        Instead of sampling we simply return the most recent sample value
+
+        @param samples  Ignored, but needed by the _sample_adc API used by AnalogueReader
+        """
+        return self.value
+
+    def update(self, samples=None):
+        """Re-read the ADC and update the buffered value
+
+        @param samples  Specifies the number of samples to average to de-noise the ADC reading
+                        See europi.AnalogueReader for details on ADC sampling
+        """
+        self.value = super()._sample_adc(samples)
+
+
+class MedianAnalogInput:
+    """A wrapper for an analogue input (e.g. knob, ain) that provides additional smoothing & debouncing
+
+    This class uses a window of the n latest samples from the underlying input and uses the median of
+    those samples. Larger window sizes will produce a more stable output, but at the cost of slowing
+    down reaction time to changes.
+    """
+
+    def __init__(self, analog_in, samples=100, window_size=5):
+        """Create the wrapper
+
+        @param analog_in    The input we're wrapping (e.g. k1, k2, ain)
+        @param samples      The number of samples to use when reading from analog_in
+        @param window_size  The number of samples used for calculating the median
+        """
+        self.analog_in = analog_in
+        self.n_samples = samples
+        self.window_size = window_size
+
+        self.samples = []
+
+    def percent(self):
+        """Read the hardware percentage and apply our additional smoothing
+
+        Smoothing is done using a simple 5-window median filter
+        """
+        self.samples.append(self.analog_in.percent(self.n_samples))
+
+        if len(self.samples) > self.window_size:
+            self.samples.pop(0)
+
+        return median(self.samples)

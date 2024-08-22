@@ -30,9 +30,14 @@ class Screensaver:
 
     ## Standard duration before we activate the screensaver
     ACTIVATE_TIMEOUT_MS = 1000 * 60 * 5
+    ACTIVATE_TIMEOUT_US = ACTIVATE_TIMEOUT_MS * 1000
 
     ## Standard duration before we blank the screen
     BLANK_TIMEOUT_MS = 1000 * 60 * 20
+    BLANK_TIMEOUT_US = BLANK_TIMEOUT_MS * 1000
+
+    def __init__(self):
+        self.last_logo_reposition_at = 0
 
     def draw(self, force=False):
         """Draw the logo to a random position on the screen
@@ -45,8 +50,10 @@ class Screensaver:
         """
         LOGO_UPDATE_INTERVAL = 2000
 
-        ms = utime.ticks_ms()
-        if force or ms % LOGO_UPDATE_INTERVAL == 0:
+        now = utime.ticks_ms()
+        elapsed_ms = time.ticks_diff(now, self.last_logo_reposition_at)
+        if force or abs(elapsed_ms) >= LOGO_UPDATE_INTERVAL:
+            self.last_logo_reposition_at = now
             x = random.randint(0, OLED_WIDTH - self.LOGO_WIDTH)
             y = random.randint(0, OLED_HEIGHT - self.LOGO_HEIGHT)
 

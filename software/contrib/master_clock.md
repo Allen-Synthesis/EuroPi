@@ -18,11 +18,11 @@ For wonky/more interesting clock patterns try these:
 
 Demo video: TBC
 
-knob_1: (in config mode) Select option to edit 
-knob_2: (in config mode) Edit selected option 
+knob_1: (in config mode) Select option to edit
+knob_2: (in config mode) Edit selected option
 
-knob_1: Screen 2: Adjust BPM. Screen 3: Select output to edit 
-knob_2: Screen 2: Adjust Pulse width. Screen 3: Adjust division of selected output 
+knob_1: Screen 2: Adjust BPM. Screen 3: Select output to edit
+knob_2: Screen 2: Adjust Pulse width. Screen 3: Adjust division of selected output
 
 button_1: Short Press (<500ms): Start/Stop (when using internal clock). Long Press (>500ms): Select clock source (Internal/External)
 button_2: Short Press (<500ms): Not used. Long Press (>500ms): Enter config mode

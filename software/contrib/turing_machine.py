@@ -1,5 +1,5 @@
 """
- A script meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully 
+ A script meant to recreate the Music Thing Modular Turning Machine Random Sequencer as faithfully
  as possible on the EuroPi hardware using bit shift operations to mimic the analog shift register.
 
 din - clock
@@ -15,7 +15,7 @@ cv4 - pulse cv1 & cv2
 cv5 - pulse cv2 & cv3
 cv6 - sequence out
 
-If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT` 
+If you'd like to use different bits for the pulse outputs you can update the `CVX_PULSE_BIT`
 constants below.
 
 The length, scale, and bit pattern are saved whenever the knob 2 state is changed, or when the user
@@ -210,7 +210,7 @@ class EuroPiTuringMachine(EuroPiScript):
         self.tm = TuringMachine(
             bit_count=bit_count,
             max_output_voltage=max_output_voltage,
-            clear_on_write=self.config["write_value"] == 0,
+            clear_on_write=self.config.WRITE_VALUE == 0,
             length=initial_length,
             scale=MAX_OUTPUT_VOLTAGE * initial_scale_percent,
         )
@@ -232,9 +232,9 @@ class EuroPiTuringMachine(EuroPiScript):
             .build()
         )
 
-        self.cv1_pulse_bit = self.config["cv1_pulse_bit"]
-        self.cv2_pulse_bit = self.config["cv2_pulse_bit"]
-        self.cv3_pulse_bit = self.config["cv3_pulse_bit"]
+        self.cv1_pulse_bit = self.config.CV1_PULSE_BIT
+        self.cv2_pulse_bit = self.config.CV2_PULSE_BIT
+        self.cv3_pulse_bit = self.config.CV3_PULSE_BIT
 
         @din.handler
         def clock():
@@ -294,14 +294,15 @@ class EuroPiTuringMachine(EuroPiScript):
 
     @classmethod
     def config_points(cls):
-        bitcount_range = range(1, min(DEFAULT_BIT_COUNT, 8))
+        range_min = 0
+        range_max = min(DEFAULT_BIT_COUNT, 8) - 1
 
         return [
-            configuration.choice(name="write_value", choices=[0, 1], default=0),
+            configuration.choice(name="WRITE_VALUE", choices=[0, 1], default=0),
             # simulate the actual bits available in the pulses expander (1-7)
-            configuration.integer(name="cv1_pulse_bit", range=bitcount_range, default=1),
-            configuration.integer(name="cv2_pulse_bit", range=bitcount_range, default=2),
-            configuration.integer(name="cv3_pulse_bit", range=bitcount_range, default=4),
+            configuration.integer(name="CV1_PULSE_BIT", minimum=range_min, maximum=range_max, default=1),
+            configuration.integer(name="CV2_PULSE_BIT", minimum=range_min, maximum=range_max, default=2),
+            configuration.integer(name="CV3_PULSE_BIT", minimum=range_min, maximum=range_max, default=4),
         ]
 
     def main(self):
