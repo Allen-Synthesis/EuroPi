@@ -3,14 +3,16 @@ from configuration import ConfigFile, ConfigSpec
 
 
 # sub-key constants for CPU_FREQS dict (see below)
+# fmt: off
 OVERCLOCKED_FREQ = "overclocked"
 DEFAULT_FREQ = "normal"           # the Europi default is to overclock, so to avoid confusion about the default
                                   # not being "default" just use a different word
-
+# fmt: on
 
 # Default & overclocked CPU frequencies for supported boards
 # Key: board type (corresponds to EUROPI_MODEL setting)
 # Sub-key: "default" or "overclocked"
+# fmt: off
 CPU_FREQS = {
     "pico": {
         DEFAULT_FREQ: 125_000_000,     # Pico default frequency is 125MHz
@@ -25,6 +27,7 @@ CPU_FREQS = {
         OVERCLOCKED_FREQ: 250_000_000  # Overclocked frequency is 250MHz
     }
 }
+# fmt: on
 
 
 class EuroPiConfig:
