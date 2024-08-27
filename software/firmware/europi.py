@@ -645,9 +645,7 @@ usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
 # Set the desired clock speed according to the configuration
 # By default this will overclock the CPU, but some users may not want to
 # e.g. to lower power consumption on a very power-constrained system
-freq(
-    CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ]
-)
+freq(CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ])
 
 # Reset the module state upon import.
 reset_state()
