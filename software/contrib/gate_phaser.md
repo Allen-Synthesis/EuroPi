@@ -17,7 +17,18 @@ Demo Video: https://www.youtube.com/watch?v=fnpH8Q6sxIM
 # Inputs, Outputs and Controls
 
 ![Operating Diagram](./gate_phaser-docs/gate_phaser.png)
-  
+
+digital input: reset
+anaologue input: not used
+
+knob_1: adjust cycle time in milliseconds
+knob_2: adjust gate delay time in milliseconds
+
+button_1: cycle through gate delay multiple options
+button_2: change the behaviour of knob2 (x5, x10, x20)
+
+outputs: gates
+
 # Getting started
 
 1. Patch anything you want to trigger with a gate to any of the outputs, for example
