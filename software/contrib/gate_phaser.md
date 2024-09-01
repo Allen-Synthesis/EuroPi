@@ -29,7 +29,7 @@ percussions elements, emvelopes, sequencer clocks or samples.
 
 # So what is this script actually doing?
 
-**Cycle time** is the time in milliseconds between gate outputs at output 1 when the gate delay multiple for output 1 is set to 0.
+**Cycle time** is the time in milliseconds between gate outputs at output 1 when the gate delay multiple for output 1 is set to 0. When gate delay multiples are set to value greater than 0 the cycle time will be increased by the gate delay time multiplies by the gate delay multiple.
 
 **Gate delay** is the time in milliseconds that gate outputs are delayed from the master cycle time.
 
