@@ -19,7 +19,7 @@ def simple_config_spec():
     return ConfigSpec(
         [
             config.choice(name="a", choices=[1, 2, 3], default=2),
-            config.integer(name="b", range=range(5), default=3),
+            config.integer(name="b", minimum=0, maximum=4, default=3),
         ]
     )
 
@@ -84,20 +84,19 @@ def test_helper_choice():
 def test_helper_int():
     config_points = ConfigSpec(
         [
-            config.integer(name="a", range=range(5), default=2),
-            config.integer(name="b", range=range(-5, 6), default=0),
-            config.integer(name="c", range=range(-5, 6, 2), default=1),
+            config.integer(name="a", minimum=0, maximum=4, default=2),
+            config.integer(name="b", minimum=-5, maximum=5, default=0),
         ]
     )
 
-    assert len(config_points) == 3
-    assert config_points.default_config() == {"a": 2, "b": 0, "c": 1}
-    assert config_points.points["a"].type == "choice"
-    assert config_points.points["b"].type == "choice"
-    assert config_points.points["c"].type == "choice"
-    assert config_points.points["a"].choices == [0, 1, 2, 3, 4]
-    assert config_points.points["b"].choices == [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-    assert config_points.points["c"].choices == [-5, -3, -1, 1, 3, 5]
+    assert len(config_points) == 2
+    assert config_points.default_config() == {"a": 2, "b": 0}
+    assert config_points.points["a"].type == int
+    assert config_points.points["b"].type == int
+    assert config_points.points["a"].minimum == 0
+    assert config_points.points["a"].maximum == 4
+    assert config_points.points["b"].minimum == -5
+    assert config_points.points["b"].maximum == 5
 
 
 # ConfigFile
