@@ -12,6 +12,8 @@ Gates are sent from outputs 1-6 which are offset (or out of phase) with each oth
 
 You can use this script to create Piano Phase type patches, dynamic rhythms which evolve over time and eventually resolve back in phase, or ... well lots of other things that would benefit from having gates which are delayed from each other.
 
+Demo Video: https://www.youtube.com/watch?v=fnpH8Q6sxIM
+
 # Inputs, Outputs and Controls
 
 ![Operating Diagram](./gate_phaser-docs/gate_phaser.png)
