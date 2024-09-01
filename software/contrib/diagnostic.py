@@ -17,6 +17,7 @@ from europi import (
     k1,
     k2,
     oled,
+    europi_config,
 )
 from europi_script import EuroPiScript
 import configuration
@@ -40,7 +41,13 @@ TEMP_CONV_FACTOR = 3.3 / 65535
 class Diagnostic(EuroPiScript):
     def __init__(self):
         super().__init__()
-        self.temp_sensor = ADC(4)
+        if europi_config.PICO_MODEL == "pico2":
+            # Pico 2 tempreature sensor is not currently working
+            # dissable for now
+            # see: https://github.com/micropython/micropython/issues/15687
+            self.temp_sensor = None
+        else:
+            self.temp_sensor = ADC(4)
         self.voltages = [
             0,  # min
             0.5,  # not 0 but still below DI's threshold
@@ -57,11 +64,16 @@ class Diagnostic(EuroPiScript):
         return [configuration.choice(name="TEMP_UNITS", choices=["C", "F"], default="C")]
 
     def calc_temp(self):
-        # see the pico's datasheet for the details of this calculation
-        t = 27 - ((self.temp_sensor.read_u16() * TEMP_CONV_FACTOR) - 0.706) / 0.001721
-        if self.use_fahrenheit:
-            t = (t * 1.8) + 32
-        return t
+        if self.temp_sensor:
+            # see the pico's datasheet for the details of this calculation
+            t = 27 - ((self.temp_sensor.read_u16() * TEMP_CONV_FACTOR) - 0.706) / 0.001721
+            if self.use_fahrenheit:
+                t = (t * 1.8) + 32
+            return t
+        else:
+            # Temporary work-around for the Pico 2's temperature sensor not working
+            # See https://github.com/micropython/micropython/issues/15687
+            return 0.0
 
     def rotate_r(self):
         self.voltages = self.voltages[-1:] + self.voltages[:-1]
