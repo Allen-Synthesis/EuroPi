@@ -1,6 +1,5 @@
-from machine import Pin, ADC, PWM, freq
 from time import sleep
-from europi import oled, b1, b2, PIN_USB_CONNECTED, PIN_CV1, PIN_AIN
+from europi import oled, b1, b2, ain, cv1, usb_connected
 from europi_script import EuroPiScript
 from os import stat, mkdir
 
@@ -12,10 +11,6 @@ class Calibrate(EuroPiScript):
         return "~Calibrate"
 
     def main(self):
-        ain = ADC(Pin(PIN_AIN, Pin.IN, Pin.PULL_DOWN))
-        cv1 = PWM(Pin(PIN_CV1))
-        usb = Pin(PIN_USB_CONNECTED, Pin.IN)
-
         def sample():
             readings = []
             for reading in range(256):
@@ -25,8 +20,14 @@ class Calibrate(EuroPiScript):
         def wait_for_voltage(voltage):
             wait_for_b1(0)
             if voltage != 0:
-                oled.centre_text(f"Plug in {voltage}V\n\nDone: Button 1")
-                wait_for_b1(1)
+                oled.centre_text(f"""Plug in {voltage}
+Done      Skip
+ B1        B2""")
+                pressed = wait_for_button(1)
+                if pressed == b2:
+                    oled.centre_text("Skipping...")
+                    sleep(1.5)
+                    return None
             else:
                 oled.centre_text(f"Unplug all\n\nDone: Button 1")
                 wait_for_b1(1)
@@ -49,7 +50,31 @@ class Calibrate(EuroPiScript):
                 fill_show(0)
                 sleep(period / 2)
 
+        def wait_for_button()):
+            """
+            Wait for either button to be pressed
+
+
+            @return b1 or b2, indicating what button was maniupulated
+            """
+            pressed = None
+            b1_pressed = b1.value() != 0
+            b2_pressed = b2.value() != 0
+            while not b1_pressed and not b2_pressed:
+                sleep(0.05)
+                b1_pressed = b1.value() != 0
+                b2_pressed = b2.value() != 0
+            if b1_pressed:
+                return b1
+            else:
+                return b2
+
         def wait_for_b1(value):
+            """
+            Wait for b1 to be pressed or released
+
+            @param value  Either 0 or 1, indicating if we're waiting for a release or a press
+            """
             while b1.value() != value:
                 sleep(0.05)
 
@@ -62,7 +87,7 @@ class Calibrate(EuroPiScript):
 
         # Calibration start
 
-        if usb.value() == 1:
+        if usb_connected.value() == 1:
             oled.centre_text("Make sure rack\npower is on\nDone: Button 1")
             wait_for_b1(1)
             wait_for_b1(0)
@@ -82,11 +107,23 @@ class Calibrate(EuroPiScript):
 
         readings = []
         if chosen_process == 1:
+            # Not every rack can generate both 5 and 10V, but most should have at least one
+            # Ask for both voltages, but we can skip one or the other
             readings.append(wait_for_voltage(0))
+            readings.append(wait_for_voltage(5))
             readings.append(wait_for_voltage(10))
         else:
             for voltage in range(11):
                 readings.append(wait_for_voltage(voltage))
+
+        # remove Nones from skipped values in the readings
+        #
+        done = False
+        while not done:
+            try:
+                readings.remove(None)
+            except ValueError:
+                done = True
 
         with open(f"lib/calibration_values.py", "w") as file:
             values = ", ".join(map(str, readings))
