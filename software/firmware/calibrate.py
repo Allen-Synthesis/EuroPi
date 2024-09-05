@@ -35,7 +35,7 @@ class Calibrate(EuroPiScript):
         if voltage != 0:
             oled.centre_text(f"""Plug in {voltage:0.1f}V
 Done      Skip
-B1        B2""")
+ B1        B2""")
             pressed = self.wait_for_button(1)
             if pressed == b2:
                 oled.centre_text("Skipping...")
