@@ -35,17 +35,6 @@ class Calibrate(EuroPiScript):
             oled.centre_text(text)
             sleep(wait)
 
-        def fill_show(colour):
-            oled.fill(colour)
-            oled.show()
-
-        def flash(flashes, period):
-            for flash in range(flashes):
-                fill_show(1)
-                sleep(period / 2)
-                fill_show(0)
-                sleep(period / 2)
-
         def wait_for_b1(value):
             while b1.value() != value:
                 sleep(0.05)
