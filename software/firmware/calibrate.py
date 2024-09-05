@@ -1,4 +1,3 @@
-from machine import Pin, ADC, PWM, freq
 from time import sleep
 from europi import oled, b1, b2, ain, cv1, usb_connected
 from europi_script import EuroPiScript
