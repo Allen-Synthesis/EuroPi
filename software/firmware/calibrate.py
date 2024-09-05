@@ -10,74 +10,76 @@ class Calibrate(EuroPiScript):
         """Push this script to the end of the menu."""
         return "~Calibrate"
 
-    def main(self):
-        def sample():
-            readings = []
-            for reading in range(256):
-                readings.append(ain.read_u16())
-            return round(sum(readings) / 256)
+    def sample(self):
+        """
+        Read the raw ADC samples from ain over several attempts and return their average
 
-        def wait_for_voltage(voltage):
-            wait_for_b1(0)
-            if voltage != 0:
-                oled.centre_text(f"""Plug in {voltage}
+        @return  The average of the ADC samples, rounded to the nearest integer
+        """
+        N_READINGS = 256
+        readings = []
+        for i in range(N_READINGS):
+            readings.append(ain.pin.read_u16())
+        return round(sum(readings) / N_READINGS)
+
+    def wait_for_voltage(self, voltage):
+        """
+        Wait for the user to connect the desired voltage into ain.
+
+        Pressing B1 confirms they've done it, pressing B2 will skip and return None
+
+        @param voltage  The requested voltage
+        @return  The measured sample, or None if the user skipped this measurement
+        """
+        self.wait_for_b1(0)
+        if voltage != 0:
+            oled.centre_text(f"""Plug in {voltage:0.1f}V
 Done      Skip
- B1        B2""")
-                pressed = wait_for_button(1)
-                if pressed == b2:
-                    oled.centre_text("Skipping...")
-                    sleep(1.5)
-                    return None
-            else:
-                oled.centre_text(f"Unplug all\n\nDone: Button 1")
-                wait_for_b1(1)
-            oled.centre_text("Calibrating...")
-            sleep(1.5)
-            return sample()
+B1        B2""")
+            pressed = self.wait_for_button(1)
+            if pressed == b2:
+                oled.centre_text("Skipping...")
+                sleep(1.5)
+                return None
+        else:
+            oled.centre_text(f"Unplug all\n\nDone: Button 1")
+            self.wait_for_b1(1)
+        oled.centre_text("Calibrating...")
+        sleep(1.5)
+        return self.sample()
 
-        def text_wait(text, wait):
-            oled.centre_text(text)
-            sleep(wait)
+    def text_wait(self, text, wait):
+        oled.centre_text(text)
+        sleep(wait)
 
-        def fill_show(colour):
-            oled.fill(colour)
-            oled.show()
-
-        def flash(flashes, period):
-            for flash in range(flashes):
-                fill_show(1)
-                sleep(period / 2)
-                fill_show(0)
-                sleep(period / 2)
-
-        def wait_for_button()):
-            """
-            Wait for either button to be pressed
+    def wait_for_button(self):
+        """
+        Wait for either button to be pressed
 
 
-            @return b1 or b2, indicating what button was maniupulated
-            """
-            pressed = None
+        @return b1 or b2, indicating what button was maniupulated
+        """
+        b1_pressed = b1.value() != 0
+        b2_pressed = b2.value() != 0
+        while not b1_pressed and not b2_pressed:
+            sleep(0.05)
             b1_pressed = b1.value() != 0
             b2_pressed = b2.value() != 0
-            while not b1_pressed and not b2_pressed:
-                sleep(0.05)
-                b1_pressed = b1.value() != 0
-                b2_pressed = b2.value() != 0
-            if b1_pressed:
-                return b1
-            else:
-                return b2
+        if b1_pressed:
+            return b1
+        else:
+            return b2
 
-        def wait_for_b1(value):
-            """
-            Wait for b1 to be pressed or released
+    def wait_for_b1(self, value):
+        """
+        Wait for b1 to be pressed or released
 
-            @param value  Either 0 or 1, indicating if we're waiting for a release or a press
-            """
-            while b1.value() != value:
-                sleep(0.05)
+        @param value  Either 0 or 1, indicating if we're waiting for a release or a press
+        """
+        while b1.value() != value:
+            sleep(0.05)
 
+    def main(self):
         # Test if /lib exists. If not: Create it
 
         try:
@@ -89,10 +91,10 @@ Done      Skip
 
         if usb_connected.value() == 1:
             oled.centre_text("Make sure rack\npower is on\nDone: Button 1")
-            wait_for_b1(1)
-            wait_for_b1(0)
+            self.wait_for_b1(1)
+            self.wait_for_b1(0)
 
-        text_wait("Calibration\nMode", 3)
+        self.text_wait("Calibration\nMode", 3)
 
         oled.centre_text("Choose Process\n\n1:LOW    2:HIGH")
         while True:
@@ -109,12 +111,12 @@ Done      Skip
         if chosen_process == 1:
             # Not every rack can generate both 5 and 10V, but most should have at least one
             # Ask for both voltages, but we can skip one or the other
-            readings.append(wait_for_voltage(0))
-            readings.append(wait_for_voltage(5))
-            readings.append(wait_for_voltage(10))
+            readings.append(self.wait_for_voltage(0))
+            readings.append(self.wait_for_voltage(5))
+            readings.append(self.wait_for_voltage(10))
         else:
             for voltage in range(11):
-                readings.append(wait_for_voltage(voltage))
+                readings.append(self.wait_for_voltage(voltage))
 
         # remove Nones from skipped values in the readings
         #
@@ -132,7 +134,7 @@ Done      Skip
         # Output Calibration
 
         oled.centre_text(f"Plug CV1 into\nanalogue in\nDone: Button 1")
-        wait_for_b1(1)
+        self.wait_for_b1(1)
         oled.centre_text("Calibrating...")
 
         if chosen_process == 1:
@@ -147,12 +149,12 @@ Done      Skip
         output_duties = [0]
         duty = 0
         cv1.duty_u16(duty)
-        reading = sample()
+        reading = self.sample()
         for index, expected_reading in enumerate(readings[1:]):
             while abs(reading - expected_reading) > 0.002 and reading < expected_reading:
                 cv1.duty_u16(duty)
                 duty += 10
-                reading = sample()
+                reading = self.sample()
             output_duties.append(duty)
             oled.centre_text(f"Calibrating...\n{index+1}V")
 
