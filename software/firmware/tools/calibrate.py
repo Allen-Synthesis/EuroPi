@@ -15,6 +15,7 @@ class CalibrationValues:
     In either mode, output_calibration_values is a length 11 array with the raw samples taken at 0-10V, in 1V
     increments.
     """
+
     MODE_UNKNOWN = "unk"
     MODE_LOW_10V = "low10"
     MODE_LOW_5V = "low5"
@@ -256,7 +257,9 @@ class Calibrate(EuroPiScript):
 
         # Calibration start
         self.state = self.STATE_MODE_SELECT
-        refresh_ui = lambda: oled.centre_text(f"Choose mode (k2)\n{k2.choice(CALIBRATION_MODES)}\nDone: Button 2")
+        refresh_ui = lambda: oled.centre_text(
+            f"Choose mode (k2)\n{k2.choice(CALIBRATION_MODES)}\nDone: Button 2"
+        )
         refresh_ui()
         self.wait_for_b2(refresh_ui)
 
@@ -284,7 +287,9 @@ class Calibrate(EuroPiScript):
             # expand the raw calibration values if we were in a low-accuracy mode such that
             # we have an expected reading for every volt from 0-10
             readings_in = [calibration_values.input_calibration_values[0]]
-            m = (calibration_values.input_calibration_values[1] - calibration_values.input_calibration_values[0]) / 10
+            m = (
+                calibration_values.input_calibration_values[1] - calibration_values.input_calibration_values[0]
+            ) / 10
             c = calibration_values.input_calibration_values[0]
             for x in range(1, 10):
                 readings_in.append(round((m * x) + c))
