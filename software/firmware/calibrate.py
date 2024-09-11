@@ -1,6 +1,5 @@
-from machine import Pin, ADC, PWM, freq
 from time import sleep
-from europi import oled, b1, b2, PIN_USB_CONNECTED, PIN_CV1, PIN_AIN
+from europi import oled, b1, b2, ain, cv1, usb_connected
 from europi_script import EuroPiScript
 from os import stat, mkdir
 
@@ -12,14 +11,11 @@ class Calibrate(EuroPiScript):
         return "~Calibrate"
 
     def main(self):
-        ain = ADC(Pin(PIN_AIN, Pin.IN, Pin.PULL_DOWN))
-        cv1 = PWM(Pin(PIN_CV1))
-        usb = Pin(PIN_USB_CONNECTED, Pin.IN)
 
         def sample():
             readings = []
             for reading in range(256):
-                readings.append(ain.read_u16())
+                readings.append(ain.pin.read_u16())
             return round(sum(readings) / 256)
 
         def wait_for_voltage(voltage):
@@ -38,17 +34,6 @@ class Calibrate(EuroPiScript):
             oled.centre_text(text)
             sleep(wait)
 
-        def fill_show(colour):
-            oled.fill(colour)
-            oled.show()
-
-        def flash(flashes, period):
-            for flash in range(flashes):
-                fill_show(1)
-                sleep(period / 2)
-                fill_show(0)
-                sleep(period / 2)
-
         def wait_for_b1(value):
             while b1.value() != value:
                 sleep(0.05)
@@ -62,7 +47,7 @@ class Calibrate(EuroPiScript):
 
         # Calibration start
 
-        if usb.value() == 1:
+        if usb_connected.value() == 1:
             oled.centre_text("Make sure rack\npower is on\nDone: Button 1")
             wait_for_b1(1)
             wait_for_b1(0)
@@ -109,11 +94,11 @@ class Calibrate(EuroPiScript):
 
         output_duties = [0]
         duty = 0
-        cv1.duty_u16(duty)
+        cv1.pin.duty_u16(duty)
         reading = sample()
         for index, expected_reading in enumerate(readings[1:]):
             while abs(reading - expected_reading) > 0.002 and reading < expected_reading:
-                cv1.duty_u16(duty)
+                cv1.pin.duty_u16(duty)
                 duty += 10
                 reading = sample()
             output_duties.append(duty)
