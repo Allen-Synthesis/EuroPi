@@ -104,8 +104,9 @@ PIN_CV3 = 16
 PIN_CV4 = 17
 PIN_CV5 = 18
 PIN_CV6 = 19
-PIN_USB_CONNECTED = 24  # Does not work on Pico 2
+PIN_USB_CONNECTED = 24
 PIN_TEMPERATURE = 4
+
 
 # Helper functions.
 
@@ -546,7 +547,9 @@ class Output:
 class Thermometer:
     """
     Wrapper for the temperature sensor connected to Pin 4
+
     Reports the module's current temperature in Celsius.
+
     If the module's temperature sensor is not working correctly, the temperature will always be reported as None
     """
 
@@ -565,10 +568,11 @@ class Thermometer:
     def read_temperature(self):
         """
         Read the ADC and return the current temperature
+
         @return  The current temperature in Celsius, or None if the hardware did not initialze properly
         """
         if self.pin:
-            # See the Pico's datasheet for the details of this calculation
+            # see the pico's datasheet for the details of this calculation
             return 27 - ((self.pin.read_u16() * self.TEMP_CONV_FACTOR) - 0.706) / 0.001721
         else:
             return None
