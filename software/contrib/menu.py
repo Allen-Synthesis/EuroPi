@@ -28,7 +28,6 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Consequencer",      "contrib.consequencer.Consequencer"],
     ["Conway",            "contrib.conway.Conway"],
     ["CVecorder",         "contrib.cvecorder.CVecorder"],
-    ["Diagnostic",        "contrib.diagnostic.Diagnostic"],
     ["EgressusMelodiam",  "contrib.egressus_melodiam.EgressusMelodiam"],
     ["EnvelopeGen",       "contrib.envelope_generator.EnvelopeGenerator"],
     ["Euclid",            "contrib.euclid.EuclideanRhythms"],
@@ -59,7 +58,8 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Traffic",           "contrib.traffic.Traffic"],
     ["Turing Machine",    "contrib.turing_machine.EuroPiTuringMachine"],
 
-    ["_Calibrate",        "calibrate.Calibrate"],              # this one should always be second to last!
+    ["_Diagnostic",       "tools.diagnostic.Diagnostic"],      # this one should always be third to last!
+    ["_Calibrate",        "tools.calibrate.Calibrate"],        # this one should always be second to last!
     ["_BootloaderMode",   "bootloader_mode.BootloaderMode"]    # this one should always be last!
 ])
 # fmt: on
