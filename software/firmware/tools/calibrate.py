@@ -288,7 +288,8 @@ class Calibrate(EuroPiScript):
             # we have an expected reading for every volt from 0-10
             readings_in = [calibration_values.input_calibration_values[0]]
             m = (
-                calibration_values.input_calibration_values[1] - calibration_values.input_calibration_values[0]
+                calibration_values.input_calibration_values[1]
+                - calibration_values.input_calibration_values[0]
             ) / 10
             c = calibration_values.input_calibration_values[0]
             for x in range(1, 10):
