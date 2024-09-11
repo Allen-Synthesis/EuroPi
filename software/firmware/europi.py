@@ -108,6 +108,7 @@ PIN_CV4 = 17
 PIN_CV5 = 18
 PIN_CV6 = 19
 PIN_USB_CONNECTED = 24
+PIN_TEMPERATURE = 4
 
 # Helper functions.
 
@@ -622,6 +623,40 @@ class Output:
             self.off()
 
 
+class Thermometer:
+    """
+    Wrapper for the temperature sensor connected to Pin 4
+
+    Reports the module's current temperature in Celsius.
+
+    If the module's temperature sensor is not working correctly, the temperature will always be reported as None
+    """
+
+    # Conversion factor for converting from the raw ADC reading to sensible units
+    # See Raspberry Pi Pico datasheet for details
+    TEMP_CONV_FACTOR = 3.3 / 65535
+
+    def __init__(self):
+        # The Raspberry Pi Pico 2's temperature sensor doesn't work reliably (yet)
+        # so do some basic exception handling
+        try:
+            self.pin = ADC(PIN_TEMPERATURE)
+        except:
+            self.pin = None
+
+    def read_temperature(self):
+        """
+        Read the ADC and return the current temperature
+
+        @return  The current temperature in Celsius, or None if the hardware did not initialze properly
+        """
+        if self.pin:
+            # see the pico's datasheet for the details of this calculation
+            return 27 - ((self.pin.read_u16() * self.TEMP_CONV_FACTOR) - 0.706) / 0.001721
+        else:
+            return None
+
+
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(PIN_DIN)
 ain = AnalogueInput(PIN_AIN)
@@ -640,6 +675,7 @@ cv6 = Output(PIN_CV6)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
+thermometer = Thermometer()
 
 # Overclock the Pico for improved performance.
 freq(europi_config.CPU_FREQ)
