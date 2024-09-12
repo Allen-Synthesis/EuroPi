@@ -55,7 +55,7 @@ class Diagnostic(EuroPiScript):
         return [configuration.choice(name="TEMP_UNITS", choices=["C", "F"], default="C")]
 
     def calc_temp(self):
-        t = thermometer.get_temperature()
+        t = thermometer.read_temperature()
         if t is None:
             return 0
 
