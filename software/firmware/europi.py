@@ -581,6 +581,7 @@ class Thermometer:
 class UsbConnection:
     """
     Checks the USB terminal is connected or not
+
     On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
     check the SIE_STATUS register and check bit 16
     """
@@ -599,6 +600,7 @@ class UsbConnection:
             # see https://forum.micropython.org/viewtopic.php?t=10814#p59545
             SIE_STATUS = 0x50110000 + 0x50
             BIT_CONNECTED = 1 << 16
+
             if mem32[SIE_STATUS] & BIT_CONNECTED:
                 return 1
             else:
