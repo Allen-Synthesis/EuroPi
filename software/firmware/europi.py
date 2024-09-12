@@ -23,6 +23,7 @@ from machine import I2C
 from machine import PWM
 from machine import Pin
 from machine import freq
+from machine import mem32
 
 
 from ssd1306 import SSD1306_I2C
@@ -107,7 +108,7 @@ PIN_CV3 = 16
 PIN_CV4 = 17
 PIN_CV5 = 18
 PIN_CV6 = 19
-PIN_USB_CONNECTED = 24
+PIN_USB_CONNECTED = 24  # Does not work on Pico 2
 PIN_TEMPERATURE = 4
 
 # Helper functions.
@@ -657,6 +658,32 @@ class Thermometer:
             return None
 
 
+class UsbConnection:
+    """
+    Checks the USB terminal is connected or not
+
+    On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
+    check the SIE_STATUS register and check bit 16
+    """
+    def __init__(self):
+        if europi_config.PICO_MODEL == "pico2":
+            self.pin = None
+        else:
+            self.pin = DigitalReader(PIN_USB_CONNECTED)
+
+    def value(self):
+        """Return 0 or 1, indicating if the USB connection is disconnected or connected"""
+        if self.pin:
+            return self.pin.value()
+        else:
+            # see https://forum.micropython.org/viewtopic.php?t=10814#p59545
+            SIE_STATUS=const(0x50110000+0x50)
+            BIT_CONNECTED=const(1<<16)
+            if mem32[SIE_STATUS] & BIT_CONNECTED:
+                return 1
+            else:
+                return 0
+
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(PIN_DIN)
 ain = AnalogueInput(PIN_AIN)
@@ -674,7 +701,7 @@ cv5 = Output(PIN_CV5)
 cv6 = Output(PIN_CV6)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
-usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
+usb_connected = UsbConnection()
 thermometer = Thermometer()
 
 # Overclock the Pico for improved performance.
