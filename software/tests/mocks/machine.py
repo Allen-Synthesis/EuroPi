@@ -60,7 +60,7 @@ class mem:
     """
     Fakes underlying machine registers.
 
-    Shouldn't be used directly, but any registers (e.g. mem32) can be isntantiated with this
+    Shouldn't be used directly, but any registers (e.g. mem32) can be instantiated with this
     """
 
     def __getitem__(self, _):
