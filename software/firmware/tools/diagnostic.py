@@ -56,15 +56,10 @@ class Diagnostic(EuroPiScript):
         return [configuration.choice(name="TEMP_UNITS", choices=["C", "F"], default="C")]
 
     def calc_temp(self):
-<<<<<<< HEAD
-        # see the pico's datasheet for the details of this calculation
         t = thermometer.read_temperature()
-=======
-        t = thermometer.get_temperature()
         if t is None:
             return 0
 
->>>>>>> 891824e (Implement a new Thermometer class to wrap the temperature sensor. Add necessary exception handling for Pico 2's (currently) unsupported temperature sensor)
         if self.use_fahrenheit:
             t = (t * 1.8) + 32
         return t
