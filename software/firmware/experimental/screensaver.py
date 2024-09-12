@@ -170,3 +170,6 @@ class OledWithScreensaver:
 
     def contrast(self, contrast):
         oled.contrast(contrast)
+
+    def pixel(self, x, y, color=1):
+        oled.pixel(x, y, color)
