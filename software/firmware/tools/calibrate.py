@@ -89,7 +89,7 @@ class Calibrate(EuroPiScript):
 
     # As above, but for B2
     STATE_WAITING_B2 = -3
-    STATE_B7_PRESSED = -4
+    STATE_B2_PRESSED = -4
 
     # The current state of the program
     # The state progresses pretty linearly with minimal branching, so mostly
@@ -317,7 +317,7 @@ class Calibrate(EuroPiScript):
         # Prompt the user to reboot to apply the new calibration
         # Spin here forever if necessary
         while True:
-            self.text_wait("Calibration\bcomplete", 3)
+            self.text_wait("Calibration\ncomplete", 3)
             self.text_wait("Reboot\nto apply\nnew calibration", 3)
 
 
