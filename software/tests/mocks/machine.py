@@ -66,4 +66,5 @@ class mem:
     def __getitem__(self, _):
         return 0x00
 
+
 mem32 = mem()
