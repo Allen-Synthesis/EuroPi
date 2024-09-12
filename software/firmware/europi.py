@@ -665,6 +665,7 @@ class UsbConnection:
     On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
     check the SIE_STATUS register and check bit 16
     """
+
     def __init__(self):
         if europi_config.PICO_MODEL == "pico2":
             self.pin = None
@@ -677,12 +678,13 @@ class UsbConnection:
             return self.pin.value()
         else:
             # see https://forum.micropython.org/viewtopic.php?t=10814#p59545
-            SIE_STATUS=const(0x50110000+0x50)
-            BIT_CONNECTED=const(1<<16)
+            SIE_STATUS = 0x50110000 + 0x50
+            BIT_CONNECTED = 1 << 16
             if mem32[SIE_STATUS] & BIT_CONNECTED:
                 return 1
             else:
                 return 0
+
 
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(PIN_DIN)
