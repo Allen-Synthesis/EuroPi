@@ -54,3 +54,16 @@ class Timer:
 
 def freq(_):
     pass
+
+
+class mem:
+    """
+    Fakes underlying machine registers.
+
+    Shouldn't be used directly, but any registers (e.g. mem32) can be isntantiated with this
+    """
+
+    def __getitem__(self, _):
+        return 0x00
+
+mem32 = mem()
