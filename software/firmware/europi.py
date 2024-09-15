@@ -517,17 +517,17 @@ class Output:
         max_voltage=MAX_OUTPUT_VOLTAGE,
         calibration_values=OUTPUT_CALIBRATION_VALUES[0],
     ):
-        self.calibration_values = calibration_values
         self.pin = PWM(Pin(pin))
         self.pin.freq(PWM_FREQ)
-        self._duty = 0
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
         self.gate_voltage = clamp(europi_config.GATE_VOLTAGE, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
 
+        self._calibration_values = calibration_values
+        self._duty = 0
         self._gradients = []
-        for index, value in enumerate(self.calibration_values[:-1]):
-            self._gradients.append(self.calibration_values[index + 1] - value)
+        for index, value in enumerate(self._calibration_values[:-1]):
+            self._gradients.append(self._calibration_values[index + 1] - value)
         self._gradients.append(self._gradients[-1])
 
     def _set_duty(self, cycle):
@@ -541,7 +541,7 @@ class Output:
             return self._duty / MAX_UINT16
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
         index = int(voltage // 1)
-        self._set_duty(self.calibration_values[index] + (self._gradients[index] * (voltage % 1)))
+        self._set_duty(self._calibration_values[index] + (self._gradients[index] * (voltage % 1)))
 
     def on(self):
         """Set the voltage HIGH at 5 volts."""
