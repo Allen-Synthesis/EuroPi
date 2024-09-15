@@ -510,10 +510,13 @@ class Output:
     calibration is important if you want to be able to output precise voltages.
     """
 
-    def __init__(self, pin,
-                 min_voltage=MIN_OUTPUT_VOLTAGE,
-                 max_voltage=MAX_OUTPUT_VOLTAGE,
-                 calibration_values=OUTPUT_CALIBRATION_VALUES[0]):
+    def __init__(
+        self,
+        pin,
+        min_voltage=MIN_OUTPUT_VOLTAGE,
+        max_voltage=MAX_OUTPUT_VOLTAGE,
+        calibration_values=OUTPUT_CALIBRATION_VALUES[0]
+    ):
         self.calibration_values = calibration_values
         self.pin = PWM(Pin(pin))
         self.pin.freq(PWM_FREQ)
