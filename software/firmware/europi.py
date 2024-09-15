@@ -595,7 +595,7 @@ class Output:
         pin,
         min_voltage=MIN_OUTPUT_VOLTAGE,
         max_voltage=MAX_OUTPUT_VOLTAGE,
-        calibration_values=OUTPUT_CALIBRATION_VALUES[0]
+        calibration_values=OUTPUT_CALIBRATION_VALUES[0],
     ):
         self.calibration_values = calibration_values
         self.pin = PWM(Pin(pin))
