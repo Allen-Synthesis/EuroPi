@@ -1,5 +1,5 @@
 from time import sleep
-from europi import oled, b1, b2, k2, ain, cv1, usb_connected
+from europi import oled, b1, b2, k2, ain, cvs, usb_connected, turn_off_all_cvs
 from europi_script import EuroPiScript
 from os import stat, mkdir
 
@@ -251,9 +251,13 @@ class Calibrate(EuroPiScript):
 
         self.text_wait("Calibration\nMode", 3)
 
+        ######################################################################################################
+
         # Initial hardware & software checks
         self.check_directory()
         self.check_rack_power()
+
+        ######################################################################################################
 
         # Calibration start
         self.state = self.STATE_MODE_SELECT
@@ -262,6 +266,8 @@ class Calibrate(EuroPiScript):
         )
         refresh_ui()
         self.wait_for_b2(refresh_ui)
+
+        ######################################################################################################
 
         # Peform the requested input calibration
         choice = k2.choice(CALIBRATION_MODES)
@@ -274,12 +280,6 @@ class Calibrate(EuroPiScript):
         else:
             calibration_values = CalibrationValues(CalibrationValues.MODE_HIGH)
             calibration_values.input_calibration_values = self.input_calibration_high()
-
-        # Output calibration
-        self.state = self.STATE_START_OUTPUT
-        oled.centre_text(f"Plug CV1 into\nanalogue in\nDone: Button 1")
-        self.wait_for_b1()
-        oled.centre_text("Calibrating...")
 
         if calibration_values.mode == CalibrationValues.MODE_HIGH:
             readings_in = calibration_values.input_calibration_values
@@ -296,19 +296,35 @@ class Calibrate(EuroPiScript):
                 readings_in.append(round((m * x) + c))
             readings_in.append(calibration_values.input_calibration_values[-1])
 
-        # Output 1-10V on CV1 & read the result on AIN
-        # Adjust the duty cycle of CV1 until the input is within an acceptable range
-        calibration_values.output_calibration_values = [0]
-        duty = 0
-        cv1.pin.duty_u16(duty)
-        reading = self.read_sample()
-        for index, expected_reading in enumerate(readings_in[1:]):
-            while abs(reading - expected_reading) > 0.002 and reading < expected_reading:
-                cv1.pin.duty_u16(duty)
-                duty += 10
-                reading = self.read_sample()
-            calibration_values.output_calibration_values.append(duty)
-            oled.centre_text(f"Calibrating...\n{index+1}V")
+        ######################################################################################################
+
+        # Output calibration
+        self.state = self.STATE_START_OUTPUT
+        calibration_values.output_calibration_values = []
+
+        turn_off_all_cvs()
+        for i in range(len(cvs)):
+            oled.centre_text(f"Plug CV{i+1} into\nanalogue in\nDone: Button 1")
+            self.wait_for_b1()
+            oled.centre_text(f"Calibrating\nCV{i+1}...")
+
+            # always 0 duty for 0V out
+            calibration_values.output_calibration_values.append([0])
+
+            # Output 1-10V on each CV output & read the result on AIN
+            # Adjust the duty cycle of the CV output until the input is within an acceptable range
+            duty = 0
+            cvs[i].pin.duty_u16(duty)
+            reading = self.read_sample()
+            for index, expected_reading in enumerate(readings_in[1:]):
+                while abs(reading - expected_reading) > 0.002 and reading < expected_reading:
+                    cvs[i].pin.duty_u16(duty)
+                    duty += 10
+                    reading = self.read_sample()
+                calibration_values.output_calibration_values[-1].append(duty)
+                oled.centre_text(f"Calibrating...\n{index+1}V")
+
+            cvs[i].off()
 
         # Save the result
         oled.centre_text("Saving\ncalibration...")

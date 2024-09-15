@@ -24,8 +24,8 @@ Calibration is interactive with instructions displayed on-screen. These instruct
     a. low-accuracy with 10V input: connect 10V to `AIN`
     b. low-accuracy with 5V input: connect 5V to `AIN`
     c. high-accuracy: read the on-screen instructions and connect the specified voltages when required.
-5. Connect `CV1` directly to `AIN`. Press `B1`
-6. Wait for the module to perform the output calibration.
+5. Connect `CV1` directly to `AIN`. Press `B1`. Wait for the module to perform the output calibration.
+6. Repeat step 5 for `CV2`, `CV3`, etc... until all CV outputs are calibrated
 7. Reboot the module when prompted. The new calibration will be applied automatically.
 
 Calibration data is saved to `/lib/calibration_values.py`. DO NOT delete this file; if you delete it you will have to
