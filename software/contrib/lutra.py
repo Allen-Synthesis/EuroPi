@@ -270,6 +270,9 @@ class Lutra(EuroPiScript):
         """
         SHOW_WAVE_TIMEOUT = 3000
 
+        # To prevent the module locking up when we connect the USB for e.g. debugging, kill this thread
+        # if the USB state changes. Otherwise the second core will continue being busy, which makes connecting
+        # to the Python terminal impossible
         usb_connected_at_start = usb_connected.value()
         while usb_connected.value() == usb_connected_at_start:
             now = time.ticks_ms()
@@ -285,6 +288,8 @@ class Lutra(EuroPiScript):
     def wave_generation_thread(self):
         """A thread function that handles the underlying math of generating the waveforms
         """
+        # To prevent the module locking up when we connect the USB for e.g. debugging, kill this thread
+        # if the USB state changes
         usb_connected_at_start = usb_connected.value()
         while usb_connected.value() == usb_connected_at_start:
             # Read the digital inputs
@@ -336,74 +341,9 @@ class Lutra(EuroPiScript):
             if self.config_dirty:
                 self.save()
 
-    def single_thread(self):
-        """Temporary work-around for RP2350
-
-        Using the secondary core on the Pico 2 seems to be unstable,
-        so as a work-around don't use it and render a simplified UI
-        """
-        prev_speed = -1
-        prev_spread = -1
-
-        while True:
-            # Read the digital inputs
-            self.digital_input_state.update()
-
-            # Manually handle B1 and DIN rising & falling
-            # If either goes high, signal that we want to old the outputs low
-            # If both become low, signal that all outputs should reset & output normally
-            if self.digital_input_state.b1_rising or self.digital_input_state.din_rising:
-                self.on_digital_in_rising()
-            elif (
-                (self.digital_input_state.b1_falling and not self.digital_input_state.din_high) or
-                (self.digital_input_state.din_falling and not self.digital_input_state.b1_pressed)
-            ):
-                self.on_digital_in_falling()
-
-            # Read the CV inputs and apply them
-            # Round to 2 decimal places to reduce noise
-            ain_percent = round(ain.percent(), 2)
-            k1_percent = round(k1.percent(), 2)
-            k2_percent = round(k2.percent(), 2)
-
-            if self.config.AIN_MODE == self.AIN_MODE_SPREAD:
-                k_speed = k1_percent
-                k_spread = clamp(k2_percent + ain_percent, 0, 1)
-            else:
-                k_speed = clamp(k1_percent + ain_percent, 0, 1)
-                k_spread = k2_percent
-
-            base_ticks = int((1.0 - k_speed) * (self.MAX_CYCLE_TICKS - self.MIN_CYCLE_TICKS) + self.MIN_CYCLE_TICKS)
-            for i in range(len(cvs)):
-                base_tick_multiplier = rescale(k_spread, 0, 1, 1, self.MAX_SPEED_MULTIPLIERS[i])
-                spread_ticks = int(base_ticks / base_tick_multiplier)
-                self.waves[i].change_cycle_length(spread_ticks)
-
-            for i in range(len(cvs)):
-                pixel_height = OLED_HEIGHT - 1
-                if self.hold_low:
-                    cvs[i].off()
-                else:
-                    self.waves[i].tick()
-
-            if prev_speed != k_speed or prev_spread != k_spread or self.config_dirty:
-                # render the simplified GUI
-                oled.centre_text(f"Speed: {k_speed}\nSpread: {k_spread}", auto_show=False)
-                oled.blit(WaveGenerator.WAVE_SHAPE_IMAGES[self.waves[0].shape], 0, 0)
-                oled.show()
-
-                prev_speed = k_speed
-                prev_spread = k_spread
-
-            if self.config_dirty:
-                self.save()
-
     def main(self):
-        if europi_config.PICO_MODEL == "pico2":
-            self.single_thread()
-        else:
-            gui_thread = _thread.start_new_thread(self.gui_render_thread, ())
-            self.wave_generation_thread()
+        gui_thread = _thread.start_new_thread(self.gui_render_thread, ())
+        self.wave_generation_thread()
 
 if __name__ == "__main__":
     Lutra().main()
