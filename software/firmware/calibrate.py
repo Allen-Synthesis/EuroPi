@@ -11,7 +11,6 @@ class Calibrate(EuroPiScript):
         return "~Calibrate"
 
     def main(self):
-
         def sample():
             readings = []
             for reading in range(256):
