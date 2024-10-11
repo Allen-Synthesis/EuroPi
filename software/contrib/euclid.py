@@ -144,8 +144,8 @@ class ChannelMenu:
         self.first_render = True
 
         self.generator_index = None
+        self.k2_percent = None
         self.read_knobs()
-
 
     def read_knobs(self):
         """Read the current state of the knobs and return whether or the state has changed, requiring a re-render
@@ -153,10 +153,16 @@ class ChannelMenu:
         @return True if we should re-render the GUI, False if we can keep the previous render
         """
         index = k1.range(len(self.script.generators))
-        if index != self.generator_index:
+        percent = round(k2.percent() * 100)
+        dirty = (
+            self.generator_index != index or
+            self.k2_percent != percent
+        )
+        if dirty:
             self.generator_index = index
-            return True
-        return False or self.first_render
+            self.k2_percent = percent
+
+        return dirty or self.first_render
 
     def draw(self):
         self.first_render = False
