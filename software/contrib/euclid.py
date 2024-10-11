@@ -269,17 +269,17 @@ class SettingsMenu:
     def apply_setting(self):
         """Apply the current setting
         """
-        if menu_item == self.MENU_ITEMS_STEPS:
+        if self.menu_item == self.MENU_ITEMS_STEPS:
             self.generator.steps = self.new_setting
             if self.generator.pulses > self.new_setting:
                 self.generator.pulses = self.new_setting
             if self.generator.rotation > self.new_setting:
                 self.generator.rotation = self.new_setting
-        elif menu_item == self.MENU_ITEMS_PULSES:
+        elif self.menu_item == self.MENU_ITEMS_PULSES:
             self.generator.pulses = self.new_setting
-        elif menu_item == self.MENU_ITEMS_ROTATION:
+        elif self.menu_item == self.MENU_ITEMS_ROTATION:
             self.generator.rotation = self.new_setting
-        elif menu_item == self.MENU_ITEMS_SKIP:
+        elif self.menu_item == self.MENU_ITEMS_SKIP:
             self.generator.skip = self.new_setting / 100.0
 
         self.generator.regenerate()
