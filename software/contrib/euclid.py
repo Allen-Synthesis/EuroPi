@@ -284,6 +284,7 @@ class SettingsMenu:
 
         self.generator.regenerate()
 
+
 class EuclideanRhythms(EuroPiScript):
     """Generates 6 different Euclidean rhythms, one per output
 
@@ -420,11 +421,13 @@ class EuclideanRhythms(EuroPiScript):
         while True:
             now = time.ticks_ms()
 
-            self.ui_dirty = self.active_screen.read_knobs() or self.ui_dirty
-
             if self.settings_dirty:
                 self.settings_dirty = False
                 self.save()
+
+            if self.active_screen.read_knobs():
+                self.last_user_interaction_at = now
+                self.ui_dirty = True
 
             if time.ticks_diff(now, self.last_user_interaction_at) >= self.screensaver.ACTIVATE_TIMEOUT_MS:
                 self.last_user_interaction_at = time.ticks_add(now, -self.screensaver.ACTIVATE_TIMEOUT_MS)
