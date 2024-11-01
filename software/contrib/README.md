@@ -231,6 +231,16 @@ as faithfully as possible on the EuroPi hardware.
 <i>Author: [mjaskula](https://github.com/mjaskula)</i>
 <br><i>Labels: sequencer, random, triggers</i>
 
+### Volts \[ [documentation](/software/contrib/volts.md) | [script](/software/contrib/volts.py) \]
+Generates static voltages on CV1-6. Useful for when you need a reliable, fixed voltage source as an input. Some useful applications include:
+- transposing a sequencer
+- shifting a bipolar LFO or VCO to be unipolar
+- sending a fixed voltage to a VCA to amplify a signal to a fixed level
+- calibrating other modules
+
+<i>Author: [chrisib](http://github.com/chrisib)</i>
+<br><i>Labels: cv, voltages, non-interactive</i>
+
 ---
 
 <details>
