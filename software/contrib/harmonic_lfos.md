@@ -12,7 +12,8 @@ Six harmonically related sine/saw/square wave LFOs
     analogue in: Added to master rate
     knob 1: Master rate
     knob 2: Adjusts the master clock division of the currently selected LFO (or the maximum voltage for noise)
-    button 1: Change mode of current LFO between sine/saw/square/off/random/noise
+    button 1, short press: Change mode of current LFO between sine/saw/square/off/random/noise
+    button 1, long press: Toggles between displaying all LFOs or just the currently selected one
     button 2: Select the next LFO
     cv1/cv2/cv3/cv4/cv5/cv6: LFO outputs
 
@@ -25,5 +26,7 @@ The default example uses all prime numbers (except 1 if you want to be technical
 You can change any of these values during operation of the program by using knob 2, and button 2 to change which LFO you have selected. The maximum division is controlled by the MAX_HARMONIC variable at the top of the script.
 
 Both the division and mode (wave shape) of each LFO are saved to a file, so will be retained after shut down. For this reason there isn't much point in changing the values of the LFO divisions in code, as they will be overwritten and saved as soon as you use knob 2 to alter them.
+
+The state of ```viewAllWaveforms``` is also saved to the same file. Therefore, you can set it and forget it to your preferred view, or toggle as desired. Either way, the previous state will be recalled on power up.
 
 There is also a variable named ```MAX_VOLTAGE```, which is likely only going to be 10 or 5 depending on which you prefer in your system, and what modules you are controlling. This is inherited by the MAX_OUTPUT_VOLTAGE set in europi.py, but you can override it if you use this script for something specific.

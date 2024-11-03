@@ -1,6 +1,6 @@
 from europi import *
 from math import cos, radians
-from time import sleep_ms
+from time import sleep_ms, ticks_diff, ticks_ms
 from machine import freq
 from random import randint
 from europi_script import EuroPiScript
@@ -29,6 +29,7 @@ class HarmonicLFOs(EuroPiScript):
         self.divisions = state.get("divisions", [1, 3, 5, 7, 11, 13])
         self.modes = state.get("modes", [self.MODES_SHAPES['SINE']] * 6)
         self.MODES_COUNT = len(self.MODES_SHAPES)
+        self.viewAllWaveforms = state.get("viewAllWaveforms", True)
 
         # Initialise all the other variables
         self.degree = 0
@@ -41,8 +42,27 @@ class HarmonicLFOs(EuroPiScript):
 
         # Set the digital input and button handlers
         din.handler(self.reset)
-        b1.handler(self.change_mode)
-        b2.handler(self.increment_selection)
+
+        @b1.handler_falling
+        def b1Pressed():
+            """Triggered when B1 is pressed"""
+            if (
+                ticks_diff(ticks_ms(), b1.last_pressed()) > 1000
+                and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000
+            ):
+                """Long press: toggle waveform view mode"""
+                self.viewAllWaveforms = not self.viewAllWaveforms
+            elif ticks_diff(ticks_ms(), b1.last_pressed()) < 500:
+                """Short press: Change the mode that controls wave shape"""
+                self.modes[self.selected_lfo] = (self.modes[self.selected_lfo] + 1) % self.MODES_COUNT
+
+            self.save_state()
+
+        @b2.handler_falling
+        def b2Pressed():
+            """Move the selection to the next LFO"""
+            self.selected_lfo = (self.selected_lfo + 1) % 6
+            self.selected_lfo_start_value = self.get_clock_division()
 
     def get_clock_division(self):
         """Determine the new clock division based on the position of knob 2"""
@@ -52,29 +72,20 @@ class HarmonicLFOs(EuroPiScript):
         """Reset all LFOs to zero volts, maintaining their divisions"""
         self.degree = 0
 
-    def change_mode(self):
-        """Change the mode that controls wave shape"""
-        self.modes[self.selected_lfo] = (self.modes[self.selected_lfo] + 1) % self.MODES_COUNT
-        self.save_state()
-
     def get_delay_increment_value(self):
         """Calculate the wait time between degrees"""
         delay = (0.1 - (k1.read_position(100, 1) / 1000)) + (ain.read_voltage(1) / 100)
         return delay, round((((1 / delay) - 10) / 1) + 1)
 
-    def increment_selection(self):
-        """Move the selection to the next LFO"""
-        self.selected_lfo = (self.selected_lfo + 1) % 6
-        self.selected_lfo_start_value = self.get_clock_division()
-
     def save_state(self):
         """Save the current set of divisions to file"""
-        if self.last_saved() < 5000:
+        if self.last_saved() < 3000:
             return
 
         self.save_state_json({
             "divisions": self.divisions,
             "modes": self.modes,
+            "viewAllWaveforms": self.viewAllWaveforms,
         })
 
     def update_display(self):
@@ -224,10 +235,15 @@ class HarmonicLFOs(EuroPiScript):
         self.rad = radians(self.degree)
         oled.vline(self.pixel_x, 0, OLED_HEIGHT, 0)
 
-        for cv, multiplier in zip(cvs, self.divisions):
+        for index, (cv, multiplier) in enumerate(zip(cvs, self.divisions)):
             volts = self.calculate_voltage(cv, multiplier)
             cv.voltage(volts)
-            oled.pixel(self.pixel_x, self.pixel_y - int(volts * (self.pixel_y / 10)), 1)
+
+            if self.viewAllWaveforms:
+                oled.pixel(self.pixel_x, self.pixel_y - int(volts * (self.pixel_y / 10)), 1)
+            elif index == self.selected_lfo:
+                oled.pixel(self.pixel_x, self.pixel_y - int(volts * (self.pixel_y / 10)), 1)
+
 
     def check_change_clock_division(self):
         """Change current LFO's division with knob movement detection"""
