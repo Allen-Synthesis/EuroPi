@@ -7,6 +7,9 @@ from europi_script import EuroPiScript
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE # Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
 MAX_HARMONIC = 32 # Too high a value may be hard to select using the knob, but the actual hardware limit is only reached at 4096
+LONG_PRESS_MIN_DURATION = 1000
+LONG_PRESS_MAX_DURATION = 5000
+SHORT_PRESS_MAX_DURATION = 500
 
 
 class HarmonicLFOs(EuroPiScript):
@@ -39,6 +42,7 @@ class HarmonicLFOs(EuroPiScript):
         self.pixel_y = OLED_HEIGHT-1
         self.selected_lfo = 0
         self.clock_division = self.selected_lfo_start_value = self.get_clock_division()
+        self.state_needs_saving = False
 
         # Set the digital input and button handlers
         din.handler(self.reset)
@@ -46,17 +50,15 @@ class HarmonicLFOs(EuroPiScript):
         @b1.handler_falling
         def b1Pressed():
             """Triggered when B1 is pressed"""
-            if (
-                ticks_diff(ticks_ms(), b1.last_pressed()) > 1000
-                and ticks_diff(ticks_ms(), b1.last_pressed()) < 5000
-            ):
+            diff = ticks_diff(ticks_ms(), b1.last_pressed())
+            if diff > LONG_PRESS_MIN_DURATION and diff < LONG_PRESS_MAX_DURATION:
                 """Long press: toggle waveform view mode"""
                 self.viewAllWaveforms = not self.viewAllWaveforms
-            elif ticks_diff(ticks_ms(), b1.last_pressed()) < 500:
+            elif diff < SHORT_PRESS_MAX_DURATION:
                 """Short press: Change the mode that controls wave shape"""
                 self.modes[self.selected_lfo] = (self.modes[self.selected_lfo] + 1) % self.MODES_COUNT
 
-            self.save_state()
+            self.state_needs_saving = True
 
         @b2.handler_falling
         def b2Pressed():
@@ -79,7 +81,7 @@ class HarmonicLFOs(EuroPiScript):
 
     def save_state(self):
         """Save the current set of divisions to file"""
-        if self.last_saved() < 3000:
+        if self.last_saved() < 5000:
             return
 
         self.save_state_json({
@@ -251,7 +253,7 @@ class HarmonicLFOs(EuroPiScript):
 
         if self.clock_division != self.selected_lfo_start_value:
             self.selected_lfo_start_value = self.divisions[self.selected_lfo] = self.clock_division
-            self.save_state()
+            self.state_needs_saving = True
 
     def main(self):
         while True:
@@ -264,6 +266,10 @@ class HarmonicLFOs(EuroPiScript):
             self.update_display()
 
             self.increment()
+
+            if self.state_needs_saving:
+                self.state_needs_saving = False
+                self.save_state()
 
 
 if __name__ == "__main__":
