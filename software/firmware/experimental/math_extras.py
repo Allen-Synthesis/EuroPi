@@ -30,3 +30,22 @@ def mean(l):
     if len(l) == 0:
         return 0
     return sum(l) / len(l)
+
+
+def rescale(x, old_min, old_max, new_min, new_max, clip=True):
+    """
+    Convert x in [old_min, old_max] -> y in [new_min, new_max] using linear interpolation
+
+    @param x  The value to convert
+    @param old_min  The old (inclusive) minimum
+    @param old_max  The old (inclusive) maximum
+    @param new_min  The new (inclusive) minimum
+    @param new_max  The new (inclusive) maximum
+    @param clip     If true, we clip values within the [min, max] range; otherwise we extrapolate based on the ranges
+    """
+    if clip and x < old_min:
+        return new_min
+    elif clip and x > old_max:
+        return new_max
+    else:
+        return (x - old_min) * (new_max - new_min) / (old_max - old_min) + new_min

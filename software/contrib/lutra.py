@@ -23,17 +23,8 @@ import time
 
 import _thread
 
+from experimental.math_extras import rescale
 from experimental.thread import DigitalInputHelper
-
-def rescale(x, old_min, old_max, new_min, new_max):
-    """Convert x in [old_min, old_max] -> y in [new_min, new_max]
-    """
-    if x < old_min:
-        return new_min
-    elif x > old_max:
-        return new_max
-    else:
-        return (x - old_min) * (new_max - new_min) / (old_max - old_min) + new_min
 
 class WaveGenerator:
     """Generates the output wave forms and sets the voltage going to one of the output jacks
