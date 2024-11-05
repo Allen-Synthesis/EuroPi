@@ -19,6 +19,7 @@ from europi_script import EuroPiScript
 
 import configuration
 import math
+from random import random
 import time
 
 import _thread
@@ -39,7 +40,9 @@ class WaveGenerator:
     WAVE_SHAPE_TRIANGLE = 2
     WAVE_SHAPE_SAW = 3
     WAVE_SHAPE_RAMP = 4
-    NUM_WAVE_SHAPES = 5
+    WAVE_SHAPE_STEP_RANDOM = 5
+    WAVE_SHAPE_SMOOTH_RANDOM = 6
+    NUM_WAVE_SHAPES = 7
 
     WAVE_SHAPES_NAMES = [
         "Sine",
@@ -47,6 +50,8 @@ class WaveGenerator:
         "Triangle",
         "Saw",
         "Ramp",
+        "Step_Random",
+        "Smooth_Random",
     ]
 
     WAVE_SHAPES_NAMES_TO_SHAPES = {
@@ -55,6 +60,8 @@ class WaveGenerator:
         "triangle": WAVE_SHAPE_TRIANGLE,
         "saw": WAVE_SHAPE_SAW,
         "ramp": WAVE_SHAPE_RAMP,
+        "step_random": WAVE_SHAPE_STEP_RANDOM,
+        "smooth_random": WAVE_SHAPE_SMOOTH_RANDOM,
     }
 
     ## 12x12 pixel images of the wave shapes
@@ -64,6 +71,8 @@ class WaveGenerator:
         FrameBuffer(bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'), 12, 12, MONO_HLSB),                              # TRIANGLE
         FrameBuffer(bytearray(b'\x80\x00\xc0\x00\xa0\x00\x90\x00\x88\x00\x84\x00\x82\x00\x81\x00\x80\x80\x80@\x80 \x80\x10'), 12, 12, MONO_HLSB),        # SAW
         FrameBuffer(bytearray(b'\x00\x10\x000\x00P\x00\x90\x01\x10\x02\x10\x04\x10\x08\x10\x10\x10 \x10@\x10\x80\x10'), 12, 12, MONO_HLSB),              # RAMP
+        FrameBuffer(bytearray(b'\x00\xe0\x00\xa0\x00\xa0\x00\xa0<\xa0$\xa0$\xa0\xe4\xb0\x04\x80\x04\x80\x04\x80\x07\x80'), 12, 12, MONO_HLSB),           # STEP_RANDOM
+        FrameBuffer(bytearray(b'\x00`\x00P\x00P\x08P\x14P$PD\x90\x82\x80\x02\x80\x02\x80\x02\x80\x01\x80'), 12, 12, MONO_HLSB),                          # SMOOTH_RANDOM
     ]
 
     IMAGE_SIZE = (12, 12)
@@ -78,6 +87,9 @@ class WaveGenerator:
 
         self.cycle_ticks = 1000
         self.current_tick = 0
+
+        self.prev_random_goal = random() * MAX_OUTPUT_VOLTAGE
+        self.random_goal = random() * MAX_OUTPUT_VOLTAGE
 
     def reset(self):
         """Reset the wave to the beginning
@@ -118,12 +130,19 @@ class WaveGenerator:
             volts = MAX_OUTPUT_VOLTAGE - self.current_tick / self.cycle_ticks * MAX_OUTPUT_VOLTAGE
         elif self.shape == self.WAVE_SHAPE_RAMP:
             volts = self.current_tick / self.cycle_ticks * MAX_OUTPUT_VOLTAGE
+        elif self.shape == self.WAVE_SHAPE_STEP_RANDOM:
+            volts = self.random_goal
+        elif self.shape == self.WAVE_SHAPE_SMOOTH_RANDOM:
+            slope = (self.random_goal - self.prev_random_goal) / self.cycle_ticks
+            volts = slope * self.current_tick + self.prev_random_goal
         else:
             volts = 0
 
         self.current_tick = self.current_tick + 1
         if self.current_tick >= self.cycle_ticks:
             self.current_tick = 0
+            self.prev_random_goal = self.random_goal
+            self.random_goal = random() * MAX_OUTPUT_VOLTAGE
 
         self.cv_output.voltage(volts)
         return volts

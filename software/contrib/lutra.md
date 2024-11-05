@@ -14,9 +14,17 @@ the module and will be re-loaded every time `Lutra` starts. Available wave shape
 - ![Triangle Wave](./lutra-docs/wave_triangle.png) Triangle
 - ![Saw Wave](./lutra-docs/wave_saw.png) Saw
 - ![Ramp Wave](./lutra-docs/wave_ramp.png) Ramp
+- ![Stepped Random Wave](./lutra-docs/wave_step_random.png) Stepped Random
+- ![Smooth Random Wave](./lutra-docs/wave_smooth_random.png) Smooth Random (Linear)
 
 When pressing `b2` to select the wave shape, the selected shape will briefly appear in the upper left corner of the
 screen.
+
+The stepped random wave will hold a randomly-chosen voltage for the duration of the cycle period, choosing a new
+voltage every period.
+
+The smooth random wave moves linearly from the current voltage toward a randomly-chosen goal over the cycle period,
+choosing a new random goal voltage every period.
 
 ## CV Input Configuration
 
