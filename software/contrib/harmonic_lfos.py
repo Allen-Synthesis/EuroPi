@@ -81,9 +81,6 @@ class HarmonicLFOs(EuroPiScript):
 
     def save_state(self):
         """Save the current set of divisions to file"""
-        if self.last_saved() < 5000:
-            return
-
         self.save_state_json({
             "divisions": self.divisions,
             "modes": self.modes,
