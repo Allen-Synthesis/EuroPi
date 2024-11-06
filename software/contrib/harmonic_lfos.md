@@ -13,7 +13,7 @@ Six harmonically related sine/saw/square wave LFOs
     knob 1: Master rate
     knob 2: Adjusts the master clock division of the currently selected LFO (or the maximum voltage for noise)
     button 1, short press: Change mode of current LFO between sine/saw/square/off/random/noise
-    button 1, long press: Toggles between displaying all LFOs or just the currently selected one
+    button 1, long press (> 2sec): Toggles between displaying all LFOs or just the currently selected one
     button 2: Select the next LFO
     cv1/cv2/cv3/cv4/cv5/cv6: LFO outputs
 

@@ -7,10 +7,7 @@ from europi_script import EuroPiScript
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE # Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
 MAX_HARMONIC = 32 # Too high a value may be hard to select using the knob, but the actual hardware limit is only reached at 4096
-LONG_PRESS_MIN_DURATION = 1000
-LONG_PRESS_MAX_DURATION = 5000
-SHORT_PRESS_MAX_DURATION = 500
-
+LONG_PRESS_MIN_DURATION = 2000
 
 class HarmonicLFOs(EuroPiScript):
     MODES_SHAPES = {
@@ -51,10 +48,10 @@ class HarmonicLFOs(EuroPiScript):
         def b1Pressed():
             """Triggered when B1 is pressed"""
             diff = ticks_diff(ticks_ms(), b1.last_pressed())
-            if diff > LONG_PRESS_MIN_DURATION and diff < LONG_PRESS_MAX_DURATION:
+            if diff > LONG_PRESS_MIN_DURATION:
                 """Long press: toggle waveform view mode"""
                 self.viewAllWaveforms = not self.viewAllWaveforms
-            elif diff < SHORT_PRESS_MAX_DURATION:
+            else:
                 """Short press: Change the mode that controls wave shape"""
                 self.modes[self.selected_lfo] = (self.modes[self.selected_lfo] + 1) % self.MODES_COUNT
 
