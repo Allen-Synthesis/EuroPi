@@ -7,7 +7,7 @@ from europi_script import EuroPiScript
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE # Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
 MAX_HARMONIC = 32 # Too high a value may be hard to select using the knob, but the actual hardware limit is only reached at 4096
-LONG_PRESS_MIN_DURATION = 2000
+LONG_PRESS_MIN_DURATION = 500
 
 class HarmonicLFOs(EuroPiScript):
     MODES_SHAPES = {
