@@ -78,15 +78,16 @@ class HarmonicLFOs(EuroPiScript):
 
     def save_state(self):
         """Save the current set of divisions to file"""
+        # Prevent save-spam by limiting save rate to 1Hz
         if self.last_saved() < 1000:
              return
 
+        self.state_needs_saving = False
         self.save_state_json({
             "divisions": self.divisions,
             "modes": self.modes,
             "viewAllWaveforms": self.viewAllWaveforms,
         })
-        self.state_needs_saving = False
 
     def update_display(self):
         """Update the OLED display every 10 cycles (degrees)"""
@@ -266,7 +267,6 @@ class HarmonicLFOs(EuroPiScript):
             self.increment()
 
             if self.state_needs_saving:
-                self.state_needs_saving = False
                 self.save_state()
 
 
