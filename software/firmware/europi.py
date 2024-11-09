@@ -700,6 +700,9 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 # Helper object to detect if the USB cable is connected or not
 usb_connected = UsbConnection()
 
+# Helper object for reading the onboard temperature sensor
+thermometer = Thermometer()
+
 # Set the desired clock speed according to the configuration
 # By default this will overclock the CPU, but some users may not want to
 # e.g. to lower power consumption on a very power-constrained system
