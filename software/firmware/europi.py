@@ -23,7 +23,7 @@ from machine import I2C
 from machine import PWM
 from machine import Pin
 from machine import freq
-
+from machine import mem32
 
 from ssd1306 import SSD1306_I2C
 
@@ -107,7 +107,7 @@ PIN_CV3 = 16
 PIN_CV4 = 17
 PIN_CV5 = 18
 PIN_CV6 = 19
-PIN_USB_CONNECTED = 24
+PIN_USB_CONNECTED = 24  # Does not work on Pico 2
 
 # Helper functions.
 
@@ -622,6 +622,64 @@ class Output:
             self.off()
 
 
+class Thermometer:
+    """
+    Wrapper for the temperature sensor connected to Pin 4
+    Reports the module's current temperature in Celsius.
+    If the module's temperature sensor is not working correctly, the temperature will always be reported as None
+    """
+
+    # Conversion factor for converting from the raw ADC reading to sensible units
+    # See Raspberry Pi Pico datasheet for details
+    TEMP_CONV_FACTOR = 3.3 / 65535
+
+    def __init__(self):
+        # The Raspberry Pi Pico 2's temperature sensor doesn't with some older
+        # uPython firmwares so do some basic exception handling
+        try:
+            self.pin = ADC(PIN_TEMPERATURE)
+        except:
+            self.pin = None
+
+    def read_temperature(self):
+        """
+        Read the ADC and return the current temperature
+        @return  The current temperature in Celsius, or None if the hardware did not initialze properly
+        """
+        if self.pin:
+            # see the pico's datasheet for the details of this calculation
+            return 27 - ((self.pin.read_u16() * self.TEMP_CONV_FACTOR) - 0.706) / 0.001721
+        else:
+            return None
+
+
+class UsbConnection:
+    """
+    Checks the USB terminal is connected or not
+    On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
+    check the SIE_STATUS register and check bit 16
+    """
+
+    def __init__(self):
+        if europi_config.PICO_MODEL == "pico2":
+            self.pin = None
+        else:
+            self.pin = DigitalReader(PIN_USB_CONNECTED)
+
+    def value(self):
+        """Return 0 or 1, indicating if the USB connection is disconnected or connected"""
+        if self.pin:
+            return self.pin.value()
+        else:
+            # see https://forum.micropython.org/viewtopic.php?t=10814#p59545
+            SIE_STATUS = 0x50110000 + 0x50
+            BIT_CONNECTED = 1 << 16
+            if mem32[SIE_STATUS] & BIT_CONNECTED:
+                return 1
+            else:
+                return 0
+
+
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(PIN_DIN)
 ain = AnalogueInput(PIN_AIN)
@@ -640,7 +698,7 @@ cv6 = Output(PIN_CV6)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # Helper object to detect if the USB cable is connected or not
-usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
+usb_connected = UsbConnection()
 
 # Set the desired clock speed according to the configuration
 # By default this will overclock the CPU, but some users may not want to
