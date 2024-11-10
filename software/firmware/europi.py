@@ -645,7 +645,7 @@ external_i2c = I2C(
     sda=Pin(europi_config.EXTERNAL_SDA),
     scl=Pin(europi_config.EXTERNAL_SCL),
     freq=europi_config.EXTERNAL_FREQUENCY,
-    timeout=europi_config.EXTERNAL_I2C_TIMEOUT
+    timeout=europi_config.EXTERNAL_I2C_TIMEOUT,
 )
 
 usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
