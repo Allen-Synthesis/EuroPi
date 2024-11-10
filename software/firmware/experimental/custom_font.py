@@ -6,7 +6,6 @@ from ssd1306 import SSD1306_I2C
 
 from europi import (
     OLED_WIDTH,
-    I2C_FREQUENCY,
     OLED_HEIGHT,
     I2C_SDA,
     I2C_SCL,
