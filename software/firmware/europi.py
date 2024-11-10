@@ -641,10 +641,10 @@ cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
 
 # External I2C
 external_i2c = I2C(
-    europi_config.EXTERNAL_CHANNEL,
-    sda=Pin(europi_config.EXTERNAL_SDA),
-    scl=Pin(europi_config.EXTERNAL_SCL),
-    freq=europi_config.EXTERNAL_FREQUENCY,
+    europi_config.EXTERNAL_I2C_CHANNEL,
+    sda=Pin(europi_config.EXTERNAL_I2C_SDA),
+    scl=Pin(europi_config.EXTERNAL_I2C_SCL),
+    freq=europi_config.EXTERNAL_I2C_FREQUENCY,
     timeout=europi_config.EXTERNAL_I2C_TIMEOUT,
 )
 
