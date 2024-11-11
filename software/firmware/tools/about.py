@@ -11,7 +11,8 @@ class About(EuroPiScript):
     def main(self):
         turn_off_all_cvs()
 
-        oled.centre_text(f"""EuroPi v{__version__}
+        oled.centre_text(
+            f"""EuroPi v{__version__}
 {europi_config.EUROPI_MODEL}/{europi_config.PICO_MODEL}
 {europi_config.CPU_FREQ}"""
         )
