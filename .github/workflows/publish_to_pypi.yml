@@ -10,20 +10,20 @@ on:
 
 jobs:
   build-n-publish:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
-      
+      - uses: actions/checkout@v4
+
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
-      
+          python-version: '3.10'
+
       - name: Build firmware tarball
         working-directory: software/firmware
         run: python setup.py sdist --dist-dir=../dist
-      
+
       - name: Build contrib tarball
         working-directory: software
         run: python setup.py sdist
@@ -47,4 +47,3 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
           packages_dir: software/dist
-

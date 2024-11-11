@@ -66,10 +66,10 @@ experimental_config = load_experimental_config()
 # OLED component display dimensions.
 OLED_WIDTH = europi_config.DISPLAY_WIDTH
 OLED_HEIGHT = europi_config.DISPLAY_HEIGHT
-I2C_SDA = europi_config.DISPLAY_SDA
-I2C_SCL = europi_config.DISPLAY_SCL
-I2C_CHANNEL = europi_config.DISPLAY_CHANNEL
-I2C_FREQUENCY = 400000
+OLED_I2C_SDA = europi_config.DISPLAY_SDA
+OLED_I2C_SCL = europi_config.DISPLAY_SCL
+OLED_I2C_CHANNEL = europi_config.DISPLAY_CHANNEL
+OLED_I2C_FREQUENCY = europi_config.DISPLAY_FREQUENCY
 
 # Standard max int consts.
 MAX_UINT16 = 65535
@@ -502,12 +502,12 @@ class Display(SSD1306_I2C):
 
     def __init__(
         self,
-        sda=I2C_SDA,
-        scl=I2C_SCL,
+        sda=OLED_I2C_SDA,
+        scl=OLED_I2C_SCL,
         width=OLED_WIDTH,
         height=OLED_HEIGHT,
-        channel=I2C_CHANNEL,
-        freq=I2C_FREQUENCY,
+        channel=OLED_I2C_CHANNEL,
+        freq=OLED_I2C_FREQUENCY,
     ):
         i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
@@ -702,6 +702,15 @@ usb_connected = UsbConnection()
 
 # Helper object for reading the onboard temperature sensor
 thermometer = Thermometer()
+
+# External I2C
+external_i2c = I2C(
+    europi_config.EXTERNAL_I2C_CHANNEL,
+    sda=Pin(europi_config.EXTERNAL_I2C_SDA),
+    scl=Pin(europi_config.EXTERNAL_I2C_SCL),
+    freq=europi_config.EXTERNAL_I2C_FREQUENCY,
+    timeout=europi_config.EXTERNAL_I2C_TIMEOUT,
+)
 
 # Set the desired clock speed according to the configuration
 # By default this will overclock the CPU, but some users may not want to
