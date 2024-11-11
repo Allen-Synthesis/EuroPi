@@ -23,7 +23,7 @@ default configuration:
 ```
 
 - `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported. Default: `"europi"`.
-- `PICO_MODEL` must be one of `"pico"`, `"pico2"`, or `"pico w"`. Default: `"pico"`.
+- `PICO_MODEL` must be one of `"pico"`, `"pico2"`, `pico h`, or `"pico w"`. Default: `"pico"`.
 - `CPU_FREQ` specifies whether or not the CPU should be overclocked. Must be one of `"overclocked"` or `"normal"`.
   Default: `"overclocked"`
 - `ROTATE_DISPLAY` must be one of `false` or `true`. Default: `false`

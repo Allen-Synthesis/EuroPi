@@ -22,6 +22,10 @@ CPU_FREQS = {
         DEFAULT_FREQ: 150_000_000,     # Pico2 default frequency is 150MHz
         OVERCLOCKED_FREQ: 300_000_000  # Overclocked frequency is 300MHz
     },
+    "pico h": {
+        DEFAULT_FREQ: 125_000_000,     # Pico H default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000  # Overclocked frequency is 250MHz
+    },
     "pico w": {
         DEFAULT_FREQ: 125_000_000,     # Pico W default frequency is 125MHz
         OVERCLOCKED_FREQ: 250_000_000  # Overclocked frequency is 250MHz
@@ -56,7 +60,7 @@ class EuroPiConfig:
             # CPU & board settings
             configuration.choice(
                 name="PICO_MODEL",
-                choices=["pico", "pico w", "pico2"],
+                choices=["pico", "pico w", "pico2", "pico h"],
                 default="pico"
             ),
             configuration.choice(
