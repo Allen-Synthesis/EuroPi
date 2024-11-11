@@ -9,13 +9,17 @@ from europi import *
 from europi_script import EuroPiScript
 from experimental.a_to_d import AnalogReaderDigitalWrapper
 from experimental.knobs import KnobBank
+from experimental.screensaver import Screensaver
 from math import floor
 
-## Output gates will be 5 volts for compatibility with most other modules
-#
-#  EuroPi can technically output 10V, but many third-party modules specify 5V maximum inputs, so let's use that
-#  for maximum compatibility
-GATE_VOLTS = 5.0
+
+# This script operates in microseconds, so for convenience define one second as a constant
+ONE_SECOND = 1000000
+
+# Automatically reset if we receive no input clocks after 5 seconds
+# This lets us handle resonably slow input clocks, while also providing some reasonable timing
+CLOCK_IN_TIMEOUT = 5 * ONE_SECOND
+
 
 def ljust(s, length):
     """Re-implements the str.ljust method from standard Python
@@ -27,53 +31,69 @@ def ljust(s, length):
     n_spaces = max(0, length - len(s))
     return s + ' '*n_spaces
 
+
 class ClockOutput:
     """A control class that handles a single output
     """
+    ## The smallest common multiple of the allowed clock divisions (2, 3, 4, 5, 6, 8, 12)
+    #
+    #  Used to reset the input gate counter to avoid integer overflows/performance degredation with large values
+    MAX_GATE_COUNT = 120
+
     def __init__(self, output_port, modifier):
         """Constructor
 
         @param output_port  One of the six output CV ports, e.g. cv1, cv2, etc... that this class will control
         @param modifier     The initial clock modifier for this output channel
         """
-        self.last_external_clock_at = time.ticks_ms()
-        self.last_interval_ms = 0
+        self.last_external_clock_at = time.ticks_us()
+        self.last_interval_us = 0
         self.modifier = modifier
         self.output_port = output_port
 
+        # Should the output be high or low?
         self.is_high = False
-        self.last_state_change_at = time.ticks_ms()
 
-    def set_external_clock(self, ticks_ms):
+        # Used to implement basic gate-skipping for clock divisions
+        self.input_gate_counter = 0
+
+    def set_external_clock(self, ticks_us):
         """Notify this output when the last external clock signal was received.
 
         The calculate_state function will use this to calculate the duration of the high/low phases
         of the output gate
         """
-        if self.last_external_clock_at != ticks_ms:
-            self.last_interval_ms = time.ticks_diff(ticks_ms, self.last_external_clock_at)
-            self.last_external_clock_at = ticks_ms
+        if self.last_external_clock_at != ticks_us:
+            self.last_interval_us = time.ticks_diff(ticks_us, self.last_external_clock_at)
+            self.last_external_clock_at = ticks_us
 
-    def calculate_state(self, ms):
+            self.input_gate_counter += 1
+            if self.input_gate_counter >= self.MAX_GATE_COUNT:
+                self.input_gate_counter = 0
+
+    def calculate_state(self, ticks_us):
         """Calculate whether this output should be high or low based on the current time
 
         Must be called before calling set_output_voltage
 
-        @param ms  The current time in ms; passed as a parameter to synchronize multiple channels
+        @param ticks_us  The current time in microseconds; passed as a parameter to synchronize multiple channels
         """
-        gate_duration_ms = self.last_interval_ms / self.modifier
-        hi_lo_duration_ms = gate_duration_ms / 2
+        if self.modifier >= 1:
+            # We're in clock multiplication mode; calculate the duration of output gates and set high/low state
+            gate_duration_us = self.last_interval_us / self.modifier
+            hi_lo_duration_us = gate_duration_us / 2
 
-        elapsed_ms = time.ticks_diff(ms, self.last_state_change_at)
+            # The time elapsed since our last external clock
+            elapsed_us = time.ticks_diff(ticks_us, self.last_external_clock_at)
 
-        if elapsed_ms > hi_lo_duration_ms:
-            self.last_state_change_at = ms
-            if self.is_high:
-                self.is_high = False
+            # The number of phases that have happened since the last incoming clock
+            n_phases = elapsed_us // hi_lo_duration_us
 
-            else:
-                self.is_high = True
-                self.output_port.voltage(GATE_VOLTS)
+            self.is_high = n_phases % 2 == 0
+        else:
+            # We're in clock division mode; just do a simple gate-skip to stay in sync with the input
+            n_gates = round(1.0 / self.modifier)
+            self.is_high = self.input_gate_counter % (n_gates * 2) < n_gates
 
     def set_output_voltage(self):
         """Set the output voltage either high or low.
@@ -81,21 +101,23 @@ class ClockOutput:
         Must be called after calling calculate_state
         """
         if self.is_high:
-            self.output_port.voltage(GATE_VOLTS)
+            self.output_port.on()
         else:
-            self.output_port.voltage(0)
+            self.output_port.off()
 
     def reset(self):
         """Reset the pattern to the initial position
         """
         self.is_high = False
-        self.output_port.voltage(0)
-        self.last_state_change_at = time.ticks_ms()
+        self.output_port.off()
+        self.input_gate_counter = 0
+
 
 class ClockModifier(EuroPiScript):
     """The main script class; multiplies and divides incoming clock signals
     """
     def __init__(self):
+        self.ui_dirty = False
         state = self.load_state_json()
 
         self.k1_bank = (
@@ -157,6 +179,7 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[0] = ' '
             self.channel_markers[1] = '>'
             self.channel_markers[2] = ' '
+            self.ui_dirty = True
 
         @b2.handler
         def b2_rising():
@@ -167,6 +190,7 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[0] = ' '
             self.channel_markers[1] = ' '
             self.channel_markers[2] = '>'
+            self.ui_dirty = True
 
         @b1.handler_falling
         def b1_falling():
@@ -178,6 +202,7 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
             self.state_dirty = True
+            self.ui_dirty = True
 
         @b2.handler_falling
         def b2_falling():
@@ -189,12 +214,13 @@ class ClockModifier(EuroPiScript):
             self.channel_markers[1] = ' '
             self.channel_markers[2] = ' '
             self.state_dirty = True
+            self.ui_dirty = True
 
         @din.handler
         def on_din():
             """Record the start time of our rising edge
             """
-            self.last_clock_at = time.ticks_ms()
+            self.last_clock_at = time.ticks_us()
 
         def on_ain():
             """Reset all channels when AIN goes high
@@ -223,7 +249,20 @@ class ClockModifier(EuroPiScript):
     def main(self):
         """The main loop
         """
+        screensaver = Screensaver()
+        last_render_at = time.ticks_us()
+
         knob_choices = list(self.clock_modifiers.keys())
+
+        prev_mods = [
+            knob_choices[0],
+            knob_choices[0],
+            knob_choices[0],
+            knob_choices[0],
+            knob_choices[0],
+            knob_choices[0],
+        ]
+
         while True:
             # update AIN so its rising edge callback can fire
             self.d_ain.update()
@@ -245,9 +284,9 @@ class ClockModifier(EuroPiScript):
             for i in range(len(mods)):
                 self.outputs[i].modifier = self.clock_modifiers[mods[i]]
 
-            # if we don't get an external signal within 1s, stop
-            now = time.ticks_ms()
-            if time.ticks_diff(now, self.last_clock_at) < 1000:
+            # if we don't get an external signal within the timeout duration, reset the outputs
+            now = time.ticks_us()
+            if time.ticks_diff(now, self.last_clock_at) <= CLOCK_IN_TIMEOUT:
                 # separate calculating the high/low state and setting the output voltage into two loops
                 # this helps reduce phase-shifting across outputs
                 for output in self.outputs:
@@ -261,17 +300,29 @@ class ClockModifier(EuroPiScript):
                     output.reset()
 
             # Update the GUI
-            # Yes, this is a very long string, but it centers nicely
-            # It looks something like this:
-            #
-            #    > 1: x1   4: /2
-            #      2: x2   5: x3
-            #      3: /4   6: /3
-            #
-            oled.fill(0)
-            oled.centre_text(
-                f"{self.channel_markers[0]} 1:{ljust(mods[0], 3)} 4:{ljust(mods[3], 3)}\n{self.channel_markers[1]} 2:{ljust(mods[1], 3)} 5:{ljust(mods[4], 3)}\n{self.channel_markers[2]} 3:{ljust(mods[2], 3)} 6:{ljust(mods[5], 3)}"
-            )
+            # This only needs to be done if the modifiers have changed or a button has been pressed/released
+            self.ui_dirty = self.ui_dirty or any([mods[i] != prev_mods[i] for i in range(len(mods))])
+            if self.ui_dirty:
+                # Yes, this is a very long string, but it centers nicely
+                # It looks something like this:
+                #
+                #    > 1: x1   4: /2
+                #      2: x2   5: x3
+                #      3: /4   6: /3
+                #
+                oled.fill(0)
+                oled.centre_text(
+                    f"{self.channel_markers[0]} 1:{ljust(mods[0], 3)} 4:{ljust(mods[3], 3)}\n{self.channel_markers[1]} 2:{ljust(mods[1], 3)} 5:{ljust(mods[4], 3)}\n{self.channel_markers[2]} 3:{ljust(mods[2], 3)} 6:{ljust(mods[5], 3)}"
+                )
+                self.ui_dirty = False
+                last_render_at = time.ticks_us()
+            elif time.ticks_diff(now, last_render_at) > screensaver.ACTIVATE_TIMEOUT_US:
+                last_render_at = time.ticks_add(now, -screensaver.ACTIVATE_TIMEOUT_US)
+                screensaver.draw()
+
+            for i in range(len(mods)):
+                prev_mods[i] = mods[i]
+
 
 if __name__=="__main__":
     ClockModifier().main()

@@ -259,7 +259,7 @@ class PolyrhythmSeq(EuroPiScript):
         self.seqs[1].set_state(_state.seq2)
         self.polys = list(_state.polys)
         self.seq_poly = list(_state.seq_poly)
-    
+
     def reset_check(self):
         """Reset the sequences and triggers when no clock pulse detected for specified time."""
         if self.counter != 0 and ticks_diff(ticks_ms(), din.last_triggered()) > self.reset_timeout:
@@ -338,7 +338,7 @@ class PolyrhythmSeq(EuroPiScript):
 
             if self.page == 2:
                 self.edit_poly()
-            
+
             self.reset_check()
 
             self.show_menu_header()

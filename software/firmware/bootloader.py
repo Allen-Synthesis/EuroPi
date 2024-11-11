@@ -141,7 +141,8 @@ class BootloaderMenu(EuroPiScript):
         return launch_class
 
     def main(self):
-        script_class_name = self.load_state_str()
+        saved_state = self.load_state_json()
+        script_class_name = saved_state.get("last_launched", None)
         script_class = None
 
         if script_class_name:
@@ -149,7 +150,9 @@ class BootloaderMenu(EuroPiScript):
 
         if not script_class:
             script_class = self.run_menu()
-            self.save_state_str(f"{script_class.__module__}.{script_class.__name__}")
+            self.save_state_json(
+                {"last_launched": f"{script_class.__module__}.{script_class.__name__}"}
+            )
             machine.reset()
         else:
             # setup the exit handlers, and execute the selection
@@ -157,6 +160,13 @@ class BootloaderMenu(EuroPiScript):
             europi.b2._handler_both(europi.b1, self.exit_to_menu)
 
             try:
+                if (
+                    europi.europi_config.MENU_AFTER_POWER_ON
+                    or script_class_name == "calibrate.Calibrate"
+                ):
+                    # Remove the last-launched file to force the module back to the menu after it powers-on next time
+                    self.save_state_json({})
+
                 script_class().main()
             except Exception as err:
                 # set all outputs to zero for safety

@@ -9,7 +9,7 @@ labels: Clock, Random, CV Generation
 Two pairs of clocked probability gates.
 
 Knob 1 adjusts the master clock speed of gate change probability. Knob 2 moves
-the probability thresholed between A and B with a 50% chance at noon. Output 
+the probability thresholed between A and B with a 50% chance at noon. Output
 row 1 (cv1 and cv2) run at 1x speed and output row 2 (cv4 and cv5) run at
 1/4x speed for interesting rhythmic patterns. Push button 1 to toggle between
 internal and external clock source. Push button 2 to toggle between gate and

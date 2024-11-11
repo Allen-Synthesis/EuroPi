@@ -297,7 +297,7 @@ class SequentialSwitch(EuroPiScript):
 
                 # turn off any unused outputs
                 for i in range(self.num_outputs, len(cvs)):
-                    cvs[i].voltage(0)
+                    cvs[i].off()
             else:
                 # read the input and send it to the current output
                 # all other outputs should be zero
@@ -306,7 +306,7 @@ class SequentialSwitch(EuroPiScript):
                     if i == self.current_output:
                         cvs[i].voltage(input_volts)
                     else:
-                        cvs[i].voltage(0)
+                        cvs[i].off()
 
             self.active_screen.draw()
 

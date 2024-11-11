@@ -5,7 +5,7 @@ import json
 from utime import ticks_diff, ticks_ms
 from configuration import ConfigSpec, ConfigFile
 from europi_config import EuroPiConfig
-from file_utils import load_file, delete_file, load_json_data
+from file_utils import load_file, delete_file, load_json_file
 
 
 class EuroPiScript:
@@ -118,10 +118,10 @@ class EuroPiScript:
             return [configuration.choice(name="language", choices=["english", "french"], default="english")]
 
     Our main method could then use the value of this configuration to display its greeting in the
-    configured language::
+    configured language:
 
         def main(self):
-            if self.config["language"] == "french":
+            if self.config.LANGUAGE == "french":
                 oled.centre_text("Bonjour le monde")
             else:
                 oled.centre_text("Hello world")
@@ -170,18 +170,7 @@ class EuroPiScript:
         appropriate save method, such as `save_state_json(state)`. See the
         class documentation for a full example.
         """
-        pass
-
-    def save_state_str(self, state: str):
-        """Take state in persistence format as a string and write to disk.
-
-        .. note::
-            Be mindful of how often `save_state_str()` is called because
-            writing to disk too often can slow down the performance of your
-            script. Only call save state when state has changed and consider
-            adding a time since last save check to reduce save frequency.
-        """
-        return self._save_state(state)
+        self.save_state_json({})
 
     def save_state_bytes(self, state: bytes):
         """Take state in persistence format as bytes and write to disk.
@@ -192,7 +181,9 @@ class EuroPiScript:
             script. Only call save state when state has changed and consider
             adding a time since last save check to reduce save frequency.
         """
-        return self._save_state(state, mode="wb")
+        with open(self._state_filename, "wb") as file:
+            file.write(state)
+            self._last_saved = ticks_ms()
 
     def save_state_json(self, state: dict):
         """Take state as a dict and save as a json string.
@@ -203,21 +194,9 @@ class EuroPiScript:
             script. Only call save state when state has changed and consider
             adding a time since last save check to reduce save frequency.
         """
-        json_str = json.dumps(state)
-        return self._save_state(json_str)
-
-    def _save_state(self, state: str, mode: str = "w"):
-        with open(self._state_filename, mode) as file:
-            file.write(state)
-        self._last_saved = ticks_ms()
-
-    def load_state_str(self) -> str:
-        """Check disk for saved state, if it exists, return the raw state value as a string.
-
-        Check for a previously saved state. If it exists, return state as a
-        string. If no state is found, an empty string will be returned.
-        """
-        return self._load_state()
+        with open(self._state_filename, "w") as file:
+            json.dump(state, file)
+            self._last_saved = ticks_ms()
 
     def load_state_bytes(self) -> bytes:
         """Check disk for saved state, if it exists, return the raw state value as bytes.
@@ -225,7 +204,7 @@ class EuroPiScript:
         Check for a previously saved state. If it exists, return state as a
         byte string. If no state is found, an empty string will be returned.
         """
-        return self._load_state(mode="rb")
+        return load_file(self._state_filename, "rb")
 
     def load_state_json(self) -> dict:
         """Load previously saved state as a dict.
@@ -233,10 +212,7 @@ class EuroPiScript:
         Check for a previously saved state. If it exists, return state as a
         dict. If no state is found, an empty dictionary will be returned.
         """
-        return load_json_data(self._load_state())
-
-    def _load_state(self, mode: str = "r") -> any:
-        return load_file(self._state_filename, mode)
+        return load_json_file(self._state_filename)
 
     def remove_state(self):
         """Remove the state file for this script."""

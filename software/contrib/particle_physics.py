@@ -7,6 +7,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.knobs import KnobBank
+from experimental.math_extras import rescale
 
 import math
 import time
@@ -27,14 +28,6 @@ MAX_ELASTICITY = 0.9
 
 ## If a bounce reaches no higher than this, assume we've come to rest
 ASSUME_STOP_PEAK = 0.002
-
-def rescale(x, old_min, old_max, new_min, new_max):
-    if x <= old_min:
-        return new_min
-    elif x >= old_max:
-        return new_max
-    else:
-        return (x - old_min) / (old_max - old_min) * (new_max - new_min) + new_min
 
 
 class Particle:
@@ -215,21 +208,21 @@ class ParticlePhysics(EuroPiScript):
 
             # CV 1 outputs a gate whenever we hit the ground
             if self.particle.hit_ground:
-                cv1.voltage(5)
+                cv1.on()
             else:
-                cv1.voltage(0)
+                cv1.off()
 
             # CV 2 outputs a trigger whenever we reach peak altitude and start falling again
             if self.particle.reached_apogee:
-                cv2.voltage(5)
+                cv2.on()
             else:
-                cv2.voltage(0)
+                cv2.off()
 
             # CV 3 outputs a gate when the particle comes to rest
             if self.particle.stopped:
-                cv3.voltage(5)
+                cv3.on()
             else:
-                cv3.voltage(0)
+                cv3.off()
 
             # CV 4 outputs control voltage based on the height of the particle
             cv4.voltage(rescale(self.particle.y, 0, MAX_HEIGHT, 0, MAX_OUTPUT_VOLTAGE))

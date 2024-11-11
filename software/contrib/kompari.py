@@ -27,8 +27,6 @@ ssoled = OledWithScreensaver()
 class Kompari(EuroPiScript):
     """The main Kompari script.  See module comment for usage
     """
-    HIGH_VOLTAGE = 5.0
-    LOW_VOLTAGE = 0.0
 
     def __init__(self):
         super().__init__()
@@ -54,19 +52,19 @@ class Kompari(EuroPiScript):
             x = ain.percent()
 
             if lower_bound < x:
-                cv1.voltage(self.HIGH_VOLTAGE)
+                cv1.on()
             else:
-                cv1.voltage(self.LOW_VOLTAGE)
+                cv1.off()
 
             if x < upper_bound:
-                cv2.voltage(self.HIGH_VOLTAGE)
+                cv2.on()
             else:
-                cv2.voltage(self.LOW_VOLTAGE)
+                cv2.off()
 
             if lower_bound < x and x < upper_bound:
-                cv3.voltage(self.HIGH_VOLTAGE)
+                cv3.on()
             else:
-                cv3.voltage(self.LOW_VOLTAGE)
+                cv3.off()
 
             cv4.voltage(max(lower_bound, x) * MAX_OUTPUT_VOLTAGE)
             cv5.voltage(min(x, upper_bound) * MAX_OUTPUT_VOLTAGE)

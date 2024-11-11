@@ -22,8 +22,7 @@ class Menu:
 
         # init handlers
         def select():
-            if self.selected != 0:  # ignore the '-- MENU --' item
-                self.select_func(self.items[self.selected + 1])
+            self.select_func(self.items[self.selected + 1])
 
         for b in choice_buttons:
             b.handler_falling(select)

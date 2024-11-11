@@ -1,13 +1,13 @@
 from europi import *
 from math import cos, radians
-from time import sleep_ms
+from time import sleep_ms, ticks_diff, ticks_ms
 from machine import freq
 from random import randint
 from europi_script import EuroPiScript
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE # Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
 MAX_HARMONIC = 32 # Too high a value may be hard to select using the knob, but the actual hardware limit is only reached at 4096
-
+LONG_PRESS_MIN_DURATION = 500
 
 class HarmonicLFOs(EuroPiScript):
     MODES_SHAPES = {
@@ -21,14 +21,15 @@ class HarmonicLFOs(EuroPiScript):
 
     def __init__(self):
         super().__init__()
-        
+
         # Retreive saved state information from file
         state = self.load_state_json()
-        
+
         # Use the saved values for the LFO divisions and mode if found in the save state file, using defaults if not
         self.divisions = state.get("divisions", [1, 3, 5, 7, 11, 13])
         self.modes = state.get("modes", [self.MODES_SHAPES['SINE']] * 6)
         self.MODES_COUNT = len(self.MODES_SHAPES)
+        self.viewAllWaveforms = state.get("viewAllWaveforms", True)
 
         # Initialise all the other variables
         self.degree = 0
@@ -38,11 +39,29 @@ class HarmonicLFOs(EuroPiScript):
         self.pixel_y = OLED_HEIGHT-1
         self.selected_lfo = 0
         self.clock_division = self.selected_lfo_start_value = self.get_clock_division()
+        self.state_needs_saving = False
 
         # Set the digital input and button handlers
         din.handler(self.reset)
-        b1.handler(self.change_mode)
-        b2.handler(self.increment_selection)
+
+        @b1.handler_falling
+        def b1Pressed():
+            """Triggered when B1 is pressed"""
+            diff = ticks_diff(ticks_ms(), b1.last_pressed())
+            if diff > LONG_PRESS_MIN_DURATION:
+                """Long press: toggle waveform view mode"""
+                self.viewAllWaveforms = not self.viewAllWaveforms
+            else:
+                """Short press: Change the mode that controls wave shape"""
+                self.modes[self.selected_lfo] = (self.modes[self.selected_lfo] + 1) % self.MODES_COUNT
+
+            self.state_needs_saving = True
+
+        @b2.handler_falling
+        def b2Pressed():
+            """Move the selection to the next LFO"""
+            self.selected_lfo = (self.selected_lfo + 1) % 6
+            self.selected_lfo_start_value = self.get_clock_division()
 
     def get_clock_division(self):
         """Determine the new clock division based on the position of knob 2"""
@@ -52,44 +71,37 @@ class HarmonicLFOs(EuroPiScript):
         """Reset all LFOs to zero volts, maintaining their divisions"""
         self.degree = 0
 
-    def change_mode(self):
-        """Change the mode that controls wave shape"""
-        self.modes[self.selected_lfo] = (self.modes[self.selected_lfo] + 1) % self.MODES_COUNT
-        self.save_state()
-
     def get_delay_increment_value(self):
         """Calculate the wait time between degrees"""
         delay = (0.1 - (k1.read_position(100, 1) / 1000)) + (ain.read_voltage(1) / 100)
         return delay, round((((1 / delay) - 10) / 1) + 1)
 
-    def increment_selection(self):
-        """Move the selection to the next LFO"""
-        self.selected_lfo = (self.selected_lfo + 1) % 6
-        self.selected_lfo_start_value = self.get_clock_division()
-
     def save_state(self):
         """Save the current set of divisions to file"""
-        if self.last_saved() < 5000:
-            return
-        
+        # Prevent save-spam by limiting save rate to 1Hz
+        if self.last_saved() < 1000:
+             return
+
+        self.state_needs_saving = False
         self.save_state_json({
             "divisions": self.divisions,
             "modes": self.modes,
+            "viewAllWaveforms": self.viewAllWaveforms,
         })
-        
+
     def update_display(self):
         """Update the OLED display every 10 cycles (degrees)"""
         oled.scroll(-1, 0)
 
         if round(self.degree, -1) % 10 == 0:
             oled.show()
-            
+
     def increment(self):
         """Increment the current degree and determine new values of delay and increment_value"""
         self.degree += self.increment_value
         self.delay, self.increment_value = self.get_delay_increment_value()
         sleep_ms(int(self.delay))
-        
+
     def draw_wave(self):
         shape = self.modes[self.selected_lfo]
 
@@ -190,13 +202,13 @@ class HarmonicLFOs(EuroPiScript):
         oled.fill_rect(0, 0, 20, 32, 0)
         oled.fill_rect(0, 0, 20, 9, 1)
         oled.text(f'{self.selected_lfo + 1}', 6, 1, 0)
-        
+
         number = self.divisions[self.selected_lfo]
         x = 2 if number >= 10 else 6
         oled.text(f'{number}', x, 12, 1)
-        
+
         self.draw_wave()
-        
+
     def calculate_voltage(self, cv, multiplier):
         """Determine the voltage based on current degree, wave shape, and MAX_VOLTAGE"""
         three_sixty = 360 * multiplier
@@ -218,16 +230,21 @@ class HarmonicLFOs(EuroPiScript):
             voltage = MAX_VOLTAGE * randint(0, int((1000 / MAX_HARMONIC) * multiplier)) / 1000
 
         return voltage
-        
+
     def display_graphic_lines(self):
         """Draw the lines displaying each LFO's voltage to the OLED display"""
         self.rad = radians(self.degree)
         oled.vline(self.pixel_x, 0, OLED_HEIGHT, 0)
 
-        for cv, multiplier in zip(cvs, self.divisions):
+        for index, (cv, multiplier) in enumerate(zip(cvs, self.divisions)):
             volts = self.calculate_voltage(cv, multiplier)
             cv.voltage(volts)
-            oled.pixel(self.pixel_x, self.pixel_y - int(volts * (self.pixel_y / 10)), 1)
+
+            if self.viewAllWaveforms:
+                oled.pixel(self.pixel_x, self.pixel_y - int(volts * (self.pixel_y / 10)), 1)
+            elif index == self.selected_lfo:
+                oled.pixel(self.pixel_x, self.pixel_y - int(volts * (self.pixel_y / 10)), 1)
+
 
     def check_change_clock_division(self):
         """Change current LFO's division with knob movement detection"""
@@ -235,19 +252,22 @@ class HarmonicLFOs(EuroPiScript):
 
         if self.clock_division != self.selected_lfo_start_value:
             self.selected_lfo_start_value = self.divisions[self.selected_lfo] = self.clock_division
-            self.save_state()
+            self.state_needs_saving = True
 
     def main(self):
         while True:
             self.check_change_clock_division()
-            
+
             self.display_graphic_lines()
-            
+
             self.display_selected_lfo()
-            
+
             self.update_display()
-            
+
             self.increment()
+
+            if self.state_needs_saving:
+                self.save_state()
 
 
 if __name__ == "__main__":

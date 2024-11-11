@@ -22,7 +22,7 @@ class ExperimentalConfig:
     quantization, it should look like this:
 
     {
-        "volts_per_octave": 1.2
+        "VOLTS_PER_OCTAVE": 1.2
     }
     """
 
@@ -34,7 +34,7 @@ class ExperimentalConfig:
             # Normally this is intended for Eurorack compatibility, but being open-source someone may
             # want to use it in an ecosystem that uses different specs
             configuration.choice(
-                name="volts_per_octave",
+                name="VOLTS_PER_OCTAVE",
                 choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
                 default=MOOG_VOLTS_PER_OCTAVE,
             ),

@@ -4,10 +4,10 @@
     @year   2023
 """
 
-from europi import experimental_config
+from europi import experimental_config, MAX_OUTPUT_VOLTAGE
 
 ## 1.0V/O is the Eurorack/Moog standard, but Buchla uses 1.2V/O
-VOLTS_PER_OCTAVE = experimental_config["volts_per_octave"]
+VOLTS_PER_OCTAVE = experimental_config.VOLTS_PER_OCTAVE
 
 ## Standard western music scale has 12 semitones per octave
 SEMITONES_PER_OCTAVE = 12
@@ -28,7 +28,7 @@ class Quantizer:
     Implements __get_item__ and __set_item__ so you can use Quantizer like an array to set notes on/off
     """
 
-    def __init__(self, notes=None):
+    def __init__(self, notes=None, name=""):
         """Constructor; can specify what notes are enabled/disabled
 
         @param notes  A boolean array of length SEMITONES_PER_OCTAVE indicating what semitones are enabled (True)
@@ -48,6 +48,8 @@ class Quantizer:
 
             self.notes = [n for n in notes]
 
+        self.name = name
+
     def __getitem__(self, n):
         return self.notes[n % len(self.notes)]
 
@@ -56,6 +58,12 @@ class Quantizer:
 
     def __len__(self):
         return len(self.notes)
+
+    def __str__(self):
+        if self.name:
+            return self.name
+        else:
+            return "".join(["1" if self.notes[i] else "0" for i in range(len(self.notes))])
 
     def quantize(self, analog_in, root=0):
         """Take an analog input voltage and round it to the nearest note on our scale
@@ -68,6 +76,11 @@ class Quantizer:
                 the raw voltage to output, and note is a value from
                 0-11 indicating the semitone
         """
+        # Make sure we've got at least 1 note in the scale enabled, otherwise we might have infinite loop problems
+        # If we have nothing to quantize to, just output zero for both outputs
+        if not (True in self.notes):
+            return (0, 0)
+
         # offset the input voltage by the root to transpose down
         analog_in = analog_in - VOLTS_PER_SEMITONE * root
 
@@ -91,6 +104,21 @@ class Quantizer:
         # re-apply the root to transpose back up
         volts = base_volts + nearest_on_scale * VOLTS_PER_SEMITONE + root * VOLTS_PER_SEMITONE
 
+        # If the calculated voltage is above what we can actually output, move down in semitones until we get
+        # to something on the scale
+        # Author's Note:
+        #  The likeliest way for this to trigger is if MAX_OUTPUT_VOLTAGE is set significantly lower than
+        #  MAX_INPUT_VOLTAGE (e.g. 10V in, 5V out) and/or @root is set very high and @analog_in is close
+        #  to MAX_OUTPUT_VOLTAGE
+        highest_volts = volts
+        highest_note = nearest_on_scale
+        while volts > MAX_OUTPUT_VOLTAGE:
+            highest_volts -= VOLTS_PER_SEMITONE
+            highest_note = (highest_note - 1) % len(self.notes)
+            if self.notes[highest_note]:
+                volts = highest_volts
+                nearest_on_scale = highest_note
+
         return (volts, nearest_on_scale)
 
 
@@ -102,25 +130,25 @@ class CommonScales:
 
     # fmt: off
     #                         C      C#     D      D#     E      F      F#     G      G#     A      A#     B
-    Chromatic    = Quantizer([True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True])
-    NatMajor     = Quantizer([True,  False, True,  False, True,  True,  False, True,  False, True,  False, True])
-    HarMajor     = Quantizer([True,  False, True,  False, True,  True,  False, True,  True,  False, True,  False])
-    Major135     = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, False])
-    Major1356    = Quantizer([True,  False, False, False, True,  False, False, True,  False, True,  False, False])
-    Major1357    = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, True])
+    Chromatic    = Quantizer([True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True],  "Chromatic")
+    NatMajor     = Quantizer([True,  False, True,  False, True,  True,  False, True,  False, True,  False, True],  "Nat Major")
+    HarMajor     = Quantizer([True,  False, True,  False, True,  True,  False, True,  True,  False, True,  False], "Har Major")
+    Major135     = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, False], "Maj 135")
+    Major1356    = Quantizer([True,  False, False, False, True,  False, False, True,  False, True,  False, False], "Maj 1356")
+    Major1357    = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, False, True],  "Maj 1357")
 
-    NatMinor     = Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, True,  False])
-    HarMinor     = Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, False, True])
-    Minor135     = Quantizer([True,  False, False, True,  False, False, False, True,  False, False, False, False])
-    Minor1356    = Quantizer([True,  False, False, True,  False, False, False, True,  True,  False, False, False])
-    Minor1357    = Quantizer([True,  False, False, True,  False, False, False, True,  False, False, True,  False])
+    NatMinor     = Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, True,  False], "Nat Minor")
+    HarMinor     = Quantizer([True,  False, True,  True,  False, True,  False, True,  True,  False, False, True],  "Har Minor")
+    Minor135     = Quantizer([True,  False, False, True,  False, False, False, True,  False, False, False, False], "Min 135")
+    Minor1356    = Quantizer([True,  False, False, True,  False, False, False, True,  True,  False, False, False], "Min 1356")
+    Minor1357    = Quantizer([True,  False, False, True,  False, False, False, True,  False, False, True,  False], "Min 1357")
 
-    MajorBlues   = Quantizer([True,  False, True,  True,  True,  False, False, True,  False, True,  False, False])
-    MinorBlues   = Quantizer([True,  False, False, True,  False, True,  True,  True,  False, False, True,  False])
+    MajorBlues   = Quantizer([True,  False, True,  True,  True,  False, False, True,  False, True,  False, False], "Maj Blues")
+    MinorBlues   = Quantizer([True,  False, False, True,  False, True,  True,  True,  False, False, True,  False], "Min Blues")
 
-    WholeTone    = Quantizer([True,  False, True,  False, True,  False, True,  False, True,  False, True,  False])
-    Pentatonic   = Quantizer([True,  False, True,  False, True,  False, False, True,  False, True,  False, False])
-    Dominant7    = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, True,  False])
+    WholeTone    = Quantizer([True,  False, True,  False, True,  False, True,  False, True,  False, True,  False], "Whole")
+    Pentatonic   = Quantizer([True,  False, True,  False, True,  False, False, True,  False, True,  False, False], "Penta")
+    Dominant7    = Quantizer([True,  False, False, False, True,  False, False, True,  False, False, True,  False], "Dom7")
     # fmt: on
 
 

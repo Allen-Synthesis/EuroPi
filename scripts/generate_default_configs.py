@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This script can be used to generate default configuration files for all EuroPiScripts that use the 
+This script can be used to generate default configuration files for all EuroPiScripts that use the
 configuration feature. Simply execute this script from the root of the project directory.
 
    $ python3 scripts/generate_default_configs.py

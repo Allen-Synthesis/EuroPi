@@ -77,7 +77,7 @@ When making changes that you intend to contribute to the EuroPi project it's imp
 
 # What to expect during the PR process
 A PR will typically progress through the following steps:
-    
+
   1. PR opened by author
   2. Reviewers add comments in the form of questions, discussion points, suggestions, and required changes.
   3. PR participants discuss the comments
@@ -93,7 +93,7 @@ The PR process is expected to take time, in the range of days to weeks. This rep
 
 ## Comment labels
 
-These labels prefix each of the reviewer's comments in order to indicate their intention. 
+These labels prefix each of the reviewer's comments in order to indicate their intention.
 
 | Label |   |
 | ----- | - |
@@ -141,7 +141,7 @@ PRs that make changes to documentation, that is `*.md` files or anything in the 
 ### Markdown must render properly on github
 
 The markdown must use [github's markdown style](https://docs.github.com/en/get-started/writing-on-github) and render properly when viewing the project on [github.com/Allen-Synthesis](https://github.com/Allen-Synthesis)
-  
+
 ### Api docs must build successfully
 
 The [API doc site](https://allen-synthesis.github.io/EuroPi/) must build successfully. See the [docs readme](/docs/README.md) for more details.
@@ -163,7 +163,7 @@ Just write any labels that apply to your program, including any not listed here 
 
 ### File Naming
 
-Please use all lowercase and separate words with underscores for your program names. If additional resources are needed, such as image files, a directory with the same name and suffixed with `docs` can be included. e.g. the files associated with a program for a Sample and Hold function would look as follows:  
+Please use all lowercase and separate words with underscores for your program names. If additional resources are needed, such as image files, a directory with the same name and suffixed with `docs` can be included. e.g. the files associated with a program for a Sample and Hold function would look as follows:
 
 ```
 software/contrib

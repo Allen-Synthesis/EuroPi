@@ -61,20 +61,20 @@ class SingleBernoulliGate():
 
     def bar_visualization(self):
         # right
-        oled.rect(int(OLED_WIDTH / 2), 
-                  int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset, 
-                  int(self.right_possibility * BERNOULLI_BAR_LEN), 
+        oled.rect(int(OLED_WIDTH / 2),
+                  int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset,
+                  int(self.right_possibility * BERNOULLI_BAR_LEN),
                   BERNOULLI_BAR_WID, 1)
         # left
-        oled.fill_rect(int(OLED_WIDTH / 2 - self.left_possibility * BERNOULLI_BAR_LEN), 
-                       int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset, 
-                       int(self.left_possibility * BERNOULLI_BAR_LEN), 
+        oled.fill_rect(int(OLED_WIDTH / 2 - self.left_possibility * BERNOULLI_BAR_LEN),
+                       int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset,
+                       int(self.left_possibility * BERNOULLI_BAR_LEN),
                        BERNOULLI_BAR_WID, 1)
-                       
+
     def probability_sample(self):
         self.right_possibility_sampled = self.right_possibility
         self.left_possibility_sampled = self.left_possibility
-    
+
     def triggered_maneuver(self):
         self.coin = random()
         if self.mode_flg == 0 or self.mode_flg == 1:
@@ -83,18 +83,18 @@ class SingleBernoulliGate():
                 self.right_port.on()
                 if self.mode_flg == 0:
                     # Draw right indicator
-                    oled.fill_rect(int(OLED_WIDTH / 2 + self.right_possibility * BERNOULLI_BAR_LEN) + 2, 
-                                   int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset, 
-                                   BERNOULLI_INDI_WID, 
+                    oled.fill_rect(int(OLED_WIDTH / 2 + self.right_possibility * BERNOULLI_BAR_LEN) + 2,
+                                   int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset,
+                                   BERNOULLI_INDI_WID,
                                    BERNOULLI_BAR_WID, 1)
             else:
                 self.left_port.on()
                 self.right_port.off()
                 if self.mode_flg == 0:
                     # Draw left indicator
-                    oled.rect(int(OLED_WIDTH / 2 - self.left_possibility * BERNOULLI_BAR_LEN) - BERNOULLI_INDI_WID - 2, 
-                              int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset, 
-                              BERNOULLI_INDI_WID, 
+                    oled.rect(int(OLED_WIDTH / 2 - self.left_possibility * BERNOULLI_BAR_LEN) - BERNOULLI_INDI_WID - 2,
+                              int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset,
+                              BERNOULLI_INDI_WID,
                               BERNOULLI_BAR_WID, 1)
         else:
             if self.coin < (self.right_possibility_sampled):
@@ -123,14 +123,14 @@ class SingleBernoulliGate():
             oled.text('G', self.text1_pos, OLED_HEIGHT-8, 1)
             # Draw indicator
             if self.coin < (self.right_possibility_sampled):
-                oled.fill_rect(int(OLED_WIDTH / 2 + self.right_possibility * BERNOULLI_BAR_LEN) + 2, 
-                               int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset, 
-                               BERNOULLI_INDI_WID, 
-                               BERNOULLI_BAR_WID, 1)                
+                oled.fill_rect(int(OLED_WIDTH / 2 + self.right_possibility * BERNOULLI_BAR_LEN) + 2,
+                               int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset,
+                               BERNOULLI_INDI_WID,
+                               BERNOULLI_BAR_WID, 1)
             else:
-                oled.rect(int(OLED_WIDTH / 2 - self.left_possibility * BERNOULLI_BAR_LEN) - BERNOULLI_INDI_WID - 2, 
-                          int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset, 
-                          BERNOULLI_INDI_WID, 
+                oled.rect(int(OLED_WIDTH / 2 - self.left_possibility * BERNOULLI_BAR_LEN) - BERNOULLI_INDI_WID - 2,
+                          int((OLED_HEIGHT - BERNOULLI_BAR_WID) / 2) + self.bar_pos_offset,
+                          BERNOULLI_INDI_WID,
                           BERNOULLI_BAR_WID, 1)
         elif self.mode_flg == 2:
             oled.text('Tg', self.text1_pos, OLED_HEIGHT-8, 1)
@@ -160,10 +160,10 @@ class BernoulliGates(EuroPiScript):
                                               out_port = (cv1, cv2, cv3),
                                               visualization_para = ('P1', (0, 0), 0, -3),
                                               port3_func = 'clock', port3_source_cv = None)
-        self.second_gate = SingleBernoulliGate(control_knob =  k2, 
-                                               control_port = None, 
-                                               out_port = (cv4, cv5, cv6), 
-                                               visualization_para = ('P2', (int(OLED_WIDTH / 2) + 8, 0), 110, BERNOULLI_BAR_WID - 1), 
+        self.second_gate = SingleBernoulliGate(control_knob =  k2,
+                                               control_port = None,
+                                               out_port = (cv4, cv5, cv6),
+                                               visualization_para = ('P2', (int(OLED_WIDTH / 2) + 8, 0), 110, BERNOULLI_BAR_WID - 1),
                                                port3_func = 'and', port3_source_cv = cv1)
 
         @din.handler
@@ -194,20 +194,20 @@ class BernoulliGates(EuroPiScript):
             self.second_gate.probability_text_visualization()
             self.first_gate.bar_visualization()
             self.second_gate.bar_visualization()
-            
+
             # Triggered maneuver
             if self.toss_flg == 1:
                 self.first_gate.probability_sample()
                 self.second_gate.probability_sample()
-                
+
                 self.first_gate.triggered_maneuver()
                 self.second_gate.triggered_maneuver()
-                
+
                 self.first_gate.function_port_maneuver()
                 self.second_gate.function_port_maneuver()
-                
+
                 self.toss_flg = 0
-                
+
             # Regular maneuver
             self.first_gate.regular_visualization()
             self.second_gate.regular_visualization()
@@ -215,7 +215,7 @@ class BernoulliGates(EuroPiScript):
             self.first_gate.regular_maneuver()
             self.second_gate.regular_maneuver()
             oled.show()
-    
-if __name__ == "__main__":    
+
+if __name__ == "__main__":
     bernoulli_gates = BernoulliGates()
     bernoulli_gates.main()
