@@ -207,5 +207,4 @@ class GatePhaser(EuroPiScript):
         self.selectedGateControlMultiplier = self.state.get("selectedGateControlMultiplier", 0)
 
 if __name__ == "__main__":
-    dm = GatePhaser()
-    dm.main()
+    GatePhaser().main()

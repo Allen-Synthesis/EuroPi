@@ -69,11 +69,45 @@ class EuroPiConfig:
                 choices=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 27],
                 default=1,
             ),
-            configuration.integer(
+            configuration.choice(
                 name="DISPLAY_CHANNEL",
-                minimum=0,
-                maximum=1,
+                choices=[0, 1],
                 default=0
+            ),
+            configuration.integer(
+                name="DISPLAY_FREQUENCY",
+                minimum=0,
+                maximum=1000000,
+                default=400000
+            ),
+
+            # External I2C connection (header between Pico & power connector)
+            configuration.choice(
+                name="EXTERNAL_I2C_SDA",
+                choices=[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 26],
+                default=2,
+            ),
+            configuration.choice(
+                name="EXTERNAL_I2C_SCL",
+                choices=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 27],
+                default=3,
+            ),
+            configuration.choice(
+                name="EXTERNAL_I2C_CHANNEL",
+                choices=[0, 1],
+                default=1
+            ),
+            configuration.integer(
+                name="EXTERNAL_I2C_FREQUENCY",
+                minimum=0,
+                maximum=1000000,  # 1M max
+                default=100000    # 100k default
+            ),
+            configuration.integer(
+                name="EXTERNAL_I2C_TIMEOUT",
+                minimum=0,
+                maximum=100000,
+                default=50000
             ),
 
             # I/O voltage settings

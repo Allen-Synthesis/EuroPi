@@ -12,10 +12,23 @@ Gates are sent from outputs 1-6 which are offset (or out of phase) with each oth
 
 You can use this script to create Piano Phase type patches, dynamic rhythms which evolve over time and eventually resolve back in phase, or ... well lots of other things that would benefit from having gates which are delayed from each other.
 
+Demo Video: https://www.youtube.com/watch?v=fnpH8Q6sxIM
+
 # Inputs, Outputs and Controls
 
 ![Operating Diagram](./gate_phaser-docs/gate_phaser.png)
-  
+
+digital input: reset
+anaologue input: not used
+
+knob_1: adjust cycle time in milliseconds
+knob_2: adjust gate delay time in milliseconds
+
+button_1: cycle through gate delay multiple options
+button_2: change the behaviour of knob2 (x5, x10, x20)
+
+outputs: gates
+
 # Getting started
 
 1. Patch anything you want to trigger with a gate to any of the outputs, for example
@@ -27,7 +40,7 @@ percussions elements, emvelopes, sequencer clocks or samples.
 
 # So what is this script actually doing?
 
-**Cycle time** is the time in milliseconds between gate outputs at output 1 when the gate delay multiple for output 1 is set to 0.
+**Cycle time** is the time in milliseconds between gate outputs at output 1 when the gate delay multiple for output 1 is set to 0. When gate delay multiples are set to value greater than 0 the cycle time will be increased by the gate delay time multiplies by the gate delay multiple.
 
 **Gate delay** is the time in milliseconds that gate outputs are delayed from the master cycle time.
 

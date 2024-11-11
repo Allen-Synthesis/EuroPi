@@ -22,6 +22,7 @@ EUROPI_SCRIPTS = OrderedDict([
 #   ["0123456789abcdef",  "contrib.spam.Eggs"],
     ["Arpeggiator",       "contrib.arp.Arpeggiator"],
     ["Bernoulli Gates",   "contrib.bernoulli_gates.BernoulliGates"],
+    ["Bezier Curves",     "contrib.bezier.Bezier"],
     ["Bit Garden",        "contrib.bit_garden.BitGarden"],
     ["Clock Modifier",    "contrib.clock_mod.ClockModifier"],
     ["Coin Toss",         "contrib.coin_toss.CoinToss"],
@@ -53,10 +54,12 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Scope",             "contrib.scope.Scope"],
     ["Seq. Switch",       "contrib.sequential_switch.SequentialSwitch"],
     ["Sigma",             "contrib.sigma.Sigma"],
+    ["Slopes",            "contrib.slopes.Slopes"],
     ["Smooth Rnd Volts",  "contrib.smooth_random_voltages.SmoothRandomVoltages"],
     ["StrangeAttractor",  "contrib.strange_attractor.StrangeAttractor"],
     ["Traffic",           "contrib.traffic.Traffic"],
     ["Turing Machine",    "contrib.turing_machine.EuroPiTuringMachine"],
+    ["Volts",             "contrib.volts.OffsetVoltages"],
 
     ["_About",            "tools.about.About"],                # this one should always be fourth to last!
     ["_Diagnostic",       "tools.diagnostic.Diagnostic"],      # this one should always be third to last!

@@ -19,6 +19,12 @@ Two channels of probability-based routing, where the digital input will be route
 <i>Author: [Bridgee](https://github.com/Bridgee)</i>
 <br><i>Labels: Random</i>
 
+### Bezier Curves \[ [documentation](/software/contrib/bezier.md) | [script](/software/contrib/bezier.py) \]
+Smooth random voltages based on bezier curves. Inspired by the ADDAC507 Random Bezier Waves module.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: Random</i>
+
 ### Clock Modifier \[ [documentation](/software/contrib/clock_mod.md) | [script](/software/contrib/clock_mod.md) \]
 A clock multiplier or divider. Each channel has an independently-controllable modifier, multiplying or dividing an external clock signal on `din`.
 
@@ -200,6 +206,12 @@ Random CV, optionally quantized, voltages based on controllable normal distribut
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: random, quantizer</i>
 
+### Sigma \[ [documentation](/software/contrib/slopes.md) | [script](/software/contrib/slopes.py) \]
+CV analyzer that produces gates & CV outputs based on the slope of the incoming signal
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: gates, CV</i>
+
 ### Smooth Random Voltages \[ [script](/software/contrib/smooth_random_voltages.py) \]
 Random CV with adjustable slew rate, inspired by: https://youtu.be/tupkx3q7Dyw.
 
@@ -230,6 +242,16 @@ as faithfully as possible on the EuroPi hardware.
 
 <i>Author: [mjaskula](https://github.com/mjaskula)</i>
 <br><i>Labels: sequencer, random, triggers</i>
+
+### Volts \[ [documentation](/software/contrib/volts.md) | [script](/software/contrib/volts.py) \]
+Generates static voltages on CV1-6. Useful for when you need a reliable, fixed voltage source as an input. Some useful applications include:
+- transposing a sequencer
+- shifting a bipolar LFO or VCO to be unipolar
+- sending a fixed voltage to a VCA to amplify a signal to a fixed level
+- calibrating other modules
+
+<i>Author: [chrisib](http://github.com/chrisib)</i>
+<br><i>Labels: cv, voltages, non-interactive</i>
 
 ---
 

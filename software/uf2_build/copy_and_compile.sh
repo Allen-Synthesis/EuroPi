@@ -15,4 +15,4 @@ cd micropython/ports/rp2
 make
 
 echo "Copying firmware file to /europi/software/uf2_build/europi-dev.uf2"
-cp build-RPI_PICO/firmware.uf2 /europi/software/uf2_build/europi-dev.uf2
+cp build-PICO/firmware.uf2 /europi/software/uf2_build/europi-dev.uf2

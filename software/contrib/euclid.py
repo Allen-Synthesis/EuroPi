@@ -10,14 +10,14 @@ noted below
 """
 
 import random
+import time
 
 from europi import *
 from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
-from experimental.screensaver import OledWithScreensaver
+from experimental.screensaver import Screensaver
 
-ssoled = OledWithScreensaver()
 
 class EuclidGenerator:
     """Generates the euclidean rhythm for a single output
@@ -141,23 +141,45 @@ class ChannelMenu:
         @param script  The EuclideanRhythms script that owns this menu
         """
         self.script = script
+        self.first_render = True
+
+        self.generator_index = None
+        self.k2_percent = None
+        self.read_knobs()
+
+    def read_knobs(self):
+        """Read the current state of the knobs and return whether or not the state has changed, requiring a re-render
+
+        @return True if we should re-render the GUI, False if we can keep the previous render
+        """
+        index = k1.range(len(self.script.generators))
+        percent = round(k2.percent() * 100)
+        dirty = (
+            self.generator_index != index or
+            self.k2_percent != percent
+        )
+        if dirty:
+            self.generator_index = index
+            self.k2_percent = percent
+
+        return dirty or self.first_render
 
     def draw(self):
-        generator_index = k1.range(len(self.script.generators))
-        g = self.script.generators[generator_index]
+        self.first_render = False
+        g = self.script.generators[self.generator_index]
         pattern_str = str(g)
 
-        ssoled.fill(0)
-        ssoled.text(f"-- CV {generator_index+1} --", 0, 0)
+        oled.fill(0)
+        oled.text(f"-- CV {self.generator_index+1} --", 0, 0)
         if len(pattern_str) > 16:
             pattern_row1 = pattern_str[0:16]
             pattern_row2 = pattern_str[16:]
-            ssoled.text(f"{pattern_row1}", 0, 10)
-            ssoled.text(f"{pattern_row2}", 0, 20)
+            oled.text(f"{pattern_row1}", 0, 10)
+            oled.text(f"{pattern_row2}", 0, 20)
         else:
-            ssoled.text(f"{pattern_str}", 0, 10)
+            oled.text(f"{pattern_str}", 0, 10)
 
-        ssoled.show()
+        oled.show()
 
 class SettingsMenu:
     """A menu screen for controlling a single setting of the generator
@@ -181,6 +203,15 @@ class SettingsMenu:
             "Skip %"
         ]
 
+        self.first_render = True
+
+        self.menu_item = None
+        self.lower_bound = None
+        self.upper_bound = None
+        self.current_setting = None
+        self.new_setting = None
+        self.read_knobs()
+
     def set_generator(self, g):
         """Configure this menu to control a given EuclideanGenerator
 
@@ -191,9 +222,8 @@ class SettingsMenu:
     def read_knobs(self):
         """Returns a tuple with the current options
 
-        @return a tuple of the form (menu_item, lower_bound, upper_bound, current_setting, new_setting)
+        @return True if the user has moved any inputs, requiring a re-render. Otherwise False
         """
-
         menu_item = k1.range(len(self.menu_items))
         lower_bound = 0
         upper_bound = 0
@@ -218,35 +248,48 @@ class SettingsMenu:
 
         new_setting = k2.range(upper_bound-lower_bound+1) + lower_bound
 
-        return (menu_item, lower_bound, upper_bound, current_setting, new_setting)
+        dirty = (
+            self.menu_item != menu_item or
+            self.lower_bound != lower_bound or
+            self.upper_bound != upper_bound or
+            self.current_setting != current_setting or
+            self.new_setting != new_setting
+        )
+
+        if dirty:
+            self.menu_item = menu_item
+            self.lower_bound = lower_bound
+            self.upper_bound = upper_bound
+            self.current_setting = current_setting
+            self.new_setting = new_setting
+
+        return dirty or self.first_render
 
     def draw(self):
-        (menu_item, lower_bound, upper_bound, current_setting, new_setting) = self.read_knobs()
-
-        ssoled.fill(0)
-        ssoled.text(f"-- {self.menu_items[menu_item]} --", 0, 0)
-        ssoled.text(f"{current_setting} <- {new_setting}", 0, 10)
-        ssoled.show()
+        self.first_render = False
+        oled.fill(0)
+        oled.text(f"-- {self.menu_items[self.menu_item]} --", 0, 0)
+        oled.text(f"{self.current_setting} <- {self.new_setting}", 0, 10)
+        oled.show()
 
     def apply_setting(self):
         """Apply the current setting
         """
-        (menu_item, lower_bound, upper_bound, current_setting, new_setting) = self.read_knobs()
-
-        if menu_item == self.MENU_ITEMS_STEPS:
-            self.generator.steps = new_setting
-            if self.generator.pulses > new_setting:
-                self.generator.pulses = new_setting
-            if self.generator.rotation > new_setting:
-                self.generator.rotation = new_setting
-        elif menu_item == self.MENU_ITEMS_PULSES:
-            self.generator.pulses = new_setting
-        elif menu_item == self.MENU_ITEMS_ROTATION:
-            self.generator.rotation = new_setting
-        elif menu_item == self.MENU_ITEMS_SKIP:
-            self.generator.skip = new_setting / 100.0
+        if self.menu_item == self.MENU_ITEMS_STEPS:
+            self.generator.steps = self.new_setting
+            if self.generator.pulses > self.new_setting:
+                self.generator.pulses = self.new_setting
+            if self.generator.rotation > self.new_setting:
+                self.generator.rotation = self.new_setting
+        elif self.menu_item == self.MENU_ITEMS_PULSES:
+            self.generator.pulses = self.new_setting
+        elif self.menu_item == self.MENU_ITEMS_ROTATION:
+            self.generator.rotation = self.new_setting
+        elif self.menu_item == self.MENU_ITEMS_SKIP:
+            self.generator.skip = self.new_setting / 100.0
 
         self.generator.regenerate()
+
 
 class EuclideanRhythms(EuroPiScript):
     """Generates 6 different Euclidean rhythms, one per output
@@ -272,8 +315,17 @@ class EuclideanRhythms(EuroPiScript):
 
         self.load()
 
+        # Do we need to save the current settings?
+        self.settings_dirty = False
+
+        # Do we need to re-draw the GUI?
+        self.ui_dirty = True
+
+        self.last_user_interaction_at = time.ticks_ms()
+
         self.channel_menu = ChannelMenu(self)
         self.settings_menu = SettingsMenu(self)
+        self.screensaver = Screensaver()
 
         self.active_screen = self.channel_menu
 
@@ -285,6 +337,7 @@ class EuclideanRhythms(EuroPiScript):
             """
             for g in self.generators:
                 g.advance()
+            self.ui_dirty = True
 
         @din.handler_falling
         def on_falling_clock():
@@ -292,26 +345,27 @@ class EuclideanRhythms(EuroPiScript):
 
             Turn off all of the CVs so we don't stay on for adjacent pulses
             """
-            for cv in cvs:
-                cv.off()
+            turn_off_all_cvs()
 
         @b1.handler
         def on_b1_press():
             """Handler for pressing button 1
             """
-            ssoled.notify_user_interaction()
+            self.ui_dirty = True
+            self.last_user_interaction_at = time.ticks_ms()
 
             if self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
             else:
                 self.settings_menu.apply_setting()
-                self.save()
+                self.settings_dirty = True
 
         @b2.handler
         def on_b2_press():
             """Handler for pressing button 2
             """
-            ssoled.notify_user_interaction()
+            self.ui_dirty = True
+            self.last_user_interaction_at = time.ticks_ms()
 
             if self.active_screen == self.channel_menu:
                 self.activate_settings_menu()
@@ -371,7 +425,22 @@ class EuclideanRhythms(EuroPiScript):
 
     def main(self):
         while True:
-            self.active_screen.draw()
+            now = time.ticks_ms()
+
+            if self.settings_dirty:
+                self.settings_dirty = False
+                self.save()
+
+            if self.active_screen.read_knobs():
+                self.last_user_interaction_at = now
+                self.ui_dirty = True
+
+            if time.ticks_diff(now, self.last_user_interaction_at) >= self.screensaver.ACTIVATE_TIMEOUT_MS:
+                self.last_user_interaction_at = time.ticks_add(now, -self.screensaver.ACTIVATE_TIMEOUT_MS)
+                self.screensaver.draw()
+            elif self.ui_dirty:
+                self.ui_dirty = False
+                self.active_screen.draw()
 
 if __name__=="__main__":
     EuclideanRhythms().main()
