@@ -634,7 +634,7 @@ class Thermometer:
     TEMP_CONV_FACTOR = 3.3 / 65535
 
     def __init__(self):
-        # The Raspberry Pi Pico 2's temperature sensor doesn't with some older
+        # The Raspberry Pi Pico 2's temperature sensor doesn't work with some older
         # uPython firmwares so do some basic exception handling
         try:
             self.pin = ADC(PIN_TEMPERATURE)
