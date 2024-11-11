@@ -6,15 +6,26 @@
 1. Run Docker
 1. Click the windows file manager file path *inside* the root folder of your clone of the EuroPi repo (the folder named 'EuroPi', not any of the folders inside it)
     ![image](https://user-images.githubusercontent.com/79809962/234898948-d1822ce9-aa64-429c-a7a1-69050972cd88.png)
-1. Type 'cmd'
+1. Type `cmd`
     ![image](https://user-images.githubusercontent.com/79809962/234899081-6bdfbba6-4751-4469-b570-d618d54f6fa6.png)
 1. Press Enter
-1. In the new terminal window, type 'software\uf2_build\build_uf2.bat'
+1. In the new terminal window, type `software\uf2_build\build_uf2.bat`
 1. Press Enter
-1. Wait for .uf2 to compile (this may take some time, do not close the terminal window
+1. Wait for .uf2 to compile (this may take some time, do not close the terminal window)
+1. The custom .uf2 build can be found at `EuroPi\software\uf2_build\europi-dev.uf2`
+
+## Compiling the firmware on Mac/Linux (using Docker)
+The same process described above for Windows can also be used on Mac and Linux, with a few small changes.
+1. If not already installed, install Docker
+   * [Linux instructions](https://docs.docker.com/desktop/setup/install/linux/)
+   * [Mac instructions](https://docs.docker.com/desktop/setup/install/mac-install/)
+1. If not already cloned, [create a local clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository?tool=desktop) of the EuroPi repository
+1. Open a terminal (ctrl+alt+T on most desktop Linux distributions) and run `cd /path/to/EuroPi` (replacing the path with the path to the repository cloned above)
+1. In the same terminal, run `/software/uf2_build/build_uf2.sh`
+1. Wait for .uf2 to compile (this may take some time, do not close the terminal window_
 1. The custom .uf2 build can be found at `EuroPi/software/uf2_build/europi-dev.uf2`
 
-## Compiling the firmware on Mac/Linux
+## Compiling the firmware on Mac/Linux (without Docker)
 The instructions below describe the steps needed to build the uf2 locally on your machine for
 development purposes. Alternatively you can run the script `software/uf2_build/build_uf2.sh` to
 build the image in a docker container. You will need to have [docker](https://docs.docker.com/get-started/)
