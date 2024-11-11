@@ -58,6 +58,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Traffic",           "contrib.traffic.Traffic"],
     ["Turing Machine",    "contrib.turing_machine.EuroPiTuringMachine"],
 
+    ["_About",            "tools.about.About"],                # this one should always be fourth to last!
     ["_Diagnostic",       "tools.diagnostic.Diagnostic"],      # this one should always be third to last!
     ["_Calibrate",        "tools.calibrate.Calibrate"],        # this one should always be second to last!
     ["_BootloaderMode",   "bootloader_mode.BootloaderMode"]    # this one should always be last!
