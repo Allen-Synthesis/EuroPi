@@ -15,6 +15,11 @@ default configuration:
     "DISPLAY_SDA": 0,
     "DISPLAY_SCL": 1,
     "DISPLAY_CHANNEL": 0,
+    "EXTERNAL_I2C_SDA": 2,
+    "EXTERNAL_I2C_SCL": 3,
+    "EXTERNAL_I2C_CHANNEL": 1,
+    "EXTERNAL_I2C_FREQUENCY": 100000,
+    "EXTERNAL_I2C_TIMEOUT": 50000,
     "MAX_OUTPUT_VOLTAGE": 10,
     "MAX_INPUT_VOLTAGE": 12,
     "GATE_VOLTAGE": 5,
@@ -22,21 +27,35 @@ default configuration:
 }
 ```
 
+CPU & Pico options:
 - `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported. Default: `"europi"`
 - `PICO_MODEL` must be one of `"pico"` or `"pico w"`. Default: `"pico"`
 - `CPU_FREQ` must be one of `250000000` or `125000000`. Default: `"250000000"`
+
+Display options:
 - `ROTATE_DISPLAY` must be one of `false` or `true`. Default: `false`
 - `DISPLAY_WIDTH` is the width of the screen in pixels. The standard EuroPi screen is 128 pixels wide. Default: `128`
 - `DISPLAY_HEIGHT` is the height of the screen in pixels. The standard EuroPi screen is 32 pixels tall. Default: `32`
 - `DISPLAY_SDA` is the I²C SDA pin used for the display. Only SDA capable pins can be selected. Default: `0`
 - `DISPLAY_SCL` is the I²C SCL pin used for the display. Only SCL capable pins can be selected. Default: `1`
 - `DISPLAY_CHANNEL` is the I²C channel used for the display, either 0 or 1. Default: `0`
+
+External I²C options:
+- `EXTERNAL_I2C_SDA` is the I²C SDA pin used for the external I²C interface. Only SDA capable pis can be selected. Default: `2`
+- `EXTERNAL_I2C_SCL` is the I²C SCL pin used for the external I²C interface. Only SCL capable pins can be selected. Defaut: `3`
+- `EXTERNAL_I2C_CHANNEL` is the I²C channel used for the external I²C interface, either 0 or 1. Default: `1`
+- `EXTERNAL_I2C_FREQUENCY` is the I²C frequency used for the external I²C interface. Default: `100000`
+- `EXTERNAL_I2C_TIMEOUT` is the I²C timeout in microseconds for the external I²C interface. Default: `50000`
+
+I/O voltage options:
 - `MAX_OUTPUT_VOLTAGE` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate. Default: `10`
   The hardware is capable of 10V maximum
 - `MAX_INPUT_VOLTAGE` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
   The hardware is capable of 12V maximum. Default: `12`
 - `GATE_VOLTAGE` is an integer in the range `[0, 10]` indicating the voltage that an output will produce when `cvx.on()`
   is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`. Default: `5`
+
+Power options:
 - `MENU_AFTER_POWER_ON` is a boolean indicating whether or not the module should always return to the main menu when
   it powers on.  By default the EuroPi will re-launch the last-used program instead of returning to the main menu. Default: `false`
 
