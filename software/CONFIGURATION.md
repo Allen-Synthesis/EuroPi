@@ -42,7 +42,7 @@ Display options:
 
 External I²C options:
 - `EXTERNAL_I2C_SDA` is the I²C SDA pin used for the external I²C interface. Only SDA capable pis can be selected. Default: `2`
-- `EXTERNAL_I2C_SCL` is the I²C SCL pin used for the external I²C interface. Only SCL capable pins can be selected. Defaut: `3`
+- `EXTERNAL_I2C_SCL` is the I²C SCL pin used for the external I²C interface. Only SCL capable pins can be selected. Default: `3`
 - `EXTERNAL_I2C_CHANNEL` is the I²C channel used for the external I²C interface, either 0 or 1. Default: `1`
 - `EXTERNAL_I2C_FREQUENCY` is the I²C frequency used for the external I²C interface. Default: `100000`
 - `EXTERNAL_I2C_TIMEOUT` is the I²C timeout in microseconds for the external I²C interface. Default: `50000`
