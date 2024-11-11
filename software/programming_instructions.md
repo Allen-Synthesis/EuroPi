@@ -26,7 +26,7 @@ This document will take you through the steps to get your module ready to progra
 
 The quickest way to get your EuroPi flashed with the latest firmware is to head over to the [releases](https://github.com/Allen-Synthesis/EuroPi/releases) page and download the latest `europi-vX.Y.Z.uf2` file. Then follow the 'BOOTSEL' instructions above to flash the EuroPi firmware to your pico.
 
-## Setting Up
+## Pico Setup
 
 This section assumes you are using the Raspberry Pi Pico (or a compatible clone) featuring the RP2040 processor.  If you
 are using the newer Raspberry Pi Pico 2, with the RP2350 processor, see [below](#pico-2-setup).
