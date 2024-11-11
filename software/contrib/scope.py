@@ -1,3 +1,4 @@
+import math
 from time import sleep
 
 from europi_script import EuroPiScript
@@ -74,7 +75,7 @@ class Scope(EuroPiScript):
 
     @staticmethod
     def read_max_disp_voltage():
-        return k2.read_position(MAX_INPUT_VOLTAGE) + 1
+        return k2.read_position(math.ceil(MAX_INPUT_VOLTAGE)) + 1
 
     @staticmethod
     def calc_y_pos(max_disp_voltage, a_voltage):
