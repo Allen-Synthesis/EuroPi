@@ -647,7 +647,7 @@ class Thermometer:
         @return  The current temperature in Celsius, or None if the hardware did not initialze properly
         """
         if self.pin:
-            # see the pico's datasheet for the details of this calculation
+            # See the Pico's datasheet for the details of this calculation
             return 27 - ((self.pin.read_u16() * self.TEMP_CONV_FACTOR) - 0.706) / 0.001721
         else:
             return None
