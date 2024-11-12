@@ -19,6 +19,7 @@ from experimental.experimental_config import experimental_config
 
 from hardware.buttons import Button
 from hardware.display import Display, DummyDisplay
+from hardware.io import AnalogueInput, DigitalInput
 from hardware.jacks import Output
 from hardware.knobs import Knob
 from hardware.pins import *
