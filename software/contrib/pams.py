@@ -15,6 +15,8 @@ from experimental.knobs import KnobBank
 from experimental.quantizer import CommonScales, Quantizer, SEMITONE_LABELS, SEMITONES_PER_OCTAVE
 from experimental.screensaver import OledWithScreensaver
 
+from hardware.io import DEFAULT_SAMPLES
+
 from collections import OrderedDict
 from machine import Timer
 
