@@ -11,7 +11,6 @@ from europi import (
     OLED_I2C_SDA,
     OLED_I2C_SCL,
     OLED_I2C_CHANNEL,
-    TEST_ENV,
     CHAR_HEIGHT,
 )
 from europi import Display as BasicDisplay

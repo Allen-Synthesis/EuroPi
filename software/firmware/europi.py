@@ -26,6 +26,8 @@ from hardware.knobs import Knob
 from hardware.pins import *
 from hardware.sensors import Thermometer, UsbConnection
 
+from test_env import is_test_env
+
 import sys
 import time
 
@@ -33,13 +35,9 @@ from machine import I2C
 from machine import Pin
 from machine import freq
 
+
+
 from version import __version__
-
-
-if sys.implementation.name == "micropython":
-    TEST_ENV = False  # We're in micropython, so we can assume access to real hardware
-else:
-    TEST_ENV = True  # This var is set when we don't have any real hardware, for example in a test or doc generation setting
 
 
 # Analogue voltage read range.
@@ -62,7 +60,7 @@ def turn_off_all_cvs():
 
 def reset_state():
     """Return device to initial state with all components off and handlers reset."""
-    if not TEST_ENV:
+    if not is_test_env():
         oled.fill(0)
     turn_off_all_cvs()
     for d in (b1, b2, din):

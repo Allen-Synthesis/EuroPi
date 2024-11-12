@@ -4,6 +4,7 @@ from framebuf import FrameBuffer, MONO_HLSB
 from machine import I2C, Pin
 import ssd1306
 from ssd1306 import SSD1306_I2C
+from test_env import is_test_env
 
 
 # Default font is 8x8 pixel monospaced font.
@@ -98,7 +99,7 @@ class Display(SSD1306_I2C):
         self.height = height
 
         if len(i2c.scan()) == 0:
-            if not TEST_ENV:
+            if not is_test_env():
                 raise Exception(
                     "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
                 )
@@ -116,7 +117,7 @@ class Display(SSD1306_I2C):
             rotate = 0
         else:
             rotate = 1
-        if not TEST_ENV:
+        if not is_test_env():
             self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
             self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
 
