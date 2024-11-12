@@ -1,5 +1,6 @@
 from hardware.io import AnalogueReader
 
+
 class Knob(AnalogueReader):
     """A class for handling the reading of knob voltage and position.
 

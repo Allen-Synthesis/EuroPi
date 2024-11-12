@@ -19,6 +19,7 @@ OLED_I2C_SCL = europi_config.DISPLAY_SCL
 OLED_I2C_CHANNEL = europi_config.DISPLAY_CHANNEL
 OLED_I2C_FREQUENCY = europi_config.DISPLAY_FREQUENCY
 
+
 class DummyDisplay:
     """A placeholder for the display that can be used if the display hardware is not connected"""
 

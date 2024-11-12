@@ -7,6 +7,7 @@ from hardware.pins import *
 from machine import ADC
 from machine import mem32
 
+
 class Thermometer:
     """
     Wrapper for the temperature sensor connected to Pin 4
