@@ -19,7 +19,7 @@ from europi_config import europi_config
 from experimental.experimental_config import experimental_config
 from framebuf import FrameBuffer, MONO_HLSB
 from hardware.buttons import Button
-from hardware.display import Display, DummyDisplay
+from hardware.display import Display, DummyDisplay, CHAR_HEIGHT, CHAR_WIDTH
 from hardware.io import AnalogueInput, DigitalInput
 from hardware.jacks import Output
 from hardware.knobs import Knob
