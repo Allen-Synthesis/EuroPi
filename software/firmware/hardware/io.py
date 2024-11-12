@@ -94,7 +94,12 @@ class AnalogueInput(AnalogueReader):
     function of the AnalogueReader and Knob classes
     """
 
-    def __init__(self, pin, min_voltage=europi_config.MIN_INPUT_VOLTAGE, max_voltage=europi_config.MAX_INPUT_VOLTAGE):
+    def __init__(
+        self,
+        pin,
+        min_voltage=europi_config.MIN_INPUT_VOLTAGE,
+        max_voltage=europi_config.MAX_INPUT_VOLTAGE
+    ):
         super().__init__(pin)
         self.MIN_VOLTAGE = min_voltage
         self.MAX_VOLTAGE = max_voltage
