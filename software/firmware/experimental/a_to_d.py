@@ -1,5 +1,4 @@
-from europi import HIGH, LOW
-
+from hardware.io import HIGH, LOW
 import utime
 
 
