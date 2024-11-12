@@ -8,11 +8,6 @@ HIGH = 1
 LOW = 0
 
 
-# How many CV outputs are there?
-# On EuroPi this 6, but future versions (e.g. EuroPi X may have more)
-NUM_CVS = 6
-
-
 # Standard max int consts.
 MAX_UINT16 = 65535
 
