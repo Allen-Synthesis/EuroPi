@@ -112,10 +112,22 @@ class EuroPiConfig:
 
             # I/O voltage settings
             configuration.floatingPoint(
+                name="MIN_OUTPUT_VOLTAGE",
+                minimum=0.0,
+                maximum=10.0,
+                default=0.0
+            ),
+            configuration.floatingPoint(
                 name="MAX_OUTPUT_VOLTAGE",
                 minimum=1.0,
                 maximum=10.0,
                 default=10.0
+            ),
+            configuration.floatingPoint(
+                name="MIN_INPUT_VOLTAGE",
+                minimum=0.0,
+                maximum=12.0,
+                default=0.0
             ),
             configuration.floatingPoint(
                 name="MAX_INPUT_VOLTAGE",

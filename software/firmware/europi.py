@@ -41,12 +41,12 @@ else:
 
 
 # Analogue voltage read range.
-MIN_INPUT_VOLTAGE = 0
+MIN_INPUT_VOLTAGE = europi_config.MIN_INPUT_VOLTAGE
 MAX_INPUT_VOLTAGE = europi_config.MAX_INPUT_VOLTAGE
 
 
 # Output voltage range
-MIN_OUTPUT_VOLTAGE = 0
+MIN_OUTPUT_VOLTAGE = europi_config.MIN_OUTPUT_VOLTAGE
 MAX_OUTPUT_VOLTAGE = europi_config.MAX_OUTPUT_VOLTAGE
 
 
