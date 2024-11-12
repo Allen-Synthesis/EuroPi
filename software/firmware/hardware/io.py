@@ -1,4 +1,7 @@
 from europi_config import europi_config
+
+from machine import ADC, Pin
+
 import time
 
 # Digital input and output binary values.
