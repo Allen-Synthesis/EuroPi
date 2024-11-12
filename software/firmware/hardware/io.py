@@ -22,7 +22,11 @@ class AnalogueReader:
     not need to be used by user scripts.
     """
 
-    def __init__(self, pin, samples=DEFAULT_SAMPLES, deadzone=0.0):
+    def __init__(self,
+        pin,
+        samples=DEFAULT_SAMPLES,
+        deadzone=0.0
+    ):
         self.pin_id = pin
         self.pin = ADC(Pin(pin))
         self.set_samples(samples)
