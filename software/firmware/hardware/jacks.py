@@ -8,10 +8,6 @@ from helpers import clamp
 from machine import Pin
 from machine import PWM
 
-# How many CV outputs are there?
-# On EuroPi this 6, but future versions (e.g. EuroPi X may have more)
-NUM_CVS = 6
-
 # PWM Frequency
 PWM_FREQ = 100_000
 
