@@ -7,6 +7,7 @@ mkdir micropython/ports/rp2/modules/experimental
 mkdir micropython/ports/rp2/modules/tools
 cp -r europi/software/firmware/*.py micropython/ports/rp2/modules
 cp -r europi/software/firmware/experimental/*.py micropython/ports/rp2/modules/experimental
+cp -r europi/software/firmware/hardware/*.py micropython/ports/rp2/modules/hardware
 cp -r europi/software/firmware/tools/*.py micropython/ports/rp2/modules/tools
 cp -r europi/software/contrib/*.py micropython/ports/rp2/modules/contrib
 

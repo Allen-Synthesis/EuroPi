@@ -141,3 +141,6 @@ class EuroPiConfig:
 
 def load_europi_config():
     return ConfigFile.load_config(EuroPiConfig, ConfigSpec(EuroPiConfig.config_points()))
+
+
+europi_config = load_europi_config()
