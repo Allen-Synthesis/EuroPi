@@ -21,6 +21,7 @@ from hardware.buttons import Button
 from hardware.display import Display, DummyDisplay
 from hardware.jacks import Output
 from hardware.knobs import Knob
+from hardware.pins import *
 from hardware.sensors import Thermometer, UsbConnection
 
 import sys
@@ -113,7 +114,8 @@ external_i2c = I2C(
 )
 
 thermometer = Thermometer()
-usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
+usb_connected = UsbConnection()
+led = Pin(PIN_LED)
 
 # Overclock the Pico for improved performance.
 freq(europi_config.CPU_FREQ)
