@@ -1,6 +1,7 @@
 import pytest
 from experimental.knobs import LockableKnob, KnobBank, DEFAULT_THRESHOLD
-from europi import k1, MAX_UINT16
+from europi import k1
+from hardware.io import MAX_UINT16
 from machine import ADC
 
 from mock_hardware import MockHardware
