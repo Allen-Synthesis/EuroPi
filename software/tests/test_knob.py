@@ -1,6 +1,7 @@
 import pytest
 
-from europi import k1, k2, MAX_UINT16
+from europi import k1, k2
+from hardware.io import MAX_UINT16
 
 from mock_hardware import MockHardware
 

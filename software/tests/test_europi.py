@@ -1,6 +1,6 @@
 import pytest
 
-from europi import clamp
+from helpers import clamp
 
 
 @pytest.mark.parametrize(

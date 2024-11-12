@@ -1,6 +1,6 @@
 import pytest
 
-from europi import AnalogueReader, MAX_UINT16
+from hardware.io import AnalogueReader, MAX_UINT16
 
 from mock_hardware import MockHardware
 

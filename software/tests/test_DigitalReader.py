@@ -1,6 +1,6 @@
 import pytest
 
-from europi import DigitalReader
+from hardware.io import DigitalReader
 
 from mock_hardware import MockHardware
 
