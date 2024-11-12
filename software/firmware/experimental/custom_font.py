@@ -4,7 +4,7 @@ from machine import I2C
 from machine import Pin
 from ssd1306 import SSD1306_I2C
 
-from europi import (
+from hardware.display import (
     OLED_WIDTH,
     OLED_I2C_FREQUENCY,
     OLED_HEIGHT,
@@ -13,7 +13,7 @@ from europi import (
     OLED_I2C_CHANNEL,
     CHAR_HEIGHT,
 )
-from europi import Display as BasicDisplay
+from hardware.display import Display as BasicDisplay
 
 
 # TODO: add a method to select the font to use by default

@@ -1,7 +1,8 @@
 """This module provides reusable UI components.
 """
 
-from europi import CHAR_HEIGHT, CHAR_WIDTH, OLED_HEIGHT, b1, k1, oled
+from europi import b1, k1, oled
+from hardware.display import CHAR_HEIGHT, CHAR_WIDTH, OLED_HEIGHT
 
 
 class Menu:

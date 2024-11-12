@@ -41,16 +41,9 @@ output_6: stepped random voltage 3 - new voltage based on k2 probability (no sle
 from random import random, uniform
 from utime import ticks_diff, ticks_ms
 import machine
-
-try:
-    from software.firmware import europi
-    from software.firmware.europi import CHAR_HEIGHT, OLED_HEIGHT, OLED_WIDTH
-    from software.firmware.europi_script import EuroPiScript
-
-except ImportError:
-    import europi
-    from europi import CHAR_HEIGHT, OLED_HEIGHT, OLED_WIDTH
-    from europi_script import EuroPiScript
+import europi
+from europi_script import EuroPiScript
+from hardware.display import *
 
 
 # Script Constants

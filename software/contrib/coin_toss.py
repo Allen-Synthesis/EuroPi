@@ -3,6 +3,7 @@ from random import random
 from time import sleep_ms, ticks_ms, ticks_add, ticks_diff
 import machine
 from europi_script import EuroPiScript
+from hardware.display import *
 
 # Internal clock tempo range.
 MAX_BPM = 280

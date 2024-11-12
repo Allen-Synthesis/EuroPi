@@ -2,6 +2,7 @@ from europi import *
 from time import sleep_ms
 from random import random
 from europi_script import EuroPiScript
+from hardware.display import *
 import machine
 
 # Constant values for display

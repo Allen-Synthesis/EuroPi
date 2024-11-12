@@ -16,6 +16,7 @@ Lutra: a genus of otters, including L. lutra, the eurasian otter and L. sumatran
 
 from europi import *
 from europi_script import EuroPiScript
+from hardware.display import *
 
 import configuration
 import math

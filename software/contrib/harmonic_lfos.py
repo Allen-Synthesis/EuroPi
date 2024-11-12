@@ -4,6 +4,7 @@ from time import sleep_ms, ticks_diff, ticks_ms
 from machine import freq
 from random import randint
 from europi_script import EuroPiScript
+from hardware.display import *
 
 MAX_VOLTAGE = MAX_OUTPUT_VOLTAGE # Default is inherited but this can be overriden by replacing "MAX_OUTPUT_VOLTAGE" with an integer
 MAX_HARMONIC = 32 # Too high a value may be hard to select using the knob, but the actual hardware limit is only reached at 4096

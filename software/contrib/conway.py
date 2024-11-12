@@ -13,6 +13,7 @@ from bit indices to byte indices.
 from europi import *
 from europi_script import EuroPiScript
 from experimental.bitarray import *
+from hardware.display import *
 from random import random as rnd
 
 import math

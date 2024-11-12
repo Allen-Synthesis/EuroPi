@@ -8,6 +8,7 @@ Features configurable intervals for multiple outputs and customizable scale
 
 from europi import *
 from europi_script import EuroPiScript
+from hardware.display import *
 
 from experimental.quantizer import Quantizer, VOLTS_PER_OCTAVE, VOLTS_PER_SEMITONE, SEMITONES_PER_OCTAVE
 from experimental.screensaver import Screensaver

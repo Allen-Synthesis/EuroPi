@@ -1,5 +1,6 @@
 from europi import *
 from europi_script import EuroPiScript
+from hardware.display import *
 
 from time import sleep, sleep_ms, ticks_ms, ticks_diff
 from math import log

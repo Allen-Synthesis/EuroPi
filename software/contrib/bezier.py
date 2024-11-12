@@ -11,6 +11,8 @@ from europi_script import EuroPiScript
 from experimental.knobs import *
 from experimental.screensaver import OledWithScreensaver
 
+from hardware.display import *
+
 import configuration
 import math
 import random

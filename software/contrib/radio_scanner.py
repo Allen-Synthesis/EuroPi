@@ -1,13 +1,6 @@
-
-try:
-    # Local development
-    from software.firmware.europi import ain, b1, b2, clamp, cvs, din, k1, k2, oled
-    from software.firmware.europi import MAX_OUTPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH
-    from software.firmware.europi_script import EuroPiScript
-except ImportError:
-    # Device import path
-    from europi import *
-    from europi_script import EuroPiScript
+from europi import *
+from europi_script import EuroPiScript
+from hardware.display import *
 
 from time import sleep_ms, ticks_diff, ticks_ms
 

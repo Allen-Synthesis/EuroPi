@@ -1,5 +1,6 @@
 from collections import OrderedDict
-from europi import Knob, MAX_UINT16
+from hardware.knobs import Knob
+from hardware.io import MAX_UINT16
 
 from experimental.math_extras import median
 

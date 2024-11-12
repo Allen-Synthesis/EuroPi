@@ -6,6 +6,7 @@
 
 from europi import *
 from europi_script import EuroPiScript
+from hardware.display import *
 
 from experimental.screensaver import Screensaver
 

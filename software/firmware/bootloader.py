@@ -5,8 +5,9 @@ import sys
 import time
 
 from collections import OrderedDict
-from europi import oled, OLED_HEIGHT, OLED_WIDTH, CHAR_HEIGHT, CHAR_WIDTH, reset_state
+from europi import oled, reset_state
 from europi_script import EuroPiScript
+from hardware.display import OLED_HEIGHT, OLED_WIDTH, CHAR_HEIGHT, CHAR_WIDTH
 from ui import Menu
 
 SCRIPT_DIR = "/lib/contrib/"
