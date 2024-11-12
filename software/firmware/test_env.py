@@ -1,5 +1,6 @@
 import sys
 
+
 def is_test_env():
     """
     Are we in a test environment?
