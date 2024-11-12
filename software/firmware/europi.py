@@ -35,8 +35,6 @@ from machine import I2C
 from machine import Pin
 from machine import freq
 
-
-
 from version import __version__
 
 
