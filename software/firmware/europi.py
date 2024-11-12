@@ -115,7 +115,7 @@ external_i2c = I2C(
 
 thermometer = Thermometer()
 usb_connected = UsbConnection()
-led = Pin(PIN_LED)
+led = Pin(PIN_LED, Pin.OUT)
 
 # Overclock the Pico for improved performance.
 freq(europi_config.CPU_FREQ)
