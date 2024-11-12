@@ -735,7 +735,7 @@ external_i2c = I2C(
 )
 
 thermometer = Thermometer()
-usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
+usb_connected = UsbConnection()
 
 # Overclock the Pico for improved performance.
 freq(europi_config.CPU_FREQ)
