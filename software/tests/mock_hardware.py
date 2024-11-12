@@ -1,7 +1,7 @@
 from machine import ADC, Pin
 
 from calibration import INPUT_CALIBRATION_VALUES
-from hardware.io import AnalogueReader, Digital, MAX_UINT16
+from hardware.io import AnalogueReader, DigitalReader, MAX_UINT16
 from hardware.knobs import Knob
 
 
