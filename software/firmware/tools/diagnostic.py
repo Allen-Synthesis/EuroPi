@@ -2,8 +2,6 @@ from machine import ADC
 from time import sleep
 
 from europi import (
-    OLED_HEIGHT,
-    OLED_WIDTH,
     ain,
     b1,
     b2,
@@ -20,6 +18,7 @@ from europi import (
     thermometer,
 )
 from europi_script import EuroPiScript
+from hardware.display import OLED_HEIGHT, OLED_WIDTH
 import configuration
 
 """
