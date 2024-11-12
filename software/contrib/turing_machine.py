@@ -24,17 +24,11 @@ exits to the menu.
 from random import getrandbits, randint
 from time import sleep
 
-
-try:
-    from firmware import europi
-    from firmware.europi import clamp, MAX_UINT16
-    from firmware.europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
-    from firmware.experimental.knobs import KnobBank
-except ImportError:
-    import europi
-    from europi import clamp, MAX_UINT16
-    from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
-    from experimental.knobs import KnobBank
+import europi
+from europi import din, ain, k1, k2, b1, b2, cv1, cv2, cv3, cv4, cv5, cv6, oled
+from experimental.knobs import KnobBank
+from helpers import clamp
+from hardware.io import MAX_UINT16
 
 import configuration
 from europi_script import EuroPiScript

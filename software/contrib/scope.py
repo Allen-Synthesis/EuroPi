@@ -2,26 +2,8 @@ import math
 from time import sleep
 
 from europi_script import EuroPiScript
-
-try:
-    # local dev
-    from software.firmware.europi import (
-        MAX_INPUT_VOLTAGE,
-        OLED_HEIGHT,
-        OLED_WIDTH,
-        ain,
-        b1,
-        b2,
-        cv1,
-        cv2,
-        cv4,
-        din,
-        k1,
-        k2,
-        oled,
-    )
-except ImportError:
-    from europi import MAX_INPUT_VOLTAGE, OLED_HEIGHT, OLED_WIDTH, ain, b1, b2, cv1, cv2, cv4, din, k1, k2, oled
+from europi import MAX_INPUT_VOLTAGE, ain, b1, b2, cv1, cv2, cv4, din, k1, k2, oled
+from hardware.display import *
 
 MAX_RATE = OLED_WIDTH
 Y_TRUE = int(OLED_HEIGHT / 3 * 2)

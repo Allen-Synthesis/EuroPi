@@ -17,7 +17,7 @@ Will set the CV output 3 to a voltage of 4.5V.
 from calibration import INPUT_CALIBRATION_VALUES, OUTPUT_CALIBRATION_VALUES
 from europi_config import europi_config
 from experimental.experimental_config import experimental_config
-
+from framebuf import FrameBuffer
 from hardware.buttons import Button
 from hardware.display import Display, DummyDisplay
 from hardware.io import AnalogueInput, DigitalInput

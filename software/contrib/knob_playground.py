@@ -1,7 +1,8 @@
 from machine import ADC
 from time import sleep
 
-from europi import k1, k2, b1, b2, oled, MAX_UINT16
+from europi import k1, k2, b1, b2, oled
+from hardware.io import MAX_UINT16
 from europi_script import EuroPiScript
 from experimental.knobs import KnobBank
 
