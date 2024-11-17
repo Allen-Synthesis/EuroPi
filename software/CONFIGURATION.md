@@ -20,9 +20,9 @@ default configuration:
     "EXTERNAL_I2C_CHANNEL": 1,
     "EXTERNAL_I2C_FREQUENCY": 100000,
     "EXTERNAL_I2C_TIMEOUT": 50000,
-    "MAX_OUTPUT_VOLTAGE": 10,
-    "MAX_INPUT_VOLTAGE": 12,
-    "GATE_VOLTAGE": 5,
+    "MAX_OUTPUT_VOLTAGE": 10.0,
+    "MAX_INPUT_VOLTAGE": 10.0,
+    "GATE_VOLTAGE": 5.0,
     "MENU_AFTER_POWER_ON": false
 }
 ```
@@ -51,7 +51,7 @@ I/O voltage options:
 - `MAX_OUTPUT_VOLTAGE` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate. Default: `10`
   The hardware is capable of 10V maximum
 - `MAX_INPUT_VOLTAGE` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
-  The hardware is capable of 12V maximum. Default: `12`
+  The hardware is capable of 12V maximum. Default: `10`
 - `GATE_VOLTAGE` is an integer in the range `[0, 10]` indicating the voltage that an output will produce when `cvx.on()`
   is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`. Default: `5`
 

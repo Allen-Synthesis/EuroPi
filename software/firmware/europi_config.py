@@ -121,7 +121,7 @@ class EuroPiConfig:
                 name="MAX_INPUT_VOLTAGE",
                 minimum=1.0,
                 maximum=12.0,
-                default=12.0
+                default=10.0
             ),
             configuration.floatingPoint(
                 name="GATE_VOLTAGE",
