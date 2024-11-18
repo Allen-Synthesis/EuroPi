@@ -301,7 +301,7 @@ class Conway(EuroPiScript):
             self.tick()
 
             # turn off the FPS gate when we're done calculating but before we draw
-            cv4.on()
+            cv4.off()
 
             # show the results on the OLED
             self.draw()
