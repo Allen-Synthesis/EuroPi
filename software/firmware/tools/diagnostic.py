@@ -90,7 +90,7 @@ class Diagnostic(EuroPiScript):
             formatted_temp = f"{int(t)}{self.temp_units}"
 
             # display the input values
-            oled.text(f"ain: {ain.read_voltage():5.2f}v {formatted_temp}", 2, 3, 1)
+            oled.text(f"ain: {ain.read_voltage(samples=512):5.2f}v {formatted_temp}", 2, 3, 1)
             oled.text(f"k1: {k1.read_position():2}  k2: {k2.read_position():2}", 2, 13, 1)
             oled.text(f"din:{din.value()} b1:{b1.value()} b2:{b2.value()}", 2, 23, 1)
 

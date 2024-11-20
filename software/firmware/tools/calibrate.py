@@ -98,6 +98,12 @@ class Calibrate(EuroPiScript):
     # It _is_ necessary for button press detection
     state = 0
 
+    # How much we adjust the duty cycle during coarse calibration
+    COARSE_STEP = 10
+
+    # How much we adjust the duty cycle during fine calibration
+    FINE_STEP = 1
+
     @classmethod
     def display_name(cls):
         """Push this script to the end of the menu."""
@@ -117,11 +123,11 @@ class Calibrate(EuroPiScript):
         """
         Read from the raw ain pin and return the average across several readings
 
-        @return  The average across 256 distinct readings from the pin
+        @return  The average across several distinct readings from the pin
         """
-        N_READINGS = 512
+        N_READINGS = 1024
         readings = []
-        for reading in range(N_READINGS):
+        for i in range(N_READINGS):
             readings.append(ain.pin.read_u16())
 
         # discard the lowest & highest 1/4 of the readings as outliers
@@ -138,7 +144,7 @@ class Calibrate(EuroPiScript):
         @return  The average samples read from ain (see @read_sample)
         """
         if voltage == 0:
-            oled.centre_text(f"Unplug all\n\nDone: Button 1")
+            oled.centre_text("Unplug all\n\nDone: Button 1")
         else:
             oled.centre_text(f"Plug in {voltage:0.1f}V\n\nDone: Button 1")
         self.wait_for_b1()
@@ -237,6 +243,79 @@ class Calibrate(EuroPiScript):
             readings.append(self.wait_for_voltage(i))
         return readings
 
+    def calibrate_output(self, cv_n, calibration_values, input_readings):
+        """
+        Send volts from CVx to AIN, adjusting the duty cycle so the output is correct.
+
+        @param cv_n  A value 0 <= cv_n < len(cvs) indicating which CV output we're calibrating
+        @param calibration_values  The array of calibration values we append our results to
+        @param input_readings  The duty cycles of AIN corresponding to 0, 1, 2, ..., 9, 10 volts
+        """
+        oled.centre_text(f"Plug CV{cv_n+1} into\nanalogue in\nDone: Button 1")
+        self.wait_for_b1()
+
+        # always 0 duty for 0V out
+        calibration_values.output_calibration_values.append([0])
+
+        # Output 1-10V on each CV output & read the result on AIN
+        # Adjust the duty cycle of the CV output until the input is within an acceptable range
+        duty = 0
+        cvs[cv_n].pin.duty_u16(duty)
+        for volts, expected_reading in enumerate(input_readings[1:]):
+            oled.centre_text(f"Calibrating...\n CV{cv_n+1} @ {volts+1}V")
+
+            sleep(1)
+
+            duty = self.coarse_output_calibration(cvs[cv_n], expected_reading, duty)
+            duty = self.fine_output_calibration(cvs[cv_n], expected_reading, duty)
+
+            calibration_values.output_calibration_values[-1].append(duty)
+
+        cvs[cv_n].off()
+
+    def coarse_output_calibration(self, cv, goal_duty, start_duty):
+        """
+        Perform a fast, coarse calibration to bring the CV output's duty cycle somewhere close
+
+        @param cv  The CV output pin we're adjusting
+        @param goal_duty  The AIN duty cycle we're expecting to read
+        @param start_duty  The CVx duty cycle we're applying to the output initially
+
+        @return The adjusted output duty cycle
+        """
+        read_duty = self.read_sample()
+        duty = start_duty
+        while abs(read_duty - goal_duty) > self.COARSE_STEP and read_duty < goal_duty:
+            duty += self.COARSE_STEP
+            cv.pin.duty_u16(duty)
+            read_duty = self.read_sample()
+
+        return duty
+
+    def fine_output_calibration(self, cv, goal_duty, start_duty):
+        """
+        Perform a slower, fine calibration to bring the CV output's duty cycle towards the goal
+
+        @param cv  The CV output pin we're adjusting
+        @param goal_duty  The AIN duty cycle we're expecting to read
+        @param start_duty  The CVx duty cycle we're applying to the output initially
+
+        @return The adjusted output duty cycle
+        """
+        count = 0
+        read_duty = self.read_sample()
+        duty = start_duty
+        while abs(read_duty - goal_duty) >= 2 * self.FINE_STEP and count < 2 * self.COARSE_STEP:
+            if read_duty < goal_duty:
+                duty += self.FINE_STEP
+            elif read_duty < goal_duty:
+                duty -= self.FINE_STEP
+            cv.pin.duty_u16(duty)
+            sleep(0.1)
+            read_duty = self.read_sample()
+
+        return duty
+
     def main(self):
         # Button handlers
         @b1.handler
@@ -310,49 +389,11 @@ class Calibrate(EuroPiScript):
         # Output calibration
         self.state = self.STATE_START_OUTPUT
         calibration_values.output_calibration_values = []
-
         turn_off_all_cvs()
         for i in range(len(cvs)):
-            oled.centre_text(f"Plug CV{i+1} into\nanalogue in\nDone: Button 1")
-            self.wait_for_b1()
+            self.calibrate_output(i, calibration_values, readings_in)
 
-            # always 0 duty for 0V out
-            calibration_values.output_calibration_values.append([0])
-
-            # Output 1-10V on each CV output & read the result on AIN
-            # Adjust the duty cycle of the CV output until the input is within an acceptable range
-            duty = 0
-            cvs[i].pin.duty_u16(duty)
-            reading = self.read_sample()
-            COARSE_STEP = 10
-            FINE_STEP = 1
-            for volts, expected_reading in enumerate(readings_in[1:]):
-                oled.centre_text(f"Calibrating...\n CV{i+1} @ {volts+1}V")
-
-                # Step 1: coarse calibration
-                # increase the duty in large steps until we get within 0.002V of teh expected reading
-                while abs(reading - expected_reading) > 0.002 and reading < expected_reading:
-                    duty += COARSE_STEP
-                    cvs[i].pin.duty_u16(duty)
-                    reading = self.read_sample()
-
-                # Step 2: fine calibration
-                # increase or decrease the duty in much smaller increments
-                count = 0
-                while abs(reading - expected_reading) > 0.001 and count <= COARSE_STEP * 2:
-                    count += 1
-                    if reading < expected_reading:
-                        duty += FINE_STEP
-                    elif reading > expected_reading:
-                        duty -= FINE_STEP
-
-                    cvs[i].pin.duty_u16(duty)
-                    sleep(0.1)
-                    reading = self.read_sample()
-
-                calibration_values.output_calibration_values[-1].append(duty)
-
-            cvs[i].off()
+        ######################################################################################################
 
         # Save the result
         oled.centre_text("Saving\ncalibration...")
