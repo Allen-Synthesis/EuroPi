@@ -2,6 +2,7 @@ from time import sleep
 from europi import oled, b1, b2, k2, ain, cvs, usb_connected, turn_off_all_cvs
 from europi_script import EuroPiScript
 from os import stat, mkdir
+from experimental.math_extras import mean
 
 
 class CalibrationValues:
@@ -126,7 +127,7 @@ class Calibrate(EuroPiScript):
         # discard the lowest & highest 1/4 of the readings as outliers
         readings.sort()
         readings = readings[N_READINGS // 4 : 3 * N_READINGS // 4]
-        return round(sum(readings) / N_READINGS)
+        return round(mean(readings))
 
     def wait_for_voltage(self, voltage):
         """
@@ -141,6 +142,8 @@ class Calibrate(EuroPiScript):
         else:
             oled.centre_text(f"Plug in {voltage:0.1f}V\n\nDone: Button 1")
         self.wait_for_b1()
+        oled.centre_text(f"Calibrating...\nAIN @ {voltage:0.1f}V")
+        sleep(1)
         return self.read_sample()
 
     def wait_for_b1(self, wait_fn=None):
@@ -285,8 +288,10 @@ class Calibrate(EuroPiScript):
             calibration_values = CalibrationValues(CalibrationValues.MODE_HIGH)
             calibration_values.input_calibration_values = self.input_calibration_high()
 
+        # make a local copy of the analogue-in readings, extrapolated if necessary,
+        # that we can use to perform the output calibration
         if calibration_values.mode == CalibrationValues.MODE_HIGH:
-            readings_in = calibration_values.input_calibration_values
+            readings_in = list(calibration_values.input_calibration_values)
         else:
             # expand the raw calibration values if we were in a low-accuracy mode such that
             # we have an expected reading for every volt from 0-10
@@ -342,7 +347,7 @@ class Calibrate(EuroPiScript):
                         duty -= FINE_STEP
 
                     cvs[i].pin.duty_u16(duty)
-                    sleep(0.05)
+                    sleep(0.1)
                     reading = self.read_sample()
 
                 calibration_values.output_calibration_values[-1].append(duty)
