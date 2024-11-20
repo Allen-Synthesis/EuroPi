@@ -306,7 +306,6 @@ class Calibrate(EuroPiScript):
         for i in range(len(cvs)):
             oled.centre_text(f"Plug CV{i+1} into\nanalogue in\nDone: Button 1")
             self.wait_for_b1()
-            oled.centre_text(f"Calibrating\nCV{i+1}...")
 
             # always 0 duty for 0V out
             calibration_values.output_calibration_values.append([0])
@@ -316,13 +315,33 @@ class Calibrate(EuroPiScript):
             duty = 0
             cvs[i].pin.duty_u16(duty)
             reading = self.read_sample()
-            for index, expected_reading in enumerate(readings_in[1:]):
+            COARSE_STEP = 10
+            FINE_STEP = 1
+            for volts, expected_reading in enumerate(readings_in[1:]):
+                oled.centre_text(f"Calibrating...\n CV{i+1} @ {volts+1}V")
+
+                # Step 1: coarse calibration
+                # increase the duty in large steps until we get within 0.002V of teh expected reading
                 while abs(reading - expected_reading) > 0.002 and reading < expected_reading:
+                    duty += COARSE_STEP
                     cvs[i].pin.duty_u16(duty)
-                    duty += 10
                     reading = self.read_sample()
+
+                # Step 2: fine calibration
+                # increase or decrease the duty in much smaller increments
+                count = 0
+                while abs(reading - expected_reading) > 0.001 and count <= COARSE_STEP*2:
+                    count+= 1
+                    if reading < expected_reading:
+                        duty += FINE_STEP
+                    elif reading > expected_reading:
+                        duty -= FINE_STEP
+
+                    cvs[i].pin.duty_u16(duty)
+                    sleep(0.05)
+                    reading = self.read_sample()
+
                 calibration_values.output_calibration_values[-1].append(duty)
-                oled.centre_text(f"Calibrating...\n{index+1}V")
 
             cvs[i].off()
 
