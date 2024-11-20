@@ -118,10 +118,14 @@ class Calibrate(EuroPiScript):
 
         @return  The average across 256 distinct readings from the pin
         """
-        N_READINGS = 256
+        N_READINGS = 512
         readings = []
         for reading in range(N_READINGS):
             readings.append(ain.pin.read_u16())
+
+        # discard the lowest & highest 1/4 of the readings as outliers
+        readings.sort()
+        readings = readings[N_READINGS//4 : 3*N_READINGS//4]
         return round(sum(readings) / N_READINGS)
 
     def wait_for_voltage(self, voltage):
