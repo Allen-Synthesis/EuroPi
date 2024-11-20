@@ -125,7 +125,7 @@ class Calibrate(EuroPiScript):
 
         # discard the lowest & highest 1/4 of the readings as outliers
         readings.sort()
-        readings = readings[N_READINGS//4 : 3*N_READINGS//4]
+        readings = readings[N_READINGS // 4 : 3 * N_READINGS // 4]
         return round(sum(readings) / N_READINGS)
 
     def wait_for_voltage(self, voltage):
@@ -334,8 +334,8 @@ class Calibrate(EuroPiScript):
                 # Step 2: fine calibration
                 # increase or decrease the duty in much smaller increments
                 count = 0
-                while abs(reading - expected_reading) > 0.001 and count <= COARSE_STEP*2:
-                    count+= 1
+                while abs(reading - expected_reading) > 0.001 and count <= COARSE_STEP * 2:
+                    count += 1
                     if reading < expected_reading:
                         duty += FINE_STEP
                     elif reading > expected_reading:
