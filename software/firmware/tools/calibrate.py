@@ -98,7 +98,6 @@ class Calibrate(EuroPiScript):
     # It _is_ necessary for button press detection
     state = 0
 
-
     @classmethod
     def display_name(cls):
         """Push this script to the end of the menu."""
@@ -270,9 +269,13 @@ class Calibrate(EuroPiScript):
             sleep(1)
             duty = self.coarse_output_calibration(cvs[cv_n], expected_reading, duty, COARSE_STEP)
             oled.centre_text(f"Calibrating...\n CV{cv_n+1} @ {volts+1}V\n2/3")
-            duty = self.fine_output_calibration(cvs[cv_n], expected_reading, duty, INTERMEDIATE_STEP, COARSE_STEP)
+            duty = self.fine_output_calibration(
+                cvs[cv_n], expected_reading, duty, INTERMEDIATE_STEP, COARSE_STEP
+            )
             oled.centre_text(f"Calibrating...\n CV{cv_n+1} @ {volts+1}V\n3/3")
-            duty = self.fine_output_calibration(cvs[cv_n], expected_reading, duty, FINE_STEP, INTERMEDIATE_STEP)
+            duty = self.fine_output_calibration(
+                cvs[cv_n], expected_reading, duty, FINE_STEP, INTERMEDIATE_STEP
+            )
 
             calibration_values.output_calibration_values[-1].append(duty)
 
