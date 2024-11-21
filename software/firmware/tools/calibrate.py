@@ -98,11 +98,6 @@ class Calibrate(EuroPiScript):
     # It _is_ necessary for button press detection
     state = 0
 
-    # How much we adjust the duty cycle during coarse calibration
-    COARSE_STEP = 10
-
-    # How much we adjust the duty cycle during fine calibration
-    FINE_STEP = 1
 
     @classmethod
     def display_name(cls):
@@ -125,7 +120,7 @@ class Calibrate(EuroPiScript):
 
         @return  The average across several distinct readings from the pin
         """
-        N_READINGS = 1024
+        N_READINGS = 512
         readings = []
         for i in range(N_READINGS):
             readings.append(ain.pin.read_u16())
@@ -254,6 +249,15 @@ class Calibrate(EuroPiScript):
         oled.centre_text(f"Plug CV{cv_n+1} into\nanalogue in\nDone: Button 1")
         self.wait_for_b1()
 
+        # Initial calibration in steps of 50, rapidly to get close to the goal
+        COARSE_STEP = 50
+
+        # Intermediate calibration in steps of 5
+        INTERMEDIATE_STEP = 5
+
+        # Final fine calibration in steps of 1
+        FINE_STEP = 1
+
         # always 0 duty for 0V out
         calibration_values.output_calibration_values.append([0])
 
@@ -262,54 +266,65 @@ class Calibrate(EuroPiScript):
         duty = 0
         cvs[cv_n].pin.duty_u16(duty)
         for volts, expected_reading in enumerate(input_readings[1:]):
-            oled.centre_text(f"Calibrating...\n CV{cv_n+1} @ {volts+1}V")
-
+            oled.centre_text(f"Calibrating...\n CV{cv_n+1} @ {volts+1}V\n1/3")
             sleep(1)
-
-            duty = self.coarse_output_calibration(cvs[cv_n], expected_reading, duty)
-            duty = self.fine_output_calibration(cvs[cv_n], expected_reading, duty)
+            duty = self.coarse_output_calibration(cvs[cv_n], expected_reading, duty, COARSE_STEP)
+            oled.centre_text(f"Calibrating...\n CV{cv_n+1} @ {volts+1}V\n2/3")
+            duty = self.fine_output_calibration(cvs[cv_n], expected_reading, duty, INTERMEDIATE_STEP, COARSE_STEP)
+            oled.centre_text(f"Calibrating...\n CV{cv_n+1} @ {volts+1}V\n3/3")
+            duty = self.fine_output_calibration(cvs[cv_n], expected_reading, duty, FINE_STEP, INTERMEDIATE_STEP)
 
             calibration_values.output_calibration_values[-1].append(duty)
 
         cvs[cv_n].off()
 
-    def coarse_output_calibration(self, cv, goal_duty, start_duty):
+    def coarse_output_calibration(self, cv, goal_duty, start_duty, step_size):
         """
         Perform a fast, coarse calibration to bring the CV output's duty cycle somewhere close
+
+        This will exit if either the calibration is within +/- the step_size OR if the measured duty
+        cycle is higher than the goal (i.e. we've over-shot the goal)
 
         @param cv  The CV output pin we're adjusting
         @param goal_duty  The AIN duty cycle we're expecting to read
         @param start_duty  The CVx duty cycle we're applying to the output initially
+        @param step_size  The amount by which we adjust the duty cycle up to reach the goal
 
         @return The adjusted output duty cycle
         """
         read_duty = self.read_sample()
         duty = start_duty
-        while abs(read_duty - goal_duty) > self.COARSE_STEP and read_duty < goal_duty:
-            duty += self.COARSE_STEP
+        while abs(read_duty - goal_duty) > step_size and read_duty < goal_duty:
+            duty += step_size
             cv.pin.duty_u16(duty)
             read_duty = self.read_sample()
 
         return duty
 
-    def fine_output_calibration(self, cv, goal_duty, start_duty):
+    def fine_output_calibration(self, cv, goal_duty, start_duty, step_size, prev_step_size):
         """
         Perform a slower, fine calibration to bring the CV output's duty cycle towards the goal
+
+        This exits if the measured duty cycle is within +/- 2*step_size OR if we make
+        2*prev_step_size adjustments
 
         @param cv  The CV output pin we're adjusting
         @param goal_duty  The AIN duty cycle we're expecting to read
         @param start_duty  The CVx duty cycle we're applying to the output initially
+        @param step_size  The amount by which we adjust the duty cycle up/down to reach the goal
+        @param prev_step_size  The previous iteration's step size, used to limit how many adjustments we make
 
         @return The adjusted output duty cycle
         """
+        MAX_COUNT = 2 * prev_step_size
         count = 0
         read_duty = self.read_sample()
         duty = start_duty
-        while abs(read_duty - goal_duty) >= 2 * self.FINE_STEP and count < 2 * self.COARSE_STEP:
+        while abs(read_duty - goal_duty) >= 2 * step_size and count < MAX_COUNT:
             if read_duty < goal_duty:
-                duty += self.FINE_STEP
+                duty += step_size
             elif read_duty < goal_duty:
-                duty -= self.FINE_STEP
+                duty -= step_size
             cv.pin.duty_u16(duty)
             sleep(0.1)
             read_duty = self.read_sample()
