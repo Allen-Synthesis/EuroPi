@@ -324,9 +324,10 @@ class Calibrate(EuroPiScript):
         read_duty = self.read_sample()
         duty = start_duty
         while abs(read_duty - goal_duty) >= 2 * step_size and count < MAX_COUNT:
+            count += 1
             if read_duty < goal_duty:
                 duty += step_size
-            elif read_duty < goal_duty:
+            elif read_duty > goal_duty:
                 duty -= step_size
             cv.pin.duty_u16(duty)
             sleep(0.1)
