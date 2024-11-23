@@ -49,7 +49,7 @@ class Scope(EuroPiScript):
 
     knob1 - samples per screen refresh. This effectively lets you 'zoom in' on the x-axis. Start at the lowest setting, 1 sample.
     knob2 - y voltage scale (only affects analog wave). This effectively lets you 'zoom in' on the low voltages. Start at
-    the highest setting, 12v.
+    the highest setting, 10v.
 
     button1 - toggle digital wave display
     button2 - toggle analog wave display
