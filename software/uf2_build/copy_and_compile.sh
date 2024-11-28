@@ -4,8 +4,10 @@ set -e
 echo "Copying EuroPi firmware and scripts to container..."
 mkdir micropython/ports/rp2/modules/contrib
 mkdir micropython/ports/rp2/modules/experimental
+mkdir micropython/ports/rp2/modules/tools
 cp -r europi/software/firmware/*.py micropython/ports/rp2/modules
 cp -r europi/software/firmware/experimental/*.py micropython/ports/rp2/modules/experimental
+cp -r europi/software/firmware/tools/*.py micropython/ports/rp2/modules/tools
 cp -r europi/software/contrib/*.py micropython/ports/rp2/modules/contrib
 
 echo "Compiling micropython and firmware modules..."
