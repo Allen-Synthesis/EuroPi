@@ -52,17 +52,35 @@ class SettingsMenu:
     # Treat a long press as anything more than 500ms
     LONG_PRESS_MS = 500
 
-    def __init__(self, menu_spec, button=europi.b2, knob=europi.k2):
+    def __init__(
+        self,
+        menu_spec,
+        button=europi.b2,
+        knob=europi.k2,
+        short_press_cb=lambda:None,
+        long_press_cb=lambda:None
+    ):
         """
         Create a new menu from the given specification
+
+        Long/short press callbacks are invoked inside the handler for the falling edge of the button. It is recommended
+        to avoid any lengthy operations inside these callbacks, as they may prevent other interrupts from being
+        handled properly.
 
         @param menu_spec  A dict representing the structure of the menu
         @param button  The button the user presses to interact with the menu
         @param knob  The knob the user turns to scroll through the menu. This may be an experimental.knobs.KnobBank
                      with 3 menu levels called "main_menu", "submenu" and "choice", or a raw knob like europi.k2
+        @param short_press_cb  An optional callback function to invoke when the user interacts with a short-press of
+                               the button
+        @param long_press_cb  An optional callback function to invoke when the user interacts with a long-press of
+                              the button
         """
         self.knob = knob
         self.button = button
+
+        self.short_press_cb = short_press_cb
+        self.long_press_cb = long_press_cb
 
         self.button.handler(self.on_button_press)
         self.button.handler_falling(self.on_button_release)
@@ -81,11 +99,12 @@ class SettingsMenu:
         self.settings_dirty = False
 
     def on_button_press(self):
+        """Handler for the rising edge of the button signal"""
         self.button_down_at = time.ticks_ms()
 
     def on_button_release(self):
-        now = time.ticks_ms()
-        if time.ticks_diff(now, self.button_down_at) >= LONG_PRESS_MS:
+        """Handler for the falling edge of the button signal"""
+        if time.ticks_diff(time.ticks_ms(), self.button_down_at) >= LONG_PRESS_MS:
             self.long_press()
         else:
             self.short_press()
@@ -108,6 +127,8 @@ class SettingsMenu:
             else:
                 self.active_item.set_current("submenu")
 
+        self.short_press_cb()
+
     def long_press(self):
         """
         Handle a long button press
@@ -122,6 +143,8 @@ class SettingsMenu:
             self.active_item = self.active_item.parent
             if type(self.knob) is KnobBank:
                 self.knob.set_current("main_menu")
+
+        self.long_press_cb()
 
     def draw(self, oled=europi.oled):
         """
@@ -141,6 +164,12 @@ class SettingsMenu:
 
     @property
     def visible_items(self):
+        """
+        Get the set of visible menu items for the current state of the menu
+
+        Menu items can be shown/hidden by setting their is_visible property. Normally this should be done in
+        a value-change callback of a menu item to show/hide dependent other items.
+        """
         items = []
         if self.active_item.parent:
             # we're in a child menu
