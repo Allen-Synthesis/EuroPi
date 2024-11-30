@@ -10,7 +10,7 @@ Menu interaction is done using K2 and B2:
   possible)
 
 Menu items are specified as dictionaries for the purposes of the constructors.
-Whenever `item_dict` is referenced in a docstring, it is a dict of the form:
+Whenever `item_dict` is referenced in a docstring, it is a dict of the following form:
 ```
 {
     !"item": ConfigPoint,
@@ -25,48 +25,70 @@ Whenever `item_dict` is referenced in a docstring, it is a dict of the form:
     ]
 }
 ```
+- ! indicates required
+- ? indicates optional
+
+The graphics and labels dictionaries are key/value pairs where the key corresponds to a valid option
+from the ConfigPoint. FloatConfigPoint may NOT have labels or graphics, but Boolean-, Integer-, and Choice-
+ConfigPoints may.
+
+FrameBuffers for graphics must be 12x12 pixels in MONO_HLSB format. bytearrays for graphics must be able to be
+sent to a FrameBuffer constructor to create the buffer described.
 """
 
 import europi
-from configuration import *
-from framebuf import FrameBuffer, MONO_HLSB
 
+from configuration import *
+from experimental.knobs import KnobBank
+from framebuf import FrameBuffer, MONO_HLSB
+import time
 
 class SettingsMenu:
     """
-    The top-level settings menu.
+    A menu-based GUI for any EuroPi script.
 
-    Contains MenuItem instances
+    This class is assumed to be the main interaction method for the program.
     """
+    # Treat a long press as anything more than 500ms
+    LONG_PRESS_MS = 500
 
-    def __init__(self, menu_spec):
+    def __init__(self, menu_spec, button=europi.b2, knob=europi.k2):
         """
         Create a new menu from the given specification
 
         @param menu_spec  A dict representing the structure of the menu
-
-        Menu Specification
-        - ! indicates required
-        - ? indicates optional
-        [
-            item_dict,
-            item_dict,
-            ...
-        ]
-
-        The graphics and labels dictionaries are key/value pairs where the key corresponds to a valid option
-        from the ConfigPoint. FloatConfigPoint may NOT have labels or graphics, but Boolean-, Integer-, and Choice-
-        ConfigPoints may.
-
-        FrameBuffers for graphics must be 12x12 pixels in MONO_HLSB format
+        @param button  The button the user presses to interact with the menu
+        @param knob  The knob the user turns to scroll through the menu. This may be an experimental.knobs.KnobBank
+                     with 3 menu levels called "main_menu", "submenu" and "choice", or a raw knob like europi.k2
         """
+        self.knob = knob
+        self.button = button
+
+        self.button.handler(self.on_button_press)
+        self.button.handler_falling(self.on_button_release)
+
         self.items = []
         for item in menu_spec:
             self.items.append(
-                MenuItem(item)
+                MenuItem(self, item)
             )
 
         self.active_item = europi.k2.choice(self.items)
+
+        self.button_down_at = time.ticks_ms()
+
+        # Indicates to the application that we need to save the settings to disk
+        self.settings_dirty = False
+
+    def on_button_press(self):
+        self.button_down_at = time.ticks_ms()
+
+    def on_button_release(self):
+        now = time.ticks_ms()
+        if time.ticks_diff(now, self.button_down_at) >= LONG_PRESS_MS:
+            self.long_press()
+        else:
+            self.short_press()
 
     def short_press(self):
         """
@@ -77,6 +99,15 @@ class SettingsMenu:
         """
         self.active_item.short_press()
 
+        # Cycle the knob bank, if necessary
+        if type(self.knob) is KnobBank:
+            if self.active_item.edit_mode:
+                self.knob.set_current("choice")
+            elif self.active_item.children:
+                self.knob.set_current("main_menu")
+            else:
+                self.active_item.set_current("submenu")
+
     def long_press(self):
         """
         Handle a long button press
@@ -85,8 +116,12 @@ class SettingsMenu:
         """
         if self.active_item.children:
             self.active_item = europi.k2.choice(self.active_item.children)
+            if type(self.knob) is KnobBank:
+                self.knob.set_current("submenu")
         elif self.active_item.parent:
             self.active_item = self.active_item.parent
+            if type(self.knob) is KnobBank:
+                self.knob.set_current("main_menu")
 
     def draw(self, oled=europi.oled):
         """
@@ -128,14 +163,17 @@ class MenuItem:
     that object's values as the available selections.
     """
 
-    def __init__(self, item_dict):
+    def __init__(self, menu, item_dict):
         """
         Create a new menu item around a ConfigPoint
 
         If the item has a callback function defined, it will be invoked once during initialization
 
+        @param menu  The SettingsMenu that owns this item
         @param item_dict  The specification for this menu item
         """
+        self.menu = menu
+
         # are we in edit mode?
         self.edit_mode = False
 
@@ -194,6 +232,7 @@ class MenuItem:
         if self.edit_mode:
             # apply the currently-selected choice if we're in edit mode
             self.value = k2.choice(self.choices)
+            self.menu.settings_dirty = True
 
         self.edit_mode = not self.edit_mode
 
