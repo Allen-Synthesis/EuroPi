@@ -313,10 +313,12 @@ class ConfigSettings:
         @param d  The raw dict loaded from the configuration file
         """
         self.__dict__ = {}  # required for getattr & setattr
+        self.__keys__ = set()
 
         for k in d.keys():
             self.validate_key(k)
             setattr(self, k, d[k])
+            self.__keys__.add(k)
 
     def validate_key(self, key):
         """Ensures that a `dict` key is a valid attribute name
@@ -340,6 +342,12 @@ class ConfigSettings:
             raise ValueError("Invalid attribute name: key cannot start with a number")
 
         return True
+
+    def keys(self):
+        return self.__keys__
+
+    def __getitem__(self, k):
+        return getattr(self, k)
 
     def __eq__(self, that):
         """Allows comparing the config object directly to either another config object or a dict
