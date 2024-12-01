@@ -73,7 +73,7 @@ class SettingsMenu:
         button=europi.b2,
         knob=europi.k2,
         short_press_cb=lambda: None,
-        long_press_cb=lambda: None
+        long_press_cb=lambda: None,
     ):
         """
         Create a new menu from the given specification
