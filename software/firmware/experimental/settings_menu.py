@@ -230,9 +230,9 @@ class MenuItem:
         prefix: str = None,
         graphics: dict = None,
         labels: dict = None,
-        callback = lambda new_value, old_value, config_point, arg: None,
-        callback_arg = None,
-        float_resolution = 2,
+        callback=lambda new_value, old_value, config_point, arg: None,
+        callback_arg=None,
+        float_resolution=2,
     ):
         """
         Create a new menu item around a ConfigPoint
