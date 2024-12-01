@@ -249,6 +249,9 @@ class EuclideanRhythms(EuroPiScript):
         )
         self.menu.load_defaults(self._state_filename)
 
+        # Is the visualization stale (i.e. have we received a pulse and not updated the visualization?)
+        self.viz_dirty = True
+
         self.screensaver = Screensaver()
 
         self.last_user_interaction_at = time.ticks_ms()
@@ -261,7 +264,7 @@ class EuclideanRhythms(EuroPiScript):
             """
             for g in self.generators:
                 g.advance()
-            self.ui_dirty = True
+            self.viz_dirty = True
 
         @din.handler_falling
         def on_falling_clock():
@@ -274,8 +277,22 @@ class EuclideanRhythms(EuroPiScript):
         @b1.handler
         def on_b1_press():
             """Handler for pressing button 1
+
+            Advance all of the rhythms
             """
             self.last_user_interaction_at = time.ticks_ms()
+            for g in self.generators:
+                g.advance()
+            self.viz_dirty = True
+
+        @b1.handler_falling
+        def on_b1_release():
+            """Handler for releasing button 1
+
+            Turn off all of the CVs so we don't stay on for adjacent pulses
+            """
+            self.last_user_interaction_at = time.ticks_ms()
+            turn_off_all_cvs()
 
     def on_menu_long_press(self):
         self.last_user_interaction_at = time.ticks_ms()
@@ -287,11 +304,15 @@ class EuclideanRhythms(EuroPiScript):
         while True:
             now = time.ticks_ms()
 
+            if self.menu.ui_dirty:
+                self.last_user_interaction_at = now
+
             if time.ticks_diff(now, self.last_user_interaction_at) >= self.screensaver.ACTIVATE_TIMEOUT_MS:
                 self.last_user_interaction_at = time.ticks_add(now, -self.screensaver.ACTIVATE_TIMEOUT_MS)
                 self.screensaver.draw()
             else:
-                if self.menu.ui_dirty:
+                if self.viz_dirty or self.menu.ui_dirty:
+                    self.viz_dirty = False
                     oled.fill(0)
                     self.menu.draw()
                     oled.show()

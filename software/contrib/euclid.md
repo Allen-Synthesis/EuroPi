@@ -8,13 +8,15 @@ of each pattern can be independently adjusted.
 
 - `ain`: not used
 - `din`: external clock input
-- `b1`: Open the settings menu for the selected CV channel, or apply the current
-  option if we're already in the settings menu
-- `b2`: Toggle between the CV channel select menu & settings menu for that channel
-- `k1`: Scroll between the CV channels in the main menu, or the available settings
-  for that channel in the settings menu
-- `k2`: Scroll through the options for the current setting in the settings menu
+- `b1`: manual clock input
+- `b2`: Menu navigation
+- `k1`: not used
+- `k2`: Channel select, menu navigation
 - `cv1` to `cv6`: euclidean rhythm outputs
+
+Long-pressing B2 will switch between the visualization and menu mode.  While in menu mode, K2 will
+scroll through the available menu options. Short-press B2 to edit a setting, rotate K2 to choose the
+desired value, then press B2 again to apply it.
 
 ## Settings
 
@@ -41,4 +43,4 @@ re-applied automatically when the script restarts.
 ## Screensaver
 
 After 20 minutes the screen will automatically go blank.  Pressing either button
-will wake the screen up and return to the channel menu.
+or rotating either knob will wake the screen up and return to the channel menu.
