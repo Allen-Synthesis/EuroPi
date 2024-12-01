@@ -105,6 +105,7 @@ class SettingsMenu:
                 MenuItem(self, item)
             )
 
+        self.active_items = self.items
         self.active_item = self.knob.choice(self.items)
 
         self.button_down_at = time.ticks_ms()
@@ -150,12 +151,9 @@ class SettingsMenu:
         """
         Save the current settings to the specified file
         """
-        data ={}
-        for item in self.items:
-            data[item.config_point.name] = item.config_point.default
-            if item.children:
-                for c in item.children:
-                    data[c.config_point.name] = c.config_point.default
+        data = {}
+        for item in self.menu_items_by_name.values():
+            data[item.config_point.name] = item.value
         ConfigFile.save_to_file(settings_file, data)
 
     def on_button_press(self):
@@ -195,14 +193,19 @@ class SettingsMenu:
 
         This changes between the two menu levels (if possible)
         """
-        if self.active_item.children:
-            self.active_item = self.knob.choice(self.active_item.children)
+        # exit editable mode when we change menu levels
+        self.active_item.edit_mode = False
+
+        # we're in the top-level menu; go to the submenu if it exists
+        if self.active_items == self.items:
+            if self.active_item.children:
+                self.active_items = self.active_item.children
+                if type(self.knob) is KnobBank:
+                    self.knob.set_current("submenu")
+        else:
+            self.active_items = self.items
             if type(self.knob) is KnobBank:
-                self.knob.set_current("submenu")
-        elif self.active_item.parent:
-            self.active_item = self.active_item.parent
-            if type(self.knob) is KnobBank:
-                self.knob.set_current("main_menu")
+                    self.knob.set_current("main_menu")
 
         self.long_press_cb()
 
@@ -232,16 +235,9 @@ class SettingsMenu:
         a value-change callback of a menu item to show/hide dependent other items.
         """
         items = []
-        if self.active_item.parent:
-            # we're in a child menu
-            for item in self.active_item.parent.children:
-                if item.is_visible:
-                    items.append(item)
-        else:
-            # we're at the top-level menu
-            for item in self.items:
-                if item.is_visible:
-                    items.append(item)
+        for item in self.active_items:
+            if item.is_visible:
+                items.append(item)
         return items
 
 
