@@ -30,17 +30,16 @@ MODE_RANDOM=3
 #  CV1 will contain the latest s&h reading, with CV2-6 outputting increasingly old readings
 MODE_SHIFT=4
 
-## How many milliseconds of idleness do we need before we trigger the screensaver?
-#
-#  =20 minutes
-SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
-
+## Use the automatic screensaver display
 ssoled = OledWithScreensaver()
 
 
 class SequentialSwitchDisplay(MenuItem):
     """
     A menu item that displays the current state of the sequential switch
+
+    This isn't an editable menu item; just a visualization used as the top-level menu item.
+    The actual settings are children of this item.
     """
     def __init__(self, sequential_switch, parent=None, children=None):
         super().__init__(parent=parent, children=children)
