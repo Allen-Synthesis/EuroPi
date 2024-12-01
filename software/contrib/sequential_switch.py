@@ -84,14 +84,8 @@ class SequentialSwitch(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        @din.handler
-        def on_rising_clock():
-            self.on_trigger()
-
-        @b1.handler
-        def on_b1_press():
-            ssoled.notify_user_interaction()
-            self.active_screen.on_button1()
+        din.handler(self.on_trigger)
+        b1.handler(self.on_trigger)
 
         self.mode = SettingMenuItem(
             config_point = ChoiceConfigPoint(
@@ -107,11 +101,11 @@ class SequentialSwitch(EuroPiScript):
             ),
             title="Mode",
             labels = {
-                MODE_SEQUENTIAL: "Seq.",
-                MODE_REVERSE: "Rev.",
-                MODE_PINGPONG: "P-P",
-                MODE_RANDOM: "Rand.",
-                MODE_SHIFT: "Shift",
+                MODE_SEQUENTIAL: "Seqential",
+                MODE_REVERSE: "Reverse",
+                MODE_PINGPONG: "Ping-Pong",
+                MODE_RANDOM: "Random",
+                MODE_SHIFT: "Shift Reg.",
             },
         )
 
