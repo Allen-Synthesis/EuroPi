@@ -224,15 +224,15 @@ class MenuItem:
     def __init__(
         self,
         config_point: ConfigPoint,
-        parent: MenuItem=None,
-        children: list[MenuItem]=None,
-        title: str=None,
-        prefix: str=None,
-        graphics: dict=None,
-        labels: dict=None,
-        callback=lambda new_value, old_value, config_point, arg: None,
-        callback_arg=None,
-        float_resolution=2,
+        parent: MenuItem = None,
+        children: list[MenuItem] = None,
+        title: str = None,
+        prefix: str = None,
+        graphics: dict = None,
+        labels: dict = None,
+        callback = lambda new_value, old_value, config_point, arg: None,
+        callback_arg = None,
+        float_resolution = 2,
     ):
         """
         Create a new menu item around a ConfigPoint
@@ -396,7 +396,7 @@ class MenuItem:
         """
         t = type(self.config_point)
         if t is FloatConfigPoint:
-            FLOAT_RESOLUTION = 1.0 / (10 ** self.float_resolution)
+            FLOAT_RESOLUTION = 1.0 / (10**self.float_resolution)
             items = []
             x = self.config_point.minimum
             while x <= self.config_point.maximum:
