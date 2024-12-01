@@ -63,6 +63,7 @@ class SettingsMenu:
 
     This class is assumed to be the main interaction method for the program.
     """
+
     # Treat a long press as anything more than 500ms
     LONG_PRESS_MS = 500
 
@@ -71,8 +72,8 @@ class SettingsMenu:
         menu_spec,
         button=europi.b2,
         knob=europi.k2,
-        short_press_cb=lambda:None,
-        long_press_cb=lambda:None
+        short_press_cb=lambda: None,
+        long_press_cb=lambda: None
     ):
         """
         Create a new menu from the given specification
@@ -101,9 +102,7 @@ class SettingsMenu:
 
         self.items = []
         for item in menu_spec:
-            self.items.append(
-                MenuItem(self, item)
-            )
+            self.items.append(MenuItem(self, item))
 
         self.active_items = self.items
         self.active_item = self.knob.choice(self.items)
@@ -205,7 +204,7 @@ class SettingsMenu:
         else:
             self.active_items = self.items
             if type(self.knob) is KnobBank:
-                    self.knob.set_current("main_menu")
+                self.knob.set_current("main_menu")
 
         self.long_press_cb()
 
@@ -278,7 +277,9 @@ class MenuItem:
 
         if "graphics" in item_dict:
             if type(self.config_point) is FloatConfigPoint:
-                raise Exception(f"Cannot add graphics to {self.config_point.name}; unsupported type")
+                raise Exception(
+                    f"Cannot add graphics to {self.config_point.name}; unsupported type"
+                )
             self.graphics = item_dict["graphics"]
         else:
             self.graphics = None
@@ -293,9 +294,7 @@ class MenuItem:
         if "children" in item_dict:
             self.children = []
             for c in item_dict["children"]:
-                self.children.append(
-                    MenuItem(menu, c)
-                )
+                self.children.append(MenuItem(menu, c))
                 self.children[-1].parent = self
 
         self.callback_fn = item_dict.get("callback", None)
@@ -346,11 +345,17 @@ class MenuItem:
         # If we're in a top-level menu the submenu is non-empty. In that case, the prefix in inverted text
         # Otherwise, the title in inverted text to indicate we're in the sub-menu
         if self.children and len(self.children) > 0:
-            oled.fill_rect(prefix_left-1, 0, prefix_right + 1, europi.CHAR_HEIGHT + 2, 1)
+            oled.fill_rect(prefix_left - 1, 0, prefix_right + 1, europi.CHAR_HEIGHT + 2, 1)
             oled.text(self.prefix, prefix_left, 1, 0)
             oled.text(self.title, title_left, 1, 1)
         else:
-            oled.fill_rect(title_left-1, 0, len(self.title) * europi.CHAR_WIDTH + 2, europi.CHAR_HEIGHT + 2, 1)
+            oled.fill_rect(
+                title_left - 1,
+                0,
+                len(self.title) * europi.CHAR_WIDTH + 2,
+                europi.CHAR_HEIGHT + 2,
+                1,
+            )
             oled.text(self.prefix, prefix_left, 1, 1)
             oled.text(self.title, title_left, 1, 0)
 
@@ -371,7 +376,13 @@ class MenuItem:
             # draw the value in inverted text
             text_width = len(display_text) * europi.CHAR_WIDTH
 
-            oled.fill_rect(text_left, SELECT_OPTION_Y, text_left + text_width + 3, europi.CHAR_HEIGHT + 4, 1)
+            oled.fill_rect(
+                text_left,
+                SELECT_OPTION_Y,
+                text_left + text_width + 3,
+                europi.CHAR_HEIGHT + 4,
+                1,
+            )
             oled.text(display_text, text_left + 1, SELECT_OPTION_Y + 2, 0)
         else:
             # draw the selection in normal text
