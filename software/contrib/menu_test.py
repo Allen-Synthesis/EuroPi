@@ -92,7 +92,7 @@ class MenuTest(EuroPiScript):
                 ),
                 "title": "Mod",
                 "prefix": "CV1",
-                "gfx": self.CLOCK_MOD_GFX,
+                "graphics": self.CLOCK_MOD_GFX,
                 "children": [
                     {
                         "item": ChoiceConfigPoint(
@@ -102,7 +102,7 @@ class MenuTest(EuroPiScript):
                         ),
                         "title": "Wave",
                         "prefix": "CV1",
-                        "gfx": self.WAVE_SHAPE_GFX,
+                        "graphics": self.WAVE_SHAPE_GFX,
                     },
                     {
                         "item": IntegerConfigPoint(
@@ -144,7 +144,7 @@ class MenuTest(EuroPiScript):
                 ),
                 "title": "Mod",
                 "prefix": "CV2",
-                "gfx": self.CLOCK_MOD_GFX,
+                "graphics": self.CLOCK_MOD_GFX,
                 "children": [
                     {
                         "item": ChoiceConfigPoint(
@@ -154,7 +154,7 @@ class MenuTest(EuroPiScript):
                         ),
                         "title": "Wave",
                         "prefix": "CV2",
-                        "gfx": self.WAVE_SHAPE_GFX,
+                        "graphics": self.WAVE_SHAPE_GFX,
                     },
                     {
                         "item": IntegerConfigPoint(

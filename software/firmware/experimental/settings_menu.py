@@ -150,7 +150,7 @@ class SettingsMenu:
             if item.children:
                 for c in item.children:
                     data[c.config_point.name] = c.config_point.default
-        ConfigFile.save_to_file(path, data)
+        ConfigFile.save_to_file(settings_file, data)
 
     def on_button_press(self):
         """Handler for the rising edge of the button signal"""
@@ -213,7 +213,8 @@ class SettingsMenu:
 
         @param oled  The display object to draw to
         """
-        self.active_item = self.knob.choice(self.visible_items)
+        if not self.active_item.edit_mode:
+            self.active_item = self.knob.choice(self.visible_items)
         self.active_item.draw(oled)
 
     @property

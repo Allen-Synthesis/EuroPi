@@ -263,7 +263,9 @@ class ConfigFile:
         @param dict  The data to save
         """
         with open(path, "w") as file:
-            json.dump(data, file, indent=2)
+            # put newlines between items to make the resulting file easier to read
+            # this makes debugging easier, in case human eyes are ever needed on the file
+            json.dump(data, file, separators=(",\n", ":"))
 
     @staticmethod
     def config_filename(cls):
