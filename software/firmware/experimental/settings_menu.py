@@ -230,7 +230,7 @@ class MenuItem:
         prefix: str=None,
         graphics: dict=None,
         labels: dict=None,
-        callback=lambda: None,
+        callback=lambda new_value, old_value, config_point, arg: None,
         callback_arg=None
     ):
         """
@@ -275,6 +275,7 @@ class MenuItem:
 
         if type(self.config_point) is FloatConfigPoint and graphics:
             raise Exception(f"Cannot add graphics to {self.config_point.name}; unsupported type")
+        self.graphics = graphics
 
         if type(self.config_point) is FloatConfigPoint:
             raise Exception(f"Cannot add labels to {self.config_point.name}; unsupported type")
