@@ -14,6 +14,7 @@ Whenever `item_dict` is referenced in a docstring, it is a dict of the following
 ```
 {
     !"item": ConfigPoint,
+    ?"title": str,
     ?"prefix": str,
     ?"graphics: {key:FrameBuffer|bytearray...}
     ?"labels": {key:str...},
@@ -27,6 +28,18 @@ Whenever `item_dict` is referenced in a docstring, it is a dict of the following
 ```
 - ! indicates required
 - ? indicates optional
+
+item: a ConfigPoint the user manipulates. Every ConfigPoint must have a unique name
+title: the text displayed on screen to represent the current ConfigPoint. Default to item.name if unspecified
+prefix: optional text to display to the left of the title; used to visually indicate the parent menu name
+graphics: an optional array of graphics to draw beside each option
+labels: an optional array of strings to use instead of the raw choices from the ConfigPoint
+callback: a function to call when the user changes the value of the config point
+callback_arg: an optional additional argument to pass to the callback function
+children: an optional array of menu items that act as the submenu to this item, accessed by long-pressing the button
+
+No more than 2 menu levels should ever be specified. No checks are done to prevent this, but specifying more than
+2 menu levels may result in unreachable submenus.
 
 The graphics and labels dictionaries are key/value pairs where the key corresponds to a valid option
 from the ConfigPoint. FloatConfigPoint may NOT have labels or graphics, but Boolean-, Integer-, and Choice-
@@ -42,6 +55,7 @@ from configuration import *
 from experimental.knobs import KnobBank
 from framebuf import FrameBuffer, MONO_HLSB
 import time
+
 
 class SettingsMenu:
     """
@@ -76,7 +90,7 @@ class SettingsMenu:
         @param long_press_cb  An optional callback function to invoke when the user interacts with a long-press of
                               the button
         """
-        self.knob = knob
+        self._knob = knob
         self.button = button
 
         self.short_press_cb = short_press_cb
@@ -91,12 +105,52 @@ class SettingsMenu:
                 MenuItem(self, item)
             )
 
-        self.active_item = europi.k2.choice(self.items)
+        self.active_item = self.knob.choice(self.items)
 
         self.button_down_at = time.ticks_ms()
 
         # Indicates to the application that we need to save the settings to disk
         self.settings_dirty = False
+
+    @property
+    def knob(self):
+        if type(self._knob) is KnobBank:
+            return self._knob.current
+        else:
+            return self._knob
+
+    def get_config_points(self):
+        """
+        Get the config points for the menu so we can load/save them as needed
+        """
+        config_points = []
+        for item in self.items:
+            config_points.append(item.config_point)
+            if item.children:
+                for c in item.children:
+                    config_points.append(c.config_point)
+        return config_points
+
+    def load_defaults(self, settings_file):
+        """
+        Load the initial settings from the file
+
+        @param settings_file  The path to a JSON file where the user's settings are saved
+        """
+        spec = ConfigSpec(self.get_config_points())
+        return ConfigFile.load_from_file(settings_file, spec)
+
+    def save(self, settings_file):
+        """
+        Save the current settings to the specified file
+        """
+        data ={}
+        for item in self.items:
+            data[item.config_point.name] = item.config_point.default
+            if item.children:
+                for c in item.children:
+                    data[c.config_point.name] = c.config_point.default
+        ConfigFile.save_to_file(path, data)
 
     def on_button_press(self):
         """Handler for the rising edge of the button signal"""
@@ -104,7 +158,7 @@ class SettingsMenu:
 
     def on_button_release(self):
         """Handler for the falling edge of the button signal"""
-        if time.ticks_diff(time.ticks_ms(), self.button_down_at) >= LONG_PRESS_MS:
+        if time.ticks_diff(time.ticks_ms(), self.button_down_at) >= self.LONG_PRESS_MS:
             self.long_press()
         else:
             self.short_press()
@@ -136,7 +190,7 @@ class SettingsMenu:
         This changes between the two menu levels (if possible)
         """
         if self.active_item.children:
-            self.active_item = europi.k2.choice(self.active_item.children)
+            self.active_item = self.knob.choice(self.active_item.children)
             if type(self.knob) is KnobBank:
                 self.knob.set_current("submenu")
         elif self.active_item.parent:
@@ -159,7 +213,7 @@ class SettingsMenu:
 
         @param oled  The display object to draw to
         """
-        self.active_item = europi.k2.choice(self.visible_items)
+        self.active_item = self.knob.choice(self.visible_items)
         self.active_item.draw(oled)
 
     @property
@@ -202,6 +256,8 @@ class MenuItem:
         @param item_dict  The specification for this menu item
         """
         self.menu = menu
+        self.parent = None
+        self.children = None
 
         # are we in edit mode?
         self.edit_mode = False
@@ -214,6 +270,7 @@ class MenuItem:
         # the configuration setting that we're controlling via this menu item
         self.config_point = item_dict["item"]
 
+        self.title = item_dict.get("title", self.config_point.name)
         self.prefix = item_dict.get("prefix", "")
 
         if "graphics" in item_dict:
@@ -234,12 +291,9 @@ class MenuItem:
             self.children = []
             for c in item_dict["children"]:
                 self.children.append(
-                    MenuItem(c)
+                    MenuItem(menu, c)
                 )
                 self.children[-1].parent = self
-        else:
-            self.children = None
-            self.parent = None
 
         self.callback_fn = item_dict.get("callback", None)
         self.callback_arg = item_dict.get("callback_arg", None)
@@ -260,7 +314,7 @@ class MenuItem:
         """
         if self.edit_mode:
             # apply the currently-selected choice if we're in edit mode
-            self.value = k2.choice(self.choices)
+            self.value = self.menu.knob.choice(self.choices)
             self.menu.settings_dirty = True
 
         self.edit_mode = not self.edit_mode
@@ -277,7 +331,7 @@ class MenuItem:
         SELECT_OPTION_Y = 16
 
         if self.edit_mode:
-            display_value = k2.choice(self.choices)
+            display_value = self.menu.knob.choice(self.choices)
         else:
             display_value = self.value
 
@@ -288,21 +342,22 @@ class MenuItem:
 
         # If we're in a top-level menu the submenu is non-empty. In that case, the prefix in inverted text
         # Otherwise, the title in inverted text to indicate we're in the sub-menu
-        if self.children and len(self.children) != 0:
+        if self.children and len(self.children) > 0:
             oled.fill_rect(prefix_left-1, 0, prefix_right + 1, europi.CHAR_HEIGHT + 2, 1)
             oled.text(self.prefix, prefix_left, 1, 0)
-            oled.text(self.name, title_left, 1, 1)
+            oled.text(self.title, title_left, 1, 1)
         else:
-            oled.fill_rect(title_left-1, 0, len(self.name) * europi.CHAR_WIDTH + 2, europi.CHAR_HEIGHT + 2, 1)
+            oled.fill_rect(title_left-1, 0, len(self.title) * europi.CHAR_WIDTH + 2, europi.CHAR_HEIGHT + 2, 1)
             oled.text(self.prefix, prefix_left, 1, 1)
-            oled.text(self.name, title_left, 1, 0)
+            oled.text(self.title, title_left, 1, 0)
 
         if self.graphics:
-            gfx = self.graphics[display_value]
-            text_left = 14  # graphics are 12x12, so add 2 pixel padding
-            if type(gfx) is bytearray:
-                gfx = FrameBuffer(gfx, 12, 12, MONO_HLSB)
-            oled.blit(gfx, 0, SELECT_OPTION_Y)
+            gfx = self.graphics.get(display_value, None)
+            if gfx:
+                text_left = 14  # graphics are 12x12, so add 2 pixel padding
+                if type(gfx) is bytearray:
+                    gfx = FrameBuffer(gfx, 12, 12, MONO_HLSB)
+                oled.blit(gfx, 0, SELECT_OPTION_Y)
 
         if self.labels:
             display_text = self.labels[display_value]
@@ -311,9 +366,9 @@ class MenuItem:
 
         if self.edit_mode:
             # draw the value in inverted text
-            text_width = len(display_text)*CHAR_WIDTH
+            text_width = len(display_text) * europi.CHAR_WIDTH
 
-            oled.fill_rect(text_left, SELECT_OPTION_Y, text_left + text_width + 3, CHAR_HEIGHT + 4, 1)
+            oled.fill_rect(text_left, SELECT_OPTION_Y, text_left + text_width + 3, europi.CHAR_HEIGHT + 4, 1)
             oled.text(display_text, text_left + 1, SELECT_OPTION_Y + 2, 0)
         else:
             # draw the selection in normal text
@@ -343,10 +398,6 @@ class MenuItem:
             raise Exception(f"Unsupported ConfigPoint type: {type(self.config_point)}")
 
         return items
-
-    @property
-    def name(self):
-        return self.config_point.name
 
     @property
     def value(self):

@@ -230,35 +230,15 @@ class ConfigFile:
     """A class containing functions for dealing with configuration files."""
 
     @staticmethod
-    def config_filename(cls):
-        """Returns the filename for the config file for the given class."""
-        return f"config/{cls.__qualname__}.json"
-
-    @staticmethod
-    def save_config(cls, data: dict):
-        """Take config as a dict and save to this class's config file.
-
-        .. note::
-            Be mindful of how often `_save_config()` is called because
-            writing to disk too often can slow down the performance of your
-            script. Only call save state when state has changed and consider
-            adding a time since last save check to reduce save frequency.
+    def load_from_file(path: str, config_spec: ConfigSpec):
         """
-        json_str = json.dumps(data)
-        try:
-            os.mkdir("config")
-        except OSError:
-            pass
-        with open(ConfigFile.config_filename(cls), "w") as file:
-            file.write(json_str)
+        Load the configuration settings from an arbitrary file
 
-    @staticmethod
-    def load_config(cls, config_spec: ConfigSpec):
-        """If this class has config points, this method validates and returns the ConfigSettings object
-        representing the class's config file.  Otherwise an empty ConfigSettings object is returned.
+        @param path  The path to the fole to read
+        @param config_spec  The specification of the configuration we're saving
         """
         if len(config_spec):
-            saved_config = load_json_file(ConfigFile.config_filename(cls))
+            saved_config = load_json_file(path)
             config = config_spec.default_config()
             validation = config_spec.validate(saved_config)
 
@@ -269,6 +249,52 @@ class ConfigFile:
             return ConfigSettings(config)
         else:
             return ConfigSettings({})
+
+    @staticmethod
+    def save_to_file(path: str, data: dict):
+        """
+        Save the configuration dict and save it to an arbitrary file
+
+        Unlike save_config, this method will NOT create any directories; if you
+        intend to save to a directory that may not exist, make sure to create it
+        first.
+
+        @param path  The path to the file we're saving to
+        @param dict  The data to save
+        """
+        with open(path, "w") as file:
+            json.dump(data, file, indent=2)
+
+    @staticmethod
+    def config_filename(cls):
+        """Returns the filename for the config file for the given class."""
+        return f"config/{cls.__qualname__}.json"
+
+    @staticmethod
+    def save_config(cls, data: dict):
+        """Take config as a dict and save to this class's config file.
+
+        This will create the default configuration directory `/config` if it
+        does not already exist
+
+        .. note::
+            Be mindful of how often `_save_config()` is called because
+            writing to disk too often can slow down the performance of your
+            script. Only call save state when state has changed and consider
+            adding a time since last save check to reduce save frequency.
+        """
+        try:
+            os.mkdir("config")
+        except OSError:
+            pass
+        ConfigFile.save_to_file(ConfigFile.config_filename(cls), data)
+
+    @staticmethod
+    def load_config(cls, config_spec: ConfigSpec):
+        """If this class has config points, this method validates and returns the ConfigSettings object
+        representing the class's config file.  Otherwise an empty ConfigSettings object is returned.
+        """
+        return ConfigFile.load_from_file(ConfigFile.config_filename(cls), config_spec)
 
     @staticmethod
     def delete_config(cls):
