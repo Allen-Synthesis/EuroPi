@@ -50,100 +50,106 @@ class MenuTest(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        menu_spec = [
-            {
-                "item": IntegerConfigPoint(
-                    "bpm",
-                    1,
-                    240,
-                    60
-                ),
-                "title": "BPM",
-                "prefix": "Clk",
-                "children": [
-                    {
-                        "item": ChoiceConfigPoint(
-                            "din_mode",
-                            ["Gate", "Trigger", "Reset"],
-                            "Gate"
-                        ),
-                        "title": "DIN Mode",
-                        "prefix": "Clk"
-                    },
-                    {
-                        "item": BooleanConfigPoint(
-                            "reset_on_start",
-                            True
-                        ),
-                        "title": "Clk-Rst",
-                        "prefix": "Clk",
-                        "labels": {
-                            True: "On",
-                            False: "Off"
-                        }
-                    }
-                ]
-            }
-        ]
-
+        # Create menu items for each CV channel
+        cv_menus = []
         for i in range(6):
-            prefix = f"CV{i+1}"
+            menu_prefix = f"CV{i+1}"
             config_prefix = f"cv{i+1}"
+            cv_menus.append(
+                MenuItem(
+                    ChoiceConfigPoint(
+                        f"{config_prefix}_mod",
+                        self.CLOCK_MODS,
+                        "x1"
+                    ),
+                    prefix = menu_prefix,
+                    title = "Mod",
+                    graphics = self.CLOCK_MOD_GFX,
+                    children = [
+                        MenuItem(
+                            ChoiceConfigPoint(
+                                f"{config_prefix}_wave",
+                                self.WAVE_SHAPES,
+                                "Square"
+                            ),
+                            prefix = menu_prefix,
+                            title = "Wave",
+                            graphics = self.WAVE_SHAPE_GFX,
 
-            menu_spec.append({
-                "item": ChoiceConfigPoint(
-                    f"{config_prefix}_mod",
-                    self.CLOCK_MODS,
-                    "x1"
-                ),
-                "title": "Mod",
-                "prefix": prefix,
-                "graphics": self.CLOCK_MOD_GFX,
-                "children": [
-                    {
-                        "item": ChoiceConfigPoint(
-                            f"{config_prefix}_wave",
-                            self.WAVE_SHAPES,
-                            "Square"
                         ),
-                        "title": "Wave",
-                        "prefix": prefix,
-                        "graphics": self.WAVE_SHAPE_GFX,
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            f"{config_prefix}_width",
-                            0,
-                            100,
-                            50
+                        MenuItem(
+                             IntegerConfigPoint(
+                                f"{config_prefix}_width",
+                                0,
+                                100,
+                                50
+                            ),
+                            prefix = menu_prefix,
+                            title = "Width",
                         ),
-                        "title": "Width",
-                        "prefix": prefix,
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            f"{config_prefix}_phase",
-                            0,
-                            100,
-                            50
+                        MenuItem(
+                             IntegerConfigPoint(
+                                f"{config_prefix}_amplitude",
+                                0,
+                                100,
+                                50
+                            ),
+                            prefix = menu_prefix,
+                            title = "Amplitude",
                         ),
-                        "title": "Phase",
-                        "prefix": prefix,
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            f"{config_prefix}_amplitude",
-                            0,
-                            100,
-                            50
-                        ),
-                        "title": "Amplitude",
-                        "prefix": prefix,
-                    }
-                ]
-            })
+                        MenuItem(
+                             IntegerConfigPoint(
+                                f"{config_prefix}_phase",
+                                0,
+                                100,
+                                50
+                            ),
+                            prefix = menu_prefix,
+                            title = "Phase",
+                        )
+                    ]
+                )
+            )
 
-        self.menu = SettingsMenu(menu_spec)
+        self.menu = SettingsMenu(
+            menu_items = [
+                MenuItem(
+                    IntegerConfigPoint(
+                        "bpm",
+                        1,
+                        240,
+                        60
+                    ),
+                    prefix = "Clk",
+                    title = "BPM",
+                    children = [
+                        MenuItem(
+                            ChoiceConfigPoint(
+                                "din_mode",
+                                ["Gate", "Trigger", "Reset"],
+                                "Gate"
+                            ),
+                            prefix = "Clk",
+                            title = "DIN Mode"
+                        ),
+                        MenuItem(
+                            BooleanConfigPoint(
+                                "reset_on_start",
+                                True
+                            ),
+                            prefix = "Clk",
+                            title = "Clk-Rst",
+                            labels = {
+                                True: "On",
+                                False: "Off"
+                            }
+                        )
+                    ]
+                )
+            ] + cv_menus
+        )
+
+        # Load the default values from the menu
         self.menu.load_defaults("DEBUG_MENU.json")
 
     def main(self):

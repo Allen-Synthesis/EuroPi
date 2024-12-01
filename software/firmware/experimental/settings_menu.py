@@ -1,52 +1,13 @@
 """
 Contains objects used for interactive settings menus
 
-Menu interaction is done using K2 and B2:
-- rotate K2 to select the menu item
+Menu interaction is done using a knob and a button (K2 and B2 by default):
+- rotate the knob to select the menu item
 - short-press to enter edit mode
-- rotate K2 to select an option
-- short-press K2 to apply the new option
-- long-press K2 to change between the 2 menu levels (if
+- rotate knob to select an option
+- short-press button to apply the new option
+- long-press button to change between the 2 menu levels (if
   possible)
-
-Menu items are specified as dictionaries for the purposes of the constructors.
-Whenever `item_dict` is referenced in a docstring, it is a dict of the following form:
-```
-{
-    !"item": ConfigPoint,
-    ?"title": str,
-    ?"prefix": str,
-    ?"graphics: {key:FrameBuffer|bytearray...}
-    ?"labels": {key:str...},
-    ?"callback": function(new_value, old_value, config_point, arg=None),
-    ?"callback_arg": Object,
-    ?"children": [
-        item_dict,
-        item_dict,
-    ]
-}
-```
-- ! indicates required
-- ? indicates optional
-
-item: a ConfigPoint the user manipulates. Every ConfigPoint must have a unique name
-title: the text displayed on screen to represent the current ConfigPoint. Default to item.name if unspecified
-prefix: optional text to display to the left of the title; used to visually indicate the parent menu name
-graphics: an optional array of graphics to draw beside each option
-labels: an optional array of strings to use instead of the raw choices from the ConfigPoint
-callback: a function to call when the user changes the value of the config point
-callback_arg: an optional additional argument to pass to the callback function
-children: an optional array of menu items that act as the submenu to this item, accessed by long-pressing the button
-
-No more than 2 menu levels should ever be specified. No checks are done to prevent this, but specifying more than
-2 menu levels may result in unreachable submenus.
-
-The graphics and labels dictionaries are key/value pairs where the key corresponds to a valid option
-from the ConfigPoint. FloatConfigPoint may NOT have labels or graphics, but Boolean-, Integer-, and Choice-
-ConfigPoints may.
-
-FrameBuffers for graphics must be 12x12 pixels in MONO_HLSB format. bytearrays for graphics must be able to be
-sent to a FrameBuffer constructor to create the buffer described.
 """
 
 import europi
@@ -69,7 +30,7 @@ class SettingsMenu:
 
     def __init__(
         self,
-        menu_spec,
+        menu_items=None,
         button=europi.b2,
         knob=europi.k2,
         short_press_cb=lambda: None,
@@ -82,7 +43,7 @@ class SettingsMenu:
         to avoid any lengthy operations inside these callbacks, as they may prevent other interrupts from being
         handled properly.
 
-        @param menu_spec  A dict representing the structure of the menu
+        @param menu_items  A list of MenuItem objects representing the top-level of the menu
         @param button  The button the user presses to interact with the menu
         @param knob  The knob the user turns to scroll through the menu. This may be an experimental.knobs.KnobBank
                      with 3 menu levels called "main_menu", "submenu" and "choice", or a raw knob like europi.k2
@@ -101,8 +62,9 @@ class SettingsMenu:
         self.button.handler_falling(self.on_button_release)
 
         self.items = []
-        for item in menu_spec:
-            self.items.append(MenuItem(self, item))
+        if menu_items:
+            for item in menu_items:
+                self.items.append(item)
 
         self.active_items = self.items
         self.active_item = self.knob.choice(self.items)
@@ -117,10 +79,21 @@ class SettingsMenu:
         for item in self.items:
             self.config_points_by_name[item.config_point.name] = item.config_point
             self.menu_items_by_name[item.config_point.name] = item
+            item.menu = self
             if item.children:
                 for c in item.children:
                     self.config_points_by_name[c.config_point.name] = c.config_point
                     self.menu_items_by_name[c.config_point.name] = c
+                    c.menu = self
+
+    def add_item(self, menu_item):
+        """
+        Add a new MenuItem to the menu
+
+        @param menu_item  The item to add to the menu
+        """
+        menu_item.menu = self
+        self.items.append(menu_item)
 
     @property
     def knob(self):
@@ -248,18 +221,36 @@ class MenuItem:
     that object's values as the available selections.
     """
 
-    def __init__(self, menu, item_dict):
+    def __init__(
+        self,
+        config_point: ConfigPoint,
+        parent: MenuItem=None,
+        children: list[MenuItem]=None,
+        title: str=None,
+        prefix: str=None,
+        graphics: dict=None,
+        labels: dict=None,
+        callback=lambda: None,
+        callback_arg=None
+    ):
         """
         Create a new menu item around a ConfigPoint
 
         If the item has a callback function defined, it will be invoked once during initialization
 
-        @param menu  The SettingsMenu that owns this item
-        @param item_dict  The specification for this menu item
+        @param config_point  The configration option this menu item controls
+        @param parent  If the menu has multiple levels, what is this item's parent control?
+        @param children  If this menu has multiple levels, whar are this item's child controls?
+        @param title  The title to display at the top of the display when this control is active
+        @param prefix  A prefix to display before the title when this control is active
+        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing 12x12 MONO_HLSB
+                         graphics to display along with the keyed values
+        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
+                       options
         """
-        self.menu = menu
-        self.parent = None
-        self.children = None
+        self.menu = None
+        self.parent = parent
+        self.children = children
 
         # are we in edit mode?
         self.edit_mode = False
@@ -270,42 +261,44 @@ class MenuItem:
         self.is_visible = True
 
         # the configuration setting that we're controlling via this menu item
-        self.config_point = item_dict["item"]
+        self.config_point = config_point
 
-        self.title = item_dict.get("title", self.config_point.name)
-        self.prefix = item_dict.get("prefix", "")
-
-        if "graphics" in item_dict:
-            if type(self.config_point) is FloatConfigPoint:
-                raise Exception(
-                    f"Cannot add graphics to {self.config_point.name}; unsupported type"
-                )
-            self.graphics = item_dict["graphics"]
+        if title:
+            self.title = title
         else:
-            self.graphics = None
+            self.title = self.config_point.name
 
-        if "labels" in item_dict:
-            if type(self.config_point) is FloatConfigPoint:
-                raise Exception(f"Cannot add labels to {self.config_point.name}; unsupported type")
-            self.labels = item_dict["labels"]
+        if prefix:
+            self.prefix = prefix
         else:
-            self.labels = None
+            self.prefix = ""
 
-        if "children" in item_dict:
-            self.children = []
-            for c in item_dict["children"]:
-                self.children.append(MenuItem(menu, c))
-                self.children[-1].parent = self
+        if type(self.config_point) is FloatConfigPoint and graphics:
+            raise Exception(f"Cannot add graphics to {self.config_point.name}; unsupported type")
 
-        self.callback_fn = item_dict.get("callback", None)
-        self.callback_arg = item_dict.get("callback_arg", None)
+        if type(self.config_point) is FloatConfigPoint:
+            raise Exception(f"Cannot add labels to {self.config_point.name}; unsupported type")
+        self.labels = labels
 
         self.choices = self.get_option_list()
 
+        self.callback_fn = callback
+        self.callback_arg = callback_arg
+
         # assign the initial value
-        # this will trigger the callback function once during initialization
-        self._value = None
-        self.value = self.config_point.default
+        # this will prevent the callback function from being called
+        self._value = self.config_point.default
+
+    def add_child(self, item):
+        """
+        Add a MenuItem to this menu's children
+
+        @param item  The MenuItem to append to the list
+        """
+        item.menu = self.menu
+        if not self.children:
+            self.children = []
+        self.children.append(item)
 
     def short_press(self):
         """
