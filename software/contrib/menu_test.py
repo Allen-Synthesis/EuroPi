@@ -56,7 +56,7 @@ class MenuTest(EuroPiScript):
             menu_prefix = f"CV{i+1}"
             config_prefix = f"cv{i+1}"
             cv_menus.append(
-                MenuItem(
+                SettingMenuItem(
                     ChoiceConfigPoint(
                         f"{config_prefix}_mod",
                         self.CLOCK_MODS,
@@ -66,7 +66,7 @@ class MenuTest(EuroPiScript):
                     title = "Mod",
                     graphics = self.CLOCK_MOD_GFX,
                     children = [
-                        MenuItem(
+                        SettingMenuItem(
                             ChoiceConfigPoint(
                                 f"{config_prefix}_wave",
                                 self.WAVE_SHAPES,
@@ -76,7 +76,7 @@ class MenuTest(EuroPiScript):
                             title = "Wave",
                             graphics = self.WAVE_SHAPE_GFX,
                         ),
-                        MenuItem(
+                        SettingMenuItem(
                              IntegerConfigPoint(
                                 f"{config_prefix}_width",
                                 0,
@@ -86,7 +86,7 @@ class MenuTest(EuroPiScript):
                             prefix = menu_prefix,
                             title = "Width",
                         ),
-                        MenuItem(
+                        SettingMenuItem(
                              IntegerConfigPoint(
                                 f"{config_prefix}_amplitude",
                                 0,
@@ -96,7 +96,7 @@ class MenuTest(EuroPiScript):
                             prefix = menu_prefix,
                             title = "Amplitude",
                         ),
-                        MenuItem(
+                        SettingMenuItem(
                              IntegerConfigPoint(
                                 f"{config_prefix}_phase",
                                 0,
@@ -112,7 +112,7 @@ class MenuTest(EuroPiScript):
 
         self.menu = SettingsMenu(
             menu_items = [
-                MenuItem(
+                SettingMenuItem(
                     IntegerConfigPoint(
                         "bpm",
                         1,
@@ -122,7 +122,7 @@ class MenuTest(EuroPiScript):
                     prefix = "Clk",
                     title = "BPM",
                     children = [
-                        MenuItem(
+                        SettingMenuItem(
                             ChoiceConfigPoint(
                                 "din_mode",
                                 ["Gate", "Trigger", "Reset"],
@@ -131,7 +131,7 @@ class MenuTest(EuroPiScript):
                             prefix = "Clk",
                             title = "DIN Mode"
                         ),
-                        MenuItem(
+                        SettingMenuItem(
                             BooleanConfigPoint(
                                 "reset_on_start",
                                 True
@@ -159,7 +159,6 @@ class MenuTest(EuroPiScript):
 
             if self.menu.settings_dirty:
                 self.menu.save("DEBUG_MENU.json")
-                self.menu.settings_dirty = False
 
 if __name__ == "__main__":
     MenuTest().main()

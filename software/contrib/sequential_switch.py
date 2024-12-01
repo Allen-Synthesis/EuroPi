@@ -7,7 +7,8 @@
 from europi import *
 from europi_script import EuroPiScript
 
-from experimental.screensaver import Screensaver
+from experimental.settings_menu import *
+from experimental.screensaver import OledWithScreensaver
 
 import time
 import random
@@ -34,38 +35,23 @@ MODE_SHIFT=4
 #  =20 minutes
 SCREENSAVER_TIMEOUT_MS = 1000 * 60 * 20
 
-class ScreensaverScreen(Screensaver):
-    """Blank the screen when idle
-    Eventually it might be neat to have an animation, but that's
-    not necessary for now
+ssoled = OledWithScreensaver()
+
+
+class SequentialSwitchDisplay(MenuItem):
     """
-
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-
-    def on_button1(self):
-        self.parent.active_screen = self.parent.switch_screen
-        self.parent.on_trigger()
-
-class SwitchScreen:
-    """Default display: shows what output is currently active
+    A menu item that displays the current state of the sequential switch
     """
+    def __init__(self, sequential_switch, parent=None, children=None):
+        super().__init__(parent=parent, children=children)
 
-    def __init__(self, parent):
-        self.parent = parent
+        self.sequential_switch = sequential_switch
 
-    def on_button1(self):
-        # the button can be used to advance the output
-        self.parent.on_trigger()
-
-    def draw(self):
-        oled.fill(0)
-
-        if self.parent.mode == MODE_SHIFT:
+    def draw(self, oled=ssoled):
+        if self.sequential_switch.mode.value == MODE_SHIFT:
             BAR_WIDTH = OLED_WIDTH // 6
-            for i in range(self.parent.num_outputs):
-                h = max(1, int(self.parent.shift_register[i] / MAX_OUTPUT_VOLTAGE * OLED_HEIGHT))
+            for i in range(self.sequential_switch.num_outputs.value):
+                h = max(1, int(self.sequential_switch.shift_register[i] / MAX_OUTPUT_VOLTAGE * OLED_HEIGHT))
                 oled.fill_rect(BAR_WIDTH * i + 1, OLED_HEIGHT - h, BAR_WIDTH-2, h, 1)
         else:
             # Show all 6 outputs as a string on 2 lines to mirror the panel
@@ -73,9 +59,9 @@ class SwitchScreen:
             for i in range(2):
                 for j in range(3):
                     out_no = i*3 + j
-                    if out_no < self.parent.num_outputs:
+                    if out_no < self.sequential_switch.num_outputs.value:
                         # output is enabled; is it hot?
-                        if self.parent.current_output == out_no:
+                        if self.sequential_switch.current_output == out_no:
                             switches = switches + " [*] "
                         else:
                             switches = switches + " [ ] "
@@ -87,76 +73,6 @@ class SwitchScreen:
 
             oled.centre_text(switches, auto_show=False)
 
-        oled.show()
-
-class MenuScreen:
-    """Advanced menu options screen
-    """
-    def __init__(self, parent):
-        self.parent = parent
-
-        self.menu_items = [
-            NumOutsChooser(parent),
-            ModeChooser(parent)
-        ]
-
-    def draw(self):
-        self.menu_items[self.parent.menu_item].draw()
-
-    def on_button1(self):
-        self.menu_items[self.parent.menu_item].on_button1()
-
-class NumOutsChooser:
-    """Used by MenuScreen to choose the number of outputs
-    """
-
-    def __init__(self, parent):
-        self.parent = parent
-
-    def read_num_outs(self):
-        return k2.range(5) + 2 # result should be 2-6
-
-    def on_button1(self):
-        num_outs = self.read_num_outs()
-        self.parent.num_outputs = num_outs
-        self.parent.current_output = self.parent.current_output % num_outs
-        self.parent.save()
-
-    def draw(self):
-        num_outs = self.read_num_outs()
-        oled.fill(0)
-        oled.text(f"-- # Outputs --", 0, 0)
-        oled.text(f"{self.parent.num_outputs} <- {num_outs}", 0, 10)
-        oled.show()
-
-class ModeChooser:
-    """Used by MenuScreen to choose the operating mode
-    """
-    def __init__(self, parent):
-        self.parent = parent
-
-        self.mode_names = [
-            "Seq.",
-            "Rev.",
-            "P-P",
-            "Rand.",
-            "Shift"
-        ]
-
-    def read_mode(self):
-        return k2.range(len(self.mode_names))
-
-    def on_button1(self):
-        new_mode = self.read_mode()
-        self.parent.mode = new_mode
-        self.parent.save()
-
-    def draw(self):
-        new_mode = self.read_mode()
-        oled.fill(0)
-        oled.text(f"-- Mode --", 0, 0)
-        oled.text(f"{self.mode_names[self.parent.mode]} <- {self.mode_names[new_mode]}", 0, 10)
-        oled.show()
 
 class SequentialSwitch(EuroPiScript):
     """The main workhorse of the whole module
@@ -168,15 +84,63 @@ class SequentialSwitch(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        # keep track of the last time the user interacted with the module
-        # if we're idle for too long, start the screensaver
-        self.last_interaction_time = time.ticks_ms()
+        @din.handler
+        def on_rising_clock():
+            self.on_trigger()
 
-        # How do we advance the output?
-        self.mode = MODE_SEQUENTIAL
+        @b1.handler
+        def on_b1_press():
+            ssoled.notify_user_interaction()
+            self.active_screen.on_button1()
 
-        # Use all 6 outputs by default
-        self.num_outputs = 6
+        self.mode = SettingMenuItem(
+            config_point = ChoiceConfigPoint(
+                "mode",
+                [
+                    MODE_SEQUENTIAL,
+                    MODE_REVERSE,
+                    MODE_PINGPONG,
+                    MODE_RANDOM,
+                    MODE_SHIFT,
+                ],
+                MODE_SEQUENTIAL
+            ),
+            title="Mode",
+            labels = {
+                MODE_SEQUENTIAL: "Seq.",
+                MODE_REVERSE: "Rev.",
+                MODE_PINGPONG: "P-P",
+                MODE_RANDOM: "Rand.",
+                MODE_SHIFT: "Shift",
+            },
+        )
+
+        self.num_outputs = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                "num_outs",
+                2,
+                6,
+                6
+            ),
+            title="# Outputs",
+        )
+
+        self.menu = SettingsMenu(
+            knob = k2,
+            button = b2,
+            short_press_cb = lambda: ssoled.notify_user_interaction(),
+            long_press_cb = lambda: ssoled.notify_user_interaction(),
+            menu_items = [
+                SequentialSwitchDisplay(
+                    self,
+                    children = [
+                        self.mode,
+                        self.num_outputs,
+                    ]
+                )
+            ]
+        )
+        self.menu.load_defaults(self._state_filename)
 
         # The index of the current outputs
         self.current_output = 0
@@ -185,39 +149,8 @@ class SequentialSwitch(EuroPiScript):
         # it will always be +1 or -1
         self.direction = 1
 
-        # GUI/user interaction
-        self.switch_screen = SwitchScreen(self)
-        self.menu_screen = MenuScreen(self)
-        self.screensaver = ScreensaverScreen(self)
-        self.active_screen = self.switch_screen
-
-        self.menu_item = 0              # the active item from the advanced menu
-
-        self.load()
-
         ## The shift register we use as s&h in MODE_SHIFT
         self.shift_register = [0] * len(cvs)
-
-    def load(self):
-        """Load the persistent settings from storage and apply them
-        """
-        state = self.load_state_json()
-
-        self.mode = state.get("mode", self.mode)
-        self.num_outputs = state.get("num_outputs", self.num_outputs)
-
-    def save(self):
-        """Save the current settings to persistent storage
-        """
-        state = {
-            "mode": self.mode,
-            "num_outputs": self.num_outputs
-        }
-        self.save_state_json(state)
-
-    @classmethod
-    def display_name(cls):
-        return "Seq. Switch"
 
     def on_trigger(self):
         """Handler for the rising edge of the input clock
@@ -227,31 +160,31 @@ class SequentialSwitch(EuroPiScript):
         # to save on clock cycles, don't use modular arithmetic
         # instead just to integer math and handle roll-over manually
         next_out = self.current_output
-        if self.mode == MODE_SEQUENTIAL:
+        if self.mode.value == MODE_SEQUENTIAL:
             next_out = next_out + 1
-        elif self.mode == MODE_REVERSE:
+        elif self.mode.value == MODE_REVERSE:
             next_out = next_out - 1
-        elif self.mode == MODE_PINGPONG:
+        elif self.mode.value == MODE_PINGPONG:
             next_out = next_out + self.direction
         else:
-            next_out = random.randint(0, self.num_outputs-1)
+            next_out = random.randint(0, self.num_outputs.value-1)
 
         if next_out < 0:
-            if self.mode == MODE_REVERSE:
-                next_out = self.num_outputs-1
+            if self.mode.value == MODE_REVERSE:
+                next_out = self.num_outputs.value-1
             else:
                 next_out = -next_out
                 self.direction = -self.direction
-        elif next_out >= self.num_outputs:
-            if self.mode == MODE_SEQUENTIAL:
+        elif next_out >= self.num_outputs.value:
+            if self.mode.value == MODE_SEQUENTIAL:
                 next_out = 0
             else:
-                next_out = self.num_outputs-2
+                next_out = self.num_outputs.value-2
                 self.direction = -self.direction
 
         self.current_output = next_out
 
-        if self.mode == MODE_SHIFT:
+        if self.mode.value == MODE_SHIFT:
             self.shift_register.pop(-1)
             self.shift_register.insert(0, ain.read_voltage())
 
@@ -261,42 +194,21 @@ class SequentialSwitch(EuroPiScript):
         Connects event handlers for clock-in and button presses
         and runs the main loop
         """
-
-        @din.handler
-        def on_rising_clock():
-            self.on_trigger()
-
-        @b1.handler
-        def on_b1_press():
-            self.last_interaction_time = time.ticks_ms()
-            self.active_screen.on_button1()
-
-        @b2.handler
-        def on_b2_press():
-            self.last_interaction_time = time.ticks_ms()
-
-            if self.active_screen == self.switch_screen:
-                self.active_screen = self.menu_screen
-            else:
-                self.active_screen = self.switch_screen
-
         while True:
-            # keep the menu items sync'd with the left knob
-            self.menu_item = k1.range(len(self.menu_screen.menu_items))
+            ssoled.fill(0)
+            self.menu.draw(ssoled)
+            ssoled.show()
 
-            # check if we've been idle for too long; if so, blank the screen
-            # to prevent burn-in
-            now = time.ticks_ms()
-            if time.ticks_diff(now, self.last_interaction_time) > SCREENSAVER_TIMEOUT_MS:
-                self.active_screen = self.screensaver
+            if self.menu.settings_dirty:
+                self.menu.save(self._state_filename)
 
-            if self.mode == MODE_SHIFT:
+            if self.mode.value == MODE_SHIFT:
                 # CV1 gets the most-recent s&h output, all the others get older values
-                for i in range(self.num_outputs):
+                for i in range(self.num_outputs.value):
                     cvs[i].voltage(self.shift_register[i])
 
                 # turn off any unused outputs
-                for i in range(self.num_outputs, len(cvs)):
+                for i in range(self.num_outputs.value, len(cvs)):
                     cvs[i].off()
             else:
                 # read the input and send it to the current output
@@ -307,8 +219,6 @@ class SequentialSwitch(EuroPiScript):
                         cvs[i].voltage(input_volts)
                     else:
                         cvs[i].off()
-
-            self.active_screen.draw()
 
 if __name__ == "__main__":
     SequentialSwitch().main()

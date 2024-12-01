@@ -74,26 +74,23 @@ class SettingsMenu:
         # Indicates to the application that we need to save the settings to disk
         self.settings_dirty = False
 
+        # Iterate through the menu and get all of the config points
         self.config_points_by_name = {}
         self.menu_items_by_name = {}
         for item in self.items:
-            self.config_points_by_name[item.config_point.name] = item.config_point
-            self.menu_items_by_name[item.config_point.name] = item
             item.menu = self
+
+            if type(item) is SettingMenuItem:
+                self.config_points_by_name[item.config_point.name] = item.config_point
+                self.menu_items_by_name[item.config_point.name] = item
+
             if item.children:
                 for c in item.children:
-                    self.config_points_by_name[c.config_point.name] = c.config_point
-                    self.menu_items_by_name[c.config_point.name] = c
                     c.menu = self
 
-    def add_item(self, menu_item):
-        """
-        Add a new MenuItem to the menu
-
-        @param menu_item  The item to add to the menu
-        """
-        menu_item.menu = self
-        self.items.append(menu_item)
+                    if type(c) is SettingMenuItem:
+                        self.config_points_by_name[c.config_point.name] = c.config_point
+                        self.menu_items_by_name[c.config_point.name] = c
 
     @property
     def knob(self):
@@ -127,6 +124,7 @@ class SettingsMenu:
         for item in self.menu_items_by_name.values():
             data[item.config_point.name] = item.value
         ConfigFile.save_to_file(settings_file, data)
+        self.settings_dirty = False
 
     def on_button_press(self):
         """Handler for the rising edge of the button signal"""
@@ -150,7 +148,7 @@ class SettingsMenu:
 
         # Cycle the knob bank, if necessary
         if type(self.knob) is KnobBank:
-            if self.active_item.edit_mode:
+            if self.active_item.is_editable:
                 self.knob.set_current("choice")
             elif self.active_item.children:
                 self.knob.set_current("main_menu")
@@ -166,7 +164,7 @@ class SettingsMenu:
         This changes between the two menu levels (if possible)
         """
         # exit editable mode when we change menu levels
-        self.active_item.edit_mode = False
+        self.active_item.is_editable = False
 
         # we're in the top-level menu; go to the submenu if it exists
         if self.active_items == self.items:
@@ -194,7 +192,7 @@ class SettingsMenu:
 
         @param oled  The display object to draw to
         """
-        if not self.active_item.edit_mode:
+        if not self.active_item.is_editable:
             self.active_item = self.knob.choice(self.visible_items)
         self.active_item.draw(oled)
 
@@ -215,7 +213,59 @@ class SettingsMenu:
 
 class MenuItem:
     """
-    A single menu item
+    Generic class for anything we can display in the menu
+    """
+
+    def __init__(
+        self,
+        children: list[MenuItem] = None,
+        parent: MenuItem = None,
+        is_visible: bool = True
+    ):
+        """
+        Create a new abstract menu item
+
+        @param parent  If the menu has multiple levels, what is this item's parent control?
+        @param children  If this menu has multiple levels, whar are this item's child controls?
+        @param is_visible  Is this menu item visible by default?
+        """
+        self.menu = None
+        self.parent = parent
+        self.children = children
+        self.is_visible = is_visible
+
+    def short_press(self):
+        """Handler for when the user short-presses the button"""
+        pass
+
+    def draw(self, oled=europi.oled):
+        """
+        Draw the item to the screen
+
+        @param oled   A Display-compatible object we draw to
+        """
+        pass
+
+    @property
+    def is_editable(self):
+        return False
+
+    @is_editable.setter
+    def is_editable(self, can_edit):
+        pass
+
+    @property
+    def is_visible(self):
+        return self._is_visible
+
+    @is_visible.setter
+    def is_visible(self, is_visible):
+        self._is_visible = is_visible
+
+
+class SettingMenuItem(MenuItem):
+    """
+    A single menu item that presents a setting the user can manipulate
 
     The menu item is a wrapper around a ConfigPoint, and uses
     that object's values as the available selections.
@@ -223,7 +273,7 @@ class MenuItem:
 
     def __init__(
         self,
-        config_point: ConfigPoint,
+        config_point: ConfigPoint = None,
         parent: MenuItem = None,
         children: list[MenuItem] = None,
         title: str = None,
@@ -233,6 +283,8 @@ class MenuItem:
         callback=lambda new_value, old_value, config_point, arg: None,
         callback_arg=None,
         float_resolution=2,
+        value_map: dict = None,
+        is_visible: bool = True,
     ):
         """
         Create a new menu item around a ConfigPoint
@@ -250,18 +302,14 @@ class MenuItem:
                        options
         @param float_resolution  The resolution of floating-point config points (ignored if config_point is not
                                  a FloatConfigPoint)
+        @param value_map  An optional dict to map the underlying simple ConfigPoint values to more complex objects
+                          e.g. map the string "CMaj" to a Quantizer object
+        @param is_visible  Is this menu item visible by default?
         """
-        self.menu = None
-        self.parent = parent
-        self.children = children
+        super().__init__(parent=parent, children=children, is_visible=is_visible)
 
         # are we in edit mode?
         self.edit_mode = False
-
-        # is this menu item currently visible?
-        # setting this to False removes it from the menu, allowing us to show/hide menu items
-        # this is managed externally, and should be handled using the callback functions
-        self.is_visible = True
 
         # the configuration setting that we're controlling via this menu item
         self.config_point = config_point
@@ -280,9 +328,13 @@ class MenuItem:
             raise Exception(f"Cannot add graphics to {self.config_point.name}; unsupported type")
         self.graphics = graphics
 
-        if type(self.config_point) is FloatConfigPoint:
+        if type(self.config_point) is FloatConfigPoint and labels:
             raise Exception(f"Cannot add labels to {self.config_point.name}; unsupported type")
         self.labels = labels
+
+        if type(self.config_point) is FloatConfigPoint and value_map:
+            raise Exception(f"Cannot add value map to {self.config_point.name}; unsupported type")
+        self.value_map = value_map
 
         if type(config_point) is FloatConfigPoint:
             self.float_resolution = float_resolution
@@ -296,17 +348,6 @@ class MenuItem:
         # this will prevent the callback function from being called
         self._value = self.config_point.default
 
-    def add_child(self, item):
-        """
-        Add a MenuItem to this menu's children
-
-        @param item  The MenuItem to append to the list
-        """
-        item.menu = self.menu
-        if not self.children:
-            self.children = []
-        self.children.append(item)
-
     def short_press(self):
         """
         Handle a short button press
@@ -314,12 +355,12 @@ class MenuItem:
         This enters edit mode, or applies the selection and
         exits edit mode
         """
-        if self.edit_mode:
+        if self.is_editable:
             # apply the currently-selected choice if we're in edit mode
             self.value = self.menu.knob.choice(self.choices)
             self.menu.settings_dirty = True
 
-        self.edit_mode = not self.edit_mode
+        self.is_editable = not self.is_editable
 
     def draw(self, oled=europi.oled):
         """
@@ -332,7 +373,7 @@ class MenuItem:
         """
         SELECT_OPTION_Y = 16
 
-        if self.edit_mode:
+        if self.is_editable:
             display_value = self.menu.knob.choice(self.choices)
         else:
             display_value = self.value
@@ -372,7 +413,7 @@ class MenuItem:
         else:
             display_text = str(display_value)
 
-        if self.edit_mode:
+        if self.is_editable:
             # draw the value in inverted text
             text_width = len(display_text) * europi.CHAR_WIDTH
 
@@ -415,10 +456,20 @@ class MenuItem:
 
     @property
     def value(self):
+        """
+        Get the raw value of this item's ConfigPoint
+
+        You should use .mapped_value if you have assigned a value_map to the constructor
+        """
         return self._value
 
     @value.setter
     def value(self, v):
+        """
+        Set the raw value of this item's ConfigPoint
+
+        @param v  The value to assign to the ConfigPoint.
+        """
         validation = self.config_point.validate(v)
         if not validation.is_valid:
             raise Exception(f"{v} is not a valid value for {self.config_point.name}")
@@ -427,3 +478,23 @@ class MenuItem:
         self._value = v
         if self.callback_fn:
             self.callback_fn(v, old_value, self.config_point, self.callback_arg)
+
+    @property
+    def mapped_value(self):
+        """
+        Get the value of this item mapped by the value_map
+
+        If value_map was not set by the constructor, this property returns the same
+        thing as .value
+        """
+        if self.value_map:
+            return self.value_map[self._value]
+        return self._value
+
+    @property
+    def is_editable(self):
+        return self.edit_mode
+
+    @is_editable.setter
+    def is_editable(self, can_edit):
+        self.edit_mode = can_edit
