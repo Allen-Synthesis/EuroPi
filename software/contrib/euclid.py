@@ -17,13 +17,14 @@ from europi_script import EuroPiScript
 
 from experimental.euclid import generate_euclidean_pattern
 from experimental.screensaver import Screensaver
+from experimental.settings_menu import *
 
 
 class EuclidGenerator:
     """Generates the euclidean rhythm for a single output
     """
 
-    def __init__(self, cv_out, steps=1, pulses=0, rotation=0, skip=0):
+    def __init__(self, cv_out, name, steps=1, pulses=0, rotation=0, skip=0):
         """Create a generator that sends its output to the given CV output
 
         @param cv_out  One of the six output jacks (cv1..cv6)
@@ -32,27 +33,63 @@ class EuclidGenerator:
         @param rotation  The initial rotation (0-32)
         @param skip  The skip probability (0-1)
         """
+        setting_prefix = name.lower()
+
+        self.steps = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                f"{setting_prefix}_steps",
+                1,
+                32,
+                steps,
+            ),
+            prefix = name,
+            title = "Steps",
+            callback = self.update_steps,
+        )
+
+        self.pulses = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                f"{setting_prefix}_pulses",
+                0,
+                32,
+                pulses,
+            ),
+            prefix = name,
+            title = "Pulses",
+            callback = self.update_pulses,
+        )
+
+        self.rotation = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                f"{setting_prefix}_rotation",
+                0,
+                32,
+                rotation,
+            ),
+            prefix = name,
+            title = "Rotation",
+            callback = self.update_rotation,
+        )
+
+        self.skip = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                f"{setting_prefix}_skip_prob",
+                0,
+                100,
+                skip,
+            ),
+            prefix = name,
+            title = "Skip %",
+        )
 
         ## The CV output this generator controls
         self.cv = cv_out
 
+        ## The name for this channel
+        self.name = name
+
         ## The current position within the pattern
         self.position = 0
-
-        ## The number of steps in the pattern
-        self.steps = steps
-
-        ## The number of triggers in the pattern
-        self.pulses = pulses
-
-        ## The rotation of the pattern
-        self.rotation = rotation
-
-        ## The probability that we skip any given step when it triggers
-        #
-        #  Must be in the range [0, 1], where 0 means never skip and
-        #  1 means always skip
-        self.skip = skip
 
         ## The on/off pattern we generate
         self.pattern = []
@@ -63,6 +100,23 @@ class EuclidGenerator:
         #  if this is None; otherwise its value is simply returned
         self.str = None
 
+        self.regenerate()
+
+    def update_steps(self, new_steps, old_steps, config_point, arg=None):
+        """Update the max range of pulses & rotation to match the number of steps
+        """
+        self.pulses.config_point.maximum = new_steps
+        self.pulses.refresh_choices(new_default=new_steps)
+
+        self.rotation.config_point.maximum = new_steps
+        self.rotation.refresh_choices(new_default=new_steps)
+
+        self.regenerate()
+
+    def update_pulses(self, new_pulses, old_pulses, config_point, arg=None):
+        self.regenerate()
+
+    def update_rotation(self, new_rot, old_rot, config_point, arg=None):
         self.regenerate()
 
     def __str__(self):
@@ -104,7 +158,7 @@ class EuclidGenerator:
         """
 
         self.position = 0
-        self.pattern = generate_euclidean_pattern(self.steps, self.pulses, self.rotation)
+        self.pattern = generate_euclidean_pattern(self.steps.value, self.pulses.value, self.rotation.value)
 
         # clear the cached string representation
         self.str = None
@@ -112,7 +166,6 @@ class EuclidGenerator:
     def advance(self):
         """Advance to the next step in the pattern and set the CV output
         """
-
         # advance the position
         # to ease CPU usage don't do any divisions, just reset to zero
         # if we overflow
@@ -123,7 +176,7 @@ class EuclidGenerator:
         if self.steps == 0 or self.pattern[self.position] == 0:
             self.cv.off()
         else:
-            if self.skip > random.random():
+            if self.skip.value / 100 > random.random():
                 self.cv.off()
             else:
                 self.cv.on()
@@ -132,45 +185,18 @@ class EuclidGenerator:
         self.str = None
 
 
-class ChannelMenu:
-    """A menu screen that lets us choose which CV channel to edit
+class EuclidVisualization(MenuItem):
+    """A  menu item for displaying a specific Euclidean channel
     """
-    def __init__(self, script):
-        """Create the channel menu
 
-        @param script  The EuclideanRhythms script that owns this menu
-        """
-        self.script = script
-        self.first_render = True
+    def __init__(self, generator, children=None, parent=None):
+        super().__init__(children=children, parent=parent)
 
-        self.generator_index = None
-        self.k2_percent = None
-        self.read_knobs()
+        self.generator = generator
 
-    def read_knobs(self):
-        """Read the current state of the knobs and return whether or not the state has changed, requiring a re-render
-
-        @return True if we should re-render the GUI, False if we can keep the previous render
-        """
-        index = k1.range(len(self.script.generators))
-        percent = round(k2.percent() * 100)
-        dirty = (
-            self.generator_index != index or
-            self.k2_percent != percent
-        )
-        if dirty:
-            self.generator_index = index
-            self.k2_percent = percent
-
-        return dirty or self.first_render
-
-    def draw(self):
-        self.first_render = False
-        g = self.script.generators[self.generator_index]
-        pattern_str = str(g)
-
-        oled.fill(0)
-        oled.text(f"-- CV {self.generator_index+1} --", 0, 0)
+    def draw(self, oled=oled):
+        pattern_str = str(self.generator)
+        oled.text(f"-- {self.generator.name} --", 0, 0)
         if len(pattern_str) > 16:
             pattern_row1 = pattern_str[0:16]
             pattern_row2 = pattern_str[16:]
@@ -178,117 +204,6 @@ class ChannelMenu:
             oled.text(f"{pattern_row2}", 0, 20)
         else:
             oled.text(f"{pattern_str}", 0, 10)
-
-        oled.show()
-
-class SettingsMenu:
-    """A menu screen for controlling a single setting of the generator
-    """
-    def __init__(self, script):
-        """Create the settings menu for a given generator
-
-        @param script  The EuclideanRhythms script that owns this menu
-        """
-        self.script = script
-        self.generator = script.generators[0]
-
-        self.MENU_ITEMS_STEPS = 0
-        self.MENU_ITEMS_PULSES = 1
-        self.MENU_ITEMS_ROTATION = 2
-        self.MENU_ITEMS_SKIP = 3
-        self.menu_items = [
-            "Steps",
-            "Pulses",
-            "Rot.",
-            "Skip %"
-        ]
-
-        self.first_render = True
-
-        self.menu_item = None
-        self.lower_bound = None
-        self.upper_bound = None
-        self.current_setting = None
-        self.new_setting = None
-        self.read_knobs()
-
-    def set_generator(self, g):
-        """Configure this menu to control a given EuclideanGenerator
-
-        @param g  The EuclideanGenerator to control
-        """
-        self.generator = g
-
-    def read_knobs(self):
-        """Returns a tuple with the current options
-
-        @return True if the user has moved any inputs, requiring a re-render. Otherwise False
-        """
-        menu_item = k1.range(len(self.menu_items))
-        lower_bound = 0
-        upper_bound = 0
-        current_setting = 0
-
-        if menu_item == self.MENU_ITEMS_STEPS:
-            lower_bound = 1
-            upper_bound = 32
-            current_setting = self.generator.steps
-        elif menu_item == self.MENU_ITEMS_PULSES:
-            lower_bound = 0
-            upper_bound = self.generator.steps
-            current_setting = self.generator.pulses
-        elif menu_item == self.MENU_ITEMS_ROTATION:
-            lower_bound = 0
-            upper_bound = self.generator.steps
-            current_setting = self.generator.rotation
-        elif menu_item == self.MENU_ITEMS_SKIP:
-            lower_bound = 0
-            upper_bound = 100
-            current_setting = int(self.generator.skip * 100)
-
-        new_setting = k2.range(upper_bound-lower_bound+1) + lower_bound
-
-        dirty = (
-            self.menu_item != menu_item or
-            self.lower_bound != lower_bound or
-            self.upper_bound != upper_bound or
-            self.current_setting != current_setting or
-            self.new_setting != new_setting
-        )
-
-        if dirty:
-            self.menu_item = menu_item
-            self.lower_bound = lower_bound
-            self.upper_bound = upper_bound
-            self.current_setting = current_setting
-            self.new_setting = new_setting
-
-        return dirty or self.first_render
-
-    def draw(self):
-        self.first_render = False
-        oled.fill(0)
-        oled.text(f"-- {self.menu_items[self.menu_item]} --", 0, 0)
-        oled.text(f"{self.current_setting} <- {self.new_setting}", 0, 10)
-        oled.show()
-
-    def apply_setting(self):
-        """Apply the current setting
-        """
-        if self.menu_item == self.MENU_ITEMS_STEPS:
-            self.generator.steps = self.new_setting
-            if self.generator.pulses > self.new_setting:
-                self.generator.pulses = self.new_setting
-            if self.generator.rotation > self.new_setting:
-                self.generator.rotation = self.new_setting
-        elif self.menu_item == self.MENU_ITEMS_PULSES:
-            self.generator.pulses = self.new_setting
-        elif self.menu_item == self.MENU_ITEMS_ROTATION:
-            self.generator.rotation = self.new_setting
-        elif self.menu_item == self.MENU_ITEMS_SKIP:
-            self.generator.skip = self.new_setting / 100.0
-
-        self.generator.regenerate()
 
 
 class EuclideanRhythms(EuroPiScript):
@@ -305,29 +220,38 @@ class EuclideanRhythms(EuroPiScript):
         #  We pre-load the defaults with some interesting patterns so the script
         #  does _something_ out of the box
         self.generators = [
-            EuclidGenerator(cv1, 8, 5),
-            EuclidGenerator(cv2, 16, 7),
-            EuclidGenerator(cv3, 16, 11),
-            EuclidGenerator(cv4, 32, 9),
-            EuclidGenerator(cv5, 32, 15),
-            EuclidGenerator(cv6, 32, 19)
+            EuclidGenerator(cv1, "CV1", 8, 5),
+            EuclidGenerator(cv2, "CV2", 16, 7),
+            EuclidGenerator(cv3, "CV3", 16, 11),
+            EuclidGenerator(cv4, "CV4", 32, 9),
+            EuclidGenerator(cv5, "CV5", 32, 15),
+            EuclidGenerator(cv6, "CV6", 32, 19)
         ]
 
-        self.load()
+        menu_items = []
+        for i in range(len(self.generators)):
+            menu_items.append(
+                EuclidVisualization(
+                    self.generators[i],
+                    children = [
+                        self.generators[i].steps,
+                        self.generators[i].pulses,
+                        self.generators[i].rotation,
+                        self.generators[i].skip,
+                    ]
+                )
+            )
 
-        # Do we need to save the current settings?
-        self.settings_dirty = False
+        self.menu = SettingsMenu(
+            menu_items = menu_items,
+            short_press_cb = self.on_menu_short_press,
+            long_press_cb = self.on_menu_long_press
+        )
+        self.menu.load_defaults(self._state_filename)
 
-        # Do we need to re-draw the GUI?
-        self.ui_dirty = True
-
-        self.last_user_interaction_at = time.ticks_ms()
-
-        self.channel_menu = ChannelMenu(self)
-        self.settings_menu = SettingsMenu(self)
         self.screensaver = Screensaver()
 
-        self.active_screen = self.channel_menu
+        self.last_user_interaction_at = time.ticks_ms()
 
         @din.handler
         def on_rising_clock():
@@ -351,96 +275,29 @@ class EuclideanRhythms(EuroPiScript):
         def on_b1_press():
             """Handler for pressing button 1
             """
-            self.ui_dirty = True
             self.last_user_interaction_at = time.ticks_ms()
 
-            if self.active_screen == self.channel_menu:
-                self.activate_settings_menu()
-            else:
-                self.settings_menu.apply_setting()
-                self.settings_dirty = True
+    def on_menu_long_press(self):
+        self.last_user_interaction_at = time.ticks_ms()
 
-        @b2.handler
-        def on_b2_press():
-            """Handler for pressing button 2
-            """
-            self.ui_dirty = True
-            self.last_user_interaction_at = time.ticks_ms()
-
-            if self.active_screen == self.channel_menu:
-                self.activate_settings_menu()
-            else:
-                self.activate_channel_menu()
-
-    @classmethod
-    def display_name(cls):
-        return "Euclid"
-
-    def activate_settings_menu(self):
-        """ Change the active screen to the settings menu
-        """
-        channel_index = k1.range(len(self.generators))
-        self.settings_menu.set_generator(self.generators[channel_index])
-        self.active_screen = self.settings_menu
-
-    def activate_channel_menu(self):
-        """Change the active screen to the CV channel menu
-        """
-        self.active_screen = self.channel_menu
-
-    def load(self):
-        """Load the previously-saved parameters and restore them
-        """
-        state = self.load_state_json()
-
-        for rhythm in state.get("rhythms", []):
-            id = rhythm["id"]
-            generator = self.generators[id]
-
-            generator.steps = rhythm["steps"]
-            generator.pulses = rhythm["pulses"]
-            generator.rotation = rhythm["rotation"]
-            generator.skip = rhythm["skip"]
-
-            generator.regenerate()
-
-    def save(self):
-        """Write the current settings to the persistent storage
-        """
-        rhythms = []
-        for i in range(len(self.generators)):
-            d = {
-                "id": i,
-                "steps": self.generators[i].steps,
-                "pulses": self.generators[i].pulses,
-                "rotation": self.generators[i].rotation,
-                "skip": self.generators[i].skip
-            }
-            rhythms.append(d)
-
-        state = {
-            "rhythms": rhythms
-        }
-        self.save_state_json(state)
+    def on_menu_short_press(self):
+        self.last_user_interaction_at = time.ticks_ms()
 
     def main(self):
         while True:
             now = time.ticks_ms()
 
-            if self.settings_dirty:
-                self.settings_dirty = False
-                self.save()
-
-            if self.active_screen.read_knobs():
-                self.last_user_interaction_at = now
-                self.ui_dirty = True
-
             if time.ticks_diff(now, self.last_user_interaction_at) >= self.screensaver.ACTIVATE_TIMEOUT_MS:
                 self.last_user_interaction_at = time.ticks_add(now, -self.screensaver.ACTIVATE_TIMEOUT_MS)
                 self.screensaver.draw()
-            elif self.ui_dirty:
-                self.ui_dirty = False
-                self.active_screen.draw()
+            else:
+                if self.menu.ui_dirty:
+                    oled.fill(0)
+                    self.menu.draw()
+                    oled.show()
+
+            if self.menu.settings_dirty:
+                self.menu.save(self._state_filename)
 
 if __name__=="__main__":
     EuclideanRhythms().main()

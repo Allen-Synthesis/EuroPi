@@ -188,9 +188,10 @@ class SequentialSwitch(EuroPiScript):
         and runs the main loop
         """
         while True:
-            ssoled.fill(0)
-            self.menu.draw(ssoled)
-            ssoled.show()
+            if self.menu.ui_dirty:
+                ssoled.fill(0)
+                self.menu.draw(ssoled)
+                ssoled.show()
 
             if self.menu.settings_dirty:
                 self.menu.save(self._state_filename)

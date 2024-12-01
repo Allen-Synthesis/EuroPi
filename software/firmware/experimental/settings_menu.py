@@ -18,6 +18,58 @@ from framebuf import FrameBuffer, MONO_HLSB
 import time
 
 
+class MenuItem:
+    """
+    Generic class for anything we can display in the menu
+    """
+
+    def __init__(
+        self,
+        children: list[MenuItem] = None,
+        parent: MenuItem = None,
+        is_visible: bool = True
+    ):
+        """
+        Create a new abstract menu item
+
+        @param parent  If the menu has multiple levels, what is this item's parent control?
+        @param children  If this menu has multiple levels, whar are this item's child controls?
+        @param is_visible  Is this menu item visible by default?
+        """
+        self.menu = None
+        self.parent = parent
+        self.children = children
+        self.is_visible = is_visible
+
+    def short_press(self):
+        """Handler for when the user short-presses the button"""
+        pass
+
+    def draw(self, oled=europi.oled):
+        """
+        Draw the item to the screen
+
+        @param oled   A Display-compatible object we draw to
+        """
+        pass
+
+    @property
+    def is_editable(self):
+        return False
+
+    @is_editable.setter
+    def is_editable(self, can_edit):
+        pass
+
+    @property
+    def is_visible(self):
+        return self._is_visible
+
+    @is_visible.setter
+    def is_visible(self, is_visible):
+        self._is_visible = is_visible
+
+
 class SettingsMenu:
     """
     A menu-based GUI for any EuroPi script.
@@ -54,6 +106,8 @@ class SettingsMenu:
         """
         self._knob = knob
         self.button = button
+
+        self._ui_dirty = True
 
         self.short_press_cb = short_press_cb
         self.long_press_cb = long_press_cb
@@ -129,9 +183,11 @@ class SettingsMenu:
     def on_button_press(self):
         """Handler for the rising edge of the button signal"""
         self.button_down_at = time.ticks_ms()
+        self._ui_dirty = True
 
     def on_button_release(self):
         """Handler for the falling edge of the button signal"""
+        self._ui_dirty = True
         if time.ticks_diff(time.ticks_ms(), self.button_down_at) >= self.LONG_PRESS_MS:
             self.long_press()
         else:
@@ -195,6 +251,17 @@ class SettingsMenu:
         if not self.active_item.is_editable:
             self.active_item = self.knob.choice(self.visible_items)
         self.active_item.draw(oled)
+        self._ui_dirty = False
+
+    @property
+    def ui_dirty(self):
+        """
+        Is the UI currently dirty and needs re-drawing?
+
+        This will be true if the user has pressed the button or rotated the knob sufficiently
+        to change the active item
+        """
+        return self._ui_dirty or self.active_item != self.knob.choice(self.visible_items)
 
     @property
     def visible_items(self):
@@ -209,58 +276,6 @@ class SettingsMenu:
             if item.is_visible:
                 items.append(item)
         return items
-
-
-class MenuItem:
-    """
-    Generic class for anything we can display in the menu
-    """
-
-    def __init__(
-        self,
-        children: list[MenuItem] = None,
-        parent: MenuItem = None,
-        is_visible: bool = True
-    ):
-        """
-        Create a new abstract menu item
-
-        @param parent  If the menu has multiple levels, what is this item's parent control?
-        @param children  If this menu has multiple levels, whar are this item's child controls?
-        @param is_visible  Is this menu item visible by default?
-        """
-        self.menu = None
-        self.parent = parent
-        self.children = children
-        self.is_visible = is_visible
-
-    def short_press(self):
-        """Handler for when the user short-presses the button"""
-        pass
-
-    def draw(self, oled=europi.oled):
-        """
-        Draw the item to the screen
-
-        @param oled   A Display-compatible object we draw to
-        """
-        pass
-
-    @property
-    def is_editable(self):
-        return False
-
-    @is_editable.setter
-    def is_editable(self, can_edit):
-        pass
-
-    @property
-    def is_visible(self):
-        return self._is_visible
-
-    @is_visible.setter
-    def is_visible(self, is_visible):
-        self._is_visible = is_visible
 
 
 class SettingMenuItem(MenuItem):
@@ -347,6 +362,20 @@ class SettingMenuItem(MenuItem):
         # assign the initial value
         # this will prevent the callback function from being called
         self._value = self.config_point.default
+
+    def refresh_choices(self, new_default=None):
+        """
+        Regenerate this item's available choices
+
+        This is needed if we externally modify e.g. the maximum/minimum values of the underlying
+        config point as a result of one option needing to be within a range determined by another.
+
+        @param new_default  A value to assign to this setting if its existing value is out-of-range
+        """
+        self.choices = self.get_option_list()
+        still_valid = self.config_point.validate(self.value)
+        if not still_valid.is_valid:
+            self._value = new_default
 
     def short_press(self):
         """
