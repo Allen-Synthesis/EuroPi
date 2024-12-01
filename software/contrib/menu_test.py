@@ -144,6 +144,7 @@ class MenuTest(EuroPiScript):
             })
 
         self.menu = SettingsMenu(menu_spec)
+        self.menu.load_defaults("DEBUG_MENU.json")
 
     def main(self):
         while True:

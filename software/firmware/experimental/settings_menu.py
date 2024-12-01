@@ -112,6 +112,16 @@ class SettingsMenu:
         # Indicates to the application that we need to save the settings to disk
         self.settings_dirty = False
 
+        self.config_points_by_name = {}
+        self.menu_items_by_name = {}
+        for item in self.items:
+            self.config_points_by_name[item.config_point.name] = item.config_point
+            self.menu_items_by_name[item.config_point.name] = item
+            if item.children:
+                for c in item.children:
+                    self.config_points_by_name[c.config_point.name] = c.config_point
+                    self.menu_items_by_name[c.config_point.name] = c
+
     @property
     def knob(self):
         if type(self._knob) is KnobBank:
@@ -123,13 +133,7 @@ class SettingsMenu:
         """
         Get the config points for the menu so we can load/save them as needed
         """
-        config_points = []
-        for item in self.items:
-            config_points.append(item.config_point)
-            if item.children:
-                for c in item.children:
-                    config_points.append(c.config_point)
-        return config_points
+        return list(self.config_points_by_name.values())
 
     def load_defaults(self, settings_file):
         """
@@ -138,7 +142,9 @@ class SettingsMenu:
         @param settings_file  The path to a JSON file where the user's settings are saved
         """
         spec = ConfigSpec(self.get_config_points())
-        return ConfigFile.load_from_file(settings_file, spec)
+        settings = ConfigFile.load_from_file(settings_file, spec)
+        for k in settings.keys():
+            self.menu_items_by_name[k].value = settings[k]
 
     def save(self, settings_file):
         """
