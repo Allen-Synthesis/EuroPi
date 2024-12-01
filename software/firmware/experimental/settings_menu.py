@@ -231,7 +231,8 @@ class MenuItem:
         graphics: dict=None,
         labels: dict=None,
         callback=lambda new_value, old_value, config_point, arg: None,
-        callback_arg=None
+        callback_arg=None,
+        float_resolution=2,
     ):
         """
         Create a new menu item around a ConfigPoint
@@ -247,6 +248,8 @@ class MenuItem:
                          graphics to display along with the keyed values
         @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
                        options
+        @param float_resolution  The resolution of floating-point config points (ignored if config_point is not
+                                 a FloatConfigPoint)
         """
         self.menu = None
         self.parent = parent
@@ -280,6 +283,9 @@ class MenuItem:
         if type(self.config_point) is FloatConfigPoint:
             raise Exception(f"Cannot add labels to {self.config_point.name}; unsupported type")
         self.labels = labels
+
+        if type(config_point) is FloatConfigPoint:
+            self.float_resolution = float_resolution
 
         self.choices = self.get_option_list()
 
@@ -390,7 +396,7 @@ class MenuItem:
         """
         t = type(self.config_point)
         if t is FloatConfigPoint:
-            FLOAT_RESOLUTION = 0.01
+            FLOAT_RESOLUTION = 1.0 / (10 ** self.float_resolution)
             items = []
             x = self.config_point.minimum
             while x <= self.config_point.maximum:

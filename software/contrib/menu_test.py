@@ -75,7 +75,6 @@ class MenuTest(EuroPiScript):
                             prefix = menu_prefix,
                             title = "Wave",
                             graphics = self.WAVE_SHAPE_GFX,
-
                         ),
                         MenuItem(
                              IntegerConfigPoint(
