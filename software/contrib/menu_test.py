@@ -50,7 +50,7 @@ class MenuTest(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        self.menu_spec = [
+        menu_spec = [
             {
                 "item": IntegerConfigPoint(
                     "bpm",
@@ -83,114 +83,67 @@ class MenuTest(EuroPiScript):
                         }
                     }
                 ]
-            },
-            {
-                "item": ChoiceConfigPoint(
-                    "cv1_mod",
-                    self.CLOCK_MODS,
-                    "x1"
-                ),
-                "title": "Mod",
-                "prefix": "CV1",
-                "graphics": self.CLOCK_MOD_GFX,
-                "children": [
-                    {
-                        "item": ChoiceConfigPoint(
-                            "cv1_wave",
-                            self.WAVE_SHAPES,
-                            "Square"
-                        ),
-                        "title": "Wave",
-                        "prefix": "CV1",
-                        "graphics": self.WAVE_SHAPE_GFX,
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            "cv1_width",
-                            0,
-                            100,
-                            50
-                        ),
-                        "title": "Width",
-                        "prefix": "CV1",
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            "cv1_phase",
-                            0,
-                            100,
-                            50
-                        ),
-                        "title": "Phase",
-                        "prefix": "CV1",
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            "cv1_amplitude",
-                            0,
-                            100,
-                            50
-                        ),
-                        "title": "Amplitude",
-                        "prefix": "CV1",
-                    }
-                ]
-            },
-            {
-                "item": ChoiceConfigPoint(
-                    "cv2_mod",
-                    self.CLOCK_MODS,
-                    "x1"
-                ),
-                "title": "Mod",
-                "prefix": "CV2",
-                "graphics": self.CLOCK_MOD_GFX,
-                "children": [
-                    {
-                        "item": ChoiceConfigPoint(
-                            "cv2_wave",
-                            self.WAVE_SHAPES,
-                            "Square"
-                        ),
-                        "title": "Wave",
-                        "prefix": "CV2",
-                        "graphics": self.WAVE_SHAPE_GFX,
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            "cv2_width",
-                            0,
-                            100,
-                            50
-                        ),
-                        "title": "Width",
-                        "prefix": "CV2",
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            "cv2_phase",
-                            0,
-                            100,
-                            50
-                        ),
-                        "title": "Phase",
-                        "prefix": "CV2",
-                    },
-                    {
-                        "item": IntegerConfigPoint(
-                            "cv2_amplitude",
-                            0,
-                            100,
-                            50
-                        ),
-                        "title": "Amplitude",
-                        "prefix": "CV2",
-                    }
-                ]
             }
         ]
 
-        self.menu = SettingsMenu(self.menu_spec)
+        for i in range(6):
+            prefix = f"CV{i+1}"
+            config_prefix = f"cv{i+1}"
+
+            menu_spec.append({
+                "item": ChoiceConfigPoint(
+                    f"{config_prefix}_mod",
+                    self.CLOCK_MODS,
+                    "x1"
+                ),
+                "title": "Mod",
+                "prefix": prefix,
+                "graphics": self.CLOCK_MOD_GFX,
+                "children": [
+                    {
+                        "item": ChoiceConfigPoint(
+                            f"{config_prefix}_wave",
+                            self.WAVE_SHAPES,
+                            "Square"
+                        ),
+                        "title": "Wave",
+                        "prefix": prefix,
+                        "graphics": self.WAVE_SHAPE_GFX,
+                    },
+                    {
+                        "item": IntegerConfigPoint(
+                            f"{config_prefix}_width",
+                            0,
+                            100,
+                            50
+                        ),
+                        "title": "Width",
+                        "prefix": prefix,
+                    },
+                    {
+                        "item": IntegerConfigPoint(
+                            f"{config_prefix}_phase",
+                            0,
+                            100,
+                            50
+                        ),
+                        "title": "Phase",
+                        "prefix": prefix,
+                    },
+                    {
+                        "item": IntegerConfigPoint(
+                            f"{config_prefix}_amplitude",
+                            0,
+                            100,
+                            50
+                        ),
+                        "title": "Amplitude",
+                        "prefix": prefix,
+                    }
+                ]
+            })
+
+        self.menu = SettingsMenu(menu_spec)
 
     def main(self):
         while True:
