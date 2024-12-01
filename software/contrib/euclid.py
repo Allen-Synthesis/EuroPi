@@ -301,8 +301,18 @@ class EuclideanRhythms(EuroPiScript):
         self.last_user_interaction_at = time.ticks_ms()
 
     def main(self):
+
+        # manually check the state of k1 since it's otherwise not used, but should
+        # disable the screensaver
+        prev_k1 = int(k1.percent() * 100)
+
         while True:
             now = time.ticks_ms()
+
+            current_k1 = int(k1.percent() * 100)
+            if current_k1 != prev_k1:
+                self.last_user_interaction_at = now
+                prev_k1 = current_k1
 
             if self.menu.ui_dirty:
                 self.last_user_interaction_at = now
