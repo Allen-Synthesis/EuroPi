@@ -23,7 +23,9 @@ class MenuItem:
     Generic class for anything we can display in the menu
     """
 
-    def __init__(self, children: list[MenuItem] = None, parent: MenuItem = None, is_visible: bool = True):
+    def __init__(
+        self, children: list[MenuItem] = None, parent: MenuItem = None, is_visible: bool = True
+    ):
         """
         Create a new abstract menu item
 
