@@ -621,7 +621,10 @@ try:
     )
 except NoDisplayConnectedException as e:
     print(e)
-    oled = DummyDisplay()
+    oled = DummyDisplay(
+        width=europi_config.DISPLAY_WIDTH,
+        height=europi_config.DISPLAY_HEIGHT,
+    )
 
 
 cv1 = Output(PIN_CV1)
