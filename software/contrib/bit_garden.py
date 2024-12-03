@@ -3,6 +3,7 @@ try:
     from software.firmware import europi_config
     from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH, OLED_WIDTH
     from software.firmware.europi import ain, din, k1, k2, oled, b1, b2, cvs
+    from software.firmware.europi_display import DummyDisplay, NoDisplayConnectedException
     from software.firmware.europi_script import EuroPiScript
     from software.firmware.experimental.a_to_d import AnalogReaderDigitalWrapper
     from software.firmware.experimental.custom_font import CustomFontDisplay
@@ -11,6 +12,7 @@ try:
 except ImportError:
     # Device import path
     from europi import *
+    from europi_display import DummyDisplay, NoDisplayConnectedException
     from europi_script import EuroPiScript
     from experimental.a_to_d import AnalogReaderDigitalWrapper
     from experimental.custom_font import CustomFontDisplay
@@ -26,7 +28,11 @@ MAX_STEPS = 32
 LONG_PRESS_MS = 500
 
 # Use the Custom Font wrapper for oled display.
-oled = CustomFontDisplay()
+try:
+    oled = CustomFontDisplay()
+except NoDisplayConnectedException as e:
+    print(e)
+    oled = DummyDisplay(OLED_WIDTH, OLED_HEIGHT)
 
 
 class TriggerMode:
@@ -171,7 +177,7 @@ class BitGarden(EuroPiScript):
     def digital_falling(self):
         """Tell the SeedPacket the digital input has gone low for Trigger mode."""
         self.packet.trigger_off()
-    
+
     def digital2_rising(self):
         self.packet.new_seed()
         self._update_display = True
@@ -364,7 +370,7 @@ class BitGarden(EuroPiScript):
         charh = ubuntumono20.height()
         oled.text(f"{self._temp_seed:04X}", start, top, font=ubuntumono20)
         oled.hline(start + (self._seed_index * charw), top+charh, charw, 1)
-    
+
     def display_edit_probability(self):
         """Display each output probability as a vertical filled bar with edit indicator."""
         top = 0
