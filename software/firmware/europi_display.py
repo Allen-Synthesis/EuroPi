@@ -34,6 +34,7 @@ class Display(SSD1306_I2C):
     """
 
     def __init__(
+        # fmt: off
         self,
         width,
         height,
@@ -43,6 +44,7 @@ class Display(SSD1306_I2C):
         freq,
         contrast,
         rotate
+        # fmt: on
     ):
         i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
@@ -100,6 +102,7 @@ class DummyDisplay:
 
     Useful e.g when debugging a breadboard version of the module without a display connected
     """
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
