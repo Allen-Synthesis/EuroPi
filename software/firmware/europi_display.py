@@ -11,6 +11,7 @@ class NoDisplayConnectedException(Exception):
     """
     An exception raised by the Display constructor if no display hardware is connected
     """
+
     def __init__(self):
         super().__init__(
             "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
