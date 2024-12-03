@@ -130,6 +130,12 @@ class EuroPiConfig:
                 default=0,
             ),
             configuration.integer(
+                name="DISPLAY_CONTRAST",
+                minimum=0,
+                maximum=255,
+                default=255
+            ),
+            configuration.integer(
                 name="DISPLAY_FREQUENCY",
                 minimum=0,
                 maximum=1000000,

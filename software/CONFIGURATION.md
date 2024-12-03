@@ -46,6 +46,7 @@ Display options:
 - `DISPLAY_SDA` is the I²C SDA pin used for the display. Only SDA capable pins can be selected. Default: `0`
 - `DISPLAY_SCL` is the I²C SCL pin used for the display. Only SCL capable pins can be selected. Default: `1`
 - `DISPLAY_CHANNEL` is the I²C channel used for the display, either 0 or 1. Default: `0`
+- `DISPLAY_CONTRAST` is a value indicating the display contrast. Higher numbers give higher contrast. `0` to `255`. Default: `255`
 
 External I²C options:
 - `EXTERNAL_I2C_SDA` is the I²C SDA pin used for the external I²C interface. Only SDA capable pis can be selected. Default: `2`
@@ -130,33 +131,7 @@ True
 ```
 
 `europi.py` contains objects called `europi_config` and `experimental_config` which implement the core & experimental
-customizations described in the sections above. Below is a detailed summary of the contents of these objects:
-
-```python
->>> from europi import europi_config
->>> dir(europi_config)
-[
-  '__class__',
-  '__init__',
-  '__module__',
-  '__qualname__',
-  '__dict__',
-  'to_attr_name',
-  'CPU_FREQ',
-  'DISPLAY_CHANNEL',
-  'DISPLAY_HEIGHT',
-  'DISPLAY_SCL',
-  'DISPLAY_SDA',
-  'DISPLAY_WIDTH',
-  'EUROPI_MODEL',
-  'GATE_VOLTAGE',
-  'MAX_INPUT_VOLTAGE',
-  'MAX_OUTPUT_VOLTAGE',
-  'MENU_AFTER_POWER_ON',
-  'PICO_MODEL',
-  'ROTATE_DISPLAY'
-]
-```
+customizations described in the sections above.
 
 When you import `europi` into your project you can access the `europi_config` object like this:
 ```python
