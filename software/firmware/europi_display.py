@@ -7,17 +7,6 @@ import ssd1306
 from ssd1306 import SSD1306_I2C
 
 
-class NoDisplayConnectedException(Exception):
-    """
-    An exception raised by the Display constructor if no display hardware is connected
-    """
-
-    def __init__(self):
-        super().__init__(
-            "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
-        )
-
-
 class Display(SSD1306_I2C):
     """
     A class for drawing graphics and text to the OLED.
@@ -50,9 +39,6 @@ class Display(SSD1306_I2C):
         i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
         self.width = width
         self.height = height
-
-        if len(i2c.scan()) == 0:
-            raise NoDisplayConnectedException()
         super().__init__(self.width, self.height, i2c)
         self.rotate(rotate)
         self.contrast(contrast)

@@ -608,7 +608,7 @@ k2 = Knob(PIN_K2)
 b1 = Button(PIN_B1)
 b2 = Button(PIN_B2)
 
-try:
+if not TEST_ENV:
     oled = Display(
         width=europi_config.DISPLAY_WIDTH,
         height=europi_config.DISPLAY_HEIGHT,
@@ -619,8 +619,8 @@ try:
         contrast=europi_config.DISPLAY_CONTRAST,
         rotate=europi_config.ROTATE_DISPLAY,
     )
-except NoDisplayConnectedException as e:
-    print(e)
+else:
+    print("No display hardware detected; falling back to DummyDisplay")
     oled = DummyDisplay(
         width=europi_config.DISPLAY_WIDTH,
         height=europi_config.DISPLAY_HEIGHT,
