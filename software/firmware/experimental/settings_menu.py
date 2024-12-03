@@ -24,19 +24,24 @@ class MenuItem:
     """
 
     def __init__(
-        self, children: list[MenuItem] = None, parent: MenuItem = None, is_visible: bool = True
+        self, children: list[object] = None, parent: object = None, is_visible: bool = True
     ):
         """
         Create a new abstract menu item
 
-        @param parent  If the menu has multiple levels, what is this item's parent control?
-        @param children  If this menu has multiple levels, whar are this item's child controls?
+        @param parent  A MenuItem representing this item's parent, if this item is the bottom-level of a
+                       multi-level menu
+        @param children  A list of MenuItems representing this item's children, if this is the top-level of a
+                         multi-level menu
         @param is_visible  Is this menu item visible by default?
         """
         self.menu = None
         self.parent = parent
         self.children = children
         self.is_visible = is_visible
+
+        if parent and children:
+            raise Exception("Cannot specify parent and children in the same menu item")
 
     def short_press(self):
         """Handler for when the user short-presses the button"""
