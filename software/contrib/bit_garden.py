@@ -3,7 +3,6 @@ try:
     from software.firmware import europi_config
     from software.firmware.europi import CHAR_HEIGHT, CHAR_WIDTH, OLED_WIDTH
     from software.firmware.europi import ain, din, k1, k2, oled, b1, b2, cvs
-    from software.firmware.europi_display import DummyDisplay, NoDisplayConnectedException
     from software.firmware.europi_script import EuroPiScript
     from software.firmware.experimental.a_to_d import AnalogReaderDigitalWrapper
     from software.firmware.experimental.custom_font import CustomFontDisplay
@@ -12,7 +11,6 @@ try:
 except ImportError:
     # Device import path
     from europi import *
-    from europi_display import DummyDisplay, NoDisplayConnectedException
     from europi_script import EuroPiScript
     from experimental.a_to_d import AnalogReaderDigitalWrapper
     from experimental.custom_font import CustomFontDisplay
@@ -28,11 +26,7 @@ MAX_STEPS = 32
 LONG_PRESS_MS = 500
 
 # Use the Custom Font wrapper for oled display.
-try:
-    oled = CustomFontDisplay()
-except NoDisplayConnectedException as e:
-    print(e)
-    oled = DummyDisplay(OLED_WIDTH, OLED_HEIGHT)
+oled = CustomFontDisplay()
 
 
 class TriggerMode:
