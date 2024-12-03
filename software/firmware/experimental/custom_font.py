@@ -5,16 +5,11 @@ from machine import Pin
 from ssd1306 import SSD1306_I2C
 
 from europi import (
-    OLED_WIDTH,
-    OLED_I2C_FREQUENCY,
-    OLED_HEIGHT,
-    OLED_I2C_SDA,
-    OLED_I2C_SCL,
-    OLED_I2C_CHANNEL,
+    europi_config,
     TEST_ENV,
     CHAR_HEIGHT,
 )
-from europi import Display as BasicDisplay
+from europi_display import Display as BasicDisplay
 
 
 # TODO: add a method to select the font to use by default
@@ -79,7 +74,16 @@ class CustomFontDisplay(BasicDisplay):
     def __init__(self, default_font=None):  # by default will use the monospaced 8x8 font
         self.writers = {}  # re-usable large font writer instances
         self.default_font = default_font
-        super().__init__(OLED_I2C_SDA, OLED_I2C_SCL, channel=OLED_I2C_CHANNEL)
+        super().__init__(
+            width=europi_config.DISPLAY_WIDTH,
+            height=europi_config.DISPLAY_HEIGHT,
+            sda=europi_config.DISPLAY_SDA,
+            scl=europi_config.DISPLAY_SCL,
+            channel=europi_config.DISPLAY_CHANNEL,
+            freq=europi_config.DISPLAY_FREQUENCY,
+            contrast=europi_config.DISPLAY_CONTRAST,
+            rotate=europi_config.ROTATE_DISPLAY,
+        )
 
     def _writer(self, font):
         """Returns the large font writer for the specified font."""
