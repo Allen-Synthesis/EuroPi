@@ -19,14 +19,16 @@ from machine import Timer
 import time
 
 
-AIN_GRAPHICS = bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00')
-KNOB_GRAPHICS = bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00')
+# fmt: off
+AIN_GRAPHICS = bytearray(b"\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00")
+KNOB_GRAPHICS = bytearray(b"\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00")
 
 AIN_LABEL = "AIN"
 KNOB_LABEL = "Knob"
 
 AUTOSELECT_AIN = "autoselect_ain"
 AUTOSELECT_KNOB = "autoselect_knob"
+# fmt: off
 
 
 class MenuItem:
