@@ -342,10 +342,11 @@ class SettingMenuItem(MenuItem):
         """
         super().__init__(parent=parent, children=children, is_visible=is_visible)
 
+        # a timer used to sample the knob/analog input when needed
         self.timer = Timer()
 
-        # are we in edit mode?
-        self.edit_mode = False
+        # internal flag for the is_editable property
+        self._is_editable = False
 
         self.analog_in = analog_in
         self.knob_in = knob_in
@@ -612,8 +613,8 @@ class SettingMenuItem(MenuItem):
 
     @property
     def is_editable(self):
-        return self.edit_mode
+        return self._is_editable
 
     @is_editable.setter
     def is_editable(self, can_edit):
-        self.edit_mode = can_edit
+        self._is_editable = can_edit
