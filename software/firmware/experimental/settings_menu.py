@@ -15,7 +15,18 @@ import europi
 from configuration import *
 from experimental.knobs import KnobBank
 from framebuf import FrameBuffer, MONO_HLSB
+from machine import Timer
 import time
+
+
+AIN_GRAPHICS = bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00')
+KNOB_GRAPHICS = bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00')
+
+AIN_LABEL = "AIN"
+KNOB_LABEL = "Knob"
+
+AUTOSELECT_AIN = "autoselect_ain"
+AUTOSELECT_KNOB = "autoselect_knob"
 
 
 class MenuItem:
@@ -170,7 +181,7 @@ class SettingsMenu:
         spec = ConfigSpec(self.get_config_points())
         settings = ConfigFile.load_from_file(settings_file, spec)
         for k in settings.keys():
-            self.menu_items_by_name[k].value = settings[k]
+            self.menu_items_by_name[k].choose(settings[k])
 
     def save(self, settings_file):
         """
@@ -178,7 +189,7 @@ class SettingsMenu:
         """
         data = {}
         for item in self.menu_items_by_name.values():
-            data[item.config_point.name] = item.value
+            data[item.config_point.name] = item.value_choice
         ConfigFile.save_to_file(settings_file, data)
         self.settings_dirty = False
 
@@ -302,6 +313,8 @@ class SettingMenuItem(MenuItem):
         float_resolution=2,
         value_map: dict = None,
         is_visible: bool = True,
+        knob_in: europi.Knob = None,
+        analog_in: europi.AnalogueInput = None,
     ):
         """
         Create a new menu item around a ConfigPoint
@@ -322,14 +335,51 @@ class SettingMenuItem(MenuItem):
         @param value_map  An optional dict to map the underlying simple ConfigPoint values to more complex objects
                           e.g. map the string "CMaj" to a Quantizer object
         @param is_visible  Is this menu item visible by default?
+        @param knob_in  If set to a Knob instance, allow the user to use a knob to automatically choose values for
+                        this setting
+        @param analog_in  If set to an analogue input, allow the user to automatically choose values for this
+                          setting via CV control
         """
         super().__init__(parent=parent, children=children, is_visible=is_visible)
 
         # are we in edit mode?
         self.edit_mode = False
 
+        self.analog_in = analog_in
+        self.knob_in = knob_in
+
+        self.graphics = graphics
+        self.labels = labels
+        self.value_map = value_map
+
         # the configuration setting that we're controlling via this menu item
-        self.config_point = config_point
+        # convert everything to a choice configuration; this way we can add the knob/ain options too
+        if type(config_point) is FloatConfigPoint:
+            self.float_resolution = float_resolution
+        self.src_config = config_point
+        choices = self.get_option_list()
+        self.config_point = ChoiceConfigPoint(
+            config_point.name,
+            choices=choices,
+            default=config_point.default,
+        )
+
+        self.NUM_AUTOINPUT_CHOICES = 0
+        if self.analog_in or self.knob_in:
+            if self.analog_in:
+                self.NUM_AUTOINPUT_CHOICES += 1
+            if self.knob_in:
+                self.NUM_AUTOINPUT_CHOICES += 1
+
+            if not self.graphics:
+                self.graphics = {}
+            self.graphics[AUTOSELECT_AIN] = AIN_GRAPHICS
+            self.graphics[AUTOSELECT_KNOB] = KNOB_GRAPHICS
+
+            if not self.labels:
+                self.labels = {}
+            self.labels[AUTOSELECT_AIN] = AIN_LABEL
+            self.labels[AUTOSELECT_KNOB] = KNOB_LABEL
 
         if title:
             self.title = title
@@ -341,29 +391,12 @@ class SettingMenuItem(MenuItem):
         else:
             self.prefix = ""
 
-        if type(self.config_point) is FloatConfigPoint and graphics:
-            raise Exception(f"Cannot add graphics to {self.config_point.name}; unsupported type")
-        self.graphics = graphics
-
-        if type(self.config_point) is FloatConfigPoint and labels:
-            raise Exception(f"Cannot add labels to {self.config_point.name}; unsupported type")
-        self.labels = labels
-
-        if type(self.config_point) is FloatConfigPoint and value_map:
-            raise Exception(f"Cannot add value map to {self.config_point.name}; unsupported type")
-        self.value_map = value_map
-
-        if type(config_point) is FloatConfigPoint:
-            self.float_resolution = float_resolution
-
-        self.choices = self.get_option_list()
-
         self.callback_fn = callback
         self.callback_arg = callback_arg
 
-        # assign the initial value
-        # this will prevent the callback function from being called
+        # assign the initial value without firing any callbacks
         self._value = self.config_point.default
+        self._value_choice = self.config_point.default
 
     def refresh_choices(self, new_default=None):
         """
@@ -374,10 +407,10 @@ class SettingMenuItem(MenuItem):
 
         @param new_default  A value to assign to this setting if its existing value is out-of-range
         """
-        self.choices = self.get_option_list()
+        self.config_point.choices = self.get_option_list()
         still_valid = self.config_point.validate(self.value)
         if not still_valid.is_valid:
-            self._value = new_default
+            self.choose(new_default)
 
     def short_press(self):
         """
@@ -387,9 +420,12 @@ class SettingMenuItem(MenuItem):
         exits edit mode
         """
         if self.is_editable:
-            # apply the currently-selected choice if we're in edit mode
-            self.value = self.menu.knob.choice(self.choices)
-            self.menu.settings_dirty = True
+            new_choice = self.menu.knob.choice(self.config_point.choices)
+            if new_choice != self.value_choice:
+                # apply the currently-selected choice if we're in edit mode
+                self.choose(new_choice)
+                self.ui_dirty = True
+                self.menu.settings_dirty = True
 
         self.is_editable = not self.is_editable
 
@@ -405,9 +441,9 @@ class SettingMenuItem(MenuItem):
         SELECT_OPTION_Y = 16
 
         if self.is_editable:
-            display_value = self.menu.knob.choice(self.choices)
+            display_value = self.menu.knob.choice(self.config_point.choices)
         else:
-            display_value = self.value
+            display_value = self.value_choice
 
         text_left = 0
         prefix_left = 1
@@ -440,7 +476,7 @@ class SettingMenuItem(MenuItem):
                 oled.blit(gfx, 0, SELECT_OPTION_Y)
 
         if self.labels:
-            display_text = self.labels[display_value]
+            display_text = self.labels.get(display_value, str(display_value))
         else:
             display_text = str(display_value)
 
@@ -466,24 +502,93 @@ class SettingMenuItem(MenuItem):
 
         @return  A list of choices
         """
-        t = type(self.config_point)
+        t = type(self.src_config)
         if t is FloatConfigPoint:
             FLOAT_RESOLUTION = 1.0 / (10**self.float_resolution)
             items = []
-            x = self.config_point.minimum
-            while x <= self.config_point.maximum:
+            x = self.src_config.minimum
+            while x <= self.src_config.maximum:
                 items.append(x)
                 x += FLOAT_RESOLUTION
         elif t is IntegerConfigPoint:
-            items = list(range(self.config_point.minimum, self.config_point.maximum + 1))
+            items = list(range(self.src_config.minimum, self.src_config.maximum + 1))
         elif t is BooleanConfigPoint:
             items = [False, True]
         elif t is ChoiceConfigPoint:
-            items = self.config_point.choices
+            items = self.src_config.choices
         else:
-            raise Exception(f"Unsupported ConfigPoint type: {type(self.config_point)}")
+            raise Exception(f"Unsupported ConfigPoint type: {type(self.src_config)}")
+
+        # Add the autoselect inputs, if needed
+        if self.knob_in:
+            items.append(AUTOSELECT_KNOB)
+        if self.analog_in:
+            items.append(AUTOSELECT_AIN)
 
         return items
+
+    def sample_ain(self, timer):
+        """
+        Read from AIN and use it to dynamically choose an item
+
+        @param timer  The timer that fired this callback
+        """
+        index = int(self.analog_in.percent() * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES))
+        item = self.config_point.choices[index]
+        if item != self._value:
+            old_value = self._value
+            self._value = item
+            self.callback_fn(item, old_value, self.config_point, self.callback_arg)
+
+    def sample_knob(self, timer):
+        """
+        Read from the secondary knob and use it to dynamically choose an item
+
+        @param timer  The timer that fired this callback
+        """
+        index = int(self.knob_in.percent() * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES))
+        item = self.config_point.choices[index]
+        if item != self._value:
+            old_value = self._value
+            self._value = item
+            self.callback_fn(item, old_value, self.config_point, self.callback_arg)
+
+    def choose(self, choice):
+        """
+        Set the raw value of this item's ConfigPoint
+
+        @param choice  The value to assign to the ConfigPoint.
+
+        @exception  ValueError if the given choice is not valid for this setting
+        """
+        # kick out early if we aren't actually choosing anything
+        if choice == self.value_choice:
+            return
+
+        validation = self.config_point.validate(choice)
+        if not validation.is_valid:
+            raise ValueError(f"{choice} is not a valid value for {self.config_point.name}")
+
+        if self.value == AUTOSELECT_AIN or self.value == AUTOSELECT_KNOB:
+            self.timer.deinit()
+            self.timer = None
+
+        old_value = self._value_choice
+        self._value_choice = choice
+
+        if self._value_choice == AUTOSELECT_AIN:
+            self.timer = Timer()
+            self.timer.init(freq=10, mode=Timer.PERIODIC, callback=self.sample_ain)
+        elif self._value_choice == AUTOSELECT_KNOB:
+            self.timer = Timer()
+            self.timer.init(freq=10, mode=Timer.PERIODIC, callback=self.sample_knob)
+        else:
+            self.callback_fn(choice, old_value, self.config_point, self.callback_arg)
+
+    @property
+    def value_choice(self):
+        """The value the user has chosen from the menu"""
+        return self._value_choice
 
     @property
     def value(self):
@@ -493,22 +598,6 @@ class SettingMenuItem(MenuItem):
         You should use .mapped_value if you have assigned a value_map to the constructor
         """
         return self._value
-
-    @value.setter
-    def value(self, v):
-        """
-        Set the raw value of this item's ConfigPoint
-
-        @param v  The value to assign to the ConfigPoint.
-        """
-        validation = self.config_point.validate(v)
-        if not validation.is_valid:
-            raise Exception(f"{v} is not a valid value for {self.config_point.name}")
-
-        old_value = self._value
-        self._value = v
-        if self.callback_fn:
-            self.callback_fn(v, old_value, self.config_point, self.callback_arg)
 
     @property
     def mapped_value(self):

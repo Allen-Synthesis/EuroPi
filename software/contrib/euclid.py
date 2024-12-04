@@ -35,6 +35,10 @@ class EuclidGenerator:
         """
         setting_prefix = name.lower()
 
+        self.rotatation = None
+        self.pulses = None
+        self.steps = None
+
         self.steps = SettingMenuItem(
             config_point = IntegerConfigPoint(
                 f"{setting_prefix}_steps",
@@ -45,18 +49,8 @@ class EuclidGenerator:
             prefix = name,
             title = "Steps",
             callback = self.update_steps,
-        )
-
-        self.pulses = SettingMenuItem(
-            config_point = IntegerConfigPoint(
-                f"{setting_prefix}_pulses",
-                0,
-                32,
-                pulses,
-            ),
-            prefix = name,
-            title = "Pulses",
-            callback = self.update_pulses,
+            analog_in = ain,
+            knob_in = k1,
         )
 
         self.rotation = SettingMenuItem(
@@ -69,6 +63,22 @@ class EuclidGenerator:
             prefix = name,
             title = "Rotation",
             callback = self.update_rotation,
+            analog_in = ain,
+            knob_in = k1,
+        )
+
+        self.pulses = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                f"{setting_prefix}_pulses",
+                0,
+                32,
+                pulses,
+            ),
+            prefix = name,
+            title = "Pulses",
+            callback = self.update_pulses,
+            analog_in = ain,
+            knob_in = k1,
         )
 
         self.skip = SettingMenuItem(
@@ -80,6 +90,8 @@ class EuclidGenerator:
             ),
             prefix = name,
             title = "Skip %",
+            analog_in = ain,
+            knob_in = k1,
         )
 
         ## The CV output this generator controls
@@ -100,15 +112,17 @@ class EuclidGenerator:
         #  if this is None; otherwise its value is simply returned
         self.str = None
 
+        # Initialize the pattern
+        self.update_steps(self.steps.value, 0, None, None)
         self.regenerate()
 
     def update_steps(self, new_steps, old_steps, config_point, arg=None):
         """Update the max range of pulses & rotation to match the number of steps
         """
-        self.pulses.config_point.maximum = new_steps
+        self.pulses.src_config.maximum = new_steps
         self.pulses.refresh_choices(new_default=new_steps)
 
-        self.rotation.config_point.maximum = new_steps
+        self.rotation.src_config.maximum = new_steps
         self.rotation.refresh_choices(new_default=new_steps)
 
         self.regenerate()
@@ -156,7 +170,6 @@ class EuclidGenerator:
 
         Changing the pattern will reset the position to zero
         """
-
         self.position = 0
         self.pattern = generate_euclidean_pattern(self.steps.value, self.pulses.value, self.rotation.value)
 
