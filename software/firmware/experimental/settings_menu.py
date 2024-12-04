@@ -533,7 +533,9 @@ class SettingMenuItem(MenuItem):
 
         @param timer  The timer that fired this callback
         """
-        index = int(self.analog_in.percent() * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES))
+        index = int(
+            self.analog_in.percent() * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES)
+        )
         item = self.config_point.choices[index]
         if item != self._value:
             old_value = self._value
@@ -546,7 +548,9 @@ class SettingMenuItem(MenuItem):
 
         @param timer  The timer that fired this callback
         """
-        index = int(self.knob_in.percent() * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES))
+        index = int(
+            self.knob_in.percent() * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES)
+        )
         item = self.config_point.choices[index]
         if item != self._value:
             old_value = self._value
