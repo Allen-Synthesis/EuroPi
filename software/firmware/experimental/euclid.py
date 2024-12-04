@@ -36,10 +36,14 @@ def generate_euclidean_pattern(steps, pulses, rot=0):
     steps = int(steps)
     pulses = int(pulses)
     rot = int(rot)
-    if pulses > steps or pulses < 0:
-        raise ValueError
-    if rot > steps or steps < 0:
-        raise ValueError
+    if pulses > steps:
+        raise ValueError("Pulses cannot be greater than steps")
+    if pulses < 0:
+        raise ValueError("Pulses must be positive")
+    if rot > steps:
+        raise ValueError("Rotation cannot be greater than steps")
+    if steps < 0:
+        raise ValueError("Steps must be positive")
     if steps == 0:
         return []
     if pulses == 0:
