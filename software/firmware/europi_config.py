@@ -74,10 +74,16 @@ class EuroPiConfig:
                 choices=[0, 1],
                 default=0
             ),
-            configuration.integer(
+            configuration.choice(
                 name="DISPLAY_FREQUENCY",
-                minimum=0,
-                maximum=1000000,
+                choices=[
+                    100000,  # 100k (Sm)
+                    400000,  # 400k (Fm)
+                    1000000, # 1M   (Fm+)
+                    1700000, # 1.7M (Hs)
+                    3400000, # 3.4M (Hs)
+                    5000000, # 5M   (UFm)
+                ],
                 default=400000
             ),
 
@@ -97,17 +103,24 @@ class EuroPiConfig:
                 choices=[0, 1],
                 default=1
             ),
-            configuration.integer(
+            configuration.choice(
                 name="EXTERNAL_I2C_FREQUENCY",
-                minimum=0,
-                maximum=1000000,  # 1M max
-                default=100000    # 100k default
+                name="DISPLAY_FREQUENCY",
+                choices=[
+                    100000,  # 100k (Sm)
+                    400000,  # 400k (Fm)
+                    1000000, # 1M   (Fm+)
+                    1700000, # 1.7M (Hs)
+                    3400000, # 3.4M (Hs)
+                    5000000, # 5M   (UFm)
+                ],
+                default=100000
             ),
             configuration.integer(
                 name="EXTERNAL_I2C_TIMEOUT",
                 minimum=0,
-                maximum=100000,
-                default=50000
+                maximum=5000,
+                default=1000
             ),
 
             # I/O voltage settings
