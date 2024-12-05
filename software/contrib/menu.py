@@ -62,8 +62,10 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Turing Machine",    "contrib.turing_machine.EuroPiTuringMachine"],
     ["Volts",             "contrib.volts.OffsetVoltages"],
 
-    ["_Calibrate",        "calibrate.Calibrate"],              # this one should always be second to last!
-    ["_BootloaderMode",   "bootloader_mode.BootloaderMode"]    # this one should always be last!
+    # System tools
+    ["_Calibrate",        "calibrate.Calibrate"],
+    ["_Config Editor",    "tools.conf_edit.ConfigurationEditor"],
+    ["_BootloaderMode",   "bootloader_mode.BootloaderMode"]
 ])
 # fmt: on
 

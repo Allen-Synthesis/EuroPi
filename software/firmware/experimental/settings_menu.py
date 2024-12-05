@@ -582,8 +582,9 @@ class SettingMenuItem(MenuItem):
             items = []
             x = self.src_config.minimum
             while x <= self.src_config.maximum:
-                items.append(x)
+                items.append(round(x, self.float_resolution))
                 x += FLOAT_RESOLUTION
+            items.append(round(self.src_config.maximum, self.float_resolution))
         elif t is IntegerConfigPoint:
             items = list(range(self.src_config.minimum, self.src_config.maximum + 1))
         elif t is BooleanConfigPoint:
