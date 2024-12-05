@@ -45,7 +45,7 @@ External I²C options:
 - `EXTERNAL_I2C_SCL` is the I²C SCL pin used for the external I²C interface. Only SCL capable pins can be selected. Default: `3`
 - `EXTERNAL_I2C_CHANNEL` is the I²C channel used for the external I²C interface, either 0 or 1. Default: `1`
 - `EXTERNAL_I2C_FREQUENCY` is the I²C frequency used for the external I²C interface. Default: `100000`
-- `EXTERNAL_I2C_TIMEOUT` is the I²C timeout in microseconds for the external I²C interface. Default: `50000`
+- `EXTERNAL_I2C_TIMEOUT` is the I²C timeout in milliseconds for the external I²C interface. Default: `1000`
 
 I/O voltage options:
 - `MAX_OUTPUT_VOLTAGE` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate. Default: `10`
