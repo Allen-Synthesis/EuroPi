@@ -105,7 +105,6 @@ class EuroPiConfig:
             ),
             configuration.choice(
                 name="EXTERNAL_I2C_FREQUENCY",
-                name="DISPLAY_FREQUENCY",
                 choices=[
                     100000,  # 100k (Sm)
                     400000,  # 400k (Fm)
