@@ -12,22 +12,27 @@ from configuration import ConfigFile
 
 from experimental.settings_menu import *
 
+
 class ConfigurationEditor(EuroPiScript):
     def __init__(self):
         super().__init__()
 
+        # fmt: off
         config_points = EuroPiConfig.config_points()
-        menu_items = [
-            SettingMenuItem(
-                config_point=cfg,
-                float_resolution=1
-            ) for cfg in config_points
-        ]
+        menu_items = []
+        for cfg in config_points:
+            menu_items.append(
+                SettingMenuItem(
+                    config_point=cfg,
+                    float_resolution=1
+                )
+            )
 
         self.menu = SettingsMenu(
             menu_items=menu_items
         )
         self.menu.load_defaults(ConfigFile.config_filename(EuroPiConfig))
+        # fmt: on
 
     def main(self):
         while True:
@@ -37,6 +42,7 @@ class ConfigurationEditor(EuroPiScript):
 
             if self.menu.settings_dirty:
                 self.menu.save(ConfigFile.config_filename(EuroPiConfig))
+
 
 if __name__ == "__main__":
     ConfigurationEditor().main()
