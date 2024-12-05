@@ -49,8 +49,8 @@ class EuclidGenerator:
             prefix = name,
             title = "Steps",
             callback = self.update_steps,
-            analog_in = ain,
-            knob_in = k1,
+            autoselect_cv = True,
+            autoselect_knob = True,
         )
 
         self.rotation = SettingMenuItem(
@@ -63,8 +63,8 @@ class EuclidGenerator:
             prefix = name,
             title = "Rotation",
             callback = self.update_rotation,
-            analog_in = ain,
-            knob_in = k1,
+            autoselect_cv = True,
+            autoselect_knob = True,
         )
 
         self.pulses = SettingMenuItem(
@@ -77,8 +77,8 @@ class EuclidGenerator:
             prefix = name,
             title = "Pulses",
             callback = self.update_pulses,
-            analog_in = ain,
-            knob_in = k1,
+            autoselect_cv = True,
+            autoselect_knob = True,
         )
 
         self.skip = SettingMenuItem(
@@ -90,8 +90,8 @@ class EuclidGenerator:
             ),
             prefix = name,
             title = "Skip %",
-            analog_in = ain,
-            knob_in = k1,
+            autoselect_cv = True,
+            autoselect_knob = True,
         )
 
         ## The CV output this generator controls
@@ -256,6 +256,8 @@ class EuclideanRhythms(EuroPiScript):
             )
 
         self.menu = SettingsMenu(
+            navigation_knob = k2,
+            navigation_button = b2,
             menu_items = menu_items,
             short_press_cb = self.on_menu_short_press,
             long_press_cb = self.on_menu_long_press

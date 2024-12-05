@@ -83,8 +83,17 @@ class SequentialSwitch(EuroPiScript):
     def __init__(self):
         super().__init__()
 
-        din.handler(self.on_trigger)
-        b1.handler(self.on_trigger)
+        # The index of the current outputs
+        self.current_output = 0
+
+        # For MODE_PINGPONG, this indicates the direction of travel
+        # it will always be +1 or -1
+        self.direction = 1
+
+        ## The shift register we use as s&h in MODE_SHIFT
+        self.shift_register = [0] * len(cvs)
+
+        self.visualization_dirty = True
 
         self.mode = SettingMenuItem(
             config_point = ChoiceConfigPoint(
@@ -119,8 +128,6 @@ class SequentialSwitch(EuroPiScript):
         )
 
         self.menu = SettingsMenu(
-            knob = k2,
-            button = b2,
             short_press_cb = lambda: ssoled.notify_user_interaction(),
             long_press_cb = lambda: ssoled.notify_user_interaction(),
             menu_items = [
@@ -135,15 +142,8 @@ class SequentialSwitch(EuroPiScript):
         )
         self.menu.load_defaults(self._state_filename)
 
-        # The index of the current outputs
-        self.current_output = 0
-
-        # For MODE_PINGPONG, this indicates the direction of travel
-        # it will always be +1 or -1
-        self.direction = 1
-
-        ## The shift register we use as s&h in MODE_SHIFT
-        self.shift_register = [0] * len(cvs)
+        din.handler(self.on_trigger)
+        b1.handler(self.on_trigger)
 
     def on_trigger(self):
         """Handler for the rising edge of the input clock
@@ -181,6 +181,8 @@ class SequentialSwitch(EuroPiScript):
             self.shift_register.pop(-1)
             self.shift_register.insert(0, ain.read_voltage())
 
+        self.visualization_dirty = True
+
     def main(self):
         """The main loop
 
@@ -188,7 +190,8 @@ class SequentialSwitch(EuroPiScript):
         and runs the main loop
         """
         while True:
-            if self.menu.ui_dirty:
+            if self.visualization_dirty or self.menu.ui_dirty:
+                self.visualization_dirty = False
                 ssoled.fill(0)
                 self.menu.draw(ssoled)
                 ssoled.show()

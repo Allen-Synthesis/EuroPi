@@ -97,11 +97,13 @@ class SettingsMenu:
 
     def __init__(
         self,
-        menu_items=None,
-        button=europi.b2,
-        knob=europi.k2,
+        menu_items: list = None,
+        navigation_button: europi.Button = europi.b2,
+        navigation_knob: europi.Knob = europi.k2,
         short_press_cb=lambda: None,
         long_press_cb=lambda: None,
+        autoselect_knob: europi.Knob = europi.k1,
+        autoselect_cv: europi.AnalogueInput = europi.ain,
     ):
         """
         Create a new menu from the given specification
@@ -111,16 +113,19 @@ class SettingsMenu:
         handled properly.
 
         @param menu_items  A list of MenuItem objects representing the top-level of the menu
-        @param button  The button the user presses to interact with the menu
-        @param knob  The knob the user turns to scroll through the menu. This may be an experimental.knobs.KnobBank
-                     with 3 menu levels called "main_menu", "submenu" and "choice", or a raw knob like europi.k2
+        @param navigation_button  The button the user presses to interact with the menu
+        @param navigation_knob  The knob the user turns to scroll through the menu. This may be an
+                                experimental.knobs.KnobBank with 3 menu levels called "main_menu",
+                                "submenu" and "choice", or a raw knob like europi.k2
         @param short_press_cb  An optional callback function to invoke when the user interacts with a short-press of
                                the button
         @param long_press_cb  An optional callback function to invoke when the user interacts with a long-press of
                               the button
+        @param autoselect_knob  A knob that the user can turn to select items without needing to menu-dive
+        @param autoselect_cv  An analogue input the user can use to select items with CV
         """
-        self._knob = knob
-        self.button = button
+        self._knob = navigation_knob
+        self.button = navigation_button
 
         self._ui_dirty = True
 
@@ -160,6 +165,13 @@ class SettingsMenu:
                     if type(c) is SettingMenuItem:
                         self.config_points_by_name[c.config_point.name] = c.config_point
                         self.menu_items_by_name[c.config_point.name] = c
+
+        # set up a timer for menu items that choose automatically based on the alternate knob or ain
+        self.autoselect_cv = autoselect_cv
+        self.autoselect_knob = autoselect_knob
+        self.autoselect_timer = Timer()
+        self.autoselect_cv_items = []
+        self.autoselect_knob_items = []
 
     @property
     def knob(self):
@@ -268,6 +280,66 @@ class SettingsMenu:
         self.active_item.draw(oled)
         self._ui_dirty = False
 
+    def register_autoselect_cv(self, menu_item: SettingMenuItem):
+        """
+        Connects a menu item to this menu's CV input
+
+        @param menu_item  The item that wants to subscribe to the CV input
+        """
+        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
+            self.autoselect_timer.init(freq=10, mode=Timer.PERIODIC, callback=self.do_autoselect)
+        self.autoselect_cv_items.append(menu_item)
+
+    def register_autoselect_knob(self, menu_item: SettingMenuItem):
+        """
+        Connects a menu item to this menu's knob input
+
+        @param menu_item  The item that wants to subscribe to the knob input
+        """
+        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
+            self.autoselect_timer.init(freq=10, mode=Timer.PERIODIC, callback=self.do_autoselect)
+        self.autoselect_knob_items.append(menu_item)
+
+    def unregister_autoselect_cv(self, menu_item: SettingMenuItem):
+        """
+        Disconnects a menu item to this menu's CV input
+
+        @param menu_item  The item that wants to unsubscribe from the CV input
+        """
+        self.autoselect_cv_items.remove(menu_item)
+        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
+            self.autoselect_timer.deinit()
+
+    def unregister_autoselect_knob(self, menu_item: SettingMenuItem):
+        """
+        Disconnects a menu item to this menu's knob input
+
+        @param menu_item  The item that wants to unsubscribe from the knob input
+        """
+        self.autoselect_knob_items.remove(menu_item)
+        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
+            self.autoselect_timer.deinit()
+
+    def do_autoselect(self, timer):
+        """
+        Callback function for the autoselection timer
+
+        Reads from ain and/or the autoselect knob and applies that choice to all subscribed menu items
+        """
+        if len(self.autoselect_cv_items) > 0:
+            ain_percent = self.autoselect_cv.percent()
+            if ain_percent == 1.0:
+                ain_percent = 0.999  # restrict to [0, 1) -- otherwise we get out-of-bounds issues
+            for item in self.autoselect_cv_items:
+                item.autoselect(ain_percent)
+
+        if len(self.autoselect_knob_items) > 0:
+            knob_percent = self.autoselect_knob.percent()
+            if knob_percent == 1.0:
+                knob_percent = 0.999  # restrict to [0, 1) -- otherwise we get out-of-bounds issues
+            for item in self.autoselect_knob_items:
+                item.autoselect(knob_percent)
+
     @property
     def ui_dirty(self):
         """
@@ -315,8 +387,8 @@ class SettingMenuItem(MenuItem):
         float_resolution=2,
         value_map: dict = None,
         is_visible: bool = True,
-        knob_in: europi.Knob = None,
-        analog_in: europi.AnalogueInput = None,
+        autoselect_knob: bool = False,
+        autoselect_cv: bool = False,
     ):
         """
         Create a new menu item around a ConfigPoint
@@ -337,18 +409,18 @@ class SettingMenuItem(MenuItem):
         @param value_map  An optional dict to map the underlying simple ConfigPoint values to more complex objects
                           e.g. map the string "CMaj" to a Quantizer object
         @param is_visible  Is this menu item visible by default?
-        @param knob_in  If set to a Knob instance, allow the user to use a knob to automatically choose values for
-                        this setting
-        @param analog_in  If set to an analogue input, allow the user to automatically choose values for this
-                          setting via CV control
+        @param autoselect_knob  If True, this item gets "Knob" as an additional choice, allowing ad-hoc selection
+                                via the knob
+        @param autoselect_cv  If True, this item gets "AIN" as an additional choice, allowing ad-hoc selection
+                              via the CV input
         """
         super().__init__(parent=parent, children=children, is_visible=is_visible)
 
         # are we in edit mode?
         self.edit_mode = False
 
-        self.analog_in = analog_in
-        self.knob_in = knob_in
+        self.autoselect_cv = autoselect_cv
+        self.autoselect_knob = autoselect_knob
 
         self.graphics = graphics
         self.labels = labels
@@ -367,10 +439,10 @@ class SettingMenuItem(MenuItem):
         )
 
         self.NUM_AUTOINPUT_CHOICES = 0
-        if self.analog_in or self.knob_in:
-            if self.analog_in:
+        if self.autoselect_cv or self.autoselect_knob:
+            if self.autoselect_cv:
                 self.NUM_AUTOINPUT_CHOICES += 1
-            if self.knob_in:
+            if self.autoselect_knob:
                 self.NUM_AUTOINPUT_CHOICES += 1
 
             if not self.graphics:
@@ -522,36 +594,21 @@ class SettingMenuItem(MenuItem):
             raise Exception(f"Unsupported ConfigPoint type: {type(self.src_config)}")
 
         # Add the autoselect inputs, if needed
-        if self.knob_in:
+        if self.autoselect_knob:
             items.append(AUTOSELECT_KNOB)
-        if self.analog_in:
+        if self.autoselect_knob:
             items.append(AUTOSELECT_AIN)
 
         return items
 
-    def sample_ain(self, timer):
+    def autoselect(self, percent: float):
         """
-        Read from AIN and use it to dynamically choose an item
+        Called by the parent menu when the Knob/CV timer fires, automatically updating the value of this item
 
-        @param timer  The timer that fired this callback
+        @param percent  A value 0-1 indicating the level of the knob/cv source
         """
         index = int(
-            self.analog_in.percent() * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES)
-        )
-        item = self.config_point.choices[index]
-        if item != self._value:
-            old_value = self._value
-            self._value = item
-            self.callback_fn(item, old_value, self.config_point, self.callback_arg)
-
-    def sample_knob(self, timer):
-        """
-        Read from the secondary knob and use it to dynamically choose an item
-
-        @param timer  The timer that fired this callback
-        """
-        index = int(
-            self.knob_in.percent() * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES)
+            percent * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES)
         )
         item = self.config_point.choices[index]
         if item != self._value:
@@ -575,20 +632,20 @@ class SettingMenuItem(MenuItem):
         if not validation.is_valid:
             raise ValueError(f"{choice} is not a valid value for {self.config_point.name}")
 
-        if self.value == AUTOSELECT_AIN or self.value == AUTOSELECT_KNOB:
-            self.timer.deinit()
-            self.timer = None
-
         old_value = self._value_choice
         self._value_choice = choice
 
+        if old_value == AUTOSELECT_AIN:
+            self.menu.unregister_autoselect_cv(self)
+        elif old_value == AUTOSELECT_KNOB:
+            self.menu.unregister_autoselect_knob(self)
+
         if self._value_choice == AUTOSELECT_AIN:
-            self.timer = Timer()
-            self.timer.init(freq=10, mode=Timer.PERIODIC, callback=self.sample_ain)
+            self.menu.register_autoselect_cv(self)
         elif self._value_choice == AUTOSELECT_KNOB:
-            self.timer = Timer()
-            self.timer.init(freq=10, mode=Timer.PERIODIC, callback=self.sample_knob)
+            self.menu.register_autoselect_knob(self)
         else:
+            self._value = choice
             self.callback_fn(choice, old_value, self.config_point, self.callback_arg)
 
     @property
