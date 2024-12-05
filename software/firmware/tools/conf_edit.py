@@ -26,12 +26,12 @@ class ConfigurationEditor(EuroPiScript):
     def __init__(self):
         super().__init__()
 
+        # fmt: off
         boolean_labels = {
             True: "Yes",
             False: "No"
         }
 
-        # fmt: off
         voltage_items = []
         system_items = []
         display_items = []
