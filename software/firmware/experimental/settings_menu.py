@@ -84,287 +84,6 @@ class MenuItem:
     def is_visible(self, is_visible):
         self._is_visible = is_visible
 
-
-class SettingsMenu:
-    """
-    A menu-based GUI for any EuroPi script.
-
-    This class is assumed to be the main interaction method for the program.
-    """
-
-    # Treat a long press as anything more than 500ms
-    LONG_PRESS_MS = 500
-
-    def __init__(
-        self,
-        menu_items: list = None,
-        navigation_button: europi.Button = europi.b2,
-        navigation_knob: europi.Knob = europi.k2,
-        short_press_cb=lambda: None,
-        long_press_cb=lambda: None,
-        autoselect_knob: europi.Knob = europi.k1,
-        autoselect_cv: europi.AnalogueInput = europi.ain,
-    ):
-        """
-        Create a new menu from the given specification
-
-        Long/short press callbacks are invoked inside the handler for the falling edge of the button. It is recommended
-        to avoid any lengthy operations inside these callbacks, as they may prevent other interrupts from being
-        handled properly.
-
-        @param menu_items  A list of MenuItem objects representing the top-level of the menu
-        @param navigation_button  The button the user presses to interact with the menu
-        @param navigation_knob  The knob the user turns to scroll through the menu. This may be an
-                                experimental.knobs.KnobBank with 3 menu levels called "main_menu",
-                                "submenu" and "choice", or a raw knob like europi.k2
-        @param short_press_cb  An optional callback function to invoke when the user interacts with a short-press of
-                               the button
-        @param long_press_cb  An optional callback function to invoke when the user interacts with a long-press of
-                              the button
-        @param autoselect_knob  A knob that the user can turn to select items without needing to menu-dive
-        @param autoselect_cv  An analogue input the user can use to select items with CV
-        """
-        self._knob = navigation_knob
-        self.button = navigation_button
-
-        self._ui_dirty = True
-
-        self.short_press_cb = short_press_cb
-        self.long_press_cb = long_press_cb
-
-        self.button.handler(self.on_button_press)
-        self.button.handler_falling(self.on_button_release)
-
-        self.items = []
-        if menu_items:
-            for item in menu_items:
-                self.items.append(item)
-
-        self.active_items = self.items
-        self.active_item = self.knob.choice(self.items)
-
-        self.button_down_at = time.ticks_ms()
-
-        # Indicates to the application that we need to save the settings to disk
-        self.settings_dirty = False
-
-        # Iterate through the menu and get all of the config points
-        self.config_points_by_name = {}
-        self.menu_items_by_name = {}
-        for item in self.items:
-            item.menu = self
-
-            if type(item) is SettingMenuItem:
-                self.config_points_by_name[item.config_point.name] = item.config_point
-                self.menu_items_by_name[item.config_point.name] = item
-
-            if item.children:
-                for c in item.children:
-                    c.menu = self
-
-                    if type(c) is SettingMenuItem:
-                        self.config_points_by_name[c.config_point.name] = c.config_point
-                        self.menu_items_by_name[c.config_point.name] = c
-
-        # set up a timer for menu items that choose automatically based on the alternate knob or ain
-        self.autoselect_cv = autoselect_cv
-        self.autoselect_knob = autoselect_knob
-        self.autoselect_timer = Timer()
-        self.autoselect_cv_items = []
-        self.autoselect_knob_items = []
-
-    @property
-    def knob(self):
-        if type(self._knob) is KnobBank:
-            return self._knob.current
-        else:
-            return self._knob
-
-    def get_config_points(self):
-        """
-        Get the config points for the menu so we can load/save them as needed
-        """
-        return list(self.config_points_by_name.values())
-
-    def load_defaults(self, settings_file):
-        """
-        Load the initial settings from the file
-
-        @param settings_file  The path to a JSON file where the user's settings are saved
-        """
-        spec = ConfigSpec(self.get_config_points())
-        settings = ConfigFile.load_from_file(settings_file, spec)
-        for k in settings.keys():
-            self.menu_items_by_name[k].choose(settings[k])
-
-    def save(self, settings_file):
-        """
-        Save the current settings to the specified file
-        """
-        data = {}
-        for item in self.menu_items_by_name.values():
-            data[item.config_point.name] = item.value_choice
-        ConfigFile.save_to_file(settings_file, data)
-        self.settings_dirty = False
-
-    def on_button_press(self):
-        """Handler for the rising edge of the button signal"""
-        self.button_down_at = time.ticks_ms()
-        self._ui_dirty = True
-
-    def on_button_release(self):
-        """Handler for the falling edge of the button signal"""
-        self._ui_dirty = True
-        if time.ticks_diff(time.ticks_ms(), self.button_down_at) >= self.LONG_PRESS_MS:
-            self.long_press()
-        else:
-            self.short_press()
-
-    def short_press(self):
-        """
-        Handle a short button press
-
-        This enters edit mode, or applies the selection and
-        exits edit mode
-        """
-        self.active_item.short_press()
-
-        # Cycle the knob bank, if necessary
-        if type(self.knob) is KnobBank:
-            if self.active_item.is_editable:
-                self.knob.set_current("choice")
-            elif self.active_item.children:
-                self.knob.set_current("main_menu")
-            else:
-                self.active_item.set_current("submenu")
-
-        self.short_press_cb()
-
-    def long_press(self):
-        """
-        Handle a long button press
-
-        This changes between the two menu levels (if possible)
-        """
-        # exit editable mode when we change menu levels
-        self.active_item.is_editable = False
-
-        # we're in the top-level menu; go to the submenu if it exists
-        if self.active_items == self.items:
-            if self.active_item.children:
-                self.active_items = self.active_item.children
-                if type(self.knob) is KnobBank:
-                    self.knob.set_current("submenu")
-        else:
-            self.active_items = self.items
-            if type(self.knob) is KnobBank:
-                self.knob.set_current("main_menu")
-
-        self.long_press_cb()
-
-    def draw(self, oled=europi.oled):
-        """
-        Draw the menu to the given display
-
-        You should call the display's .fill(0) function before calling this in order to clear the screen. Otherwise
-        the menu item will be drawn on top of whatever is on the screen right now. (In some cases this may be the
-        desired result, but when in doubt, call oled.fill(0) first).
-
-        You MUST call the display's .show() function after calling this in order to send the buffer to the display
-        hardware
-
-        @param oled  The display object to draw to
-        """
-        if not self.active_item.is_editable:
-            self.active_item = self.knob.choice(self.visible_items)
-        self.active_item.draw(oled)
-        self._ui_dirty = False
-
-    def register_autoselect_cv(self, menu_item: SettingMenuItem):
-        """
-        Connects a menu item to this menu's CV input
-
-        @param menu_item  The item that wants to subscribe to the CV input
-        """
-        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
-            self.autoselect_timer.init(freq=10, mode=Timer.PERIODIC, callback=self.do_autoselect)
-        self.autoselect_cv_items.append(menu_item)
-
-    def register_autoselect_knob(self, menu_item: SettingMenuItem):
-        """
-        Connects a menu item to this menu's knob input
-
-        @param menu_item  The item that wants to subscribe to the knob input
-        """
-        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
-            self.autoselect_timer.init(freq=10, mode=Timer.PERIODIC, callback=self.do_autoselect)
-        self.autoselect_knob_items.append(menu_item)
-
-    def unregister_autoselect_cv(self, menu_item: SettingMenuItem):
-        """
-        Disconnects a menu item to this menu's CV input
-
-        @param menu_item  The item that wants to unsubscribe from the CV input
-        """
-        self.autoselect_cv_items.remove(menu_item)
-        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
-            self.autoselect_timer.deinit()
-
-    def unregister_autoselect_knob(self, menu_item: SettingMenuItem):
-        """
-        Disconnects a menu item to this menu's knob input
-
-        @param menu_item  The item that wants to unsubscribe from the knob input
-        """
-        self.autoselect_knob_items.remove(menu_item)
-        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
-            self.autoselect_timer.deinit()
-
-    def do_autoselect(self, timer):
-        """
-        Callback function for the autoselection timer
-
-        Reads from ain and/or the autoselect knob and applies that choice to all subscribed menu items
-        """
-        if len(self.autoselect_cv_items) > 0:
-            ain_percent = self.autoselect_cv.percent()
-            if ain_percent == 1.0:
-                ain_percent = 0.999  # restrict to [0, 1) -- otherwise we get out-of-bounds issues
-            for item in self.autoselect_cv_items:
-                item.autoselect(ain_percent)
-
-        if len(self.autoselect_knob_items) > 0:
-            knob_percent = self.autoselect_knob.percent()
-            if knob_percent == 1.0:
-                knob_percent = 0.999  # restrict to [0, 1) -- otherwise we get out-of-bounds issues
-            for item in self.autoselect_knob_items:
-                item.autoselect(knob_percent)
-
-    @property
-    def ui_dirty(self):
-        """
-        Is the UI currently dirty and needs re-drawing?
-
-        This will be true if the user has pressed the button or rotated the knob sufficiently
-        to change the active item
-        """
-        return self._ui_dirty or self.active_item != self.knob.choice(self.visible_items)
-
-    @property
-    def visible_items(self):
-        """
-        Get the set of visible menu items for the current state of the menu
-
-        Menu items can be shown/hidden by setting their is_visible property. Normally this should be done in
-        a value-change callback of a menu item to show/hide dependent other items.
-        """
-        items = []
-        for item in self.active_items:
-            if item.is_visible:
-                items.append(item)
-        return items
-
-
 class SettingMenuItem(MenuItem):
     """
     A single menu item that presents a setting the user can manipulate
@@ -682,3 +401,283 @@ class SettingMenuItem(MenuItem):
     @is_editable.setter
     def is_editable(self, can_edit):
         self.edit_mode = can_edit
+
+
+class SettingsMenu:
+    """
+    A menu-based GUI for any EuroPi script.
+
+    This class is assumed to be the main interaction method for the program.
+    """
+
+    # Treat a long press as anything more than 500ms
+    LONG_PRESS_MS = 500
+
+    def __init__(
+        self,
+        menu_items: list = None,
+        navigation_button: europi.Button = europi.b2,
+        navigation_knob: europi.Knob = europi.k2,
+        short_press_cb=lambda: None,
+        long_press_cb=lambda: None,
+        autoselect_knob: europi.Knob = europi.k1,
+        autoselect_cv: europi.AnalogueInput = europi.ain,
+    ):
+        """
+        Create a new menu from the given specification
+
+        Long/short press callbacks are invoked inside the handler for the falling edge of the button. It is recommended
+        to avoid any lengthy operations inside these callbacks, as they may prevent other interrupts from being
+        handled properly.
+
+        @param menu_items  A list of MenuItem objects representing the top-level of the menu
+        @param navigation_button  The button the user presses to interact with the menu
+        @param navigation_knob  The knob the user turns to scroll through the menu. This may be an
+                                experimental.knobs.KnobBank with 3 menu levels called "main_menu",
+                                "submenu" and "choice", or a raw knob like europi.k2
+        @param short_press_cb  An optional callback function to invoke when the user interacts with a short-press of
+                               the button
+        @param long_press_cb  An optional callback function to invoke when the user interacts with a long-press of
+                              the button
+        @param autoselect_knob  A knob that the user can turn to select items without needing to menu-dive
+        @param autoselect_cv  An analogue input the user can use to select items with CV
+        """
+        self._knob = navigation_knob
+        self.button = navigation_button
+
+        self._ui_dirty = True
+
+        self.short_press_cb = short_press_cb
+        self.long_press_cb = long_press_cb
+
+        self.button.handler(self.on_button_press)
+        self.button.handler_falling(self.on_button_release)
+
+        self.items = []
+        if menu_items:
+            for item in menu_items:
+                self.items.append(item)
+
+        self.active_items = self.items
+        self.active_item = self.knob.choice(self.items)
+
+        self.button_down_at = time.ticks_ms()
+
+        # Indicates to the application that we need to save the settings to disk
+        self.settings_dirty = False
+
+        # Iterate through the menu and get all of the config points
+        self.config_points_by_name = {}
+        self.menu_items_by_name = {}
+        for item in self.items:
+            item.menu = self
+
+            if type(item) is SettingMenuItem:
+                self.config_points_by_name[item.config_point.name] = item.config_point
+                self.menu_items_by_name[item.config_point.name] = item
+
+            if item.children:
+                for c in item.children:
+                    c.menu = self
+
+                    if type(c) is SettingMenuItem:
+                        self.config_points_by_name[c.config_point.name] = c.config_point
+                        self.menu_items_by_name[c.config_point.name] = c
+
+        # set up a timer for menu items that choose automatically based on the alternate knob or ain
+        self.autoselect_cv = autoselect_cv
+        self.autoselect_knob = autoselect_knob
+        self.autoselect_timer = Timer()
+        self.autoselect_cv_items = []
+        self.autoselect_knob_items = []
+
+    @property
+    def knob(self):
+        if type(self._knob) is KnobBank:
+            return self._knob.current
+        else:
+            return self._knob
+
+    def get_config_points(self):
+        """
+        Get the config points for the menu so we can load/save them as needed
+        """
+        return list(self.config_points_by_name.values())
+
+    def load_defaults(self, settings_file):
+        """
+        Load the initial settings from the file
+
+        @param settings_file  The path to a JSON file where the user's settings are saved
+        """
+        spec = ConfigSpec(self.get_config_points())
+        settings = ConfigFile.load_from_file(settings_file, spec)
+        for k in settings.keys():
+            self.menu_items_by_name[k].choose(settings[k])
+
+    def save(self, settings_file):
+        """
+        Save the current settings to the specified file
+        """
+        data = {}
+        for item in self.menu_items_by_name.values():
+            data[item.config_point.name] = item.value_choice
+        ConfigFile.save_to_file(settings_file, data)
+        self.settings_dirty = False
+
+    def on_button_press(self):
+        """Handler for the rising edge of the button signal"""
+        self.button_down_at = time.ticks_ms()
+        self._ui_dirty = True
+
+    def on_button_release(self):
+        """Handler for the falling edge of the button signal"""
+        self._ui_dirty = True
+        if time.ticks_diff(time.ticks_ms(), self.button_down_at) >= self.LONG_PRESS_MS:
+            self.long_press()
+        else:
+            self.short_press()
+
+    def short_press(self):
+        """
+        Handle a short button press
+
+        This enters edit mode, or applies the selection and
+        exits edit mode
+        """
+        self.active_item.short_press()
+
+        # Cycle the knob bank, if necessary
+        if type(self.knob) is KnobBank:
+            if self.active_item.is_editable:
+                self.knob.set_current("choice")
+            elif self.active_item.children:
+                self.knob.set_current("main_menu")
+            else:
+                self.active_item.set_current("submenu")
+
+        self.short_press_cb()
+
+    def long_press(self):
+        """
+        Handle a long button press
+
+        This changes between the two menu levels (if possible)
+        """
+        # exit editable mode when we change menu levels
+        self.active_item.is_editable = False
+
+        # we're in the top-level menu; go to the submenu if it exists
+        if self.active_items == self.items:
+            if self.active_item.children:
+                self.active_items = self.active_item.children
+                if type(self.knob) is KnobBank:
+                    self.knob.set_current("submenu")
+        else:
+            self.active_items = self.items
+            if type(self.knob) is KnobBank:
+                self.knob.set_current("main_menu")
+
+        self.long_press_cb()
+
+    def draw(self, oled=europi.oled):
+        """
+        Draw the menu to the given display
+
+        You should call the display's .fill(0) function before calling this in order to clear the screen. Otherwise
+        the menu item will be drawn on top of whatever is on the screen right now. (In some cases this may be the
+        desired result, but when in doubt, call oled.fill(0) first).
+
+        You MUST call the display's .show() function after calling this in order to send the buffer to the display
+        hardware
+
+        @param oled  The display object to draw to
+        """
+        if not self.active_item.is_editable:
+            self.active_item = self.knob.choice(self.visible_items)
+        self.active_item.draw(oled)
+        self._ui_dirty = False
+
+    def register_autoselect_cv(self, menu_item: SettingMenuItem):
+        """
+        Connects a menu item to this menu's CV input
+
+        @param menu_item  The item that wants to subscribe to the CV input
+        """
+        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
+            self.autoselect_timer.init(freq=10, mode=Timer.PERIODIC, callback=self.do_autoselect)
+        self.autoselect_cv_items.append(menu_item)
+
+    def register_autoselect_knob(self, menu_item: SettingMenuItem):
+        """
+        Connects a menu item to this menu's knob input
+
+        @param menu_item  The item that wants to subscribe to the knob input
+        """
+        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
+            self.autoselect_timer.init(freq=10, mode=Timer.PERIODIC, callback=self.do_autoselect)
+        self.autoselect_knob_items.append(menu_item)
+
+    def unregister_autoselect_cv(self, menu_item: SettingMenuItem):
+        """
+        Disconnects a menu item to this menu's CV input
+
+        @param menu_item  The item that wants to unsubscribe from the CV input
+        """
+        self.autoselect_cv_items.remove(menu_item)
+        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
+            self.autoselect_timer.deinit()
+
+    def unregister_autoselect_knob(self, menu_item: SettingMenuItem):
+        """
+        Disconnects a menu item to this menu's knob input
+
+        @param menu_item  The item that wants to unsubscribe from the knob input
+        """
+        self.autoselect_knob_items.remove(menu_item)
+        if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
+            self.autoselect_timer.deinit()
+
+    def do_autoselect(self, timer):
+        """
+        Callback function for the autoselection timer
+
+        Reads from ain and/or the autoselect knob and applies that choice to all subscribed menu items
+        """
+        if len(self.autoselect_cv_items) > 0:
+            ain_percent = self.autoselect_cv.percent()
+            if ain_percent == 1.0:
+                ain_percent = 0.999  # restrict to [0, 1) -- otherwise we get out-of-bounds issues
+            for item in self.autoselect_cv_items:
+                item.autoselect(ain_percent)
+
+        if len(self.autoselect_knob_items) > 0:
+            knob_percent = self.autoselect_knob.percent()
+            if knob_percent == 1.0:
+                knob_percent = 0.999  # restrict to [0, 1) -- otherwise we get out-of-bounds issues
+            for item in self.autoselect_knob_items:
+                item.autoselect(knob_percent)
+
+    @property
+    def ui_dirty(self):
+        """
+        Is the UI currently dirty and needs re-drawing?
+
+        This will be true if the user has pressed the button or rotated the knob sufficiently
+        to change the active item
+        """
+        return self._ui_dirty or self.active_item != self.knob.choice(self.visible_items)
+
+    @property
+    def visible_items(self):
+        """
+        Get the set of visible menu items for the current state of the menu
+
+        Menu items can be shown/hidden by setting their is_visible property. Normally this should be done in
+        a value-change callback of a menu item to show/hide dependent other items.
+        """
+        items = []
+        for item in self.active_items:
+            if item.is_visible:
+                items.append(item)
+        return items
