@@ -6,6 +6,10 @@ from machine import I2C, Pin
 import ssd1306
 from ssd1306 import SSD1306_I2C
 
+# Default font is 8x8 pixel monospaced font.
+CHAR_WIDTH = 8
+CHAR_HEIGHT = 8
+
 
 class Display(SSD1306_I2C):
     """
