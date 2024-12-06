@@ -51,28 +51,33 @@ class EuroPiConfig:
                 name="DISPLAY_WIDTH",
                 minimum=8,
                 maximum=1024,
-                default=128
+                default=128,
+                danger=True,
             ),
             configuration.integer(
                 name="DISPLAY_HEIGHT",
                 minimum=8,
                 maximum=1024,
-                default=32
+                default=32,
+                danger=True,
             ),
             configuration.choice(
                 name="DISPLAY_SDA",
                 choices=[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 26],
                 default=0,
+                danger=True,
             ),
             configuration.choice(
                 name="DISPLAY_SCL",
                 choices=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 27],
                 default=1,
+                danger=True,
             ),
             configuration.choice(
                 name="DISPLAY_CHANNEL",
                 choices=[0, 1],
-                default=0
+                default=0,
+                danger=True,
             ),
             configuration.choice(
                 name="DISPLAY_FREQUENCY",
@@ -84,7 +89,8 @@ class EuroPiConfig:
                     3400000, # 3.4M (Hs)
                     5000000, # 5M   (UFm)
                 ],
-                default=400000
+                default=400000,
+                danger=True,
             ),
 
             # External I2C connection (header between Pico & power connector)

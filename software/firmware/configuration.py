@@ -30,12 +30,14 @@ class ConfigPoint:
     :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
     :param type: The name of this ConfigPoint's type
     :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
     """
 
-    def __init__(self, name: str, type: str, default):
+    def __init__(self, name: str, type: str, default, danger: bool = False):
         self.name = name
         self.type = type
         self.default = default
+        self.danger = danger
 
     def validate(self, value) -> Validation:
         """Validates the given value with this ConfigPoint. Returns a `Validation` containing the
@@ -52,10 +54,11 @@ class FloatConfigPoint(ConfigPoint):
     :param minimum: The minimum allowed value
     :param maximum: The maximum allowed value
     :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
     """
 
-    def __init__(self, name: str, minimum: float, maximum: float, default: float):
-        super().__init__(name=name, type=float, default=default)
+    def __init__(self, name: str, minimum: float, maximum: float, default: float, danger: bool = False):
+        super().__init__(name=name, type=float, default=default, danger=danger)
         self.maximum = maximum
         self.minimum = minimum
 
@@ -86,10 +89,11 @@ class IntegerConfigPoint(ConfigPoint):
     :param minimum: The minimum allowed value
     :param maximum: The maximum allowed value
     :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
     """
 
-    def __init__(self, name: str, minimum: int, maximum: int, default: int):
-        super().__init__(name=name, type=int, default=default)
+    def __init__(self, name: str, minimum: int, maximum: int, default: int, danger: bool = False):
+        super().__init__(name=name, type=int, default=default, danger=danger)
         self.minimum = minimum
         self.maximum = maximum
 
@@ -116,12 +120,13 @@ class ChoiceConfigPoint(ConfigPoint):
     :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
     :param choices: A List of all of the valid choices for this ConfigPoint
     :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
     """
 
-    def __init__(self, name: str, choices: "List", default):
+    def __init__(self, name: str, choices: "List", default, danger: bool = False):
         if default not in choices:
             raise ValueError("default value must be available in given choices")
-        super().__init__(name=name, type="choice", default=default)
+        super().__init__(name=name, type="choice", default=default, danger=danger)
         self.choices = choices
 
     def validate(self, value) -> Validation:
@@ -139,32 +144,35 @@ class BooleanConfigPoint(ChoiceConfigPoint):
 
     :param name: The name of this `ConfigPoint`, will be used by scripts to look up the configured value.
     :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
     """
 
-    def __init__(self, name: str, default: bool):
-        super().__init__(name=name, choices=[False, True], default=default)
+    def __init__(self, name: str, default: bool, danger: bool = False):
+        super().__init__(name=name, choices=[False, True], default=default, danger=danger)
 
 
-def boolean(name: str, default: bool) -> BooleanConfigPoint:
+def boolean(name: str, default: bool, danger: bool = False) -> BooleanConfigPoint:
     """A helper function to simplify the creation of BooleanConfigPoints.
 
     :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
     :param default: The default value
     """
-    return BooleanConfigPoint(name=name, default=default)
+    return BooleanConfigPoint(name=name, default=default, danger=danger)
 
 
-def choice(name: str, choices: "List", default) -> ChoiceConfigPoint:
+def choice(name: str, choices: "List", default, danger: bool = False) -> ChoiceConfigPoint:
     """A helper function to simplify the creation of ChoiceConfigPoints. Requires selection from a
     limited number of choices. The default value must exist in the given choices.
 
     :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
     :param choices: A List of all of the valid choices for this ConfigPoint
-    :param default: The default value"""
-    return ChoiceConfigPoint(name=name, choices=choices, default=default)
+    :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
+    """
+    return ChoiceConfigPoint(name=name, choices=choices, default=default, danger=danger)
 
 
-def floatingPoint(name: str, minimum: float, maximum: float, default: float) -> FloatConfigPoint:
+def floatingPoint(name: str, minimum: float, maximum: float, default: float, danger: bool = False) -> FloatConfigPoint:
     """A helper function to simplify the creation of FloatConfigPoints. Requires selection from a
     range of floats. The default value must exist in the given range.
 
@@ -172,11 +180,12 @@ def floatingPoint(name: str, minimum: float, maximum: float, default: float) -> 
     :param minumum: The minumum allowed value
     :param maximum: The maximum allowed value
     :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
     """
-    return FloatConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default)
+    return FloatConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default, danger=danger)
 
 
-def integer(name: str, minimum: int, maximum: int, default: int) -> IntegerConfigPoint:
+def integer(name: str, minimum: int, maximum: int, default: int, danger: bool = False) -> IntegerConfigPoint:
     """A helper function to simplify the creation of IntegerConfigPoints. Requires selection from a
     range of integers. The default value must exist in the given range.
 
@@ -184,8 +193,9 @@ def integer(name: str, minimum: int, maximum: int, default: int) -> IntegerConfi
     :param minimum: The minimum allowed value
     :param maximum: The maximum allowed value
     :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
     """
-    return IntegerConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default)
+    return IntegerConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default, danger=danger)
 
 
 class ConfigSpec:

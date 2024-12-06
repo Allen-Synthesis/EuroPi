@@ -28,6 +28,8 @@ KNOB_LABEL = "Knob"
 
 AUTOSELECT_AIN = "autoselect_ain"
 AUTOSELECT_KNOB = "autoselect_knob"
+
+DANGER_GRAPHICS = bytearray(b'\x00\x00\x04\x00\n\x00\n\x00\x11\x00\x15\x00$\x80$\x80@@D@\x80 \xff\xe0')
 # fmt: off
 
 
@@ -155,6 +157,7 @@ class SettingMenuItem(MenuItem):
             config_point.name,
             choices=choices,
             default=config_point.default,
+            danger=config_point.danger,
         )
 
         self.NUM_AUTOINPUT_CHOICES = 0
@@ -288,6 +291,10 @@ class SettingMenuItem(MenuItem):
         else:
             # draw the selection in normal text
             oled.text(display_text, text_left + 1, SELECT_OPTION_Y + 2, 1)
+
+        if self.config_point.danger:
+            fb = FrameBuffer(DANGER_GRAPHICS, 12, 12, MONO_HLSB)
+            oled.blit(fb, DISPLAY_WIDTH-12, DISPLAY_HEIGHT-12)
 
     def get_option_list(self):
         """
