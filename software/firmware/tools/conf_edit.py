@@ -39,46 +39,37 @@ class ConfigurationEditor(EuroPiScript):
 
         config_points = EuroPiConfig.config_points()
         for cfg in config_points:
-            if "EXTERNAL_I2C" in cfg.name:
-                i2c_items.append(
-                    SettingMenuItem(
-                        config_point=cfg,
-                        prefix="I2C",
-                        title=cfg.name.replace("EXTERNAL_I2C", "").replace("_", ' ').lower().strip(),
-                        float_resolution=1,
-                        labels=boolean_labels
-                    )
-                )
+            # Special case; this name can't be easily modified & still fit, so just replace it
+            if cfg.name == "MENU_AFTER_POWER_ON":
+                title = "boot to menu"
+                prefix = "Sys"
+                items = system_items
+            elif "EXTERNAL_I2C" in cfg.name:
+                title = cfg.name.replace("EXTERNAL_I2C", "").replace("_", ' ').lower().strip()
+                prefix = "I2C"
+                items = i2c_items
             elif "DISPLAY" in cfg.name:
-                display_items.append(
-                    SettingMenuItem(
-                        config_point=cfg,
-                        prefix="Display",
-                        title=cfg.name.replace("DISPLAY", "").replace("_", ' ').lower().strip(),
-                        float_resolution=1,
-                        labels=boolean_labels
-                    )
-                )
+                title = cfg.name.replace("DISPLAY", "").replace("_", ' ').lower().strip()
+                prefix = "OLED"
+                items = display_items
             elif "VOLTAGE" in cfg.name:
-                voltage_items.append(
-                    SettingMenuItem(
-                        config_point=cfg,
-                        prefix="Voltage",
-                        title=cfg.name.replace("VOLTAGE", "").replace("_", ' ').lower().replace("input", "in").replace("output", "out").strip(),
-                        float_resolution=1,
-                        labels=boolean_labels
-                    )
-                )
+                title = cfg.name.replace("VOLTAGE", "").replace("_", ' ').lower().replace("input", "in").replace("output", "out").strip()
+                prefix = "Voltage"
+                items = voltage_items
             else:
-                system_items.append(
-                    SettingMenuItem(
-                        config_point=cfg,
-                        prefix="Sys",
-                        title=cfg.name.replace("_", ' ').lower().strip(),
-                        float_resolution=1,
-                        labels=boolean_labels
-                    )
+                title = cfg.name.replace("_", ' ').lower().strip()
+                prefix = "Sys"
+                items = system_items
+
+            items.append(
+                SettingMenuItem(
+                    config_point=cfg,
+                    labels=boolean_labels,
+                    float_resolution=1,
+                    prefix=prefix,
+                    title=title,
                 )
+            )
 
         self.menu = SettingsMenu(
             menu_items=[
@@ -96,7 +87,7 @@ class ConfigurationEditor(EuroPiScript):
 
                 # Display properties
                 SectionHeader(
-                    title="Display",
+                    title="Display/OLED",
                     children=display_items
                 ),
 
