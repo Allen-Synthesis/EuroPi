@@ -27,10 +27,12 @@ default configuration:
 }
 ```
 
-CPU & Pico options:
+System options:
 - `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported. Default: `"europi"`
 - `PICO_MODEL` must be one of `"pico"` or `"pico w"`. Default: `"pico"`
 - `CPU_FREQ` must be one of `250000000` or `125000000`. Default: `"250000000"`
+- `MENU_AFTER_POWER_ON` is a boolean indicating whether or not the module should always return to the main menu when
+  it powers on.  By default the EuroPi will re-launch the last-used program instead of returning to the main menu. Default: `false`
 
 Display options:
 - `ROTATE_DISPLAY` must be one of `false` or `true`. Default: `false`
@@ -48,16 +50,15 @@ External I²C options:
 - `EXTERNAL_I2C_TIMEOUT` is the I²C timeout in milliseconds for the external I²C interface. Default: `1000`
 
 I/O voltage options:
-- `MAX_OUTPUT_VOLTAGE` is an integer in the range `[0, 10]` indicating the maximum voltage CV output can generate. Default: `10`
+- `MAX_OUTPUT_VOLTAGE` is a float in the range `[0.0, 10.0]` indicating the maximum voltage CV output can generate. Default: `10.0`
   The hardware is capable of 10V maximum
-- `MAX_INPUT_VOLTAGE` is an integer in the range `[0, 12]` indicating the maximum allowed voltage into the `ain` jack.
-  The hardware is capable of 12V maximum. Default: `10`
-- `GATE_VOLTAGE` is an integer in the range `[0, 10]` indicating the voltage that an output will produce when `cvx.on()`
-  is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`. Default: `5`
+- `MAX_INPUT_VOLTAGE` is a float in the range `[0.0, 12.0]` indicating the maximum allowed voltage into the `ain` jack.
+  The hardware is capable of 12V maximum. Default: `10.0`
+- `GATE_VOLTAGE` is a float in the range `[0.0, 10.0]` indicating the voltage that an output will produce when `cvx.on()`
+  is called. This value must not be higher than `MAX_OUTPUT_VOLTAGE`. Default: `5.0`
 
-Power options:
-- `MENU_AFTER_POWER_ON` is a boolean indicating whether or not the module should always return to the main menu when
-  it powers on.  By default the EuroPi will re-launch the last-used program instead of returning to the main menu. Default: `false`
+I/O voltage options should specify no more than 1 decimal point. i.e. `2.5` is acceptable, but `1.234` is not.  These
+limits are intended for broad compatibility configuration, not for precise tuning.
 
 
 # Experimental configuration
