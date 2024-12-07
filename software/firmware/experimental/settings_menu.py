@@ -70,6 +70,16 @@ class MenuItem:
         """
         pass
 
+    def add_child(self, item):
+        """
+        Add a new child item to this item
+        """
+        if self.children is None:
+            self.children = []
+        self.children.append(item)
+        item.parent = self
+        item.menu = self.menu
+
     @property
     def is_editable(self):
         return False
@@ -85,6 +95,7 @@ class MenuItem:
     @is_visible.setter
     def is_visible(self, is_visible):
         self._is_visible = is_visible
+
 
 class SettingMenuItem(MenuItem):
     """
@@ -125,6 +136,9 @@ class SettingMenuItem(MenuItem):
                          graphics to display along with the keyed values
         @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
                        options
+        @param callback  A function to invoke when this item's value changes. Must accept
+                         (new_value, old_value, config_point, arg=None) as parameters
+        @param callback_arg  An optional additional argument to pass to the callback function
         @param float_resolution  The resolution of floating-point config points (ignored if config_point is not
                                  a FloatConfigPoint)
         @param value_map  An optional dict to map the underlying simple ConfigPoint values to more complex objects
@@ -193,6 +207,12 @@ class SettingMenuItem(MenuItem):
         # assign the initial value without firing any callbacks
         self._value = self.config_point.default
         self._value_choice = self.config_point.default
+
+    def reset_to_default(self):
+        """
+        Reset this item to its default value
+        """
+        self.choose(self.src_config.default)
 
     def refresh_choices(self, new_default=None):
         """
