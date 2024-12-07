@@ -314,7 +314,7 @@ class SettingMenuItem(MenuItem):
 
         if self.config_point.danger:
             fb = FrameBuffer(DANGER_GRAPHICS, 12, 12, MONO_HLSB)
-            oled.blit(fb, DISPLAY_WIDTH-12, DISPLAY_HEIGHT-12)
+            oled.blit(fb, europi.OLED_WIDTH-12, europi.OLED_HEIGHT-12)
 
     def get_option_list(self):
         """
