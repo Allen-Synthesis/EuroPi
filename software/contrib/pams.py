@@ -408,6 +408,8 @@ class MasterClock:
             prefix="Clk",
             title = "BPM",
             callback = self.recalculate_timer_hz,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
         self.reset_on_start = SettingMenuItem(
             config_point = BooleanConfigPoint(
@@ -543,6 +545,8 @@ class PamsOutput:
             autoselect_cv = True,
             autoselect_knob = True,
             value_map=QUANTIZERS,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## The root of the quantized scale (ignored if quantizer is None)
@@ -554,7 +558,9 @@ class PamsOutput:
             ),
             prefix = f"CV{n}",
             title = "Q Root",
-            labels = SEMITONE_LABELS
+            labels = SEMITONE_LABELS,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## The clock modifier for this channel
@@ -573,6 +579,8 @@ class PamsOutput:
             value_map = CLOCK_MULTIPLIERS,
             callback = self.request_clock_mod,
             graphics = CLOCK_MOD_IMGS,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## To prevent phase misalignment we use this as the active clock modifier
@@ -597,6 +605,8 @@ class PamsOutput:
             labels = WAVE_SHAPE_LABELS,
             graphics = WAVE_SHAPE_IMGS,
             callback = self.update_menu_visibility,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## The phase offset of the output as a [0, 100] percentage
@@ -608,7 +618,9 @@ class PamsOutput:
                 0
             ),
             prefix = f"CV{n}",
-            title = "Phase"
+            title = "Phase",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## The amplitude of the output as a [0, 100] percentage
@@ -620,7 +632,9 @@ class PamsOutput:
                 50
             ),
             prefix = f"CV{n}",
-            title = "Ampl"
+            title = "Ampl",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## Wave width
@@ -632,7 +646,9 @@ class PamsOutput:
                 50
             ),
             prefix = f"CV{n}",
-            title = "Width"
+            title = "Width",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## Euclidean -- number of steps in the pattern (0 = disabled)
@@ -646,6 +662,8 @@ class PamsOutput:
             prefix = f"CV{n}",
             title = "EStep",
             callback = self.change_e_length,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## Euclidean -- number of triggers in the pattern
@@ -659,6 +677,8 @@ class PamsOutput:
             prefix = f"CV{n}",
             title = "ETrig",
             callback = self.recalculate_e_pattern,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## Euclidean -- rotation of the pattern
@@ -672,6 +692,8 @@ class PamsOutput:
             prefix = f"CV{n}",
             title = "ERot",
             callback = self.recalculate_e_pattern,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## Probability that we skip an output [0-100]
@@ -683,7 +705,9 @@ class PamsOutput:
                 0
             ),
             prefix = f"CV{n}",
-            title = "Skip%"
+            title = "Skip%",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         # ADSR settings
@@ -695,7 +719,9 @@ class PamsOutput:
                 10
             ),
             prefix = f"CV{n}",
-            title = "Attack"
+            title = "Attack",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
         self.decay = SettingMenuItem(
             config_point = IntegerConfigPoint(
@@ -705,7 +731,9 @@ class PamsOutput:
                 10
             ),
             prefix = f"CV{n}",
-            title = "Decay"
+            title = "Decay",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
         self.sustain = SettingMenuItem(
             config_point = IntegerConfigPoint(
@@ -715,7 +743,9 @@ class PamsOutput:
                 50
             ),
             prefix = f"CV{n}",
-            title = "Sustain"
+            title = "Sustain",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
         self.release = SettingMenuItem(
             config_point = IntegerConfigPoint(
@@ -725,7 +755,9 @@ class PamsOutput:
                 50
             ),
             prefix = f"CV{n}",
-            title = "Release"
+            title = "Release",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## Swing percentage
@@ -741,7 +773,9 @@ class PamsOutput:
                 50
             ),
             prefix = f"CV{n}",
-            title = "Swing%"
+            title = "Swing%",
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## Allows muting a channel during runtime
@@ -754,7 +788,9 @@ class PamsOutput:
             ),
             prefix = f"CV{n}",
             title="Mute",
-            labels = YES_NO_LABELS
+            labels = YES_NO_LABELS,
+            autoselect_knob = True,
+            autoselect_cv = True,
         )
 
         ## All settings in an array so we can iterate through them in reset_settings(self)
