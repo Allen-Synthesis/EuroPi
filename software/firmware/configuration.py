@@ -57,7 +57,9 @@ class FloatConfigPoint(ConfigPoint):
     :param danger: If true, mark this option as dangerous to modify in the config editor
     """
 
-    def __init__(self, name: str, minimum: float, maximum: float, default: float, danger: bool = False):
+    def __init__(
+        self, name: str, minimum: float, maximum: float, default: float, danger: bool = False
+    ):
         super().__init__(name=name, type=float, default=default, danger=danger)
         self.maximum = maximum
         self.minimum = minimum
@@ -172,7 +174,9 @@ def choice(name: str, choices: "List", default, danger: bool = False) -> ChoiceC
     return ChoiceConfigPoint(name=name, choices=choices, default=default, danger=danger)
 
 
-def floatingPoint(name: str, minimum: float, maximum: float, default: float, danger: bool = False) -> FloatConfigPoint:
+def floatingPoint(
+    name: str, minimum: float, maximum: float, default: float, danger: bool = False
+) -> FloatConfigPoint:
     """A helper function to simplify the creation of FloatConfigPoints. Requires selection from a
     range of floats. The default value must exist in the given range.
 
@@ -182,10 +186,14 @@ def floatingPoint(name: str, minimum: float, maximum: float, default: float, dan
     :param default: The default value
     :param danger: If true, mark this option as dangerous to modify in the config editor
     """
-    return FloatConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default, danger=danger)
+    return FloatConfigPoint(
+        name=name, minimum=minimum, maximum=maximum, default=default, danger=danger
+    )
 
 
-def integer(name: str, minimum: int, maximum: int, default: int, danger: bool = False) -> IntegerConfigPoint:
+def integer(
+    name: str, minimum: int, maximum: int, default: int, danger: bool = False
+) -> IntegerConfigPoint:
     """A helper function to simplify the creation of IntegerConfigPoints. Requires selection from a
     range of integers. The default value must exist in the given range.
 
@@ -195,7 +203,9 @@ def integer(name: str, minimum: int, maximum: int, default: int, danger: bool = 
     :param default: The default value
     :param danger: If true, mark this option as dangerous to modify in the config editor
     """
-    return IntegerConfigPoint(name=name, minimum=minimum, maximum=maximum, default=default, danger=danger)
+    return IntegerConfigPoint(
+        name=name, minimum=minimum, maximum=maximum, default=default, danger=danger
+    )
 
 
 class ConfigSpec:

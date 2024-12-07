@@ -48,7 +48,10 @@ def test_save_load_state_json(script_for_testing):
     state = {"one": 1, "two": ["a", "bb"], "three": True}
     script_for_testing.save_state_json(state)
     with open(script_for_testing._state_filename, "r") as f:
-        assert re.match(r'\{\s*"one"\s*:\s*1\s*,\s*"two"\s*:\s*\[\s*"a"\s*,\s*"bb"\s*\]\s*,\s*"three"\s*:\s*true\s*\}', f.read())
+        assert re.match(
+            r'\{\s*"one"\s*:\s*1\s*,\s*"two"\s*:\s*\[\s*"a"\s*,\s*"bb"\s*\]\s*,\s*"three"\s*:\s*true\s*\}',
+            f.read()
+        )
     assert script_for_testing.load_state_json() == state
 
 
