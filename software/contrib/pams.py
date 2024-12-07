@@ -693,7 +693,7 @@ class PamsOutput:
                 f"cv{n}_swing",
                 0,
                 100,
-                0
+                50
             ),
             prefix = f"CV{n}",
             title = "Swing%"
