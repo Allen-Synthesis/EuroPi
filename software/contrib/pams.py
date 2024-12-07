@@ -291,17 +291,21 @@ BANK_LABELS = [
 ]
 
 
-class AnalogInReader:
-    """A wrapper for `ain` that can be shared across multiple Settings
+class BufferedAnalogueReader(AnalogueReader):
+    """A wrapper for basic AnalogueReader instances that read the ADC hardware on-demand
 
-    This allows `ain` to be read once during the main loop, but keep its value across multiple
-    accesses across each output channel.  It also adds gain & precision settings that can
-    be adjusted in application's menu
+    This is useful if the reader is going to be using `.choice(...)` for multiple things,
+    as normally every call to .percent, .choice, .voltage, etc... re-reads the ADC.
+
+    Call .update() to re-sample from the ADC
     """
-    def __init__(self, cv_in, label):
-        self.cv_in = cv_in
-        self.last_percent = 0.0
+    def __init__(self, cv_in: AnalogueReader, label: str):
+        """
+        Create the buffered reader
 
+        @param cv_in  The base reader we're buffering
+        @param label  A label used to stringify this object
+        """
         self.gain = SettingMenuItem(
             config_point = IntegerConfigPoint(
                 f"{label.lower()}_gain",
@@ -327,23 +331,42 @@ class AnalogInReader:
             }
         )
 
-    def update(self):
-        """Read the current voltage from the analog input using the configured precision
+        self._last_sample = 0
 
-        Sets self.last_voltage, which is returned by self.get_value()
+        super().__init__(cv_in.pin_id)
+        self.label = label
 
-        @return The voltage read from the analog input multiplied by self.gain
+    def percent(self, samples=None, deadzone=None):
         """
-        self.last_percent = self.cv_in.percent(self.precision.mapped_value) * self.gain.value / 100.0
-        return self.last_percent
+        Apply our gain control to the base percentage
 
-    def percent(self):
-        return self.last_percent
+        Note that even though the gain goes up to 200%, this returns a value in the range [0, 1].
+        """
+        p = super().percent(samples, deadzone)
+        p = p * self.gain.value
+        p = clamp(p, 0.0, 1.0)
+        return p
 
-## Wrapped copies of all CV inputs so we can iterate through them
+    def _sample_adc(self, samples=None):
+        """
+        Override the default _sample_adc to just return the last sample
+        """
+        return self._last_sample
+
+    def update(self):
+        """
+        Re-read the ADC and store the sample value
+        """
+        self._last_sample = super()._sample_adc(samples=self.precision.mapped_value)
+
+    def __str__(self):
+        return self.label
+
+
+## Wrapped copies of all CV inputs so we can iterate through them to update them
 CV_INS = {
-    "KNOB": AnalogInReader(k1, "Knob"),
-    "AIN": AnalogInReader(ain, "AIN"),
+    "KNOB": BufferedAnalogueReader(k1, "Knob"),
+    "AIN": BufferedAnalogueReader(ain, "AIN"),
 }
 
 
