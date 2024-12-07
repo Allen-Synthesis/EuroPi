@@ -291,6 +291,40 @@ BANK_LABELS = [
 ]
 
 
+class AnalogInReader:
+    """A wrapper for `ain` that can be shared across multiple Settings
+
+    This allows `ain` to be read once during the main loop, but keep its value across multiple
+    accesses across each output channel.  It also adds gain & precision settings that can
+    be adjusted in application's menu
+    """
+    def __init__(self, cv_in):
+        self.cv_in = cv_in
+        self.last_percent = 0.0
+
+        self.gain = 1.0
+        self.precision = DEFAULT_SAMPLES
+
+    def update(self):
+        """Read the current voltage from the analog input using the configured precision
+
+        Sets self.last_voltage, which is returned by self.get_value()
+
+        @return The voltage read from the analog input multiplied by self.gain
+        """
+        self.last_percent = self.cv_in.percent(self.precision) * self.gain
+        return self.last_percent
+
+    def percent(self):
+        return self.last_percent
+
+## Wrapped copies of all CV inputs so we can iterate through them
+CV_INS = {
+    "KNOB": AnalogInReader(k1),
+    "AIN": AnalogInReader(ain)
+}
+
+
 class MasterClock:
     """The main clock that ticks and runs the outputs
     """
@@ -960,12 +994,12 @@ class PamsOutput:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.value == WAVE_AIN:
                 if rising_edge and not self.skip_this_step:
-                    wave_sample = CV_INS["AIN"].value / MAX_INPUT_VOLTAGE
+                    wave_sample = CV_INS["AIN"].percent() * self.amplitude.value / 100.0
                 else:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.value == WAVE_KNOB:
                 if rising_edge and not self.skip_this_step:
-                    wave_sample = CV_INS["KNOB"].value / MAX_INPUT_VOLTAGE
+                    wave_sample = CV_INS["KNOB"].percent() * self.amplitude.value / 100.0
                 else:
                     wave_sample = self.previous_wave_sample
             elif self.wave_shape.value == WAVE_SQUARE:
@@ -1084,8 +1118,8 @@ class PamsWorkout2(EuroPiScript):
             menu_items = menu_items,
             navigation_button = b2,
             navigation_knob = k2_bank,
-            autoselect_cv = ain,
-            autoselect_knob = k1,
+            autoselect_cv = CV_INS["AIN"],
+            autoselect_knob = CV_INS["KNOB"],
             short_press_cb = lambda: ssoled.notify_user_interaction(),
             long_press_cb = lambda: ssoled.notify_user_interaction()
         )
@@ -1133,7 +1167,8 @@ class PamsWorkout2(EuroPiScript):
 
     def main(self):
         while True:
-            now = time.ticks_ms()
+            for cv_in in CV_INS.values():
+                cv_in.update()
 
             ssoled.fill(0)
             self.main_menu.draw(ssoled)
