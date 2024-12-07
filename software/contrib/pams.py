@@ -499,7 +499,7 @@ class PamsOutput:
         ## To prevent phase misalignment we use this as the active clock modifier
         #
         #  If clock_mod is changed, we apply it to this when it is safe to do so
-        self.real_clock_mod = self.clock_mod.value
+        self.real_clock_mod = self.clock_mod.mapped_value
 
         ## Indicates if clock_mod and real_clock_mod are the same or not
         self.clock_mod_dirty = False
@@ -603,7 +603,7 @@ class PamsOutput:
                 100,
                 0
             ),
-            prefix = "CV{n}",
+            prefix = f"CV{n}",
             title = "Skip%"
         )
 
@@ -615,7 +615,7 @@ class PamsOutput:
                 100,
                 10
             ),
-            prefix = "CV{n}",
+            prefix = f"CV{n}",
             title = "Attack"
         )
         self.decay = SettingMenuItem(
@@ -625,7 +625,7 @@ class PamsOutput:
                 100,
                 10
             ),
-            prefix = "CV{n}",
+            prefix = f"CV{n}",
             title = "Decay"
         )
         self.sustain = SettingMenuItem(
@@ -635,7 +635,7 @@ class PamsOutput:
                 100,
                 50
             ),
-            prefix = "CV{n}",
+            prefix = f"CV{n}",
             title = "Sustain"
         )
         self.release = SettingMenuItem(
@@ -645,7 +645,7 @@ class PamsOutput:
                 100,
                 50
             ),
-            prefix = "CV{n}",
+            prefix = f"CV{n}",
             title = "Release"
         )
 
@@ -661,7 +661,7 @@ class PamsOutput:
                 100,
                 0
             ),
-            prefix = "CV{n}",
+            prefix = f"CV{n}",
             title = "Swing%"
         )
 
@@ -745,7 +745,7 @@ class PamsOutput:
         self.release.is_visible = show_adsr
 
         # hide the quantization root if we're not quantizing
-        show_root = self.quantizer.value is not None
+        show_root = self.quantizer.mapped_value is not None
         self.root.is_visible = show_root
 
         # hide the width parameter if we're reading from AIN or KNOB, or outputting a sine wave
@@ -763,7 +763,7 @@ class PamsOutput:
         self.clock_mod_dirty = True
 
     def change_clock_mod(self):
-        self.real_clock_mod = self.clock_mod.value
+        self.real_clock_mod = self.clock_mod.mapped_value
         self.clock_mod_dirty = False
 
     def recalculate_e_pattern(self, new_value=None, old_value=None, config_point=None, arg=None):
@@ -984,8 +984,8 @@ class PamsOutput:
             self.previous_wave_sample = wave_sample
             out_volts = wave_sample * MAX_OUTPUT_VOLTAGE
 
-            if self.quantizer.value is not None:
-                (out_volts, note) = self.quantizer.value.quantize(out_volts, self.root.value)
+            if self.quantizer.mapped_value is not None:
+                (out_volts, note) = self.quantizer.mapped_value.quantize(out_volts, self.root.value)
 
             if wave_position == ticks_per_note - 1:
                 if self.next_e_pattern:
