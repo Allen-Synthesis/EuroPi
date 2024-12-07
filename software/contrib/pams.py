@@ -14,7 +14,7 @@ from configuration import *
 
 from experimental.euclid import generate_euclidean_pattern
 from experimental.knobs import KnobBank
-from experimental.quantizer import CommonScales, Quantizer, SEMITONE_LABELS, SEMITONES_PER_OCTAVE
+from experimental.quantizer import CommonScales, Quantizer, SEMITONES_PER_OCTAVE
 from experimental.screensaver import OledWithScreensaver
 from experimental.settings_menu import *
 
@@ -106,6 +106,20 @@ QUANTIZERS = {
     "Dom 7"     : CommonScales.Dominant7,
 }
 
+SEMITONE_LABELS = {
+    0: "C",
+    1: "C#",
+    2: "D",
+    3: "D#",
+    4: "E",
+    5: "F",
+    6: "F#",
+    7: "G",
+    8: "G#",
+    9: "A",
+    10: "A#",
+    11: "B",
+}
 
 ## Always-on gate when the clock is running
 CLOCK_MOD_RUN = 100
@@ -542,8 +556,6 @@ class PamsOutput:
             prefix=f"CV{n}",
             title="Quant.",
             callback = self.update_menu_visibility,
-            autoselect_cv = True,
-            autoselect_knob = True,
             value_map=QUANTIZERS,
             autoselect_knob = True,
             autoselect_cv = True,
@@ -1133,6 +1145,27 @@ class PamsOutput:
         else:
             self.cv_out.voltage(self.out_volts)
 
+    def to_bank(self):
+        """Convert all of this channel's properties into a dict that can be saved as a bank
+
+        @return The dict representing this channel's current state
+        """
+        d = {}
+        for setting in self.all_settings:
+            key = setting.config_point.name.replace(f"cv{self.cv_n}_", "")
+            d[key] = setting.value_choice
+        return d
+
+    def from_bank(self, bank):
+        """Load a saved bank's settings and apply them here
+
+        @param bank  The dict loaded from the bank file
+        """
+        for setting in self.all_settings:
+            key = setting.config_point.name.replace(f"cv{self.cv_n}_", "")
+            if key in bank:
+                setting.choose(bank[key])
+
 
 class PamsWorkout2(EuroPiScript):
     """The main script for the Pam's Workout implementation
@@ -1188,8 +1221,40 @@ class PamsWorkout2(EuroPiScript):
             ch.clock_mod.add_child(ch.quantizer)
             ch.clock_mod.add_child(ch.root)
             ch.clock_mod.add_child(ch.mute)
-
-            # TODO: add menu items to load/save banks
+            ch.clock_mod.add_child(
+                ActionMenuItem(
+                    actions = [
+                        "Cancel",
+                        "Bank 1",
+                        "Bank 2",
+                        "Bank 3",
+                        "Bank 4",
+                        "Bank 5",
+                        "Bank 6",
+                    ],
+                    prefix = f"CV{ch.cv_n}",
+                    title = "Load",
+                    callback = self.load_bank,
+                    callback_arg = ch
+                )
+            )
+            ch.clock_mod.add_child(
+                ActionMenuItem(
+                    actions = [
+                        "Cancel",
+                        "Bank 1",
+                        "Bank 2",
+                        "Bank 3",
+                        "Bank 4",
+                        "Bank 5",
+                        "Bank 6",
+                    ],
+                    prefix = f"CV{ch.cv_n}",
+                    title = "Save",
+                    callback = self.save_bank,
+                    callback_arg = ch
+                )
+            )
 
             # add the channel to the menu items
             menu_items.append(ch.clock_mod)
@@ -1210,8 +1275,6 @@ class PamsWorkout2(EuroPiScript):
             long_press_cb = lambda: ssoled.notify_user_interaction()
         )
         self.main_menu.load_defaults(self._state_filename)
-
-        # TODO: load the saved banks from storage
 
         @din.handler
         def on_din_rising():
@@ -1251,6 +1314,43 @@ class PamsWorkout2(EuroPiScript):
             wake up behavior the same for both buttons
             """
             ssoled.notify_user_interaction()
+
+    def load_bank(self, bank, channel):
+        """
+        Load a saved bank and apply it to the given channel
+
+        @param bank  The name of the bank, or "Cancel"
+        @param  The channel to apply the saved settings to
+        """
+        if bank.lower() == "cancel":
+            return
+
+        try:
+            with open(self.bank_filename(bank), "r") as file:
+                d = json.load(file)
+            channel.from_bank(d)
+        except Exception as err:
+            print(f"Failed to load {bank}: {err}")
+
+    def save_bank(self, bank, channel):
+        """
+        Save the current state of the channel to a persistence file so it can be loaded
+
+        @param bank  The name of the bank, or "Cancel"
+        @param  The channel to apply the saved settings to
+        """
+        if bank.lower() == "cancel":
+            return
+
+        try:
+            d = channel.to_bank()
+            with open(self.bank_filename(bank), "w") as file:
+                json.dump(d, file, separators=(",\n", ":"))
+        except Exception as err:
+            print(f"Failed to save {bank}: {err}")
+
+    def bank_filename(self, bank):
+        return f'saved_state_{self.__class__.__qualname__}_{bank.lower().replace(" ", "_")}.json'
 
     def main(self):
         prev_k1 = CV_INS["KNOB"].percent()

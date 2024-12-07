@@ -97,37 +97,22 @@ class MenuItem:
         self._is_visible = is_visible
 
 
-class SettingMenuItem(MenuItem):
-    """
-    A single menu item that presents a setting the user can manipulate
-
-    The menu item is a wrapper around a ConfigPoint, and uses
-    that object's values as the available selections.
-    """
+class ChoiceMenuItem(MenuItem):
+    """A generic menu item for displaying a choice of options to the user"""
 
     def __init__(
         self,
-        config_point: ConfigPoint = None,
         parent: MenuItem = None,
         children: list[MenuItem] = None,
         title: str = None,
         prefix: str = None,
         graphics: dict = None,
         labels: dict = None,
-        callback=lambda new_value, old_value, config_point, arg: None,
-        callback_arg=None,
-        float_resolution=2,
-        value_map: dict = None,
         is_visible: bool = True,
-        autoselect_knob: bool = False,
-        autoselect_cv: bool = False,
     ):
         """
-        Create a new menu item around a ConfigPoint
+        Create a new choice menu item
 
-        If the item has a callback function defined, it will be invoked once during initialization
-
-        @param config_point  The configration option this menu item controls
         @param parent  If the menu has multiple levels, what is this item's parent control?
         @param children  If this menu has multiple levels, whar are this item's child controls?
         @param title  The title to display at the top of the display when this control is active
@@ -136,123 +121,23 @@ class SettingMenuItem(MenuItem):
                          graphics to display along with the keyed values
         @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
                        options
-        @param callback  A function to invoke when this item's value changes. Must accept
-                         (new_value, old_value, config_point, arg=None) as parameters
-        @param callback_arg  An optional additional argument to pass to the callback function
-        @param float_resolution  The resolution of floating-point config points (ignored if config_point is not
-                                 a FloatConfigPoint)
-        @param value_map  An optional dict to map the underlying simple ConfigPoint values to more complex objects
-                          e.g. map the string "CMaj" to a Quantizer object
         @param is_visible  Is this menu item visible by default?
-        @param autoselect_knob  If True, this item gets "Knob" as an additional choice, allowing ad-hoc selection
-                                via the knob
-        @param autoselect_cv  If True, this item gets "AIN" as an additional choice, allowing ad-hoc selection
-                              via the CV input
         """
-        super().__init__(parent=parent, children=children, is_visible=is_visible)
-
-        # are we in edit mode?
-        self.edit_mode = False
-
-        self.autoselect_cv = autoselect_cv
-        self.autoselect_knob = autoselect_knob
-
-        self.graphics = graphics
-        self.labels = labels
-        self.value_map = value_map
-
-        # the configuration setting that we're controlling via this menu item
-        # convert everything to a choice configuration; this way we can add the knob/ain options too
-        if type(config_point) is FloatConfigPoint:
-            self.float_resolution = float_resolution
-        self.src_config = config_point
-        choices = self.get_option_list()
-        self.config_point = ChoiceConfigPoint(
-            config_point.name,
-            choices=choices,
-            default=config_point.default,
-            danger=config_point.danger,
+        super().__init__(
+            children=children,
+            parent=parent,
+            is_visible=is_visible
         )
 
-        self.NUM_AUTOINPUT_CHOICES = 0
-        if self.autoselect_cv or self.autoselect_knob:
-            if self.autoselect_cv:
-                self.NUM_AUTOINPUT_CHOICES += 1
-            if self.autoselect_knob:
-                self.NUM_AUTOINPUT_CHOICES += 1
+        self.title = title
+        self.prefix = prefix
+        self.graphics = graphics
+        self.labels = labels
 
-            if not self.graphics:
-                self.graphics = {}
-            self.graphics[AUTOSELECT_AIN] = AIN_GRAPHICS
-            self.graphics[AUTOSELECT_KNOB] = KNOB_GRAPHICS
-
-            if not self.labels:
-                self.labels = {}
-            self.labels[AUTOSELECT_AIN] = AIN_LABEL
-            self.labels[AUTOSELECT_KNOB] = KNOB_LABEL
-
-        if title:
-            self.title = title
-        else:
-            self.title = self.config_point.name
-
-        if prefix:
-            self.prefix = prefix
-        else:
-            self.prefix = ""
-
-        self.callback_fn = callback
-        self.callback_arg = callback_arg
-
-        # assign the initial value without firing any callbacks
-        self._value = self.config_point.default
-        self._value_choice = self.config_point.default
-
-    def reset_to_default(self):
-        """
-        Reset this item to its default value
-        """
-        self.choose(self.src_config.default)
-
-    def modify_choices(self, choices=None, new_default=None):
-        """
-        Regenerate this item's available choices
-
-        This is needed if we externally modify e.g. the maximum/minimum values of the underlying
-        config point as a result of one option needing to be within a range determined by another.
-
-        @param choices  The list of new options we want to allow the user to choose from, excluding any autoselections
-        @param new_default  A value to assign to this setting if its existing value is out-of-range
-        """
-        if choices is None:
-            choices = get_option_list()
-        else:
-            # add the autoselect items, if needed
-            if self.autoselect_knob:
-                choices.append(AUTOSELECT_KNOB)
-            if self.autoselect_knob:
-                choices.append(AUTOSELECT_AIN)
-
-        self.config_point.choices = choices
-        still_valid = self.config_point.validate(self.value)
-        if not still_valid.is_valid:
-            self.choose(new_default)
+        self._is_editable = False
 
     def short_press(self):
-        """
-        Handle a short button press
-
-        This enters edit mode, or applies the selection and
-        exits edit mode
-        """
-        if self.is_editable:
-            new_choice = self.menu.knob.choice(self.config_point.choices)
-            if new_choice != self.value_choice:
-                # apply the currently-selected choice if we're in edit mode
-                self.choose(new_choice)
-                self.ui_dirty = True
-                self.menu.settings_dirty = True
-
+        """Toggle is_editable on a short press"""
         self.is_editable = not self.is_editable
 
     def draw(self, oled=europi.oled):
@@ -267,9 +152,9 @@ class SettingMenuItem(MenuItem):
         SELECT_OPTION_Y = 16
 
         if self.is_editable:
-            display_value = self.menu.knob.choice(self.config_point.choices)
+            display_value = self.menu.knob.choice(self.choices)
         else:
-            display_value = self.value_choice
+            display_value = self.default_choice
 
         text_left = 0
         prefix_left = 1
@@ -322,9 +207,185 @@ class SettingMenuItem(MenuItem):
             # draw the selection in normal text
             oled.text(display_text, text_left + 1, SELECT_OPTION_Y + 2, 1)
 
-        if self.config_point.danger:
-            fb = FrameBuffer(DANGER_GRAPHICS, 12, 12, MONO_HLSB)
-            oled.blit(fb, europi.OLED_WIDTH-12, europi.OLED_HEIGHT-12)
+    @property
+    def choices(self):
+        raise NotImplemented("choices(self) must be implemented by the sub-class!")
+
+    @property
+    def default_choice(self):
+        raise NotImplemented("default_choice(self) must be implemented by the sub-class!")
+
+    @property
+    def is_editable(self):
+        return self._is_editable
+
+    @is_editable.setter
+    def is_editable(self, can_edit):
+        self._is_editable = can_edit
+
+
+class SettingMenuItem(ChoiceMenuItem):
+    """
+    A single menu item that presents a setting the user can manipulate
+
+    The menu item is a wrapper around a ConfigPoint, and uses
+    that object's values as the available selections.
+    """
+
+    def __init__(
+        self,
+        config_point: ConfigPoint = None,
+        parent: MenuItem = None,
+        children: list[MenuItem] = None,
+        title: str = None,
+        prefix: str = None,
+        graphics: dict = None,
+        labels: dict = None,
+        callback=lambda new_value, old_value, config_point, arg: None,
+        callback_arg=None,
+        float_resolution=2,
+        value_map: dict = None,
+        is_visible: bool = True,
+        autoselect_knob: bool = False,
+        autoselect_cv: bool = False,
+    ):
+        """
+        Create a new menu item around a ConfigPoint
+
+        If the item has a callback function defined, it will be invoked once during initialization
+
+        @param config_point  The configration option this menu item controls
+        @param parent  If the menu has multiple levels, what is this item's parent control?
+        @param children  If this menu has multiple levels, whar are this item's child controls?
+        @param title  The title to display at the top of the display when this control is active
+        @param prefix  A prefix to display before the title when this control is active
+        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing 12x12 MONO_HLSB
+                         graphics to display along with the keyed values
+        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
+                       options
+        @param callback  A function to invoke when this item's value changes. Must accept
+                         (new_value, old_value, config_point, arg=None) as parameters
+        @param callback_arg  An optional additional argument to pass to the callback function
+        @param float_resolution  The resolution of floating-point config points (ignored if config_point is not
+                                 a FloatConfigPoint)
+        @param value_map  An optional dict to map the underlying simple ConfigPoint values to more complex objects
+                          e.g. map the string "CMaj" to a Quantizer object
+        @param is_visible  Is this menu item visible by default?
+        @param autoselect_knob  If True, this item gets "Knob" as an additional choice, allowing ad-hoc selection
+                                via the knob
+        @param autoselect_cv  If True, this item gets "AIN" as an additional choice, allowing ad-hoc selection
+                              via the CV input
+        """
+        if title is None:
+            title = config_point.name
+        if prefix is None:
+            prefix = ""
+
+        super().__init__(
+            parent=parent,
+            children=children,
+            title=title,
+            prefix=prefix,
+            graphics=graphics,
+            labels=labels,
+            is_visible=is_visible,
+        )
+
+        self.autoselect_cv = autoselect_cv
+        self.autoselect_knob = autoselect_knob
+        self.value_map = value_map
+
+        # the configuration setting that we're controlling via this menu item
+        # convert everything to a choice configuration; this way we can add the knob/ain options too
+        if type(config_point) is FloatConfigPoint:
+            self.float_resolution = float_resolution
+        self.src_config = config_point
+        choices = self.get_option_list()
+        self.config_point = ChoiceConfigPoint(
+            config_point.name,
+            choices=choices,
+            default=config_point.default,
+            danger=config_point.danger,
+        )
+
+        self.NUM_AUTOINPUT_CHOICES = 0
+        if self.autoselect_cv or self.autoselect_knob:
+            if self.autoselect_cv:
+                self.NUM_AUTOINPUT_CHOICES += 1
+            if self.autoselect_knob:
+                self.NUM_AUTOINPUT_CHOICES += 1
+
+            if not self.graphics:
+                self.graphics = {}
+            self.graphics[AUTOSELECT_AIN] = AIN_GRAPHICS
+            self.graphics[AUTOSELECT_KNOB] = KNOB_GRAPHICS
+
+            if not self.labels:
+                self.labels = {}
+            self.labels[AUTOSELECT_AIN] = AIN_LABEL
+            self.labels[AUTOSELECT_KNOB] = KNOB_LABEL
+
+        self.callback_fn = callback
+        self.callback_arg = callback_arg
+
+        # assign the initial value without firing any callbacks
+        self._value = self.config_point.default
+        self._value_choice = self.config_point.default
+
+    @property
+    def choices(self):
+        return self.config_point.choices
+
+    @property
+    def default_choice(self):
+        return self.value_choice
+
+    def reset_to_default(self):
+        """
+        Reset this item to its default value
+        """
+        self.choose(self.src_config.default)
+
+    def modify_choices(self, choices=None, new_default=None):
+        """
+        Regenerate this item's available choices
+
+        This is needed if we externally modify e.g. the maximum/minimum values of the underlying
+        config point as a result of one option needing to be within a range determined by another.
+
+        @param choices  The list of new options we want to allow the user to choose from, excluding any autoselections
+        @param new_default  A value to assign to this setting if its existing value is out-of-range
+        """
+        if choices is None:
+            choices = get_option_list()
+        else:
+            # add the autoselect items, if needed
+            if self.autoselect_knob:
+                choices.append(AUTOSELECT_KNOB)
+            if self.autoselect_knob:
+                choices.append(AUTOSELECT_AIN)
+
+        self.config_point.choices = choices
+        still_valid = self.config_point.validate(self.value)
+        if not still_valid.is_valid:
+            self.choose(new_default)
+
+    def short_press(self):
+        """
+        Handle a short button press
+
+        This enters edit mode, or applies the selection and
+        exits edit mode
+        """
+        if self.is_editable:
+            new_choice = self.menu.knob.choice(self.config_point.choices)
+            if new_choice != self.value_choice:
+                # apply the currently-selected choice if we're in edit mode
+                self.choose(new_choice)
+                self.ui_dirty = True
+                self.menu.settings_dirty = True
+
+        super().short_press()
 
     def get_option_list(self):
         """
@@ -405,6 +466,15 @@ class SettingMenuItem(MenuItem):
             self._value = choice
             self.callback_fn(choice, old_value, self.config_point, self.callback_arg)
 
+    def draw(self, oled=europi.oled):
+        super().draw(oled)
+
+        # add a ! to the lower-right corner to indicate a potentially
+        # volatile, edit-at-your-own-risk item
+        if self.config_point.danger:
+            fb = FrameBuffer(DANGER_GRAPHICS, 12, 12, MONO_HLSB)
+            oled.blit(fb, europi.OLED_WIDTH-12, europi.OLED_HEIGHT-12)
+
     @property
     def value_choice(self):
         """The value the user has chosen from the menu"""
@@ -431,13 +501,81 @@ class SettingMenuItem(MenuItem):
             return self.value_map[self._value]
         return self._value
 
-    @property
-    def is_editable(self):
-        return self.edit_mode
 
-    @is_editable.setter
-    def is_editable(self, can_edit):
-        self.edit_mode = can_edit
+class ActionMenuItem(ChoiceMenuItem):
+    """
+    A menu item that just invokes a callback function when selected.
+
+    This class is similar to the SettingMenuItem, but doesn't wrap a ConfigPoint; it just has
+    options and fires the callback when you choose one
+    """
+
+    def __init__(
+        self,
+        actions: list[object],
+        callback = lambda x: None,
+        callback_arg: object = None,
+        parent: MenuItem = None,
+        children: list[MenuItem] = None,
+        title: str = None,
+        prefix: str = None,
+        graphics: dict = None,
+        labels: dict = None,
+        is_visible: bool = True,
+    ):
+        """
+        Create a new menu item around a ConfigPoint
+
+        If the item has a callback function defined, it will be invoked once during initialization
+
+        @param actions  The list of choices the user can pick from. e.g. ["Cancel", "Ok"]
+        @param callback  The function to call when the user invokes the action. The selected item from choices
+                         is passed as the first parameter
+        @param callback_arg  The second parameter passed to the callback
+        @param parent  If the menu has multiple levels, what is this item's parent control?
+        @param children  If this menu has multiple levels, whar are this item's child controls?
+        @param title  The title to display at the top of the display when this control is active
+        @param prefix  A prefix to display before the title when this control is active
+        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing 12x12 MONO_HLSB
+                         graphics to display along with the keyed values
+        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
+                       options
+        @param is_visible  Is this menu item visible by default?
+        """
+        super().__init__(
+            parent=parent,
+            children=children,
+            title=title,
+            prefix=prefix,
+            graphics=graphics,
+            labels=labels,
+            is_visible=is_visible,
+        )
+
+        self.actions = actions
+        self.callback = callback
+        self.callback_arg = callback_arg
+        self.title = title
+        self.prefix = prefix
+
+        self._is_editable = False
+
+    @property
+    def choices(self):
+        return self.actions
+
+    @property
+    def default_choice(self):
+        return self.choices[0]
+
+    def short_press(self):
+        if self.is_editable:
+            # fire the callback if we're exiting edit-mode
+            choice = self.menu.knob.choice(self.choices)
+            self.callback(choice, self.callback_arg)
+
+        super().short_press()
+
 
 
 class SettingsMenu:
@@ -607,7 +745,7 @@ class SettingsMenu:
         if type(self.knob) is KnobBank:
             if self.active_item.is_editable:
                 self.knob.set_current("choice")
-            elif self.active_item.children:
+            elif self.active_item.children and len(self.active_item.children) > 0:
                 self.knob.set_current("main_menu")
             else:
                 self.active_item.set_current("submenu")
