@@ -39,6 +39,11 @@ class ConfigurationEditor(EuroPiScript):
 
         config_points = EuroPiConfig.config_points()
         for cfg in config_points:
+            if type(cfg) is BooleanConfigPoint:
+                labels = boolean_labels
+            else:
+                labels = None
+
             # Special case; this name can't be easily modified & still fit, so just replace it
             if cfg.name == "MENU_AFTER_POWER_ON":
                 title = "boot to menu"
@@ -64,7 +69,7 @@ class ConfigurationEditor(EuroPiScript):
             items.append(
                 SettingMenuItem(
                     config_point=cfg,
-                    labels=boolean_labels,
+                    labels=labels,
                     float_resolution=1,
                     prefix=prefix,
                     title=title,
