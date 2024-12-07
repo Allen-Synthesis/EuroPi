@@ -577,7 +577,6 @@ class ActionMenuItem(ChoiceMenuItem):
         super().short_press()
 
 
-
 class SettingsMenu:
     """
     A menu-based GUI for any EuroPi script.
