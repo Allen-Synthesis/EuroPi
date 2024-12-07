@@ -298,12 +298,34 @@ class AnalogInReader:
     accesses across each output channel.  It also adds gain & precision settings that can
     be adjusted in application's menu
     """
-    def __init__(self, cv_in):
+    def __init__(self, cv_in, label):
         self.cv_in = cv_in
         self.last_percent = 0.0
 
-        self.gain = 1.0
-        self.precision = DEFAULT_SAMPLES
+        self.gain = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                f"{label.lower()}_gain",
+                0,
+                200,
+                100
+            ),
+            prefix = label,
+            title = "Gain"
+        )
+        self.precision = SettingMenuItem(
+            config_point = ChoiceConfigPoint(
+                f"{label.lower()}_precision",
+                ["Low", "Med", "High"],
+                "Med"
+            ),
+            prefix = label,
+            title = "Precision",
+            value_map = {
+                "Low": DEFAULT_SAMPLES / 2,
+                "Med": DEFAULT_SAMPLES,
+                "High": DEFAULT_SAMPLES * 2
+            }
+        )
 
     def update(self):
         """Read the current voltage from the analog input using the configured precision
@@ -312,7 +334,7 @@ class AnalogInReader:
 
         @return The voltage read from the analog input multiplied by self.gain
         """
-        self.last_percent = self.cv_in.percent(self.precision) * self.gain
+        self.last_percent = self.cv_in.percent(self.precision.mapped_value) * self.gain.value / 100.0
         return self.last_percent
 
     def percent(self):
@@ -320,8 +342,8 @@ class AnalogInReader:
 
 ## Wrapped copies of all CV inputs so we can iterate through them
 CV_INS = {
-    "KNOB": AnalogInReader(k1),
-    "AIN": AnalogInReader(ain)
+    "KNOB": AnalogInReader(k1, "Knob"),
+    "AIN": AnalogInReader(ain, "AIN"),
 }
 
 
@@ -1110,8 +1132,10 @@ class PamsWorkout2(EuroPiScript):
             # add the channel to the menu items
             menu_items.append(ch.clock_mod)
 
-        # TODO: re-add AIN, K1 gains?
-        # This feels unnecessary with the menu handling the dynamic inputs internally
+        # Add gain & precision controls for K1 & AIN
+        for cv in CV_INS.values():
+            cv.gain.add_child(cv.precision),
+            menu_items.append(cv.gain)
 
         ## The main application menu
         self.main_menu = SettingsMenu(
