@@ -1082,6 +1082,9 @@ class PamsWorkout2(EuroPiScript):
     def __init__(self):
         super().__init__()
 
+        # Are UI elements _not_ managed by the main menu dirty?
+        self.ui_dirty = True
+
         self.din_mode = SettingMenuItem(
             config_point = ChoiceConfigPoint(
                 "din",
@@ -1179,6 +1182,7 @@ class PamsWorkout2(EuroPiScript):
                 self.clock.stop()
             else:
                 self.clock.start()
+            self.ui_dirty = True
 
         @b1.handler_falling
         def on_b1_release():
@@ -1190,14 +1194,27 @@ class PamsWorkout2(EuroPiScript):
             ssoled.notify_user_interaction()
 
     def main(self):
+        prev_k1 = CV_INS["KNOB"].percent()
+        prev_k2 = k2_bank.current.percent()
+
         while True:
             for cv_in in CV_INS.values():
                 cv_in.update()
 
-            ssoled.fill(0)
-            self.main_menu.draw(ssoled)
-            if self.main_menu.settings_dirty:
-                self.main_menu.save(self._state_filename)
+            current_k1 = CV_INS["KNOB"].percent()
+            current_k2 = k2_bank.current.percent()
+
+            # wake up from the screensaver if we rotate a knob
+            if abs(current_k1 - prev_k1) > 0.02 or abs(current_k2 - prev_k2) > 0.02:
+                self.ui_dirty = True
+                ssoled.notify_user_interaction()
+
+            # only re-render the UI if necessary
+            if self.main_menu.ui_dirty or self.ui_dirty:
+                ssoled.notify_user_interaction()
+                ssoled.fill(0)
+                self.main_menu.draw(ssoled)
+                self.ui_dirty = False
 
             # draw a simple header to indicate status
             if self.clock.is_running:
@@ -1206,7 +1223,14 @@ class PamsWorkout2(EuroPiScript):
                 imgFB = FrameBuffer(STATUS_IMG_PAUSE, STATUS_IMG_WIDTH, STATUS_IMG_HEIGHT, MONO_HLSB)
             ssoled.blit(imgFB, OLED_WIDTH - STATUS_IMG_WIDTH, 0)
 
+            # This will either update the UI or animate the screensaver
             ssoled.show()
+
+            if self.main_menu.settings_dirty:
+                self.main_menu.save(self._state_filename)
+
+            prev_k1 = current_k1
+            prev_k2 = prev_k2
 
 if __name__=="__main__":
     PamsWorkout2().main()
