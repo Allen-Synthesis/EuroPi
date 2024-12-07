@@ -119,11 +119,8 @@ class EuclidGenerator:
     def update_steps(self, new_steps, old_steps, config_point, arg=None):
         """Update the max range of pulses & rotation to match the number of steps
         """
-        self.pulses.src_config.maximum = new_steps
-        self.pulses.refresh_choices(new_default=new_steps)
-
-        self.rotation.src_config.maximum = new_steps
-        self.rotation.refresh_choices(new_default=new_steps)
+        self.pulses.modify_choices(choices=list(range(new_steps+1)), new_default=new_steps)
+        self.rotation.modify_choices(choices=list(range(new_steps+1)), new_default=new_steps)
 
         self.regenerate()
 

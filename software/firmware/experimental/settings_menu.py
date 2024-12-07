@@ -214,16 +214,26 @@ class SettingMenuItem(MenuItem):
         """
         self.choose(self.src_config.default)
 
-    def refresh_choices(self, new_default=None):
+    def modify_choices(self, choices=None, new_default=None):
         """
         Regenerate this item's available choices
 
         This is needed if we externally modify e.g. the maximum/minimum values of the underlying
         config point as a result of one option needing to be within a range determined by another.
 
+        @param choices  The list of new options we want to allow the user to choose from, excluding any autoselections
         @param new_default  A value to assign to this setting if its existing value is out-of-range
         """
-        self.config_point.choices = self.get_option_list()
+        if choices is None:
+            choices = get_option_list()
+        else:
+            # add the autoselect items, if needed
+            if self.autoselect_knob:
+                choices.append(AUTOSELECT_KNOB)
+            if self.autoselect_knob:
+                choices.append(AUTOSELECT_AIN)
+
+        self.config_point.choices = choices
         still_valid = self.config_point.validate(self.value)
         if not still_valid.is_valid:
             self.choose(new_default)
@@ -537,10 +547,29 @@ class SettingsMenu:
 
         @param settings_file  The path to a JSON file where the user's settings are saved
         """
-        spec = ConfigSpec(self.get_config_points())
-        settings = ConfigFile.load_from_file(settings_file, spec)
-        for k in settings.keys():
-            self.menu_items_by_name[k].choose(settings[k])
+        failed_key_counts = {}
+
+        # because we may have a situation where, via callbacks, some settings' options are dynamically
+        # modified, we need to load iteratively
+        json_data = load_json_file(settings_file)
+        keys = list(json_data.keys())
+        max_tries = len(keys)
+        while len(keys) > 0:
+            k = keys[0]
+            keys.pop(0)
+            if k in self.menu_items_by_name:
+                try:
+                    self.menu_items_by_name[k].choose(json_data[k])
+                except ValueError as err:
+                    if k not in failed_key_counts:
+                        failed_key_counts[k] = 1
+                    else:
+                        failed_key_counts[k] += 1
+                    # Bump this key to the back and try again; a prior key might fix the problem
+                    if failed_key_counts[k] < max_tries:
+                        keys.append(k)
+                    else:
+                        raise
 
     def save(self, settings_file):
         """

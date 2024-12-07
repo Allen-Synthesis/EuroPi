@@ -753,10 +753,8 @@ class PamsOutput:
         self.width.is_visible = show_width
 
     def change_e_length(self, new_value=None, old_value=None, config_point=None, arg=None):
-        self.e_trig.src_config.maximum = self.e_step.value
-        self.e_rot.src_config.maximum = self.e_step.value
-        self.e_trig.refresh_choices(self.e_step.value)
-        self.e_rot.refresh_choices(self.e_step.value)
+        self.e_trig.modify_choices(list(range(self.e_step.value+1)), self.e_step.value)
+        self.e_rot.modify_choices(list(range(self.e_step.value+1)), self.e_step.value)
         self.recalculate_e_pattern()
 
     def request_clock_mod(self, new_value=None, old_value=None, config_point=None, arg=None):
