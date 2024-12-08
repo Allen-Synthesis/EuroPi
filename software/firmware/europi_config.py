@@ -3,11 +3,12 @@ from configuration import ConfigFile, ConfigSpec
 
 
 # sub-key constants for CPU_FREQS dict (see below)
+# the Europi default is to overclock, so to avoid confusion about the default
+# not being "default" just use a different word
 # fmt: off
+DEFAULT_FREQ = "normal"
 OVERCLOCKED_FREQ = "overclocked"
 UNDERCLOCKED_FREQ = "underclocked"
-DEFAULT_FREQ = "normal"           # the Europi default is to overclock, so to avoid confusion about the default
-                                  # not being "default" just use a different word
 # fmt: on
 
 # Supported Pico model types
