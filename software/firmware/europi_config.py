@@ -5,30 +5,35 @@ from configuration import ConfigFile, ConfigSpec
 # sub-key constants for CPU_FREQS dict (see below)
 # fmt: off
 OVERCLOCKED_FREQ = "overclocked"
+UNDERCLOCKED_FREQ = "underclocked"
 DEFAULT_FREQ = "normal"           # the Europi default is to overclock, so to avoid confusion about the default
                                   # not being "default" just use a different word
 # fmt: on
 
 # Default & overclocked CPU frequencies for supported boards
 # Key: board type (corresponds to EUROPI_MODEL setting)
-# Sub-key: "default" or "overclocked"
+# Sub-key: "default" or "overclocked" or "underclocked"
 # fmt: off
 CPU_FREQS = {
     "pico": {
-        DEFAULT_FREQ: 125_000_000,     # Pico default frequency is 125MHz
-        OVERCLOCKED_FREQ: 250_000_000  # Overclocked frequency is 250MHz
+        DEFAULT_FREQ: 125_000_000,      # Pico default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000,  # Overclocked frequency is 250MHz
+        UNDERCLOCKED_FREQ: 75_000_000   # Underclock to 75MHz
     },
     "pico2": {
-        DEFAULT_FREQ: 150_000_000,     # Pico2 default frequency is 150MHz
-        OVERCLOCKED_FREQ: 300_000_000  # Overclocked frequency is 300MHz
+        DEFAULT_FREQ: 150_000_000,      # Pico2 default frequency is 150MHz
+        OVERCLOCKED_FREQ: 300_000_000,  # Overclocked frequency is 300MHz
+        UNDERCLOCKED_FREQ: 75_000_000,  # Underclock to 75MHz
     },
     "pico h": {
-        DEFAULT_FREQ: 125_000_000,     # Pico H default frequency is 125MHz
-        OVERCLOCKED_FREQ: 250_000_000  # Overclocked frequency is 250MHz
+        DEFAULT_FREQ: 125_000_000,      # Pico H default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000,  # Overclocked frequency is 250MHz
+        UNDERCLOCKED_FREQ: 75_000_000,  # Underclock to 75MHz
     },
     "pico w": {
-        DEFAULT_FREQ: 125_000_000,     # Pico W default frequency is 125MHz
-        OVERCLOCKED_FREQ: 250_000_000  # Overclocked frequency is 250MHz
+        DEFAULT_FREQ: 125_000_000,      # Pico W default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000,  # Overclocked frequency is 250MHz
+        UNDERCLOCKED_FREQ: 75_000_000,  # Underclock to 75MHz
     }
 }
 # fmt: on
@@ -67,7 +72,8 @@ class EuroPiConfig:
                 name="CPU_FREQ",
                 choices=[
                     DEFAULT_FREQ,
-                    OVERCLOCKED_FREQ
+                    OVERCLOCKED_FREQ,
+                    UNDERCLOCKED_FREQ,
                 ],
                 default=OVERCLOCKED_FREQ,
             ),
