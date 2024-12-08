@@ -269,7 +269,12 @@ class Lutra(EuroPiScript):
         """A thread function that handles drawing the GUI
         """
         SHOW_WAVE_TIMEOUT = 3000
-        while True:
+
+        # To prevent the module locking up when we connect the USB for e.g. debugging, kill this thread
+        # if the USB state changes. Otherwise the second core will continue being busy, which makes connecting
+        # to the Python terminal impossible
+        usb_connected_at_start = usb_connected.value()
+        while usb_connected.value() == usb_connected_at_start:
             now = time.ticks_ms()
             oled.fill(0)
             with self.pixel_lock:
@@ -283,11 +288,9 @@ class Lutra(EuroPiScript):
     def wave_generation_thread(self):
         """A thread function that handles the underlying math of generating the waveforms
         """
-        usb_connected_at_start = usb_connected.value()
-
         # To prevent the module locking up when we connect the USB for e.g. debugging, kill this thread
-        # if the USB state changes. Otherwise the second core will continue being busy, which makes connecting
-        # to the Python terminal impossible
+        # if the USB state changes
+        usb_connected_at_start = usb_connected.value()
         while usb_connected.value() == usb_connected_at_start:
             # Read the digital inputs
             self.digital_input_state.update()
