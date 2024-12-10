@@ -617,8 +617,6 @@ class PamsOutput:
             labels = WAVE_SHAPE_LABELS,
             graphics = WAVE_SHAPE_IMGS,
             callback = self.update_menu_visibility,
-            autoselect_knob = True,
-            autoselect_cv = True,
         )
 
         ## The phase offset of the output as a [0, 100] percentage
