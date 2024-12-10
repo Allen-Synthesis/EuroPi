@@ -1,5 +1,7 @@
 import pytest
 
+import re
+
 from firmware import configuration as config
 from firmware.configuration import ConfigSpec, ConfigFile, Validation
 
@@ -121,7 +123,8 @@ def test_save_and_load_saved_config(class_with_config, simple_config_spec):
     ConfigFile.save_config(class_with_config, {"a": 1, "b": 2})
 
     with open(ConfigFile.config_filename(class_with_config), "r") as f:
-        assert f.read() == '{"a": 1, "b": 2}'
+        # allow arbitrary whitespace in the JSON formatting
+        assert re.match(r'\{\s*"a"\s*:\s*1\s*,\s*"b"\s*:\s*2\s*\}', f.read())
 
     assert ConfigFile.load_config(class_with_config, simple_config_spec) == {
         "a": 1,
@@ -133,7 +136,8 @@ def test_load_config_with_fallback_to_defaults(class_with_config, simple_config_
     ConfigFile.save_config(class_with_config, {"a": 1})
 
     with open(ConfigFile.config_filename(class_with_config), "r") as f:
-        assert f.read() == '{"a": 1}'
+        # allow arbitrary whitespace in the JSON formatting
+        assert re.match(r'\{\s*"a"\s*:\s*1\s*\}', f.read())
 
     assert ConfigFile.load_config(class_with_config, simple_config_spec) == {
         "a": 1,

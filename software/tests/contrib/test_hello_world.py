@@ -1,4 +1,5 @@
 import pytest
+import re
 from contrib.hello_world import HelloWorld
 
 
@@ -41,5 +42,5 @@ def test_save_load_state_json(hw, monkeypatch):
     # Test save and load state behaves as expected.
     hw.save_state()
     with open(hw._state_filename, 'r') as f:
-        assert f.read() == '{"counter": 1, "enabled": false}'
+        assert re.match(r'\{\s*"counter"\s*:\s*1\s*,\s*"enabled"\s*:\s*false\s*\}',  f.read())
     assert hw.load_state_json() == {"counter": 1, "enabled": False}

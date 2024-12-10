@@ -12,17 +12,20 @@ section on limitations, below.
 - `cv1-6`: one of these will have a copy of `ain`, the others will be zero
 - `button 1`: manually advance the output (on default view), or apply the current
   option (in menu view)
-- `button 2`: cycle between default & menu views
-- `knob 1`: cycle through the menu items (in menu view)
-- `knob 2`: cycle through the options for the current menu item (in menu view)
+- `button 2`: long-press to toggle between menu view and the visualization
+- `knob 1`: unused
+- `knob 2`: menu navigation (when inside menu view)
 
 Pressing button 1 will manually advance the output, just like a trigger
 on the digital input.
 
-Pressing button 2 will enter the options menu.  Use knob 1 to
-advance through the available options.  Knob 2 will cycle through the
-values for the selected option.  Pressing button 1 will apply the
-current selection.  Pressing button 2 will return to the default view.
+Long-pressing button 2 will toggle between the default visualization and
+the settings menu.
+
+When in the settings menu, use knob 2 to select a setting to change. Short-
+press B2 to edit the selected setting. Rotate knob 2 to select a new value
+for the setting and short-press B2 to apply it.  Long-pressing B2 will
+cancel the edit and return to the visualization.
 
 Options:
 - number of outputs: 2-6, determines the number of output ports used
@@ -42,7 +45,7 @@ Pressing button 1 while the screen is blank will wake the module up
 _and_ advance the output.  Pressing button 2 will only wake up the screen.
 
 
-## Shift Mode
+## Shift Register Mode
 
 When operating in shift mode, every time `b1` is pressed or a trigger is read on `din`,
 the current value from `ain` is read and inserted into the first position of a shift register.
