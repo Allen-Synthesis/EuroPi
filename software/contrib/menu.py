@@ -38,7 +38,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Hamlet",            "contrib.hamlet.Hamlet"],
     ["HarmonicLFOs",      "contrib.harmonic_lfos.HarmonicLFOs"],
     ["HelloWorld",        "contrib.hello_world.HelloWorld"],
-    ["Itty Bitty",        "contrib.hello_world.IttyBitty"],
+    ["Itty Bitty",        "contrib.itty_bitty.IttyBitty"],
     ["KnobPlayground",    "contrib.knob_playground.KnobPlayground"],
     ["Kompari",           "contrib.kompari.Kompari"],
     ["Logic",             "contrib.logic.Logic"],
