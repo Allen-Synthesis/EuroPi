@@ -67,7 +67,7 @@ class BittySequence:
             self.trigger_out.off()
             self.gate_out.off()
 
-        self.cv_out.voltage(europi_config.MAX_OUTPUT_VOLTAGE * self.shifted_sequence / 255)
+        self.cv_out.voltage(europi_config.MAX_OUTPUT_VOLTAGE * self.cv_sequence / 255)
 
         self.output_dirty = False
 
@@ -85,6 +85,17 @@ class BittySequence:
     @property
     def shifted_sequence(self):
         return ((self.binary_sequence << self.step) & 0xff) | ((self.binary_sequence & 0xff) >> (8 - self.step))
+
+    @property
+    def cv_sequence(self):
+        # reverse the bits of the shifted sequence
+        s = self.shifted_sequence
+        cv = 0x00
+        while s:
+            cv = cv << 1
+            cv = cv | (s & 0x01)
+            s = s >> 1
+        return cv & 0xff
 
     @property
     def current_bit(self):

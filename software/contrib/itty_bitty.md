@@ -58,7 +58,9 @@ duration of the trigger is the same as the incoming clock signal (or the duratio
 
 The gate output will go high if the current bit is 1, and will go low if the current bit is 0.
 
-The CV output set to `MAX_OUTPUT_VOLTAGE * n' / 255`.
+The CV output set to `MAX_OUTPUT_VOLTAGE * reverse(n') / 255`. The bits are reversed so as to prevent a situation
+where the CV is always high when the active bit is also high; this forcibly de-couples the gate & CV outputs,
+which can lead to more interesting interactions between them
 
 ## Configuration
 
