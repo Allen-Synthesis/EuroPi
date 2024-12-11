@@ -67,10 +67,7 @@ class BittySequence:
         self.output_dirty = False
 
     def change_sequence(self, n):
-        if n == self.sequence_n:
-            return
-
-        self.sequence_n = n
+         self.sequence_n = n
 
 
 class IttyBitty(EuroPiScript):
