@@ -59,3 +59,31 @@ duration of the trigger is the same as the incoming clock signal (or the duratio
 The gate output will go high if the current bit is 1, and will go low if the current bit is 0.
 
 The CV output set to `MAX_OUTPUT_VOLTAGE * n' / 255`.
+
+## Configuration
+
+This program has one configuration option:
+
+- `USE_GRAY_ENCODING`: it `true`, instead of traditional binary encoding, the pattery is encoded using
+  [gray encoding](https://en.wikipedia.org/wiki/Gray_encoding). This means that adjacent sequences will
+  always differ by exactly 1 bit.
+
+| Decimal value | Traditional binary | Gray encoding |
+|---------------|--------------------|---------------|
+| 0             | `00000000`         | `000000000`   |
+| 1             | `00000001`         | `000000001`   |
+| 2             | `00000010`         | `000000011`   |
+| 3             | `00000011`         | `000000010`   |
+| 4             | `00000100`         | `000000110`   |
+| 5             | `00000101`         | `000000111`   |
+| 6             | `00000110`         | `000000101`   |
+| 7             | `00000111`         | `000000100`   |
+| ...           | ...                | ...           |
+
+To enable Gray encoding, create/edit `/config/IttyBitty.json` to contain the following:
+```json
+{
+    "USE_GRAY_ENCODING": true
+}
+
+```
