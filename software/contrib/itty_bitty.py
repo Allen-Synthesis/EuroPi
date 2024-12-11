@@ -60,18 +60,14 @@ class BittySequence:
     def apply_output(self):
         now = time.ticks_ms()
 
-        # shift the sequence
-        n_prime = ((self.binary_sequence << self.step) & 0xff) | ((self.binary_sequence & 0xff) >> (8 - self.step))
-        current_bit = n_prime & 0x01
-
-        if current_bit:
+        if self.current_bit:
             self.trigger_out.on()
             self.gate_out.on()
         else:
             self.trigger_out.off()
             self.gate_out.off()
 
-        self.cv_out.voltage(europi_config.MAX_OUTPUT_VOLTAGE * n_prime / 255)
+        self.cv_out.voltage(europi_config.MAX_OUTPUT_VOLTAGE * self.shifted_sequence / 255)
 
         self.output_dirty = False
 
@@ -85,6 +81,14 @@ class BittySequence:
             n = n & 0xff
 
         self.binary_sequence = n
+
+    @property
+    def shifted_sequence(self):
+        return ((self.binary_sequence << self.step) & 0xff) | ((self.binary_sequence & 0xff) >> (8 - self.step))
+
+    @property
+    def current_bit(self):
+        return (self.shifted_sequence >> 7) & 0x01
 
 
 class IttyBitty(EuroPiScript):
@@ -119,6 +123,9 @@ class IttyBitty(EuroPiScript):
         ]
 
     def main(self):
+        TEXT_TOP = CHAR_HEIGHT
+        BITS_LEFT = CHAR_WIDTH * 6
+
         while True:
             n1 = k1.read_position(steps=256, samples=200)
             n2 = k2.read_position(steps=256, samples=200)
@@ -129,19 +136,27 @@ class IttyBitty(EuroPiScript):
             oled.fill(0)
             for i in range(len(self.sequencers)):
                 s = self.sequencers[i]
-                n_prime = ((s.binary_sequence << s.step) & 0xff) | ((s.binary_sequence & 0xff) >> (8 - s.step))
-                oled.text(f"{s.sequence_n:5} {n_prime:08b}", 0, CHAR_HEIGHT*i + CHAR_HEIGHT, 1)
+
+                # Set the output voltages if needed
                 if s.output_dirty:
                     s.apply_output()
 
-            # draw a box around the active bits
-            oled.rect(
-                CHAR_WIDTH * 13,
-                0,
-                CHAR_WIDTH,
-                OLED_HEIGHT - 1,
-                1
-            )
+                # Show the sequence number, sequence, and draw a box around the active bit
+                oled.text(f"{s.sequence_n:5} {s.binary_sequence:08b}", 0, CHAR_HEIGHT*i + TEXT_TOP, 1)
+                oled.fill_rect(
+                    BITS_LEFT + s.step * CHAR_WIDTH,
+                    CHAR_HEIGHT*i + TEXT_TOP,
+                    CHAR_WIDTH,
+                    CHAR_HEIGHT,
+                    1
+                )
+                oled.text(
+                    f"{s.current_bit}",
+                    BITS_LEFT + s.step * CHAR_WIDTH,
+                    CHAR_HEIGHT*i + TEXT_TOP,
+                    0
+                )
+
             oled.show()
 
 

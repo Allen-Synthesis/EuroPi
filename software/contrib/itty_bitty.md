@@ -51,7 +51,7 @@ the bits 1 place to the left, giving us `n'`:
 ...
 ```
 
-The "current bit` is the least-significant bit.
+The "current bit` is the most-significant bit.
 
 The trigger output will emit a trigger signal if the current 1s bit is 1, and no trigger if the current bit is 0. The
 duration of the trigger is the same as the incoming clock signal (or the duration of the button press).
