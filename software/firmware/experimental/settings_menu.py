@@ -149,7 +149,6 @@ class ChoiceMenuItem(MenuItem):
 
         @param oled  A Display instance (or compatible class) to render the item
         """
-        SELECT_OPTION_Y = 16
 
         if self.is_editable:
             display_value = self.menu.knob.choice(self.choices)
@@ -184,7 +183,7 @@ class ChoiceMenuItem(MenuItem):
                 text_left = 14  # graphics are 12x12, so add 2 pixel padding
                 if type(gfx) is bytearray:
                     gfx = FrameBuffer(gfx, 12, 12, MONO_HLSB)
-                oled.blit(gfx, 0, SELECT_OPTION_Y)
+                oled.blit(gfx, 0, self.SELECT_OPTION_Y)
 
         if self.labels:
             display_text = self.labels.get(display_value, str(display_value))
@@ -197,15 +196,15 @@ class ChoiceMenuItem(MenuItem):
 
             oled.fill_rect(
                 text_left,
-                SELECT_OPTION_Y,
+                self.SELECT_OPTION_Y,
                 text_left + text_width + 3,
                 europi.CHAR_HEIGHT + 4,
                 1,
             )
-            oled.text(display_text, text_left + 1, SELECT_OPTION_Y + 2, 0)
+            oled.text(display_text, text_left + 1, self.SELECT_OPTION_Y + 2, 0)
         else:
             # draw the selection in normal text
-            oled.text(display_text, text_left + 1, SELECT_OPTION_Y + 2, 1)
+            oled.text(display_text, text_left + 1, self.SELECT_OPTION_Y + 2, 1)
 
     @property
     def choices(self):
@@ -231,6 +230,7 @@ class SettingMenuItem(ChoiceMenuItem):
     The menu item is a wrapper around a ConfigPoint, and uses
     that object's values as the available selections.
     """
+    SELECT_OPTION_Y = 16
 
     def __init__(
         self,
@@ -425,9 +425,13 @@ class SettingMenuItem(ChoiceMenuItem):
 
         @param percent  A value 0-1 indicating the level of the knob/cv source
         """
+        last_choice = len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES
         index = int(
-            percent * (len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES)
+            percent * last_choice
         )
+        if index >= last_choice:
+            index = last_choice - 1
+
         item = self.config_point.choices[index]
         if item != self._value:
             old_value = self._value
@@ -469,11 +473,16 @@ class SettingMenuItem(ChoiceMenuItem):
     def draw(self, oled=europi.oled):
         super().draw(oled)
 
+        # show the real value in parentheses
+        if self.value_choice == AUTOSELECT_AIN or self.value_choice == AUTOSELECT_KNOB:
+            oled.text(f"({self.value})", europi.OLED_WIDTH//2, self.SELECT_OPTION_Y, 1)
+
+
         # add a ! to the lower-right corner to indicate a potentially
         # volatile, edit-at-your-own-risk item
         if self.config_point.danger:
             fb = FrameBuffer(DANGER_GRAPHICS, 12, 12, MONO_HLSB)
-            oled.blit(fb, europi.OLED_WIDTH-12, europi.OLED_HEIGHT-12)
+            oled.blit(fb, europi.OLED_WIDTH - 12, europi.OLED_HEIGHT - 12)
 
     @property
     def value_choice(self):
@@ -575,6 +584,7 @@ class ActionMenuItem(ChoiceMenuItem):
             self.callback(choice, self.callback_arg)
 
         super().short_press()
+
 
 
 class SettingsMenu:
@@ -839,15 +849,11 @@ class SettingsMenu:
         """
         if len(self.autoselect_cv_items) > 0:
             ain_percent = self.autoselect_cv.percent()
-            if ain_percent == 1.0:
-                ain_percent = 0.999  # restrict to [0, 1) -- otherwise we get out-of-bounds issues
             for item in self.autoselect_cv_items:
                 item.autoselect(ain_percent)
 
         if len(self.autoselect_knob_items) > 0:
             knob_percent = self.autoselect_knob.percent()
-            if knob_percent == 1.0:
-                knob_percent = 0.999  # restrict to [0, 1) -- otherwise we get out-of-bounds issues
             for item in self.autoselect_knob_items:
                 item.autoselect(knob_percent)
 
