@@ -40,15 +40,6 @@ k2_bank = (
     .build()
 )
 
-## Vertical screen offset for placing user input
-SELECT_OPTION_Y = 16
-
-## Exactly what it says on the tin; half the width of a character on the screen
-HALF_CHAR_WIDTH = int(CHAR_WIDTH / 2)
-
-## How many ms does a button need to be held to qualify as a long press?
-LONG_PRESS_MS = 500
-
 ## The scales that each PamsOutput can quantize to
 QUANTIZER_NAMES = [
     "None",
@@ -320,6 +311,8 @@ class BufferedAnalogueReader(AnalogueReader):
         @param cv_in  The base reader we're buffering
         @param label  A label used to stringify this object
         """
+        self.reverse_percentage = type(cv_in) is Knob
+
         self.gain = SettingMenuItem(
             config_point = IntegerConfigPoint(
                 f"{label.lower()}_gain",
@@ -357,8 +350,11 @@ class BufferedAnalogueReader(AnalogueReader):
         Note that even though the gain goes up to 200%, this returns a value in the range [0, 1].
         """
         p = super().percent(samples, deadzone)
-        p = p * self.gain.value
+        if self.gain:
+            p = p * self.gain.value / 100.0
         p = clamp(p, 0.0, 1.0)
+        if self.reverse_percentage:
+            return 1.0 - p
         return p
 
     def _sample_adc(self, samples=None):
