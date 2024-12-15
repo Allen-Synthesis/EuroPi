@@ -1,3 +1,4 @@
+import inspect
 import sys
 import pytest
 import utime
@@ -18,4 +19,5 @@ def test_menu_imports(mock_time_module):
     for display_name in EUROPI_SCRIPTS.keys():
         class_name = EUROPI_SCRIPTS[display_name]
         clazz = bootloader.get_class_for_name(class_name)
+        assert inspect.isclass(clazz), f"{class_name} does not resolve to a class"
         assert bootloader._is_europi_script(clazz), f"{class_name} is not a EuroPiScript"

@@ -195,7 +195,7 @@ class EuroPiScript:
             adding a time since last save check to reduce save frequency.
         """
         with open(self._state_filename, "w") as file:
-            json.dump(state, file)
+            json.dump(state, file, separators=(",\n", ":"))
             self._last_saved = ticks_ms()
 
     def load_state_bytes(self) -> bytes:
