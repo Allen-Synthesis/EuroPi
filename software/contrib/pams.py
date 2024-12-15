@@ -223,8 +223,8 @@ WAVE_SHAPE_LABELS = {
     WAVE_SIN: "Sine",
     WAVE_ADSR: "ADSR",
     WAVE_RANDOM: "Random",
-    WAVE_AIN: "AIN",
-    WAVE_KNOB: "KNOB",
+    WAVE_AIN: "AIN (S&H)",
+    WAVE_KNOB: "KNOB (S&H)",
 }
 
 ## Images of teh wave shapes
