@@ -55,6 +55,9 @@ class MenuItem:
         self.children = children
         self.is_visible = is_visible
 
+        # Used to indicate that if this is the active menu item, the UI should re-render it
+        self.ui_dirty = False
+
         if parent and children:
             raise Exception("Cannot specify parent and children in the same menu item")
 
@@ -68,7 +71,7 @@ class MenuItem:
 
         @param oled   A Display-compatible object we draw to
         """
-        pass
+        self.ui_dirty = False
 
     def add_child(self, item):
         """
@@ -149,6 +152,7 @@ class ChoiceMenuItem(MenuItem):
 
         @param oled  A Display instance (or compatible class) to render the item
         """
+        super().draw(oled)
 
         if self.is_editable:
             display_value = self.menu.knob.choice(self.choices)
@@ -434,6 +438,7 @@ class SettingMenuItem(ChoiceMenuItem):
 
         item = self.config_point.choices[index]
         if item != self._value:
+            self.ui_dirty = True
             old_value = self._value
             self._value = item
             self.callback_fn(item, old_value, self.config_point, self.callback_arg)
@@ -865,7 +870,7 @@ class SettingsMenu:
         This will be true if the user has pressed the button or rotated the knob sufficiently
         to change the active item
         """
-        return self._ui_dirty or self.active_item != self.knob.choice(self.visible_items)
+        return self._ui_dirty or self.active_item.ui_dirty or self.active_item != self.knob.choice(self.visible_items)
 
     @property
     def visible_items(self):
