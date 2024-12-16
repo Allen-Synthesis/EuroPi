@@ -70,7 +70,7 @@ This program has the following configuration options:
   CV signal connected to `AIN`
 - `USE_AIN_B`: if `true`, channel B's value is determined by `AIN` and `k2` will act as an attenuator for the
   CV signal connected to `AIN`
-- `USE_GRAY_ENCODING`: if `true`, instead of traditional binary encoding, the pattery is encoded using
+- `USE_GRAY_ENCODING`: if `true`, instead of traditional binary encoding, the pattern is encoded using
   [gray encoding](https://en.wikipedia.org/wiki/Gray_encoding). This means that adjacent sequences will
   always differ by exactly 1 bit.
 
