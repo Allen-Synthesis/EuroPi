@@ -130,16 +130,46 @@ class IttyBitty(EuroPiScript):
             configuration.boolean(
                 "USE_GRAY_ENCODING",
                 False
-            )
+            ),
+
+            # Flags to enable AIN to control channel A and/or channel B
+            # when enabled, the knob acts as an attenuator instead of a selector
+            configuration.boolean(
+                "USE_AIN_A",
+                False
+            ),
+            configuration.boolean(
+                "USE_AIN_B",
+                False
+            ),
         ]
 
     def main(self):
         TEXT_TOP = CHAR_HEIGHT
         BITS_LEFT = CHAR_WIDTH * 6
 
+        N_STEPS = 256
+        N_SAMPLES = 200
+
         while True:
-            n1 = k1.read_position(steps=256, samples=200)
-            n2 = k2.read_position(steps=256, samples=200)
+            cv = ain.percent(samples=N_SAMPLES)
+
+            if self.config.USE_AIN_A:
+                atten = k1.percent(samples=N_SAMPLES)
+                n1 = round(cv * atten * N_STEPS)
+                if n1 == N_STEPS:
+                    # prevent bounds problems since percent() returns [0, 1], not [0, 1)
+                    n1 = N_STEPS - 1
+            else:
+                n1 = k1.read_position(steps=N_STEPS, samples=N_SAMPLES)
+
+            if self.config.USE_AIN_B:
+                atten = k2.percent(samples=N_SAMPLES)
+                n2 = round(cv * atten * N_STEPS)
+                if n2 == N_STEPS:
+                    n2 = N_STEPS - 1
+            else:
+                n2 = k2.read_position(steps=N_STEPS, samples=N_SAMPLES)
 
             self.sequencers[0].change_sequence(n1)
             self.sequencers[1].change_sequence(n2)

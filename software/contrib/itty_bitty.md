@@ -11,7 +11,7 @@ new module.
 ## Ins & Outs
 
 - `DIN`: an input clock/gate/trigger signal used to advance the sequences
-- `AIN`: not used
+- `AIN`: optional CV control for sequence A and/or B (see configuration, below)
 - `K1`: determines the value of sequence A: 0-255
 - `K2`: determines the value of sequence B: 0-255
 - `B1`: manually advance sequence A
@@ -64,9 +64,13 @@ which can lead to more interesting interactions between them
 
 ## Configuration
 
-This program has one configuration option:
+This program has the following configuration options:
 
-- `USE_GRAY_ENCODING`: it `true`, instead of traditional binary encoding, the pattery is encoded using
+- `USE_AIN_A`: if `true`, channel A's value is determined by `AIN` and `k1` will act as an attenuator for the
+  CV signal connected to `AIN`
+- `USE_AIN_B`: if `true`, channel B's value is determined by `AIN` and `k2` will act as an attenuator for the
+  CV signal connected to `AIN`
+- `USE_GRAY_ENCODING`: if `true`, instead of traditional binary encoding, the pattery is encoded using
   [gray encoding](https://en.wikipedia.org/wiki/Gray_encoding). This means that adjacent sequences will
   always differ by exactly 1 bit.
 
