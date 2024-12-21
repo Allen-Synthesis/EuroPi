@@ -64,19 +64,18 @@ which can lead to more interesting interactions between them.
 
 ### Example sequence
 
-Let's assume sequence 83 is selected.  `83 = 01010011`
+Let's assume sequence 83 is selected. `83 = 01010011`
 
-| Step | Gate       | Trigger | CV Out    |
-|      | (High/Low) | (Y/N)   | (10V max) |
-|------|------------|---------|-----------|
-| 1    | Low        | N       | 7.921V    |
-| 2    | High       | Y       | 3.961V    |
-| 3    | Low        | N       | 6.980V    |
-| 4    | High       | Y       | 3.490V    |
-| 5    | Low        | N       | 6.745V    |
-| 6    | Low        | N       | 3.723V    |
-| 7    | High       | Y       | 1.686V    |
-| 8    | High       | Y       | 5.843V    |
+| Step | Gate (High/Low) | Trigger (Y/N) | CV Out (10V max) |
+|------|-----------------|---------------|------------------|
+| 1    | Low             | N             | 7.921V           |
+| 2    | High            | Y             | 3.961V           |
+| 3    | Low             | N             | 6.980V           |
+| 4    | High            | Y             | 3.490V           |
+| 5    | Low             | N             | 6.745V           |
+| 6    | Low             | N             | 3.723V           |
+| 7    | High            | Y             | 1.686V           |
+| 8    | High            | Y             | 5.843V           |
 
 Time graph
 ```
