@@ -104,6 +104,13 @@ The division of the master clock that each LFO runs at, as well as each of their
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: LFO</i>
 
+### Itty Bitty \[ [documentation](/software/contrib/itty_bitty.md) | [script](/software/contrib/itty_bitty.py) \]
+
+Dual-channel 8-bit trigger+gate+cv sequencer based on the binary representation of an 8-bit number.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: sequencer, gate, trigger, cv</i>
+
 ### Kompari \[ [documentation](/software/contrib/kompari.md) | [script](/software/contrib/kompari.py) \]
 
 Compares `AIN` to `K1` and `K2`, outputting 5V digital signals on `CV1`-`CV5`, and an analogue output signal based on
