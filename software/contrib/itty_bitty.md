@@ -60,7 +60,55 @@ The gate output will go high if the current bit is 1, and will go low if the cur
 
 The CV output set to `MAX_OUTPUT_VOLTAGE * reverse(n') / 255`. The bits are reversed so as to prevent a situation
 where the CV is always high when the active bit is also high; this forcibly de-couples the gate & CV outputs,
-which can lead to more interesting interactions between them
+which can lead to more interesting interactions between them.
+
+### Example sequence
+
+Let's assume sequence 83 is selected.  `83 = 01010011`
+
+| Step | Gate       | Trigger | CV Out    |
+|      | (High/Low) | (Y/N)   | (10V max) |
+|------|------------|---------|-----------|
+| 1    | Low        | N       | 7.921V    |
+| 2    | High       | Y       | 3.961V    |
+| 3    | Low        | N       | 6.980V    |
+| 4    | High       | Y       | 3.490V    |
+| 5    | Low        | N       | 6.745V    |
+| 6    | Low        | N       | 3.723V    |
+| 7    | High       | Y       | 1.686V    |
+| 8    | High       | Y       | 5.843V    |
+
+Time graph
+```
+Clock In
+____      ____      ____      ____      ____      ____      ____      ____
+    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+    |____|    |____|    |____|    |____|    |____|    |____|    |____|    |____
+         .         .         .         .         .         .         .
+Gate Out .         .         .         .         .         .         .
+         ._________.         ._________.         .         .____________________
+         |         |         |         |         .         |         .
+_________|         |_________|         |___________________|         .
+         .         .         .         .         .         .         .
+Trigger Out        .         .         .         .         .         .
+         ._        .         ._        .         .         ._        ._
+         | |       .         | |       .         .         | |       | |
+_________| |_________________| |___________________________| |_______| |________
+         .         .         .         .         .         .         .
+CV Out (approx)    .         .         .         .         .         .
+10V---   .         .         .         .         .         .         .
+         .         .         .         .         .         .         .
+_________.         .         .         .         .         .         .
+         |         ._________.         ._________.         .         .
+         |         |         |         |         |         .         .__________
+5V----   |         |         |         |         |         .         |
+         |_________|         |_________|         |_________.         |
+         .         .         ,         .         .         |         |
+         .         .         .         .         .         |_________|
+         .         .         .         .         .         .         .
+0V----   .         .         .         .         .         .         .
+
+```
 
 ## Configuration
 
