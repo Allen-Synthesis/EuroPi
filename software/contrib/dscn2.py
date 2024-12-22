@@ -118,7 +118,7 @@ class Dcsn2(EuroPiScript):
                 oled.line(3*OLED_WIDTH//4, OLED_HEIGHT//2, OLED_WIDTH-6, OLED_HEIGHT-5, 1)
 
         oled.text(f"{pattern_length}", 0, 0, 1)
-        s = f"{int(loop_prob * 100)}"
+        s = f"{round(loop_prob * 100)}"
         oled.blit(self.loop_image, OLED_WIDTH - CHAR_WIDTH * (len(s)+1) - 1, 0)
         oled.text(s, OLED_WIDTH - len(s) * CHAR_WIDTH, 0, 1)
         oled.text(f"{self.pattern[0]}", OLED_WIDTH//2-CHAR_WIDTH//2, OLED_HEIGHT//2 - CHAR_HEIGHT//2, 1)
@@ -128,7 +128,7 @@ class Dcsn2(EuroPiScript):
         while True:
             r = rnd()
             loop_prob = 1.0 - self.calculate_randomness()  # 0 -> random, 1 -> loop
-            pattern_length = int(self.length_knob.percent() * (self.MAX_LENGTH - self.MIN_LENGTH) + self.MIN_LENGTH)
+            pattern_length = round(self.length_knob.percent() * (self.MAX_LENGTH - self.MIN_LENGTH) + self.MIN_LENGTH)
 
             if self.unhandled_clock:
                 self.unhandled_clock = False
