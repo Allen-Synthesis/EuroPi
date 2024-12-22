@@ -29,6 +29,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Consequencer",      "contrib.consequencer.Consequencer"],
     ["Conway",            "contrib.conway.Conway"],
     ["CVecorder",         "contrib.cvecorder.CVecorder"],
+    ["DCSN-2",            "contrib.dscn2.Dcns2"],
     ["Diagnostic",        "contrib.diagnostic.Diagnostic"],
     ["EgressusMelodiam",  "contrib.egressus_melodiam.EgressusMelodiam"],
     ["EnvelopeGen",       "contrib.envelope_generator.EnvelopeGenerator"],
