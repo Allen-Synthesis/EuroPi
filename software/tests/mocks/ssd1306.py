@@ -33,6 +33,9 @@ class SSD1306_I2C:
     def rect(self, *args):
         pass
 
+    def ellipse(self, *args):
+        pass
+
     def text(self, *args):
         pass
 

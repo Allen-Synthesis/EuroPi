@@ -159,6 +159,9 @@ class OledWithScreensaver:
     def fill_rect(self, x, y, width, height, color=1):
         oled.fill_rect(x, y, width, height, color)
 
+    def ellipse(self, x, y, xr, yr, colour=1, fill=False):
+        oled.ellipse(x, y, xr, yr, colour, fill)
+
     def blit(self, buffer, x, y):
         oled.blit(buffer, x, y)
 
