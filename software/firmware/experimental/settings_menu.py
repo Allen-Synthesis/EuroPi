@@ -103,6 +103,8 @@ class MenuItem:
 class ChoiceMenuItem(MenuItem):
     """A generic menu item for displaying a choice of options to the user"""
 
+    SELECT_OPTION_Y = 16
+
     def __init__(
         self,
         parent: MenuItem = None,
@@ -234,7 +236,6 @@ class SettingMenuItem(ChoiceMenuItem):
     The menu item is a wrapper around a ConfigPoint, and uses
     that object's values as the available selections.
     """
-    SELECT_OPTION_Y = 16
 
     def __init__(
         self,
