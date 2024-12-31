@@ -8,6 +8,11 @@ Menu interaction is done using a knob and a button (K2 and B2 by default):
 - short-press button to apply the new option
 - long-press button to change between the 2 menu levels (if
   possible)
+
+For examples of how to create and use the SettingsMenu, please refer to
+- contrib/euclid.py
+- contrib/pams.py (this is a very complex example)
+- contrib/sequential_switch.py
 """
 
 import europi
