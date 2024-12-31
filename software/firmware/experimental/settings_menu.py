@@ -362,7 +362,7 @@ class SettingMenuItem(ChoiceMenuItem):
         @param new_default  A value to assign to this setting if its existing value is out-of-range
         """
         if choices is None:
-            choices = get_option_list()
+            choices = self.get_option_list()
         else:
             # add the autoselect items, if needed
             if self.autoselect_knob:
