@@ -10,9 +10,13 @@ Menu interaction is done using a knob and a button (K2 and B2 by default):
   possible)
 
 For examples of how to create and use the SettingsMenu, please refer to
+- contrib/settings_menu_example.py
+
+Additional, more complex, examples can be found in:
 - contrib/euclid.py
 - contrib/pams.py (this is a very complex example)
 - contrib/sequential_switch.py
+- tools/conf_edit.py
 """
 
 import europi
