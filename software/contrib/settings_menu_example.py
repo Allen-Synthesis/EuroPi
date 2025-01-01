@@ -37,6 +37,12 @@ class SettingsMenuExample(EuroPiScript):
 
                     # This is a function that gets called when the user changes the setting
                     # callback_arg is an additional parameter we can pass to the callback
+                    # Note: we don't NEED to use a callback; we can just read the ConfigPoint
+                    # in the main loop and apply it there if desired.
+                    #
+                    # The callback is executed inside the button-handler interrupt routine,
+                    # so any CPU-intensive or interrupt-blocking behaviour (e.g. disk IO to save
+                    # a file, or rendering the display) should NOT be done via a callback function.
                     callback=self.set_analog_cv,
                     callback_arg=cv1,
 
@@ -45,6 +51,14 @@ class SettingsMenuExample(EuroPiScript):
                     # generally 1-2 should be fine, 3 is usable for relatively
                     # small ranges (e.g. 0-1 with 3 decimal places)
                     float_resolution=1,
+
+                    # For this channel only, let's also enable AIN and K1 to be used
+                    # to control the voltage on CV1
+                    # When the user selects "Knob" or "AIN" as the value for this channel
+                    # the menu will read the value of K1/AIN and use that to choose
+                    # between the manually-selectable options at a rate of 10Hz
+                    autoselect_knob=True,
+                    autoselect_cv=True,
 
                     # Create child items that can be accessed with a long-press
                     children=[
@@ -116,6 +130,7 @@ class SettingsMenuExample(EuroPiScript):
 
         # Read the persistent settings file and load the settings for the menu's configuration points
         # This will trigger the callbacks as necessary
+        # The _state_filename property is defined in EuroPiScript.
         self.menu.load_defaults(self._state_filename)
 
     def set_analog_cv(self, new_value, old_value, config_point, arg=None):
@@ -149,13 +164,23 @@ class SettingsMenuExample(EuroPiScript):
 
     def main(self):
         while True:
-            # We must clear the screen before drawing the menu and
-            # call .show() afterwards
-            # You may draw additional graphics/text on top of the menu
-            # before calling.draw() if desired
-            oled.fill(0)
-            self.menu.draw()
-            oled.show()
+            # We can check if the menu's GUI has changed and needs to be re-drawn
+            # This saves us the CPU cycles that would be used by contantly re-drawing
+            # the menu. Continually re-drawing the menu CAN be done in applications
+            # where preserving CPU isn't a priority
+            if self.menu.ui_dirty:
+                # We must clear the screen before drawing the menu and
+                # call .show() afterwards
+                # You may draw additional graphics/text on top of the menu
+                # before calling.draw() if desired
+                oled.fill(0)
+                self.menu.draw()
+                oled.show()
+
+            # If any of the ConfigPoints have been changed, we can save these so they're
+            # loaded automatically next time
+            if self.menu.settings_dirty:
+                self.menu.save(self._state_filename)
 
 
 if __name__ == "__main__":
