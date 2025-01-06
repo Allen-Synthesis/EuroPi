@@ -1,6 +1,6 @@
 from experimental.clocks.clock_source import ExternalClockSource
-
 from utime import ticks_ms, ticks_diff
+
 
 class NullClock(ExternalClockSource):
     """

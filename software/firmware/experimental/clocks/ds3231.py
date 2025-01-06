@@ -45,9 +45,12 @@ def bcdtodec(bcd):
 
 
 class DS3231(ExternalClockSource):
-    """ DS3231 RTC driver.
+    """
+    DS3231 RTC driver.
 
-    Hard coded to work with year 2000-2099."""
+    Hard coded to work with year 2000-2099.
+    """
+
     # fmt: off
     FREQ_1      = const(1)
     FREQ_1024   = const(2)
@@ -68,6 +71,7 @@ class DS3231(ExternalClockSource):
     # fmt: on
 
     def __init__(self, i2c, addr=0x68):
+        # fmt: off
         super().__init__()
         self.i2c = i2c
         self.addr = addr
@@ -75,6 +79,7 @@ class DS3231(ExternalClockSource):
         self._buf = bytearray(1)      # Pre-allocate a single bytearray for re-use
         self._al1_buf = bytearray(4)
         self._al2buf = bytearray(3)
+        # fmt: on
 
     def datetime(self):
         """
@@ -94,18 +99,19 @@ class DS3231(ExternalClockSource):
         seconds = bcdtodec(self._timebuf[0])
         minutes = bcdtodec(self._timebuf[1])
 
-        if (self._timebuf[2] & 0x40) >> 6: # Check for 12 hour mode bit
-            hour = bcdtodec(self._timebuf[2] & 0x9F) # Mask out bit 6(12/24) and 5(AM/PM)
-            if (self._timebuf[2] & 0x20) >> 5: # bit 5(AM/PM)
+        # Check for 12 hour mode bit
+        if (self._timebuf[2] & 0x40) >> 6:
+            hour = bcdtodec(self._timebuf[2] & 0x9F)  # Mask out bit 6(12/24) and 5(AM/PM)
+            if (self._timebuf[2] & 0x20) >> 5:  # bit 5(AM/PM)
                 # PM
                 hour += 12
         else:
             # 24h mode
-            hour = bcdtodec(self._timebuf[2] & 0xBF) # Mask bit 6 (12/24 format)
+            hour = bcdtodec(self._timebuf[2] & 0xBF)  # Mask bit 6 (12/24 format)
 
-        weekday = bcdtodec(self._timebuf[3]) # Can be set arbitrarily by user (1,7)
+        weekday = bcdtodec(self._timebuf[3])  # Can be set arbitrarily by user (1,7)
         day = bcdtodec(self._timebuf[4])
-        month = bcdtodec(self._timebuf[5] & 0x7F) # Mask out the century bit
+        month = bcdtodec(self._timebuf[5] & 0x7F)  # Mask out the century bit
         year = bcdtodec(self._timebuf[6]) + 2000
 
         if self.OSF():
@@ -234,11 +240,12 @@ class DS3231(ExternalClockSource):
         a2m3 = (match & 0x02) << 6
         a2m2 = (match & 0x01) << 7
 
-        dydt = (1 << 6) if weekday else 0 # day / date bit
-
-        self._al2buf[0] = dectobcd(time[0]) | a2m2 if len(time) > 1 else a2m2 # minute
-        self._al2buf[1] = dectobcd(time[1]) | a2m3 if len(time) > 2 else a2m3 # hour
-        self._al2buf[2] = dectobcd(time[2]) | a2m4 | dydt if len(time) > 3 else a2m4 | dydt # day
+        # fmt: off
+        dydt = (1 << 6) if weekday else 0  # day / date bit
+        self._al2buf[0] = dectobcd(time[0]) | a2m2 if len(time) > 1 else a2m2                # minute
+        self._al2buf[1] = dectobcd(time[1]) | a2m3 if len(time) > 2 else a2m3                # hour
+        self._al2buf[2] = dectobcd(time[2]) | a2m4 | dydt if len(time) > 3 else a2m4 | dydt  # day
+        # fmt: on
 
         self.i2c.writeto_mem(self.addr, ALARM2_REG, self._al2buf)
 

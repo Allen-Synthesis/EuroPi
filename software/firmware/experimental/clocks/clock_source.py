@@ -25,6 +25,7 @@ class ExternalClockSource:
 
     The implemented clock source must provide the time and date in UTC, 24-hour time.
     """
+
     def __init__(self):
         pass
 
