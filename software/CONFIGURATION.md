@@ -70,10 +70,7 @@ shows the default configuration:
 ```json
 {
     "VOLTS_PER_OCTAVE": 1.0,
-
     "RTC_IMPLEMENTATION": "",
-    "UTC_OFFSET_HOURS": 0,
-    "UTC_OFFSET_MINUTES": 0,
 }
 ```
 
