@@ -23,6 +23,7 @@ https://github.com/mcauser/micropython-tinyrtc-i2c/blob/master/ds1307.py
 from experimental.clocks.clock_source import ExternalClockSource
 from micropython import const
 
+# fmt: off
 DATETIME_REG    = const(0) # 7 bytes
 ALARM1_REG      = const(7) # 5 bytes
 ALARM2_REG      = const(11) # 4 bytes
@@ -30,11 +31,13 @@ CONTROL_REG     = const(14)
 STATUS_REG      = const(15)
 AGING_REG       = const(16)
 TEMPERATURE_REG = const(17) # 2 bytes
+# fmt: on
 
 
 def dectobcd(decimal):
     """Convert decimal to binary coded decimal (BCD) format"""
     return (decimal // 10) << 4 | (decimal % 10)
+
 
 def bcdtodec(bcd):
     """Convert binary coded decimal to decimal"""
@@ -45,29 +48,31 @@ class DS3231(ExternalClockSource):
     """ DS3231 RTC driver.
 
     Hard coded to work with year 2000-2099."""
+    # fmt: off
     FREQ_1      = const(1)
     FREQ_1024   = const(2)
     FREQ_4096   = const(3)
     FREQ_8192   = const(4)
     SQW_32K     = const(1)
 
-    AL1_EVERY_S     = const(15) # Alarm every second
-    AL1_MATCH_S     = const(14) # Alarm when seconds match (every minute)
-    AL1_MATCH_MS    = const(12) # Alarm when minutes, seconds match (every hour)
-    AL1_MATCH_HMS   = const(8) # Alarm when hours, minutes, seconds match (every day)
-    AL1_MATCH_DHMS  = const(0) # Alarm when day|wday, hour, min, sec match (specific wday / mday) (once per month/week)
+    AL1_EVERY_S     = const(15)  # Alarm every second
+    AL1_MATCH_S     = const(14)  # Alarm when seconds match (every minute)
+    AL1_MATCH_MS    = const(12)  # Alarm when minutes, seconds match (every hour)
+    AL1_MATCH_HMS   = const(8)   # Alarm when hours, minutes, seconds match (every day)
+    AL1_MATCH_DHMS  = const(0)   # Alarm when day|wday, hour, min, sec match (specific wday / mday) (once per month/week)
 
-    AL2_EVERY_M     = const(7) # Alarm every minute on 00 seconds
-    AL2_MATCH_M     = const(6) # Alarm when minutes match (every hour)
-    AL2_MATCH_HM    = const(4) # Alarm when hours and minutes match (every day)
-    AL2_MATCH_DHM   = const(0) # Alarm when day|wday match (once per month/week)
+    AL2_EVERY_M     = const(7)   # Alarm every minute on 00 seconds
+    AL2_MATCH_M     = const(6)   # Alarm when minutes match (every hour)
+    AL2_MATCH_HM    = const(4)   # Alarm when hours and minutes match (every day)
+    AL2_MATCH_DHM   = const(0)   # Alarm when day|wday match (once per month/week)
+    # fmt: on
 
     def __init__(self, i2c, addr=0x68):
         super().__init__()
         self.i2c = i2c
         self.addr = addr
-        self._timebuf = bytearray(7) # Pre-allocate a buffer for the time data
-        self._buf = bytearray(1) # Pre-allocate a single bytearray for re-use
+        self._timebuf = bytearray(7)  # Pre-allocate a buffer for the time data
+        self._buf = bytearray(1)      # Pre-allocate a single bytearray for re-use
         self._al1_buf = bytearray(4)
         self._al2buf = bytearray(3)
 
@@ -90,23 +95,32 @@ class DS3231(ExternalClockSource):
         minutes = bcdtodec(self._timebuf[1])
 
         if (self._timebuf[2] & 0x40) >> 6: # Check for 12 hour mode bit
-            hour = bcdtodec(self._timebuf[2] & 0x9f) # Mask out bit 6(12/24) and 5(AM/PM)
+            hour = bcdtodec(self._timebuf[2] & 0x9F) # Mask out bit 6(12/24) and 5(AM/PM)
             if (self._timebuf[2] & 0x20) >> 5: # bit 5(AM/PM)
                 # PM
                 hour += 12
         else:
             # 24h mode
-            hour = bcdtodec(self._timebuf[2] & 0xbf) # Mask bit 6 (12/24 format)
+            hour = bcdtodec(self._timebuf[2] & 0xBF) # Mask bit 6 (12/24 format)
 
         weekday = bcdtodec(self._timebuf[3]) # Can be set arbitrarily by user (1,7)
         day = bcdtodec(self._timebuf[4])
-        month = bcdtodec(self._timebuf[5] & 0x7f) # Mask out the century bit
+        month = bcdtodec(self._timebuf[5] & 0x7F) # Mask out the century bit
         year = bcdtodec(self._timebuf[6]) + 2000
 
         if self.OSF():
             print("WARNING: Oscillator stop flag set. Time may not be accurate.")
 
-        return (year, month, day, weekday, hour, minutes, seconds, 0) # Conforms to the ESP8266 RTC (v1.13)
+        return (
+            year,
+            month,
+            day,
+            weekday,
+            hour,
+            minutes,
+            seconds,
+            0,
+        )  # Conforms to the ESP8266 RTC (v1.13)
 
     def set_datetime(self, datetime):
         """
@@ -114,22 +128,24 @@ class DS3231(ExternalClockSource):
 
         @param datetime : tuple, (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
         """
+        # fmt: off
         try:
-            self._timebuf[3] = dectobcd(datetime[6]) # Day of week
+            self._timebuf[3] = dectobcd(datetime[6])             # Day of week
         except IndexError:
             self._timebuf[3] = 0
         try:
-            self._timebuf[0] = dectobcd(datetime[5]) # Seconds
+            self._timebuf[0] = dectobcd(datetime[5])             # Seconds
         except IndexError:
             self._timebuf[0] = 0
-        self._timebuf[1] = dectobcd(datetime[4]) # Minutes
-        self._timebuf[2] = dectobcd(datetime[3]) # Hour + the 24h format flag
-        self._timebuf[4] = dectobcd(datetime[2]) # Day
-        self._timebuf[5] = dectobcd(datetime[1]) & 0xff # Month + mask the century flag
-        self._timebuf[6] = dectobcd(int(str(datetime[0])[-2:])) # Year can be yyyy, or yy
+        self._timebuf[1] = dectobcd(datetime[4])                 # Minutes
+        self._timebuf[2] = dectobcd(datetime[3])                 # Hour + the 24h format flag
+        self._timebuf[4] = dectobcd(datetime[2])                 # Day
+        self._timebuf[5] = dectobcd(datetime[1]) & 0xFF          # Month + mask the century flag
+        self._timebuf[6] = dectobcd(int(str(datetime[0])[-2:]))  # Year can be yyyy, or yy
         self.i2c.writeto_mem(self.addr, DATETIME_REG, self._timebuf)
         self._OSF_reset()
         return True
+        #fmt: on
 
     def square_wave(self, freq=None):
         """Outputs Square Wave Signal
@@ -143,19 +159,21 @@ class DS3231(ExternalClockSource):
             2 = 1.024 kHz,
             3 = 4.096 kHz,
             4 = 8.192 kHz"""
+        # fmt: off
         if freq is None:
             return self.i2c.readfrom_mem(self.addr, CONTROL_REG, 1)[0]
 
         if not freq:
             # Set INTCN (bit 2) to 1 and both ALIE (bits 1 & 0) to 0
             self.i2c.readfrom_mem_into(self.addr, CONTROL_REG, self._buf)
-            self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([(self._buf[0] & 0xf8) | 0x04]))
+            self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([(self._buf[0] & 0xF8) | 0x04]))
         else:
             # Set the frequency in the control reg and at the same time set the INTCN to 0
             freq -= 1
             self.i2c.readfrom_mem_into(self.addr, CONTROL_REG, self._buf)
-            self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([(self._buf[0] & 0xe3) | (freq << 3)]))
+            self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([(self._buf[0] & 0xE3) | (freq << 3)]))
         return True
+        # fmt: on
 
     def alarm1(self, time=None, match=AL1_MATCH_DHMS, int_en=True, weekday=False):
         """Set alarm1, can match mday, wday, hour, minute, second
@@ -177,12 +195,14 @@ class DS3231(ExternalClockSource):
         a1m2 = (match & 0x02) << 6
         a1m1 = (match & 0x01) << 7
 
-        dydt = (1 << 6) if weekday else 0 # day / date bit
+        dydt = (1 << 6) if weekday else 0  # day / date bit
 
-        self._al1_buf[0] = dectobcd(time[0]) | a1m1 # second
-        self._al1_buf[1] = (dectobcd(time[1]) | a1m2) if len(time) > 1 else a1m2 # minute
-        self._al1_buf[2] = (dectobcd(time[2]) | a1m3) if len(time) > 2 else a1m3 # hour
-        self._al1_buf[3] = (dectobcd(time[3]) | a1m4 | dydt) if len(time) > 3 else a1m4 | dydt # day (wday|mday)
+        # fmt: off
+        self._al1_buf[0] = dectobcd(time[0]) | a1m1                                             # second
+        self._al1_buf[1] = (dectobcd(time[1]) | a1m2) if len(time) > 1 else a1m2                # minute
+        self._al1_buf[2] = (dectobcd(time[2]) | a1m3) if len(time) > 2 else a1m3                # hour
+        self._al1_buf[3] = (dectobcd(time[3]) | a1m4 | dydt) if len(time) > 3 else a1m4 | dydt  # day (wday|mday)
+        # fmt: on
 
         self.i2c.writeto_mem(self.addr, ALARM1_REG, self._al1_buf)
 
@@ -237,21 +257,23 @@ class DS3231(ExternalClockSource):
         enable : bool, enable/disable interrupts
         alarm : int, alarm nr (0 to set both interrupts)
         returns: the control register"""
+        # fmt: off
         if alarm in (0, 1):
             self.i2c.readfrom_mem_into(self.addr, CONTROL_REG, self._buf)
             if enable:
-                self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([(self._buf[0] & 0xfa) | 0x05]))
+                self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([(self._buf[0] & 0xFA) | 0x05]))
             else:
-                self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([self._buf[0] & 0xfe]))
+                self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([self._buf[0] & 0xFE]))
 
         if alarm in (0, 2):
             self.i2c.readfrom_mem_into(self.addr, CONTROL_REG, self._buf)
             if enable:
-                self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([(self._buf[0] & 0xf9) | 0x06]))
+                self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([(self._buf[0] & 0xF9) | 0x06]))
             else:
-                self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([self._buf[0] & 0xfd]))
+                self.i2c.writeto_mem(self.addr, CONTROL_REG, bytearray([self._buf[0] & 0xFD]))
 
         return self.i2c.readfrom_mem(self.addr, CONTROL_REG, 1)
+        # fmt: on
 
     def check_alarm(self, alarm):
         """Check if the alarm flag is set and clear the alarm flag"""
@@ -284,7 +306,7 @@ class DS3231(ExternalClockSource):
     def _OSF_reset(self):
         """Clear the oscillator stop flag (OSF)"""
         self.i2c.readfrom_mem_into(self.addr, STATUS_REG, self._buf)
-        self.i2c.writeto_mem(self.addr, STATUS_REG, bytearray([self._buf[0] & 0x7f]))
+        self.i2c.writeto_mem(self.addr, STATUS_REG, bytearray([self._buf[0] & 0x7F]))
 
     def _is_busy(self):
         """Returns True when device is busy doing TCXO management"""

@@ -24,14 +24,17 @@ changes to support EuroPi's RTC interface.
 from micropython import const
 from experimental.clocks.clock_source import ExternalClockSource
 
-DATETIME_REG = const(0) # 0x00-0x06
-CHIP_HALT    = const(128)
-CONTROL_REG  = const(7) # 0x07
-RAM_REG      = const(8) # 0x08-0x3F
+# fmt: off
+DATETIME_REG = const(0)    # 0x00-0x06
+CHIP_HALT    = const(128)  # 0x80, 0b10000000
+CONTROL_REG  = const(7)    # 0x07
+RAM_REG      = const(8)    # 0x08-0x3F
+# fmt: on
 
 
 class DS1307(ExternalClockSource):
     """Driver for the DS1307 RTC."""
+
     def __init__(self, i2c, addr=0x68):
         super().__init__()
         self.i2c = i2c
@@ -54,16 +57,18 @@ class DS1307(ExternalClockSource):
         @return datetime : tuple, (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
         """
         buf = self.i2c.readfrom_mem(self.addr, DATETIME_REG, 7)
+        # fmt: off
         return (
-            self._bcd2dec(buf[6]) + 2000, # year
-            self._bcd2dec(buf[5]), # month
-            self._bcd2dec(buf[4]), # day
-            self._bcd2dec(buf[3] - self.weekday_start), # weekday
-            self._bcd2dec(buf[2]), # hour
-            self._bcd2dec(buf[1]), # minute
-            self._bcd2dec(buf[0] & 0x7F), # second
+            self._bcd2dec(buf[6]) + 2000,                # year
+            self._bcd2dec(buf[5]),                       # month
+            self._bcd2dec(buf[4]),                       # day
+            self._bcd2dec(buf[3] - self.weekday_start),  # weekday
+            self._bcd2dec(buf[2]),                       # hour
+            self._bcd2dec(buf[1]),                       # minute
+            self._bcd2dec(buf[0] & 0x7F),                # second
             0 # subseconds
         )
+        # fmt: on
 
     def set_datetime(self, datetime):
         """
@@ -71,17 +76,19 @@ class DS1307(ExternalClockSource):
 
         @param datetime : tuple, (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
         """
+        # fmt: off
         buf = bytearray(7)
-        buf[0] = self._dec2bcd(datetime[6]) & 0x7F # second, msb = CH, 1=halt, 0=go
-        buf[1] = self._dec2bcd(datetime[5]) # minute
-        buf[2] = self._dec2bcd(datetime[4]) # hour
-        buf[3] = self._dec2bcd(datetime[3] + self.weekday_start) # weekday
-        buf[4] = self._dec2bcd(datetime[2]) # day
-        buf[5] = self._dec2bcd(datetime[1]) # month
-        buf[6] = self._dec2bcd(datetime[0] - 2000) # year
+        buf[0] = self._dec2bcd(datetime[6]) & 0x7F                # second, msb = CH, 1=halt, 0=go
+        buf[1] = self._dec2bcd(datetime[5])                       # minute
+        buf[2] = self._dec2bcd(datetime[4])                       # hour
+        buf[3] = self._dec2bcd(datetime[3] + self.weekday_start)  # weekday
+        buf[4] = self._dec2bcd(datetime[2])                       # day
+        buf[5] = self._dec2bcd(datetime[1])                       # month
+        buf[6] = self._dec2bcd(datetime[0] - 2000)                # year
         if (self._halt):
             buf[0] |= (1 << 7)
         self.i2c.writeto_mem(self.addr, DATETIME_REG, buf)
+        # fmt: on
 
     def halt(self, val=None):
         """Power up, power down or check status"""

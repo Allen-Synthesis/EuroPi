@@ -34,12 +34,4 @@ class NullClock(ExternalClockSource):
         yy = 1970
         wd = (4 + dd) % 7  # 1 jan 1970 was a thursday
 
-        return (
-            yy,
-            mm,
-            dd,
-            h,
-            m,
-            s + ms / 1000.0,
-            wd
-        )
+        return (yy, mm, dd, h, m, s + ms / 1000.0, wd)
