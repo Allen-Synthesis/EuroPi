@@ -94,8 +94,7 @@ class RealtimeClock:
         """
         if datetime[self.MONTH] == 2 and self.is_leap_year(datetime):
             return 29
-        else:
-            return self._month_lengths[datetime[self.MONTH] - 1]
+        return self._month_lengths[datetime[self.MONTH] - 1]
 
 
 # fmt: off
