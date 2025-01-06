@@ -18,6 +18,24 @@ https://github.com/pangopi/micropython-DS3231-AT24C32/blob/main/ds3231.py
 in-turn based on work by Mike Causer for the DS1307:
 https://github.com/mcauser/micropython-tinyrtc-i2c/blob/master/ds1307.py
 
+If you have a brand-new DS3231, or have recently replaced your module's battery, you may need to manually update
+the clock.  To do so:
+
+1. Connect the clock module to your EuroPi
+2. Connect your EuroPi to a computer via the USB port
+3. Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to
+   experimental_config, restart the Raspberry Pi Pico before proceeding.
+4. In Thonny's Python terminal, run the following code:
+
+    >>> from experimental.rtc import clock
+    >>> clock.source.set_datetime((2025, 6, 14, 22, 59, 0, 6))
+
+This will set the clock to 14 June 2025, 22:59:00, and set the weekday to Saturday (6).
+The tuple is of the form (Year, Month, Day, Hour, Minute [, Second[, Weekday]]). It is recommended
+to set the seconds & weekday, but it is optional.
+
+Note that the clock _should_ be set to UTC, not local time. If you choose to use local time instead
+some scripts that assume the clock is set to UTC may behave incorrectly.
 """
 
 from experimental.clocks.clock_source import ExternalClockSource
