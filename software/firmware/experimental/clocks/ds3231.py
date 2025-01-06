@@ -42,13 +42,13 @@ from experimental.clocks.clock_source import ExternalClockSource
 from micropython import const
 
 # fmt: off
-DATETIME_REG    = const(0) # 7 bytes
-ALARM1_REG      = const(7) # 5 bytes
-ALARM2_REG      = const(11) # 4 bytes
+DATETIME_REG    = const(0)   # 7 bytes
+ALARM1_REG      = const(7)   # 5 bytes
+ALARM2_REG      = const(11)  # 4 bytes
 CONTROL_REG     = const(14)
 STATUS_REG      = const(15)
 AGING_REG       = const(16)
-TEMPERATURE_REG = const(17) # 2 bytes
+TEMPERATURE_REG = const(17)  # 2 bytes
 # fmt: on
 
 
