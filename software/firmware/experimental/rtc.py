@@ -12,15 +12,42 @@ that can be used externally.
 import europi
 from experimental.experimental_config import RTC_NONE, RTC_DS1307, RTC_DS3231
 
+# Weekdays are represented by an integer 1-7
+# ISO 8601 specifies the week starts on Monday
+WeekdayNames = {
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+    7: "Sunday",
+}
 
-class RealtimeClock:
+# Months are specified as an integer 1-12
+# Shortened names can be extracted using the first 3 letters
+MonthNames = {
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December",
+}
+
+
+class DateTimeIndex:
     """
-    A continually-running clock that provides the day & date.
+    Indices for the fields within a weekday tuple
 
-    This class wraps around an external clock source, e.g. an I2C-compatible RTC
-    module or a network connection to an NTP server
+    Note that SECOND and WEEKDAY are optional and may be omitted in some implementations
     """
-
     YEAR = 0
     MONTH = 1
     DAY = 2
@@ -29,23 +56,15 @@ class RealtimeClock:
     SECOND = 5
     WEEKDAY = 6
 
-    # fmt: off
-    # The lengths of the months in a non-leap-year
-    _month_lengths = [
-        31,
-        28,
-        31,
-        30,
-        31,
-        30,
-        31,
-        31,
-        30,
-        31,
-        30,
-        31
-    ]
-    # fmt: on
+
+
+class RealtimeClock:
+    """
+    A continually-running clock that provides the day & date.
+
+    This class wraps around an external clock source, e.g. an I2C-compatible RTC
+    module or a network connection to an NTP server
+    """
 
     def __init__(self, source):
         """
@@ -63,39 +82,19 @@ class RealtimeClock:
         """
         return self.source.datetime()
 
-    def is_leap_year(self, datetime):
+    def __str__(self):
         """
-        Determine if the datetime's year is a leap year or not
+        Return the current time as a string
 
-        @return  True if the datetime is a leap year, otherwise False
+        @return  A string with the format "[Weekday] YYYY/MM/DD HH:MM[:SS]"
         """
-        # a year is a leap year if it is divisible by 4
-        # but NOT a multple of 100, unless it's also a multiple of 400
-        year = datetime[self.YEAR]
-        return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
-
-    def year_length(self, datetime):
-        """
-        Determine the number of days in the datetime's year
-
-        @return  The number of days in the year, taking leap years into account
-        """
-        if self.is_leap_year(datetime):
-            return 366
-        return 365
-
-    def month_length(self, datetime):
-        """
-        Get the numer of days in the month
-
-        This takes leap-years into consideration
-
-        @return  The number of days in the datetime's month
-        """
-        if datetime[self.MONTH] == 2 and self.is_leap_year(datetime):
-            return 29
-        return self._month_lengths[datetime[self.MONTH] - 1]
-
+        t = self.now()
+        if len(t) > DateTimeIndex.WEEKDAY:
+            return f"{WeekdayNames[t[DateTimeIndex.WEEKDAY]]} {t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}:{t[DateTimeIndex.SECOND]:02}"
+        elif len(t) > DateTimeIndex.SECOND:
+            return f"{t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}:{t[DateTimeIndex.SECOND]:02}"
+        else:
+            return f"{t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}"
 
 # fmt: off
 if europi.experimental_config.RTC_IMPLEMENTATION == RTC_DS1307:

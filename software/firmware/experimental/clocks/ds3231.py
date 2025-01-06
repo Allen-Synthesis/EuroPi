@@ -121,12 +121,11 @@ class DS3231(ExternalClockSource):
             year,
             month,
             day,
-            weekday,
             hour,
             minutes,
             seconds,
-            0,
-        )  # Conforms to the ESP8266 RTC (v1.13)
+            weekday,
+        )
 
     def set_datetime(self, datetime):
         """
@@ -134,6 +133,8 @@ class DS3231(ExternalClockSource):
 
         @param datetime : tuple, (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
         """
+        self.check_valid_datetime(datetime)
+
         # fmt: off
         try:
             self._timebuf[3] = dectobcd(datetime[6])             # Day of week

@@ -39,7 +39,6 @@ class DS1307(ExternalClockSource):
         super().__init__()
         self.i2c = i2c
         self.addr = addr
-        self.weekday_start = 1
         self._halt = False
 
     def _dec2bcd(self, value):
@@ -59,14 +58,13 @@ class DS1307(ExternalClockSource):
         buf = self.i2c.readfrom_mem(self.addr, DATETIME_REG, 7)
         # fmt: off
         return (
-            self._bcd2dec(buf[6]) + 2000,                # year
-            self._bcd2dec(buf[5]),                       # month
-            self._bcd2dec(buf[4]),                       # day
-            self._bcd2dec(buf[3] - self.weekday_start),  # weekday
-            self._bcd2dec(buf[2]),                       # hour
-            self._bcd2dec(buf[1]),                       # minute
-            self._bcd2dec(buf[0] & 0x7F),                # second
-            0 # subseconds
+            self._bcd2dec(buf[6]) + 2000,  # year
+            self._bcd2dec(buf[5]),         # month
+            self._bcd2dec(buf[4]),         # day
+            self._bcd2dec(buf[2]),         # hour
+            self._bcd2dec(buf[1]),         # minute
+            self._bcd2dec(buf[0] & 0x7F),  # second
+            self._bcd2dec(buf[3]),         # weekday
         )
         # fmt: on
 
@@ -76,15 +74,23 @@ class DS1307(ExternalClockSource):
 
         @param datetime : tuple, (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
         """
+        self.check_valid_datetime(datetime)
+
         # fmt: off
         buf = bytearray(7)
-        buf[0] = self._dec2bcd(datetime[6]) & 0x7F                # second, msb = CH, 1=halt, 0=go
-        buf[1] = self._dec2bcd(datetime[5])                       # minute
-        buf[2] = self._dec2bcd(datetime[4])                       # hour
-        buf[3] = self._dec2bcd(datetime[3] + self.weekday_start)  # weekday
-        buf[4] = self._dec2bcd(datetime[2])                       # day
-        buf[5] = self._dec2bcd(datetime[1])                       # month
-        buf[6] = self._dec2bcd(datetime[0] - 2000)                # year
+        try:
+            buf[3] = dectobcd(datetime[6])             # Day of week
+        except IndexError:
+            buf[3] = 0
+        try:
+            buf[0] = dectobcd(datetime[5])             # Seconds
+        except IndexError:
+            buf[0] = 0
+        buf[1] = dectobcd(datetime[4])                 # Minutes
+        buf[2] = dectobcd(datetime[3])                 # Hour + the 24h format flag
+        buf[4] = dectobcd(datetime[2])                 # Day
+        buf[5] = dectobcd(datetime[1]) & 0xFF          # Month + mask the century flag
+        buf[6] = dectobcd(int(str(datetime[0])[-2:]))  # Year can be yyyy, or yy
         if (self._halt):
             buf[0] |= (1 << 7)
         self.i2c.writeto_mem(self.addr, DATETIME_REG, buf)
