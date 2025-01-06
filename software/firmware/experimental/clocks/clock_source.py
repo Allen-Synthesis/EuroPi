@@ -115,6 +115,7 @@ class ExternalClockSource:
 
         @param datetime
         """
+        # fmt: off
         n_days = self.month_length(datetime)
         if (
             # To anyone reading this from the past: congrats on time-travel! Your year is not supported
@@ -149,3 +150,4 @@ class ExternalClockSource:
             )
         ):
             raise ValueError("Invalid datetime tuple")
+        # fmt: on

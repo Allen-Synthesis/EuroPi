@@ -48,6 +48,7 @@ class DateTimeIndex:
 
     Note that SECOND and WEEKDAY are optional and may be omitted in some implementations
     """
+
     YEAR = 0
     MONTH = 1
     DAY = 2
@@ -55,7 +56,6 @@ class DateTimeIndex:
     MINUTE = 4
     SECOND = 5
     WEEKDAY = 6
-
 
 
 class RealtimeClock:
