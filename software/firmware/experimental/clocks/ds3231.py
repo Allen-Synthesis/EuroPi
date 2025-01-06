@@ -145,7 +145,7 @@ class DS3231(ExternalClockSource):
         self.i2c.writeto_mem(self.addr, DATETIME_REG, self._timebuf)
         self._OSF_reset()
         return True
-        #fmt: on
+        # fmt: on
 
     def square_wave(self, freq=None):
         """Outputs Square Wave Signal
@@ -230,7 +230,7 @@ class DS3231(ExternalClockSource):
         if isinstance(time, int):
             time = (time,)
 
-        a2m4 = (match & 0x04) << 5 # masks
+        a2m4 = (match & 0x04) << 5  # masks
         a2m3 = (match & 0x02) << 6
         a2m2 = (match & 0x01) << 7
 
