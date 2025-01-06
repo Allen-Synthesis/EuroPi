@@ -1,16 +1,14 @@
 """
 Interface for interacting with realtime clock hardware.
 
-For simplicity, we always assume that the external clock source is synchronized with UTC. This means
-your I2C clocks should be set to UTC time, not local time. To configure the time zone offset, use
-experimental_config to set the desired offset hours and minutes. For regions using Daylight Savings
-time (most of North America, western Europe, Australia, and New Zealand, among others) you will
-need to manually adjust your config file to keep local time properly adjusted.
+For consistency, we always assume that the external clock source is synchronized with UTC. This means
+your I2C clock should be set to UTC time, not local time. If you set your I2C clock to local time
+some scripts may behave incorrectly.
 
 The Raspberry Pi Pico (and official variants like the Pico W, Pico 2, etc...) does NOT
 include a realtime clock. All RTC implementations rely on some external reference time, e.g.
 - external hardware (e.g. an I2C-supported external clock module)
-- an wireless connection and an accessible NTP server
+- a wireless connection and an accessible NTP server
 
 The external clock source must implement the ExternalClockSource class
 """

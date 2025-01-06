@@ -12,35 +12,6 @@ that can be used externally.
 import europi
 from experimental.experimental_config import RTC_NONE, RTC_DS1307, RTC_DS3231
 
-# Weekdays are represented by an integer 1-7
-# ISO 8601 specifies the week starts on Monday
-WeekdayNames = {
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday",
-    7: "Sunday",
-}
-
-# Months are specified as an integer 1-12
-# Shortened names can be extracted using the first 3 letters
-MonthNames = {
-    1: "January",
-    2: "February",
-    3: "March",
-    4: "April",
-    5: "May",
-    6: "June",
-    7: "July",
-    8: "August",
-    9: "September",
-    10: "October",
-    11: "November",
-    12: "December",
-}
-
 
 class DateTimeIndex:
     """
@@ -56,6 +27,66 @@ class DateTimeIndex:
     MINUTE = 4
     SECOND = 5
     WEEKDAY = 6
+
+
+class Month:
+    """
+    Container class for month names
+    """
+
+    JANUARY = 1
+    FEBRUARY = 2
+    MARCH = 3
+    APRIL = 4
+    MAY = 5
+    JUNE = 6
+    JULY = 7
+    AUGUST = 8
+    SEPTEMBER = 9
+    OCTOBER = 10
+    NOVEMBER = 11
+    DECEMBER = 12
+
+    NAME = {
+        1: "January",
+        2: "February",
+        3: "March",
+        4: "April",
+        5: "May",
+        6: "June",
+        7: "July",
+        8: "August",
+        9: "September",
+        10: "October",
+        11: "November",
+        12: "December",
+    }
+
+
+class Weekday:
+    """
+    Container class for weekday names
+
+    ISO 8601 specifies the week starts on Monday (1) and ends on Sunday (7)
+    """
+
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+    NAME = {
+        1: "Monday",
+        2: "Tuesday",
+        3: "Wednesday",
+        4: "Thursday",
+        5: "Friday",
+        6: "Saturday",
+        7: "Sunday",
+    }
 
 
 class RealtimeClock:
@@ -90,7 +121,7 @@ class RealtimeClock:
         """
         t = self.now()
         if len(t) > DateTimeIndex.WEEKDAY:
-            return f"{WeekdayNames[t[DateTimeIndex.WEEKDAY]]} {t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}:{t[DateTimeIndex.SECOND]:02}"
+            return f"{Weekday.NAME[t[DateTimeIndex.WEEKDAY]]} {t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}:{t[DateTimeIndex.SECOND]:02}"
         elif len(t) > DateTimeIndex.SECOND:
             return f"{t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}:{t[DateTimeIndex.SECOND]:02}"
         else:
