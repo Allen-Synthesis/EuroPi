@@ -20,6 +20,16 @@ class DailyRandom(EuroPiScript):
 
     SEQUENCE_LENGTH = 16
 
+    BITMASKS = [
+        0b101010101010,
+        0b001100110011,
+        0b100100100100,
+        0b111000111000,
+        0b011000111001,
+        0b011011011011,
+        0b110011001100,
+    ]
+
     def __init__(self):
         super().__init__()
 
@@ -35,9 +45,21 @@ class DailyRandom(EuroPiScript):
     def regenerate_sequences(self, datetime):
         (year, month, day, hour, minute) = datetime[0:5]
 
-        seed_1 = year ^ month ^ day
-        seed_2 = year ^ month ^ day ^ hour
-        seed_3 = year ^ month ^ day ^ hour ^ minute
+        try:
+            weekday = datetime[DateTimeIndex.WEEKDAY] % 7
+        except IndexError:
+            weekday = 0
+
+        # bit-shift the fields around to reduce collisions
+        # mask: 12 bits
+        # year: 11 bits
+        # month: 4 bits
+        # day: 5 bits
+        # hour: 6 bits
+        # minute: 6 bits
+        seed_1 = self.BITMASKS[weekday] ^ year ^ (month << 7) ^ day
+        seed_2 = self.BITMASKS[weekday] ^ year ^ (month << 6) ^ day ^ hour
+        seed_3 = self.BITMASKS[weekday] ^ year ^ (month << 7) ^ day ^ (hour << 6) ^ minute
 
         def generate_gates(seed):
             random.seed(seed)
