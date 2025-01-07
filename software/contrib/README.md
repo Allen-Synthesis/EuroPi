@@ -54,6 +54,15 @@ Recording of CV can be primed so that you can record a movement without missing 
 <i>Author: [anselln](https://github.com/anselln)</i>
 <br><i>Labels: sequencer, CV, performance</i>
 
+### Daily Random \[ [documentation](/software/contrib/daily_random.md) | [script](/software/contrib/daily_random.md) \]
+A pseudo-random gate and CV sequencer that uses a realtime clock to generate patterns.
+
+Requires installing and configuring a realtime clock module, connected to EuroPi's external I2C interface for best results.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: sequencer, gate, cv, random, realtime clock</i>
+
+
 ### Egressus Melodium \[ [documentation](/software/contrib/egressus_melodiam.md) | [script](/software/contrib/egressus_melodiam.py) \]
 Clockable and free-running LFO and random CV pattern generator
 
