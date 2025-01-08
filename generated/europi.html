@@ -452,6 +452,35 @@ calibration is important if you want to be able to output precise voltages.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="europi.Thermometer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Thermometer</span></span><a class="headerlink" href="#europi.Thermometer" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for the temperature sensor connected to Pin 4
+Reports the module’s current temperature in Celsius.
+If the module’s temperature sensor is not working correctly, the temperature will always be reported as None</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="europi.Thermometer.read_temperature">
+<span class="sig-name descname"><span class="pre">read_temperature</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Thermometer.read_temperature" title="Permalink to this definition"></a></dt>
+<dd><p>Read the ADC and return the current temperature
+&#64;return  The current temperature in Celsius, or None if the hardware did not initialze properly</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="europi.UsbConnection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">UsbConnection</span></span><a class="headerlink" href="#europi.UsbConnection" title="Permalink to this definition"></a></dt>
+<dd><p>Checks the USB terminal is connected or not
+On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
+check the SIE_STATUS register and check bit 16</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="europi.UsbConnection.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.UsbConnection.value" title="Permalink to this definition"></a></dt>
+<dd><p>Return 0 or 1, indicating if the USB connection is disconnected or connected</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="europi.bootsplash">
 <span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">bootsplash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.bootsplash" title="Permalink to this definition"></a></dt>
