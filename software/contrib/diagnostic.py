@@ -17,6 +17,8 @@ from europi import (
     k1,
     k2,
     oled,
+    europi_config,
+    thermometer,
 )
 from europi_script import EuroPiScript
 import configuration
@@ -40,7 +42,6 @@ TEMP_CONV_FACTOR = 3.3 / 65535
 class Diagnostic(EuroPiScript):
     def __init__(self):
         super().__init__()
-        self.temp_sensor = ADC(4)
         self.voltages = [
             0,  # min
             0.5,  # not 0 but still below DI's threshold
@@ -58,7 +59,7 @@ class Diagnostic(EuroPiScript):
 
     def calc_temp(self):
         # see the pico's datasheet for the details of this calculation
-        t = 27 - ((self.temp_sensor.read_u16() * TEMP_CONV_FACTOR) - 0.706) / 0.001721
+        t = thermometer.read_temperature()
         if self.use_fahrenheit:
             t = (t * 1.8) + 32
         return t
