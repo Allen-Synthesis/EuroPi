@@ -1,9 +1,52 @@
 from europi import *
 from europi_script import EuroPiScript
 
-from experimental.rtc import clock
+from experimental.rtc import clock, DateTimeIndex
 
 import random
+
+
+class Sequence:
+    """
+    A single gate or CV sequence
+    """
+    BASE_SEQUENCE_LENGTH = 16
+
+    def __init__(self, seed):
+        self.index = 0
+        self.regenerate(seed)
+
+    def regenerate(self, seed):
+        random.seed(seed)
+
+        # randomize the length so the majority are 16, but we get some longer or shorter
+        length = self.BASE_SEQUENCE_LENGTH
+        r = random.random()
+        if r < 0.1:
+            length -= 2
+        elif r < 0.25:
+            length -= 1
+        elif r > 0.8:
+            length += 2
+        elif r > 0.75:
+            length += 1
+
+        pattern = []
+        for i in range(length):
+            pattern.append(random.random())
+
+        self.pattern = pattern
+
+    def next(self):
+        self.index = (self.index + 1) % len(self.pattern)
+
+    @property
+    def gate_volts(self):
+        return (int(self.pattern[self.index] * 2) % 2) * europi_config.GATE_VOLTAGE
+
+    @property
+    def cv_volts(self):
+        return self.pattern[self.index] * europi_config.MAX_OUTPUT_VOLTAGE
 
 
 class DailyRandom(EuroPiScript):
@@ -23,26 +66,36 @@ class DailyRandom(EuroPiScript):
     BITMASKS = [
         0b101010101010,
         0b001100110011,
-        0b100100100100,
+        0b000111000111,
+        0b111111000000,
         0b111000111000,
-        0b011000111001,
-        0b011011011011,
         0b110011001100,
+        0b010101010101,
     ]
 
     def __init__(self):
         super().__init__()
 
-        current_time = clock.now()
-        self.regenerate_sequences(current_time)
+        self.sequences = [
+            Sequence(0) for cv in cvs
+        ]
+        self.regenerate_sequences()
 
-        self.sequence_index = 0
+        self.trigger_recvd = False
 
         @din.handler
         def advance_sequence():
-            self.sequence_index += 1
+            for s in self.sequences:
+                s.next()
+            self.trigger_recvd = True
 
-    def regenerate_sequences(self, datetime):
+        @din.handler_falling
+        def gates_off():
+            for i in range(len(cvs) // 2):
+                cvs[i].off()
+
+    def regenerate_sequences(self):
+        datetime = clock.now()
         (year, month, day, hour, minute) = datetime[0:5]
 
         try:
@@ -57,50 +110,33 @@ class DailyRandom(EuroPiScript):
         # day: 5 bits
         # hour: 6 bits
         # minute: 6 bits
-        seed_1 = self.BITMASKS[weekday] ^ year ^ (month << 7) ^ day
-        seed_2 = self.BITMASKS[weekday] ^ year ^ (month << 6) ^ day ^ hour
-        seed_3 = self.BITMASKS[weekday] ^ year ^ (month << 7) ^ day ^ (hour << 6) ^ minute
-
-        def generate_gates(seed):
-            random.seed(seed)
-            bits = random.getrandbits(self.SEQUENCE_LENGTH)
-            pattern = []
-            for i in range(self.SEQUENCE_LENGTH):
-                pattern.append(bits & 0x01)
-                bits = bits >> 1
-            return pattern
-
-        def generate_cv(seed):
-            random.seed(seed)
-            pattern = []
-            for i in range(self.SEQUENCE_LENGTH):
-                pattern.append(random.random() * europi_config.MAX_OUTPUT_VOLTAGE)
-            return pattern
-
-        self.sequences = [
-            generate_gates(seed_1),
-            generate_gates(seed_2),
-            generate_gates(seed_3),
-            generate_cv(seed_1),
-            generate_cv(seed_2),
-            generate_cv(seed_3),
+        seeds = [
+            self.BITMASKS[weekday] ^ year ^ (month << 7) ^ day,
+            self.BITMASKS[weekday] ^ year ^ (month << 6) ^ day ^ ~hour,
+            self.BITMASKS[weekday] ^ year ^ (month << 7) ^ day ^ (hour << 6) ^ minute,
         ]
 
+        for i in range(len(self.sequences)):
+            self.sequences[i].regenerate(seeds[i % len(seeds)])
+
     def main(self):
-        # clear the display
-        oled.fill(0)
-        oled.show()
+        oled.centre_text(str(clock).replace(" ", "\n"))
+        last_draw_at = clock.now()
 
         while True:
-            # regenerate the patterns when the day rolls over
-            current_time = clock.now()
-            self.regenerate_sequences(current_time)
+            now = clock.now()
+            if not clock.compare_datetimes(now, last_draw_at):
+                self.regenerate_sequences()
+                oled.centre_text(str(clock).replace(" ", "\n"))
+                last_draw_at = now
 
-            for i in range(len(cvs)):
-                if i < len(cvs) // 2:
-                    cvs[i].voltage(self.sequences[i][self.sequence_index % self.SEQUENCE_LENGTH] * europi_config.GATE_VOLTAGE)
-                else:
-                    cvs[i].voltage(self.sequences[i][self.sequence_index % self.SEQUENCE_LENGTH] * europi_config.MAX_OUTPUT_VOLTAGE)
+            if self.trigger_recvd:
+                self.trigger_recvd = False
+                for i in range(len(self.sequences)):
+                    if i < len(cvs) // 2:
+                        cvs[i].voltage(self.sequences[i].gate_volts)
+                    else:
+                        cvs[i].voltage(self.sequences[i].cv_volts)
 
 
 if __name__ == "__main__":

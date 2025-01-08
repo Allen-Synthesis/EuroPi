@@ -113,6 +113,17 @@ class RealtimeClock:
         """
         return self.source.datetime()
 
+    def compare_datetimes(self, t1, t2):
+        """
+        Comapre two datetimes to see if they represent the same time
+
+        If one time has fewer fields than the other, we only consider the fields present in both
+        """
+        for i in range(min(len(t1), len(t2))):
+            if t1[i] != t2[i]:
+                return False
+        return True
+
     def __str__(self):
         """
         Return the current time as a string
