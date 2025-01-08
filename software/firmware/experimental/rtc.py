@@ -153,7 +153,9 @@ class DateTime:
 
         @param tz  The timezone we're adding to this Datetime
         """
-        t = DateTime(self.year, self.month, self.day, self.hour, self.minute, self.second, self.weekday)
+        t = DateTime(
+            self.year, self.month, self.day, self.hour, self.minute, self.second, self.weekday
+        )
 
         # shortcut if there is no offset
         if tz.hours == 0 and tz.minutes == 0:
@@ -202,24 +204,11 @@ class DateTime:
 
     @staticmethod
     def days_in_month(month, year):
-        month_lengths = [
-            31,
-            28,
-            31,
-            30,
-            31,
-            30,
-            31,
-            31,
-            30,
-            31,
-            30,
-            31
-        ]
+        month_lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         if DateTime.is_leap_year(year) and month == Month.FEBRUARY:
             return 29
         else:
-            return month_lengths[month-1]
+            return month_lengths[month - 1]
 
     def __eq__(self, other):
         # fmt: off
@@ -326,7 +315,7 @@ class RealtimeClock:
             t[ExternalClockSource.HOUR],
             t[ExternalClockSource.MINUTE],
             t[ExternalClockSource.SECOND],
-            t[ExternalClockSource.WEEKDAY]
+            t[ExternalClockSource.WEEKDAY],
         )
 
     def localnow(self):
@@ -361,8 +350,7 @@ else:
 # fmt: on
 
 local_timezone = Timezone(
-    europi.experimental_config.UTC_OFFSET_HOURS,
-    europi.experimental_config.UTC_OFFSET_MINUTES
+    europi.experimental_config.UTC_OFFSET_HOURS, europi.experimental_config.UTC_OFFSET_MINUTES
 )
 
 clock = RealtimeClock(source)
