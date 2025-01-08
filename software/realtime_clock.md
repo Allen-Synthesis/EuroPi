@@ -98,9 +98,26 @@ Once you've done this, restart your EuroPi and run the following command to make
 the clock is properly configured:
 ```python
 from experimenta.rtc import clock
-print(clock)
+print(clock.utcnow())
 ```
 You should see the current date and time printed.
+
+## What about local time?
+
+You can further configure EuroPi to add a timezone offset. To do this, edit `/config/ExperimentalConfig.json`
+to add the following:
+```json
+{
+    "UTC_OFFSET_HOURS": -3,
+    "UTC_OFFSET_MINUTES": -30,
+}
+```
+This will set the local timezone to UTC -03:30, or Newfoundland time. If you don't liven in
+Newfoundland (it's okay, I don't either), adjust the hours and minutes to your local timezone. Note that
+EuroPi will _not_ track daylight savings time, so if your region changes the clocks every spring and
+autumn, you will need to manually adjust EuroPi twice per year to keep the local time synchronized.
+
+The sign of the minutes and hours must match.
 
 ## Troubleshooting
 

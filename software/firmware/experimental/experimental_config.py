@@ -55,6 +55,20 @@ class ExperimentalConfig:
                 ],
                 default=RTC_NONE,
             ),
+
+            # RTC Timezone offset for local time
+            configuration.integer(
+                "UTC_OFFSET_HOURS",
+                minimum=-24,
+                maximum=24,
+                default=0,
+            ),
+            configuration.integer(
+                "UTC_OFFSET_MINUTES",
+                minimum=-59,
+                maximum=59,
+                default=0,
+            ),
         ]
         # fmt: on
 

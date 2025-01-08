@@ -10,23 +10,8 @@ that can be used externally.
 """
 
 import europi
+from experimental.clocks.clock_source import ExternalClockSource
 from experimental.experimental_config import RTC_NONE, RTC_DS1307, RTC_DS3231
-
-
-class DateTimeIndex:
-    """
-    Indices for the fields within a weekday tuple
-
-    Note that SECOND and WEEKDAY are optional and may be omitted in some implementations
-    """
-
-    YEAR = 0
-    MONTH = 1
-    DAY = 2
-    HOUR = 3
-    MINUTE = 4
-    SECOND = 5
-    WEEKDAY = 6
 
 
 class Month:
@@ -79,6 +64,7 @@ class Weekday:
     SUNDAY = 7
 
     NAME = {
+        0: "Unspecified",
         1: "Monday",
         2: "Tuesday",
         3: "Wednesday",
@@ -87,6 +73,220 @@ class Weekday:
         6: "Saturday",
         7: "Sunday",
     }
+
+
+class Timezone:
+    """
+    Represents a timezone shift relative to UTC
+
+    We allow minutes & hours, since there are 15-, 30-, and 45-minute timzeones in the world
+    """
+
+    def __init__(self, hours, minutes):
+        """
+        Create a time zone we can add to a datetime to get local time
+
+        @param hours  The number of hours ahead/behind we need to adjust [-24 to +24]
+        @param minutes  The number of minutes ahead/behind we need to adjust [-59 to +59]
+        """
+        if (hours < 0 and minutes > 0) or (hours > 0 and minutes < 0):
+            raise ValueError("Timezone offset must be in a consistent direction")
+        if abs(hours) > 24 or abs(minutes) > 59:
+            raise ValueError("Invalid time zone adjustment")
+        self.hours = hours
+        self.minutes = minutes
+
+    def __str__(self):
+        """
+        Get the offset as a string
+
+        Result is of the format is {+|-}hh:mm
+        """
+        s = f"{abs(self.hours):02}:{abs(self.minutes):02}"
+        if self.hours < 0:
+            s = f"-{s}"
+        else:
+            s = f"+{s}"
+        return s
+
+
+class DateTime:
+    """Represents a date and time"""
+
+    def __init__(self, year, month, day, hour, minute, second=None, weekday=None):
+        """
+        Create a DateTime representing a specific moment
+
+        @param year  The current year (e.g. 2025)
+        @param month  The current month (e.g. Month.JANUARY)
+        @param day  The current day within the month (e.g. 17)
+        @param hour  The current hour on a 24-hour clock (0-23)
+        @param minute  The current minute within the hour (0-59)
+        @param second  The current second within the minute (0-59, optional)
+        @param weekday  The current day of the week (e.g. Weekday.MONDAY, optional)
+        """
+        self.year = year
+        self.month = month
+        self.day = day
+        self.hour = hour
+        self.minute = minute
+        self.second = second
+        self.weekday = weekday
+
+    def __str__(self):
+        """
+        Get the current day and time as a string
+
+        Result is of the format
+            [Weekday ]YYYY/MM/DD hh:mm[:ss]
+        """
+        s = f"{self.year:04}/{self.month:02}/{self.day:02} {self.hour:02}:{self.minute:02}"
+        if self.second is not None:
+            s = f"{s}:{self.second:02}"
+        if self.weekday is not None:
+            s = f"{Weekday.NAME[self.weekday]} {s}"
+        return s
+
+    def __add__(self, tz):
+        """
+        Add a timezone offset to the current time, returning the result
+
+        @param tz  The timezone we're adding to this Datetime
+        """
+        t = DateTime(self.year, self.month, self.day, self.hour, self.minute, self.second, self.weekday)
+
+        # shortcut if there is no offset
+        if tz.hours == 0 and tz.minutes == 0:
+            return t
+
+        # add the offset; this can be positive or negative
+        t.minute += tz.minutes
+        t.hour += tz.hours
+
+        # cascade through the units, borrowing/carrying-over as needed
+        if t.minute < 0:
+            t.minute += 60
+            t.hour -= 1
+        elif t.minute >= 60:
+            t.minute -= 60
+            t.hour += 1
+
+        if t.hour < 0:
+            t.hour += 24
+            t.day -= 1
+        elif t.hour >= 24:
+            t.hour -= 24
+            t.day += 1
+
+        days_in_month = DateTime.days_in_month(t.month, t.year)
+        if t.day <= 0:
+            t.day += 1
+            t.month -= 1
+        elif t.day > days_in_month:
+            t.day = 1
+            t.month += 1
+
+        if t.month <= 1:
+            t.month += 12
+            t.year -= 1
+        elif t.month > 12:
+            t.month -= 12
+            t.year += 1
+
+        return t
+
+    @staticmethod
+    def is_leap_year(year):
+        # a year is a leap year if it is divisible by 4
+        return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+    @staticmethod
+    def days_in_month(month, year):
+        month_lengths = [
+            31,
+            28,
+            31,
+            30,
+            31,
+            30,
+            31,
+            31,
+            30,
+            31,
+            30,
+            31
+        ]
+        if DateTime.is_leap_year(year) and month == Month.FEBRUARY:
+            return 29
+        else:
+            return month_lengths[month-1]
+
+    def __eq__(self, other):
+        # fmt: off
+        return (
+            self.year == other.year and
+            self.month == other.month and
+            self.day == other.day and
+            self.hour == other.hour and
+            self.minute == other.minute and
+            (
+                (self.second is None or other.hour is None ) or
+                (self.second == other.second)
+            )
+        )
+        # fmt: on
+
+    def __lt__(self, other):
+        if self.year == other.year:
+            if self.month == other.month:
+                if self.hour == other.hour:
+                    if self.minute == other.minute:
+                        if self.second is None or other.second is None:
+                            return False
+                        return self.second < other.second
+                    return self.minute < other.minute
+                return self.hour < other.hour
+            return self.month < other.month
+        return self.year < other.year
+
+    def __gt__(self, other):
+        if self.year == other.year:
+            if self.month == other.month:
+                if self.hour == other.hour:
+                    if self.minute == other.minute:
+                        if self.second is None or other.second is None:
+                            return False
+                        return self.second > other.second
+                    return self.minute > other.minute
+                return self.hour > other.hour
+            return self.month > other.month
+        return self.year > other.year
+
+    def __le__(self, other):
+        if self.year == other.year:
+            if self.month == other.month:
+                if self.hour == other.hour:
+                    if self.minute == other.minute:
+                        if self.second is None or other.second is None:
+                            return False
+                        return self.second <= other.second
+                    return self.minute <= other.minute
+                return self.hour <= other.hour
+            return self.month <= other.month
+        return self.year <= other.year
+
+    def __ge__(self, other):
+        if self.year == other.year:
+            if self.month == other.month:
+                if self.hour == other.hour:
+                    if self.minute == other.minute:
+                        if self.second is None or other.second is None:
+                            return False
+                        return self.second >= other.second
+                    return self.minute >= other.minute
+                return self.hour >= other.hour
+            return self.month >= other.month
+        return self.year >= other.year
 
 
 class RealtimeClock:
@@ -105,38 +305,47 @@ class RealtimeClock:
         """
         self.source = source
 
-    def now(self):
+    def utcnow(self):
         """
         Get the current UTC time.
 
-        @return a tuple, (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
+        @return A DateTime object representing the current UTC time
         """
-        return self.source.datetime()
 
-    def compare_datetimes(self, t1, t2):
-        """
-        Comapre two datetimes to see if they represent the same time
+        # get the raw tuple from the clock, append Nones so we have all 7 fields
+        t = list(self.source.datetime())
+        if len(t) < ExternalClockSource.SECOND + 1:
+            t.append(None)
+        if len(t) < ExternalClockSource.WEEKDAY + 1:
+            t.append(None)
 
-        If one time has fewer fields than the other, we only consider the fields present in both
+        return DateTime(
+            t[ExternalClockSource.YEAR],
+            t[ExternalClockSource.MONTH],
+            t[ExternalClockSource.DAY],
+            t[ExternalClockSource.HOUR],
+            t[ExternalClockSource.MINUTE],
+            t[ExternalClockSource.SECOND],
+            t[ExternalClockSource.WEEKDAY]
+        )
+
+    def localnow(self):
         """
-        for i in range(min(len(t1), len(t2))):
-            if t1[i] != t2[i]:
-                return False
-        return True
+        Get the current local time
+
+        See experimental_config for instructions on how to configure the local timezone
+
+        @return a DateTime object representing the current local time
+        """
+        return self.utcnow() + local_timezone
 
     def __str__(self):
         """
-        Return the current time as a string
+        Return the current UTC time as a string
 
         @return  A string with the format "[Weekday] YYYY/MM/DD HH:MM[:SS]"
         """
-        t = self.now()
-        if len(t) > DateTimeIndex.WEEKDAY:
-            return f"{Weekday.NAME[t[DateTimeIndex.WEEKDAY]]} {t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}:{t[DateTimeIndex.SECOND]:02}"
-        elif len(t) > DateTimeIndex.SECOND:
-            return f"{t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}:{t[DateTimeIndex.SECOND]:02}"
-        else:
-            return f"{t[DateTimeIndex.YEAR]}/{t[DateTimeIndex.MONTH]:02}/{t[DateTimeIndex.DAY]:02} {t[DateTimeIndex.HOUR]:02}:{t[DateTimeIndex.MINUTE]:02}"
+        return f"{self.localnow()}"
 
 
 # fmt: off
@@ -150,5 +359,10 @@ else:
     from experimental.clocks.null_clock import NullClock
     source = NullClock()
 # fmt: on
+
+local_timezone = Timezone(
+    europi.experimental_config.UTC_OFFSET_HOURS,
+    europi.experimental_config.UTC_OFFSET_MINUTES
+)
 
 clock = RealtimeClock(source)

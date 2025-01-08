@@ -10,10 +10,10 @@ Generates pseudo-random gate and CV patterns based on the current date and time.
 - `b2`: not used
 - `k1`: not used
 - `k2`: not used
-- `cv1`: daily gate sequence (updates at midnight UTC)
+- `cv1`: daily gate sequence (updates at midnight local time)
 - `cv2`: hourly gate sequence (updates at the top of every hour)
 - `cv3`: minute gate sequence (updates at the top of every minute)
-- `cv4`: daily CV sequence (updates at midnight UTC)
+- `cv4`: daily CV sequence (updates at midnight local time)
 - `cv5`: hourly CV sequence (updates at the top of every hour)
 - `cv6`: minute CV sequence (updates at the top of every minute)
 

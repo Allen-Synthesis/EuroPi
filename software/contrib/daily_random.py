@@ -1,7 +1,7 @@
 from europi import *
 from europi_script import EuroPiScript
 
-from experimental.rtc import clock, DateTimeIndex
+from experimental.rtc import clock
 
 import random
 
@@ -95,13 +95,14 @@ class DailyRandom(EuroPiScript):
                 cvs[i].off()
 
     def regenerate_sequences(self):
-        datetime = clock.now()
-        (year, month, day, hour, minute) = datetime[0:5]
-
-        try:
-            weekday = datetime[DateTimeIndex.WEEKDAY] % 7
-        except IndexError:
-            weekday = 0
+        datetime = clock.localnow()
+        year = datetime.year
+        month = datetime.month
+        day = datetime.day
+        hour = datetime.hour
+        minute = datetime.minute
+        second = datetime.second if datetime.second is not None else 0
+        weekday = datetime.weekday if datetime.weekday is not None else 0
 
         # bit-shift the fields around to reduce collisions
         # mask: 12 bits
@@ -120,14 +121,14 @@ class DailyRandom(EuroPiScript):
             self.sequences[i].regenerate(seeds[i % len(seeds)])
 
     def main(self):
-        oled.centre_text(str(clock).replace(" ", "\n"))
-        last_draw_at = clock.now()
+        last_draw_at = clock.localnow()
+        oled.centre_text(str(last_draw_at).replace(" ", "\n"))
 
         while True:
-            now = clock.now()
-            if not clock.compare_datetimes(now, last_draw_at):
+            now = clock.localnow()
+            if now != last_draw_at:
                 self.regenerate_sequences()
-                oled.centre_text(str(clock).replace(" ", "\n"))
+                oled.centre_text(str(now).replace(" ", "\n"))
                 last_draw_at = now
 
             if self.trigger_recvd:
