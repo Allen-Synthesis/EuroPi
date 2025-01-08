@@ -609,16 +609,23 @@ b1 = Button(PIN_B1)
 b2 = Button(PIN_B2)
 
 if not TEST_ENV:
-    oled = Display(
-        width=europi_config.DISPLAY_WIDTH,
-        height=europi_config.DISPLAY_HEIGHT,
-        sda=europi_config.DISPLAY_SDA,
-        scl=europi_config.DISPLAY_SCL,
-        channel=europi_config.DISPLAY_CHANNEL,
-        freq=europi_config.DISPLAY_FREQUENCY,
-        contrast=europi_config.DISPLAY_CONTRAST,
-        rotate=europi_config.ROTATE_DISPLAY,
-    )
+    try:
+        oled = Display(
+            width=europi_config.DISPLAY_WIDTH,
+            height=europi_config.DISPLAY_HEIGHT,
+            sda=europi_config.DISPLAY_SDA,
+            scl=europi_config.DISPLAY_SCL,
+            channel=europi_config.DISPLAY_CHANNEL,
+            freq=europi_config.DISPLAY_FREQUENCY,
+            contrast=europi_config.DISPLAY_CONTRAST,
+            rotate=europi_config.ROTATE_DISPLAY,
+        )
+    except Exception as err:
+        print(f"Failed to initialize display: {err}. Is the hardware connected properly?")
+        oled = DummyDisplay(
+            width=europi_config.DISPLAY_WIDTH,
+            height=europi_config.DISPLAY_HEIGHT,
+        )
 else:
     print("No display hardware detected; falling back to DummyDisplay")
     oled = DummyDisplay(
