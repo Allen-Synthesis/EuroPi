@@ -30,13 +30,17 @@ These modules can be bought online from a variety of sources, for example:
 The realtime clock should be connected to EuroPi's I2C header pins, located on the
 rear of the module, between the Raspberry Pi Pico and the power header.
 
-TODO: picture to locate the header
+<img src="https://github.com/user-attachments/assets/17c94bbf-e5b6-44f9-9002-5dec3135c108" width="360">
+
+_EuroPi's I2C header (circled)_
 
 Depending on the size and depth of your synthesizer's case there are a few ways you
 can mount the clock. For deep cases, the easiest solution is to simply use a standoff
 to connect the clock to the Raspberry Pi Pico:
 
-TODO: pictures of the standoff mount
+<img src="https://github.com/user-attachments/assets/5d028add-ff5d-42ee-83a7-dfe89ce1b043" width="360"> <img src="https://github.com/user-attachments/assets/86725f58-bea4-415f-9be7-94651ff3c728" width="360">
+
+_The DS3231 RTC mounted to the Raspberry Pi Pico using a standoff_
 
 For shallower cases, you can attach header pins and jumper wires to a pice of perfboard
 or plastic, and mount the clock vertically.
