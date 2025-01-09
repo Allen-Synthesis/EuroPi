@@ -32,7 +32,7 @@ from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB
 
 from europi_config import load_europi_config, CPU_FREQS
-from europi_display import Display, DummyDisplay, NoDisplayConnectedException
+from europi_display import Display, DummyDisplay
 
 from experimental.experimental_config import load_experimental_config
 
