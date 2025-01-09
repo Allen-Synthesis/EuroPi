@@ -45,12 +45,15 @@ _The DS3231 RTC mounted to the Raspberry Pi Pico using a standoff_
 For shallower cases, you can attach header pins and jumper wires to a pice of perfboard
 or plastic, and mount the clock vertically.
 
-TODO: pictures of the vertical mount
+<img src="https://github.com/user-attachments/assets/01cf0570-7426-4677-92d2-ab73d8ea482f" width="360"> <img src="https://github.com/user-attachments/assets/2222ba76-ef94-4b1e-96a2-4f65c6afaa81" width="360">
+
+_A vertical mount made from a piece of perboard, 2 female headers, and some wire_
 
 Other mounting solutions are also possible, for example attaching the clock behind a
 blank panel or using double-sided foam tape to attach it directly to the inside of your
-case. As long as the clock is securely fastened so it won't move around, and is connected
-to the I2C header on EuroPi, it should be fine.
+case. As long as the clock is securely fastened so it won't move around, insulated from
+any accidental contact with conductive surfaces inside the case, and properly
+connected to the I2C header pins it should be fine.
 
 ## How do I configure the clock?
 
