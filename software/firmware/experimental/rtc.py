@@ -209,7 +209,8 @@ class DateTime:
         # shift the month, day and weekday back to be 1-indexed
         t.month += 1
         t.day += 1
-        t.weekday += 1
+        if t.weekday is not None:
+            t.weekday += 1
 
         return t
 
