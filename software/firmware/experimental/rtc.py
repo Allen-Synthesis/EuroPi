@@ -161,6 +161,12 @@ class DateTime:
         if tz.hours == 0 and tz.minutes == 0:
             return t
 
+        # temporarily shift the month and day to be zero-indexed to make subsequent math easier
+        t.month -= 1
+        t.day -= 1
+        if t.weekday is not None:
+            t.weekday -= 1
+
         # add the offset; this can be positive or negative
         t.minute += tz.minutes
         t.hour += tz.hours
@@ -176,24 +182,34 @@ class DateTime:
         if t.hour < 0:
             t.hour += 24
             t.day -= 1
+            if t.weekday is not None:
+                t.weekday = (t.weekday - 1) % 7
         elif t.hour >= 24:
             t.hour -= 24
             t.day += 1
+            if t.weekday is not None:
+                t.weekday = (t.weekday + 1) % 7
 
-        days_in_month = DateTime.days_in_month(t.month, t.year)
-        if t.day <= 0:
-            t.day += 1
+        days_in_month = DateTime.days_in_month(t.month + 1, t.year)
+        days_in_prev_month = DateTime.days_in_month((t.month + 1) % 12 + 1, t.year)
+        if t.day < 0:
+            t.day = days_in_prev_month - 1  # last day of the month, zero-indexed
             t.month -= 1
-        elif t.day > days_in_month:
+        elif t.day >= days_in_month:
             t.day = 1
             t.month += 1
 
-        if t.month <= 1:
+        if t.month < 0:
             t.month += 12
             t.year -= 1
-        elif t.month > 12:
+        elif t.month >= 12:
             t.month -= 12
             t.year += 1
+
+        # shift the month, day and weekday back to be 1-indexed
+        t.month += 1
+        t.day += 1
+        t.weekday += 1
 
         return t
 
@@ -327,14 +343,6 @@ class RealtimeClock:
         @return a DateTime object representing the current local time
         """
         return self.utcnow() + local_timezone
-
-    def __str__(self):
-        """
-        Return the current UTC time as a string
-
-        @return  A string with the format "[Weekday] YYYY/MM/DD HH:MM[:SS]"
-        """
-        return f"{self.localnow()}"
 
 
 # fmt: off
