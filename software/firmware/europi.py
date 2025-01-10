@@ -105,6 +105,7 @@ PIN_CV4 = 17
 PIN_CV5 = 18
 PIN_CV6 = 19
 PIN_USB_CONNECTED = 24  # Does not work on Pico 2
+PIN_TEMPERATURE = 4
 
 # Helper functions.
 
