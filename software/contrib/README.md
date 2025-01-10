@@ -62,6 +62,11 @@ Requires installing and configuring a realtime clock module, connected to EuroPi
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: sequencer, gate, cv, random, realtime clock</i>
 
+### DCSN-2 \[ [documentation](/software/contrib/dscn2.md) | [script](/software/contrib/dcsn2.md) \]
+A loopable random gate sequencer based on a binary tree.  Inspired by the Robaux DCSN3
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: sequencer, gates, triggers, randomness</i>
 
 ### Egressus Melodium \[ [documentation](/software/contrib/egressus_melodiam.md) | [script](/software/contrib/egressus_melodiam.py) \]
 Clockable and free-running LFO and random CV pattern generator
@@ -112,6 +117,13 @@ The division of the master clock that each LFO runs at, as well as each of their
 
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: LFO</i>
+
+### Itty Bitty \[ [documentation](/software/contrib/itty_bitty.md) | [script](/software/contrib/itty_bitty.py) \]
+
+Dual-channel 8-bit trigger+gate+cv sequencer based on the binary representation of an 8-bit number.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: sequencer, gate, trigger, cv</i>
 
 ### Kompari \[ [documentation](/software/contrib/kompari.md) | [script](/software/contrib/kompari.py) \]
 

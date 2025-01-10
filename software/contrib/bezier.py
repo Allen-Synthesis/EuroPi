@@ -405,14 +405,52 @@ class Bezier(EuroPiScript):
     def config_points(cls):
         """Return the static configuration options for this class
         """
+        def restrict_input_voltage(v):
+            if v > europi_config.MAX_INPUT_VOLTAGE:
+                return europi_config.MAX_INPUT_VOLTAGE
+            return v
+
         return [
-            configuration.floatingPoint(name="MAX_INPUT_VOLTAGE", minimum=0.0, maximum=europi_config.MAX_INPUT_VOLTAGE, default=10.0),
-            configuration.floatingPoint(name="MIN_VOLTAGE", minimum=0.0, maximum=europi_config.MAX_OUTPUT_VOLTAGE, default=0.0),
-            configuration.floatingPoint(name="MAX_VOLTAGE", minimum=0.0, maximum=europi_config.MAX_OUTPUT_VOLTAGE, default=europi_config.MAX_OUTPUT_VOLTAGE),
-            configuration.floatingPoint(name="MIN_FREQUENCY", minimum=0.001, maximum=10.0, default=0.01),
-            configuration.floatingPoint(name="MAX_FREQUENCY", minimum=0.001, maximum=10.0, default=1.0),
-            configuration.choice(name="AIN_MODE", choices=["frequency", "curve"], default="frequency"),
-            configuration.choice(name="LOGIC_MODE", choices=["and", "or", "xor", "nand", "nor", "xnor"], default="xor")
+            configuration.floatingPoint(
+                name="MAX_INPUT_VOLTAGE",
+                minimum=0.0,
+                maximum=europi_config.MAX_INPUT_VOLTAGE,
+                default=restrict_input_voltage(10.0)
+            ),
+            configuration.floatingPoint(
+                name="MIN_VOLTAGE",
+                minimum=0.0,
+                maximum=europi_config.MAX_OUTPUT_VOLTAGE,
+                default=0.0
+            ),
+            configuration.floatingPoint(
+                name="MAX_VOLTAGE",
+                minimum=0.0,
+                maximum=europi_config.MAX_OUTPUT_VOLTAGE,
+                default=europi_config.MAX_OUTPUT_VOLTAGE
+            ),
+            configuration.floatingPoint(
+                name="MIN_FREQUENCY",
+                minimum=0.001,
+                maximum=10.0,
+                default=0.01
+            ),
+            configuration.floatingPoint(
+                name="MAX_FREQUENCY",
+                minimum=0.001,
+                maximum=10.0,
+                default=1.0
+            ),
+            configuration.choice(
+                name="AIN_MODE",
+                choices=["frequency", "curve"],
+                default="frequency"
+            ),
+            configuration.choice(
+                name="LOGIC_MODE",
+                choices=["and", "or", "xor", "nand", "nor", "xnor"],
+                default="xor"
+            )
         ]
 
     def save(self):

@@ -1,10 +1,55 @@
 import configuration
 from configuration import ConfigFile, ConfigSpec
 
-# Pico machine CPU freq.
-# Default pico CPU freq is 125_000_000 (125mHz)
-PICO_DEFAULT_CPU_FREQ = 125_000_000
-OVERCLOCKED_CPU_FREQ = 250_000_000
+
+# sub-key constants for CPU_FREQS dict (see below)
+# the Europi default is to overclock, so to avoid confusion about the default
+# not being "default" just use a different word
+# fmt: off
+DEFAULT_FREQ = "normal"
+OVERCLOCKED_FREQ = "overclocked"
+UNDERCLOCKED_FREQ = "underclocked"
+# fmt: on
+
+# Supported Pico model types
+MODEL_PICO = "pico"
+MODEL_PICO_H = "pico h"
+MODEL_PICO_W = "pico w"
+MODEL_PICO_2 = "pico 2"
+MODEL_PICO_2W = "pico 2w"
+
+# Default & overclocked CPU frequencies for supported boards
+# Key: board type (corresponds to EUROPI_MODEL setting)
+# Sub-key: "default" or "overclocked" or "underclocked"
+# fmt: off
+CPU_FREQS = {
+    MODEL_PICO: {
+        DEFAULT_FREQ: 125_000_000,      # Pico default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000,  # Overclocked frequency is 250MHz
+        UNDERCLOCKED_FREQ: 75_000_000   # Underclock to 75MHz
+    },
+    MODEL_PICO_2: {
+        DEFAULT_FREQ: 150_000_000,      # Pico 2 default frequency is 150MHz
+        OVERCLOCKED_FREQ: 300_000_000,  # Overclocked frequency is 300MHz
+        UNDERCLOCKED_FREQ: 75_000_000,  # Underclock to 75MHz
+    },
+    MODEL_PICO_2W: {
+        DEFAULT_FREQ: 150_000_000,      # Pico 2 W default frequency is 150MHz
+        OVERCLOCKED_FREQ: 300_000_000,  # Overclocked frequency is 300MHz
+        UNDERCLOCKED_FREQ: 75_000_000,  # Underclock to 75MHz
+    },
+    MODEL_PICO_H: {
+        DEFAULT_FREQ: 125_000_000,      # Pico H default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000,  # Overclocked frequency is 250MHz
+        UNDERCLOCKED_FREQ: 75_000_000,  # Underclock to 75MHz
+    },
+    MODEL_PICO_W: {
+        DEFAULT_FREQ: 125_000_000,      # Pico W default frequency is 125MHz
+        OVERCLOCKED_FREQ: 250_000_000,  # Overclocked frequency is 250MHz
+        UNDERCLOCKED_FREQ: 75_000_000,  # Underclock to 75MHz
+    }
+}
+# fmt: on
 
 
 class EuroPiConfig:
@@ -27,37 +72,47 @@ class EuroPiConfig:
             configuration.choice(
                 name="EUROPI_MODEL",
                 choices = ["europi"],
-                default="europi"
+                default="europi",
             ),
 
             # CPU & board settings
             configuration.choice(
                 name="PICO_MODEL",
-                choices=["pico", "pico w"],
-                default="pico"
+                choices=[
+                    MODEL_PICO,
+                    MODEL_PICO_W,
+                    MODEL_PICO_H,
+                    MODEL_PICO_2,
+                    MODEL_PICO_2W,
+                ],
+                default=MODEL_PICO,
             ),
             configuration.choice(
                 name="CPU_FREQ",
-                choices=[PICO_DEFAULT_CPU_FREQ, OVERCLOCKED_CPU_FREQ],
-                default=OVERCLOCKED_CPU_FREQ,
+                choices=[
+                    DEFAULT_FREQ,
+                    OVERCLOCKED_FREQ,
+                    UNDERCLOCKED_FREQ,
+                ],
+                default=OVERCLOCKED_FREQ,
             ),
 
             # Display settings
             configuration.boolean(
                 name="ROTATE_DISPLAY",
-                default=False
+                default=False,
             ),
             configuration.integer(
                 name="DISPLAY_WIDTH",
                 minimum=8,
                 maximum=1024,
-                default=128
+                default=128,
             ),
             configuration.integer(
                 name="DISPLAY_HEIGHT",
                 minimum=8,
                 maximum=1024,
-                default=32
+                default=32,
             ),
             configuration.choice(
                 name="DISPLAY_SDA",
@@ -72,13 +127,19 @@ class EuroPiConfig:
             configuration.choice(
                 name="DISPLAY_CHANNEL",
                 choices=[0, 1],
-                default=0
+                default=0,
+            ),
+            configuration.integer(
+                name="DISPLAY_CONTRAST",
+                minimum=0,
+                maximum=255,
+                default=255
             ),
             configuration.integer(
                 name="DISPLAY_FREQUENCY",
                 minimum=0,
                 maximum=1000000,
-                default=400000
+                default=400000,
             ),
 
             # External I2C connection (header between Pico & power connector)
@@ -95,19 +156,19 @@ class EuroPiConfig:
             configuration.choice(
                 name="EXTERNAL_I2C_CHANNEL",
                 choices=[0, 1],
-                default=1
+                default=1,
             ),
             configuration.integer(
                 name="EXTERNAL_I2C_FREQUENCY",
                 minimum=0,
                 maximum=1000000,  # 1M max
-                default=100000    # 100k default
+                default=100000,   # 100k default
             ),
             configuration.integer(
                 name="EXTERNAL_I2C_TIMEOUT",
                 minimum=0,
                 maximum=100000,
-                default=50000
+                default=50000,
             ),
 
             # I/O voltage settings
@@ -115,25 +176,25 @@ class EuroPiConfig:
                 name="MAX_OUTPUT_VOLTAGE",
                 minimum=1.0,
                 maximum=10.0,
-                default=10.0
+                default=10.0,
             ),
             configuration.floatingPoint(
                 name="MAX_INPUT_VOLTAGE",
                 minimum=1.0,
                 maximum=12.0,
-                default=10.0
+                default=10.0,
             ),
             configuration.floatingPoint(
                 name="GATE_VOLTAGE",
                 minimum=1.0,
                 maximum=10.0,
-                default=5.0
+                default=5.0,
             ),
 
             # Menu settings
             configuration.boolean(
                 name="MENU_AFTER_POWER_ON",
-                default=False
+                default=False,
             ),
         ]
         # fmt: on

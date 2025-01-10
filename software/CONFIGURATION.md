@@ -8,7 +8,7 @@ default configuration:
 {
     "EUROPI_MODEL": "europi",
     "PICO_MODEL": "pico",
-    "CPU_FREQ": 250000000,
+    "CPU_FREQ": "overclocked",
     "ROTATE_DISPLAY": false,
     "DISPLAY_WIDTH": 128,
     "DISPLAY_HEIGHT": 32,
@@ -29,8 +29,15 @@ default configuration:
 
 CPU & Pico options:
 - `EUROPI_MODEL` specifies the type of EuroPi module. Currently only `"europi"` is supported. Default: `"europi"`
-- `PICO_MODEL` must be one of `"pico"` or `"pico w"`. Default: `"pico"`
-- `CPU_FREQ` must be one of `250000000` or `125000000`. Default: `"250000000"`
+- `PICO_MODEL` must be one of
+  - `"pico"`,
+  - `"pico h"`,
+  - `"pico w"`,
+  - `"pico 2"`, or
+  - `"pico 2w"`.
+  Default: `"pico"`.
+- `CPU_FREQ` specifies whether or not the CPU should be overclocked. Must be one of `"overclocked"` or `"normal"`.
+  Default: `"overclocked"`
 
 Display options:
 - `ROTATE_DISPLAY` must be one of `false` or `true`. Default: `false`
@@ -39,6 +46,7 @@ Display options:
 - `DISPLAY_SDA` is the I²C SDA pin used for the display. Only SDA capable pins can be selected. Default: `0`
 - `DISPLAY_SCL` is the I²C SCL pin used for the display. Only SCL capable pins can be selected. Default: `1`
 - `DISPLAY_CHANNEL` is the I²C channel used for the display, either 0 or 1. Default: `0`
+- `DISPLAY_CONTRAST` is a value indicating the display contrast. Higher numbers give higher contrast. `0` to `255`. Default: `255`
 
 External I²C options:
 - `EXTERNAL_I2C_SDA` is the I²C SDA pin used for the external I²C interface. Only SDA capable pis can be selected. Default: `2`
@@ -58,6 +66,9 @@ I/O voltage options:
 Power options:
 - `MENU_AFTER_POWER_ON` is a boolean indicating whether or not the module should always return to the main menu when
   it powers on.  By default the EuroPi will re-launch the last-used program instead of returning to the main menu. Default: `false`
+
+If you assembled your module with the Raspberry Pi Pico 2 (or a clone featuring the RP2350 microcontroller) make sure to
+set the `PICO_MODEL` setting to `"pico2"`.
 
 
 # Experimental configuration
@@ -133,33 +144,7 @@ True
 ```
 
 `europi.py` contains objects called `europi_config` and `experimental_config` which implement the core & experimental
-customizations described in the sections above. Below is a detailed summary of the contents of these objects:
-
-```python
->>> from europi import europi_config
->>> dir(europi_config)
-[
-  '__class__',
-  '__init__',
-  '__module__',
-  '__qualname__',
-  '__dict__',
-  'to_attr_name',
-  'CPU_FREQ',
-  'DISPLAY_CHANNEL',
-  'DISPLAY_HEIGHT',
-  'DISPLAY_SCL',
-  'DISPLAY_SDA',
-  'DISPLAY_WIDTH',
-  'EUROPI_MODEL',
-  'GATE_VOLTAGE',
-  'MAX_INPUT_VOLTAGE',
-  'MAX_OUTPUT_VOLTAGE',
-  'MENU_AFTER_POWER_ON',
-  'PICO_MODEL',
-  'ROTATE_DISPLAY'
-]
-```
+customizations described in the sections above.
 
 When you import `europi` into your project you can access the `europi_config` object like this:
 ```python

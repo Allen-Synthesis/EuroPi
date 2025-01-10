@@ -14,7 +14,7 @@ For example::
 Will set the CV output 3 to a voltage of 4.5V.
 """
 
-import ssd1306
+
 import sys
 import time
 
@@ -23,15 +23,17 @@ from machine import I2C
 from machine import PWM
 from machine import Pin
 from machine import freq
+from machine import mem32
 
-
-from ssd1306 import SSD1306_I2C
 
 from version import __version__
 
 from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB
-from europi_config import load_europi_config
+
+from europi_config import load_europi_config, CPU_FREQS
+from europi_display import Display, DummyDisplay
+
 from experimental.experimental_config import load_experimental_config
 
 if sys.implementation.name == "micropython":
@@ -62,14 +64,9 @@ except ImportError:
 europi_config = load_europi_config()
 experimental_config = load_experimental_config()
 
-
 # OLED component display dimensions.
 OLED_WIDTH = europi_config.DISPLAY_WIDTH
 OLED_HEIGHT = europi_config.DISPLAY_HEIGHT
-OLED_I2C_SDA = europi_config.DISPLAY_SDA
-OLED_I2C_SCL = europi_config.DISPLAY_SCL
-OLED_I2C_CHANNEL = europi_config.DISPLAY_CHANNEL
-OLED_I2C_FREQUENCY = europi_config.DISPLAY_FREQUENCY
 
 # Standard max int consts.
 MAX_UINT16 = 65535
@@ -107,7 +104,7 @@ PIN_CV3 = 16
 PIN_CV4 = 17
 PIN_CV5 = 18
 PIN_CV6 = 19
-PIN_USB_CONNECTED = 24
+PIN_USB_CONNECTED = 24  # Does not work on Pico 2
 
 # Helper functions.
 
@@ -485,83 +482,6 @@ class Button(DigitalReader):
         return self.last_rising_ms
 
 
-class Display(SSD1306_I2C):
-    """A class for drawing graphics and text to the OLED.
-
-    The OLED Display works by collecting all the applied commands and only
-    updates the physical display when ``oled.show()`` is called. This allows
-    you to perform more complicated graphics without slowing your program, or
-    to perform the calculations for other functions, but only update the
-    display every few steps to prevent lag.
-
-    To clear the display, simply fill the display with the colour black by using ``oled.fill(0)``
-
-    More explanations and tips about the the display can be found in the oled_tips file
-    `oled_tips.md <https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md>`_
-    """
-
-    def __init__(
-        self,
-        sda=OLED_I2C_SDA,
-        scl=OLED_I2C_SCL,
-        width=OLED_WIDTH,
-        height=OLED_HEIGHT,
-        channel=OLED_I2C_CHANNEL,
-        freq=OLED_I2C_FREQUENCY,
-    ):
-        i2c = I2C(channel, sda=Pin(sda), scl=Pin(scl), freq=freq)
-        self.width = width
-        self.height = height
-
-        if len(i2c.scan()) == 0:
-            if not TEST_ENV:
-                raise Exception(
-                    "EuroPi Hardware Error:\nMake sure the OLED display is connected correctly"
-                )
-        super().__init__(self.width, self.height, i2c)
-        self.rotate(europi_config.ROTATE_DISPLAY)
-
-    def rotate(self, rotate):
-        """Flip the screen from its default orientation
-
-        @param rotate  True or False, indicating whether we want to flip the screen from its default orientation
-        """
-        # From a hardware perspective, the default screen orientation of the display _is_ rotated
-        # But logically we treat this as right-way-up.
-        if rotate:
-            rotate = 0
-        else:
-            rotate = 1
-        if not TEST_ENV:
-            self.write_cmd(ssd1306.SET_COM_OUT_DIR | ((rotate & 1) << 3))
-            self.write_cmd(ssd1306.SET_SEG_REMAP | (rotate & 1))
-
-    def centre_text(self, text, clear_first=True, auto_show=True):
-        """Display one or more lines of text centred both horizontally and vertically.
-
-        @param text  The text to display
-        @param clear_first  If true, the screen buffer is cleared before rendering the text
-        @param auto_show  If true, oled.show() is called after rendering the text. If false, you must call oled.show() yourself
-        """
-        if clear_first:
-            self.fill(0)
-        # Default font is 8x8 pixel monospaced font which can be split to a
-        # maximum of 4 lines on a 128x32 display, but the maximum_lines variable
-        # is rounded down for readability
-        lines = str(text).split("\n")
-        maximum_lines = round(self.height / CHAR_HEIGHT)
-        if len(lines) > maximum_lines:
-            raise Exception("Provided text exceeds available space on oled display.")
-        padding_top = (self.height - (len(lines) * (CHAR_HEIGHT + 1))) / 2
-        for index, content in enumerate(lines):
-            x_offset = int((self.width - ((len(content) + 1) * (CHAR_WIDTH - 1))) / 2) - 1
-            y_offset = int((index * (CHAR_HEIGHT + 1)) + padding_top) - 1
-            self.text(content, x_offset, y_offset)
-
-        if auto_show:
-            self.show()
-
-
 class Output:
     """A class for sending digital or analogue voltage to an output jack.
 
@@ -622,6 +542,64 @@ class Output:
             self.off()
 
 
+class Thermometer:
+    """
+    Wrapper for the temperature sensor connected to Pin 4
+    Reports the module's current temperature in Celsius.
+    If the module's temperature sensor is not working correctly, the temperature will always be reported as None
+    """
+
+    # Conversion factor for converting from the raw ADC reading to sensible units
+    # See Raspberry Pi Pico datasheet for details
+    TEMP_CONV_FACTOR = 3.3 / 65535
+
+    def __init__(self):
+        # The Raspberry Pi Pico 2's temperature sensor doesn't work with some older
+        # uPython firmwares so do some basic exception handling
+        try:
+            self.pin = ADC(PIN_TEMPERATURE)
+        except:
+            self.pin = None
+
+    def read_temperature(self):
+        """
+        Read the ADC and return the current temperature
+        @return  The current temperature in Celsius, or None if the hardware did not initialze properly
+        """
+        if self.pin:
+            # See the Pico's datasheet for the details of this calculation
+            return 27 - ((self.pin.read_u16() * self.TEMP_CONV_FACTOR) - 0.706) / 0.001721
+        else:
+            return None
+
+
+class UsbConnection:
+    """
+    Checks the USB terminal is connected or not
+    On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
+    check the SIE_STATUS register and check bit 16
+    """
+
+    def __init__(self):
+        if europi_config.PICO_MODEL == "pico2":
+            self.pin = None
+        else:
+            self.pin = DigitalReader(PIN_USB_CONNECTED)
+
+    def value(self):
+        """Return 0 or 1, indicating if the USB connection is disconnected or connected"""
+        if self.pin:
+            return self.pin.value()
+        else:
+            # see https://forum.micropython.org/viewtopic.php?t=10814#p59545
+            SIE_STATUS = 0x50110000 + 0x50
+            BIT_CONNECTED = 1 << 16
+            if mem32[SIE_STATUS] & BIT_CONNECTED:
+                return 1
+            else:
+                return 0
+
+
 # Define all the I/O using the appropriate class and with the pins used
 din = DigitalInput(PIN_DIN)
 ain = AnalogueInput(PIN_AIN)
@@ -630,7 +608,32 @@ k2 = Knob(PIN_K2)
 b1 = Button(PIN_B1)
 b2 = Button(PIN_B2)
 
-oled = Display()
+if not TEST_ENV:
+    try:
+        oled = Display(
+            width=europi_config.DISPLAY_WIDTH,
+            height=europi_config.DISPLAY_HEIGHT,
+            sda=europi_config.DISPLAY_SDA,
+            scl=europi_config.DISPLAY_SCL,
+            channel=europi_config.DISPLAY_CHANNEL,
+            freq=europi_config.DISPLAY_FREQUENCY,
+            contrast=europi_config.DISPLAY_CONTRAST,
+            rotate=europi_config.ROTATE_DISPLAY,
+        )
+    except Exception as err:
+        print(f"Failed to initialize display: {err}. Is the hardware connected properly?")
+        oled = DummyDisplay(
+            width=europi_config.DISPLAY_WIDTH,
+            height=europi_config.DISPLAY_HEIGHT,
+        )
+else:
+    print("No display hardware detected; falling back to DummyDisplay")
+    oled = DummyDisplay(
+        width=europi_config.DISPLAY_WIDTH,
+        height=europi_config.DISPLAY_HEIGHT,
+    )
+
+
 cv1 = Output(PIN_CV1)
 cv2 = Output(PIN_CV2)
 cv3 = Output(PIN_CV3)
@@ -638,6 +641,12 @@ cv4 = Output(PIN_CV4)
 cv5 = Output(PIN_CV5)
 cv6 = Output(PIN_CV6)
 cvs = [cv1, cv2, cv3, cv4, cv5, cv6]
+
+# Helper object to detect if the USB cable is connected or not
+usb_connected = UsbConnection()
+
+# Helper object for reading the onboard temperature sensor
+thermometer = Thermometer()
 
 # External I2C
 external_i2c = I2C(
@@ -648,10 +657,10 @@ external_i2c = I2C(
     timeout=europi_config.EXTERNAL_I2C_TIMEOUT,
 )
 
-usb_connected = DigitalReader(PIN_USB_CONNECTED, 0)
-
-# Overclock the Pico for improved performance.
-freq(europi_config.CPU_FREQ)
+# Set the desired clock speed according to the configuration
+# By default this will overclock the CPU, but some users may not want to
+# e.g. to lower power consumption on a very power-constrained system
+freq(CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ])
 
 # Reset the module state upon import.
 reset_state()
