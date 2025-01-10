@@ -103,6 +103,12 @@ class EuroPiConfig:
                 default=False,
             ),
             configuration.integer(
+                name="DISPLAY_CONTRAST",
+                minimum=0,
+                maximum=255,
+                default=255,
+            ),
+            configuration.integer(
                 name="DISPLAY_WIDTH",
                 minimum=8,
                 maximum=1024,
@@ -133,7 +139,7 @@ class EuroPiConfig:
                 choices=[0, 1],
                 default=0,
                 danger=True,
-            ),
+            ),            
             configuration.choice(
                 name="DISPLAY_FREQUENCY",
                 choices=[

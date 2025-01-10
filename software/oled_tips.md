@@ -19,6 +19,7 @@ The pixels are indexed with (0, 0) at the top left, and (127, 31) at the bottom 
 |vline|x, y, length, colour|Draws a vertical wide line starting at (x, y) with specified length and colour|
 |rect|x, y, width, height, colour|Draws a rectangle starting at (x, y) with specified width, height, and outline colour|
 |fill_rect|x, y, width, height, colour|Draws a rectangle starting at (x, y) with specified width, height, and fill colour|
+|ellipse|x, y, xr, yr, colour[, fill]|Draws an ellipse with horizontal radius xr and vertical radius yr, at postition (x, y) with the speficied colour and optional fill|
 |blit|buffer, x, y|Draws a bitmap based on a buffer, starting at (x, y)
 |scroll|x, y|Scrolls the contents of the display by (x, y)
 |invert|colour|Inverts the display
