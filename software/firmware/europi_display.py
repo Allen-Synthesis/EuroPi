@@ -128,6 +128,9 @@ class DummyDisplay:
     def fill_rect(self, x, y, width, height, color=1):
         pass
 
+    def ellipse(self, x, y, xr, yr, colour=1, fill=False):
+        pass
+
     def blit(self, buffer, x, y):
         pass
 
