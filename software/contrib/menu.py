@@ -49,6 +49,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["NoddyHolder",       "contrib.noddy_holder.NoddyHolder"],
     ["Pam's Workout",     "contrib.pams.PamsWorkout"],
     ["Particle Phys.",    "contrib.particle_physics.ParticlePhysics"],
+    ["Pet Rock",          "contrib.pet_rock.PetRock"],
     ["Piconacci",         "contrib.piconacci.Piconacci"],
     ["PolyrhythmSeq",     "contrib.polyrhythmic_sequencer.PolyrhythmSeq"],
     ["PolySquare",        "contrib.poly_square.PolySquare"],

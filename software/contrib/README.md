@@ -173,6 +173,13 @@ While not technically random, the effects of changing the particle's initial con
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: gate, lfo, sequencer, random, trigger</i>
 
+### Pet Rock \[ [documentation](/software/contrib/pet_rock.md) | [script](/software/contrib/pet_rock.py) \]
+A pseudo-random gate generator that uses the realtime clock to track the phase of the moon as a seed. Based on [Pet Rock by Jonah Senzel](https://petrock.site)
+
+Requires installing and configuring a realtime clock module, connected to EuroPi's external I2C interface for best results.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: sequencer, gate, random, realtime clock</i>
 
 ### Poly Square \[ [documentation](/software/contrib/poly_square.md) | [script](/software/contrib/poly_square.py) \]
 Six independent oscillators which output on CVs 1-6.
