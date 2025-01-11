@@ -60,7 +60,7 @@ class Algo:
         @param channel  1 for channel A, 2 for channel B
         @param weekday  The current weekday 1-7 (M-Su)
         @param cycle  The current moon phase
-        @param continuity  ???
+        @param continuity  A random value shared between both A and B channels
         """
 
         self.channel = channel
