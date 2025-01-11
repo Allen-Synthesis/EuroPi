@@ -11,8 +11,10 @@ from europi_script import EuroPiScript
 from framebuf import FrameBuffer, MONO_HLSB
 import math
 import random
+import time
 
 from experimental.a_to_d import AnalogReaderDigitalWrapper
+from experimental.math_extras import rescale
 from experimental.rtc import *
 
 
@@ -431,6 +433,55 @@ class Mood:
             return AlgoVari
 
 
+class IntervalTimer:
+    """
+    Uses ticks_ms and ticks_diff to fire a callback at fixed-ish intervals
+    """
+
+    MIN_INTERVAL = 10
+    MAX_INTERVAL = 500
+
+    def __init__(self, speed_knob, rise_cb=lambda: None, fall_cb=lambda: None):
+        self.interval_ms = 0
+        self.last_tick_at = time.ticks_ms()
+
+        self.speed_knob = speed_knob
+
+        self.rise_callback = rise_cb
+        self.fall_callback = fall_cb
+
+        self.next_rise = True
+
+        self.update_interval()
+
+    def update_interval(self):
+        DEADZONE = 0.1
+        p = self.speed_knob.percent()
+        if p <= DEADZONE:
+            # disable the timer for the first 10% of travel so we have an easy-off
+            # for external clocking
+            self.interval_ms = 0
+        else:
+            p = 1.0 - rescale(p, DEADZONE, 1, 0, 1)
+            self.interval_ms = round(rescale(p, 0, 1, self.MIN_INTERVAL, self.MAX_INTERVAL))
+
+    def tick(self):
+        # kick out immediately if the timer is off
+        if self.interval_ms <= 0:
+            return
+
+        now = time.ticks_ms()
+        if time.ticks_diff(now, self.last_tick_at) >= self.interval_ms:
+            self.last_tick_at = now
+
+            if self.next_rise:
+                self.rise_callback()
+                self.next_rise = False
+            else:
+                self.fall_callback()
+                self.next_rise = True
+
+
 class PetRock(EuroPiScript):
 
     def __init__(self):
@@ -446,11 +497,21 @@ class PetRock(EuroPiScript):
         )
         b2.handler(self.on_channel_b_trigger)
         b2.handler_falling(self.on_channel_b_fall)
+        self.timer_b = IntervalTimer(
+            k2,
+            rise_cb=self.on_channel_b_trigger,
+            fall_cb=self.on_channel_b_fall
+        )
 
         din.handler(self.on_channel_a_trigger)
         din.handler_falling(self.on_channel_a_fall)
         b1.handler(self.on_channel_a_trigger)
         b1.handler_falling(self.on_channel_a_fall)
+        self.timer_a = IntervalTimer(
+            k1,
+            rise_cb=self.on_channel_a_trigger,
+            fall_cb=self.on_channel_a_fall
+        )
 
     def generate_sequences(self):
         continuity = randint(0, 99)
@@ -504,6 +565,12 @@ class PetRock(EuroPiScript):
 
         while True:
             self.din2.update()
+
+            self.timer_a.update_interval()
+            self.timer_b.update_interval()
+
+            self.timer_a.tick()
+            self.timer_b.tick()
 
             local_time = clock.localnow()
 

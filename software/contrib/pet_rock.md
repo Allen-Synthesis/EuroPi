@@ -10,14 +10,17 @@ This script generates pseudo-random gate sequences based on the phase of the moo
 - `ain`: external clock input for sequence B
 - `b1`: manually advance sequence A
 - `b2`: manually advance sequence B
-- `k1`: not used
-- `k2`: not used
+- `k1`: speed control for sequence A
+- `k2`: speed control for sequence B
 - `cv1`: primary gate output for sequence A
 - `cv2`: inverted gate output for sequence A
 - `cv3`: end of sequence trigger for sequence A
 - `cv4`: primary gate output for sequence B
 - `cv5`: inverted gate output for sequence B
 - `cv6`: end of sequence trigger for sequence B
+
+Both sequence A and sequence B can be internally clocked by setting the speed using `K1` and `K2`. Turning
+these knobs fully anticlockwise will stop the internal clocks.
 
 ## Required Hardware
 
