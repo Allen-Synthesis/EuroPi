@@ -22,6 +22,41 @@ This script generates pseudo-random gate sequences based on the phase of the moo
 Both sequence A and sequence B can be internally clocked by setting the speed using `K1` and `K2`. Turning
 these knobs fully anticlockwise will stop the internal clocks.
 
+## Configuration
+
+Pet Rock can be configured to use different pseudo-random rhythm-generating algorithms. To choose, edit
+`config/PetRock.json` to set the `MOODS` key:
+```json
+{
+    "MOODS": "classic"
+}
+```
+
+- `MOODS` can be one of `classic` (default), `alternate`, or `all`
+
+Depending on the `MOODS` configured, the following algorithms are used, cycling every new moon:
+
+**Classic**
+- ![swords](./pet_rock-docs/swords.png) Plain
+- ![cups](./pet_rock-docs/cups.png) Reich
+- ![wands](./pet_rock-docs/wands.png) Sparse
+- ![pentacles](./pet_rock-docs/pentacle.png) Vari
+
+**Alternate**
+
+These algorithms were implemented in the original Pet Rock firmware, but ultimately not used in the final
+release.
+- ![hearts](./pet_rock-docs/heart.png) Blocks
+- ![spades](./pet_rock-docs/spade.png) Culture
+- ![diamonds](./pet_rock-docs/diamond.png) Over
+- ![shields](./pet_rock-docs/shield.png) Wonk
+
+**All**
+
+When `"all"` moods are selected, the order is the 4 classic algorithms, followed by the 4 alternate algorithms,
+in the order listed above.
+
+
 ## Required Hardware
 
 This script requires a Realtime Clock (RTC) to EuroPi's secondary I2C header pins,
