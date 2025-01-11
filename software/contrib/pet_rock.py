@@ -46,6 +46,8 @@ from experimental.rtc import *
 class Algo:
     """
     Generic algorithm for generating the gate sequences
+
+    All pseudo-random algorithms inherit from this class
     """
 
     CHANNEL_A = 1
@@ -59,8 +61,8 @@ class Algo:
 
         @param channel  1 for channel A, 2 for channel B
         @param weekday  The current weekday 1-7 (M-Su)
-        @param cycle  The current moon phase
-        @param continuity  A random value shared between both A and B channels
+        @param cycle  The current moon phase: 0-7 (new to waning crescent)
+        @param continuity  A random value shared between both A and B channels: 0-100
         """
 
         self.channel = channel
@@ -120,7 +122,14 @@ class Algo:
 
 class AlgoPlain(Algo):
     """
-    The Red-mood algorithm
+    A straight-forward random-fill
+
+    We choose a length based on the moon phase and then fill it with on/off signals
+    using a coin-toss.
+
+    This _could_ result in all-on or all-off patterns, but this is generally unlikely
+
+    This corresponds to the red mood in the original firmware
     """
 
     # swords
@@ -161,7 +170,10 @@ class AlgoPlain(Algo):
 
 class AlgoReich(Algo):
     """
-    The Blue-mood algorithm
+    Choose a random pattern length pased on the moon phase and our continuity variable
+    and fill the pattern with on/off using a fixed density
+
+    This corresponds to the blue mood in the original firmware
     """
 
     # cups
@@ -207,7 +219,10 @@ class AlgoReich(Algo):
 
 class AlgoSparse(Algo):
     """
-    The Yellow-mood algorithm
+    Chooses a fixed length based on moon phase and fills the pattern with a low-density
+    on/off pattern (10% on)
+
+    This corresponds to the yellow mood in the original firmware
     """
 
     # shields
@@ -252,7 +267,12 @@ class AlgoSparse(Algo):
 
 class AlgoVari(Algo):
     """
-    The Green-mood algorithm
+    Generates two sub-sequences A & B, repeating each a fixed number of times
+
+    e.g. if sequence a is 0011 and sequence b is 1010, with 2 repeats the final pattern
+    is 0011 0011 1010 1010
+
+    This corresponds to the green mood in the original firmware
     """
 
     # pentacles
@@ -305,6 +325,8 @@ class AlgoVari(Algo):
 
 class AlgoBlocks(Algo):
     """
+    Builds the sequence by randomly choosing N pre-defined pattern blocks
+
     One of the unimplemented algorithms in the original firmware
     """
 
@@ -347,6 +369,12 @@ class AlgoBlocks(Algo):
 
 class AlgoCulture(Algo):
     """
+    Chooses a pre-programmed rhythm based on the weekday and adds a random number
+    of coin-toss steps to the end of it
+
+    The back half of the rhythms is zero, resulting in some interesting hand-offs between
+    the main and inverted outputs.
+
     One of the unimplemented algorithms in the original firmware
     """
 
@@ -379,6 +407,9 @@ class AlgoCulture(Algo):
 
 class AlgoOver(Algo):
     """
+    Generates two sub-sequences and overwrites parts of the main sequence with each
+    after each complete cycle
+
     One of the unimplemented algorithms in the original firmware
     """
 
@@ -448,6 +479,12 @@ class AlgoOver(Algo):
 
 class AlgoWonk(Algo):
     """
+    Generates a fixed-length pattern with a random density based on the weekday. We then
+    "wonk" a number of steps based on the moon phase
+
+    Wonking means we choose a random on-step, turn it off, and then turn the step before
+    or after on.
+
     One of the unimplemented algorithms in the original firmware
     """
 
@@ -465,10 +502,10 @@ class AlgoWonk(Algo):
             self.sequence.append(0)
 
 
-        # ensure there is at least 2 filled steps
+        # ensure there is at least 1 filled step
         self.sequence[random.randint(0, seqmax - 1)] = 1
 
-        steps_placed = 1
+        steps_placed = 0
         for i in range(0, seqmax, 4):
             if random.randint(0, 99) < densityPercent:
                 self.sequence[i] = 1
@@ -483,7 +520,7 @@ class AlgoWonk(Algo):
                 steps_wonked += 1
                 self.sequence[chosen_step] = 0
 
-                if random.randint(0, 99) < 50:
+                if random.randint(0, 1) == 0:
                     self.sequence[chosen_step + 1] = 1
                 else:
                     self.sequence[chosen_step - 1] = 1
