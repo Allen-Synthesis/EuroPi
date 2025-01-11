@@ -3,6 +3,29 @@ A clone of Pet Rock by Jonah Senzel.
 
 Tracks the phase of the moon using a realtime clock and generates
 pseudo-random gate sequences based on the date & moon phase
+
+The original code is written in C++ and released under the
+CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en)
+
+Original source code is located here: https://github.com/jsenzel1/petrock
+
+This re-implementation is not a perfect 1:1 copy of the original, but attempts
+to faithfully recreate the idea behind it for the EuroPi module.
+
+Instead of using colours to differentiate between the moods, this program
+displays moods using Tarot and/or playing card suits:
+- swords (red)
+- cups (blue)
+- wands/clubs (yellow)
+- pentacles (green)
+
+An additional 4 moods were included in the original C++ firmware, but were
+deprecated. They are also re-implemented here, but disabled by default:
+- hearts
+- spades
+- diamonds
+- shields (since clubs overlap with the original tarot suits; some Swiss-German
+  decks of cards include shields as an additional suit)
 """
 
 from europi import *
