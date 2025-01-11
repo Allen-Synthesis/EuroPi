@@ -8,6 +8,7 @@ pseudo-random gate sequences based on the date & moon phase
 from europi import *
 from europi_script import EuroPiScript
 
+import configuration
 from framebuf import FrameBuffer, MONO_HLSB
 import math
 import random
@@ -15,14 +16,8 @@ import time
 
 from experimental.a_to_d import AnalogReaderDigitalWrapper
 from experimental.math_extras import rescale
+from experimental.random_extras import shuffle
 from experimental.rtc import *
-
-
-def randint(min, max):
-    """
-    Return a random integer in the range [min, max]
-    """
-    return int(random.random() * (max - min + 1) + min)
 
 
 class Algo:
@@ -114,9 +109,9 @@ class AlgoPlain(Algo):
         seqmax = 0
 
         if cycle == MoonPhase.NEW_MOON:
-            seqmax = randint(5, 7)
+            seqmax = random.randint(5, 7)
         elif cycle == MoonPhase.WAXING_CRESCENT or cycle == MoonPhase.WANING_CRESCENT:
-            seqmax = randint(4, 16)
+            seqmax = random.randint(4, 16)
         elif cycle == MoonPhase.FIRST_QUARTER or cycle == MoonPhase.THIRD_QUARTER:
             seqmax = Algo.map(continuity, 0, 100, 6, 12)
             seqmax = seqmax * self.channel  # channel B is twice as long as A
@@ -138,7 +133,7 @@ class AlgoPlain(Algo):
         # being played against each other - this is the "meta movement" of the rhythmic
         # flavor, in every algo/mood
         for i in range(seqmax):
-            self.sequence.append(randint(0, 1))
+            self.sequence.append(random.randint(0, 1))
 
 
 class AlgoReich(Algo):
@@ -153,7 +148,7 @@ class AlgoReich(Algo):
         super().__init__(channel, weekday, cycle, continuity)
 
         if cycle == MoonPhase.NEW_MOON:
-            seqmax = randint(3, 5)
+            seqmax = random.randint(3, 5)
         elif cycle == MoonPhase.WAXING_CRESCENT or cycle == MoonPhase.WAXING_CRESCENT:
             if channel == Algo.CHANNEL_A:
                 seqmax = Algo.map(continuity, 0, 100, 3, 8)
@@ -161,7 +156,7 @@ class AlgoReich(Algo):
                 a = Algo.map(continuity, 0, 100, 3, 8)
                 b = 0
                 while b == 0 or b == a or b == a*2 or b*2 == a:
-                    b = randint(3, 8)
+                    b = random.randint(3, 8)
 
                 seqmax = b
         elif cycle == MoonPhase.FIRST_QUARTER or cycle == MoonPhase.THIRD_QUARTER:
@@ -174,7 +169,7 @@ class AlgoReich(Algo):
 
         seqDensity=50
         for i in range(seqmax):
-            if randint(0, 99) < seqDensity:
+            if random.randint(0, 99) < seqDensity:
                 self.sequence.append(1)
             else:
                 self.sequence.append(0)
@@ -184,7 +179,7 @@ class AlgoReich(Algo):
             if self.sequence[i] == 1:
                 empty = False
         if empty:
-            self.sequence[randint(0, len(self.sequence)-1)] = 1
+            self.sequence[random.randint(0, len(self.sequence)-1)] = 1
 
 
 class AlgoSparse(Algo):
@@ -199,9 +194,9 @@ class AlgoSparse(Algo):
         super().__init__(channel, weekday, cycle, continuity)
 
         if cycle == MoonPhase.NEW_MOON:
-            seqmax = randint(10, 19)
+            seqmax = random.randint(10, 19)
         elif cycle == MoonPhase.WAXING_CRESCENT or cycle == MoonPhase.WANING_CRESCENT:
-            seqmax = randint(15, 30)
+            seqmax = random.randint(15, 30)
         elif cycle == MoonPhase.FIRST_QUARTER:
             if channel == Algo.CHANNEL_A:
                 seqmax = 32
@@ -224,11 +219,11 @@ class AlgoSparse(Algo):
         for i in range(seqmax):
             self.sequence.append(0)
 
-        seedStepInd = randint(0, seqmax - 1)
+        seedStepInd = random.randint(0, seqmax - 1)
         self.sequence[seedStepInd] = 1
 
         for i in range(seqmax):
-            if randint(0, 99) < densityPercent:
+            if random.randint(0, 99) < densityPercent:
                 self.sequence[i] = 1
 
 
@@ -244,11 +239,11 @@ class AlgoVari(Algo):
         super().__init__(channel, weekday, cycle, continuity)
 
         if cycle == MoonPhase.NEW_MOON:
-            seqmax = randint(3, 19)
+            seqmax = random.randint(3, 19)
             repeats = 3
         elif cycle == MoonPhase.WAXING_CRESCENT or cycle == MoonPhase.WANING_CRESCENT:
-            seqmax = randint(8, 12)
-            repeats = randint(3, 6)
+            seqmax = random.randint(8, 12)
+            repeats = random.randint(3, 6)
         elif cycle == MoonPhase.FIRST_QUARTER or cycle == MoonPhase.THIRD_QUARTER:
             seqmax = 8
             if channel == Algo.CHANNEL_A:
@@ -265,12 +260,12 @@ class AlgoVari(Algo):
         seq_a = []
         seq_b = []
         for i in range(seqmax):
-            r = randint(0, 1)
+            r = random.randint(0, 1)
             seq_a.append(r)
             seq_b.append(r)
 
         for i in range(seqmax-1, -1, -1):
-            j = randint(0, i)
+            j = random.randint(0, i)
 
             tmp = seq_b[i]
             seq_b[i] = seq_b[j]
@@ -293,6 +288,39 @@ class AlgoBlocks(Algo):
     # hearts
     mood_graphics = bytearray(b'\x07\xe0\x07\xe0\x1f\xf8\x1f\xf8?\xfc?\xfc\x7f\xfe\x7f\xfe\x7f\xfe\x7f\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x7f\xff\xff\xfe?\xff\xff\xfc\x1f\xff\xff\xf8\x1f\xff\xff\xf8\x0f\xff\xff\xf0\x07\xff\xff\xe0\x07\xff\xff\xe0\x03\xff\xff\xc0\x01\xff\xff\x80\x01\xff\xff\x80\x00\xff\xff\x00\x00\x7f\xfe\x00\x00\x7f\xfe\x00\x00?\xfc\x00\x00\x1f\xf8\x00\x00\x1f\xf8\x00\x00\x0f\xf0\x00\x00\x07\xe0\x00\x00\x07\xe0\x00\x00\x03\xc0\x00\x00\x01\x80\x00')
 
+    blocks = [
+        [0, 0, 0, 0],
+        [1, 0, 0, 0],
+        [1, 0, 1, 0],
+        [1, 0, 0, 1],
+        [1, 1, 1, 0],
+        [1, 0, 1, 1],
+        [0, 0, 1, 0],
+        [1, 1, 1, 1],
+    ]
+
+    def __init__(self, channel, weekday, cycle, continuity):
+        super().__init__(channel, weekday, cycle, continuity)
+
+        # This is wholly original
+        # the original, deprecated code has a to-do here
+        if cycle == MoonPhase.NEW_MOON:
+            numblocks = 2
+        elif cycle == MoonPhase.WAXING_CRESCENT or cycle == MoonPhase.WANING_CRESCENT:
+            numblocks = random.randint(3, 4)
+        elif cycle == MoonPhase.FIRST_QUARTER or cycle == MoonPhase.THIRD_QUARTER:
+            numblocks = random.randint(2, 3)
+            numblocks = numblocks * self.channel  # B is double A
+        elif cycle == MoonPhase.WAXING_GIBBOUS or cycle == MoonPhase.WANING_GIBBOUS:
+            numblocks = random.randint(4, 5)
+        else:
+            numblocks = 6
+
+        for i in range(numblocks):
+            block = AlgoBlocks.blocks[random.randint(0, len(AlgoBlocks.blocks) - 1)]
+            for n in block:
+                self.sequence.append(block)
+
 
 class AlgoCulture(Algo):
     """
@@ -301,6 +329,29 @@ class AlgoCulture(Algo):
 
     # spades
     mood_graphics = bytearray(b'\x00\x01\x80\x00\x00\x03\xc0\x00\x00\x07\xe0\x00\x00\x0f\xf0\x00\x00\x1f\xf8\x00\x00?\xfc\x00\x00\x7f\xfe\x00\x00\xff\xff\x00\x01\xff\xff\x80\x03\xff\xff\xc0\x07\xff\xff\xe0\x0f\xff\xff\xf0\x1f\xff\xff\xf8?\xff\xff\xfc\x7f\xff\xff\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x7f\xff\xff\xfe\x7f\xff\xff\xfe?\xfd\xbf\xfc\x1f\xf9\x9f\xf8\x07\xe1\x87\xe0\x00\x01\x80\x00\x00\x01\x80\x00\x00\x01\x80\x00\x00\x07\xe0\x00\x00\x1f\xf8\x00\x00?\xfc\x00')
+
+    rhythms = [
+        [1,0,0,1,1,0,1,0,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+		[1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+		[1,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+		[1,0,1,0,1,0,1,0,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+		[1,1,1,1,1,0,0,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+		[1,0,0,1,0,0,1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+		[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    ]
+
+    def __init__(self, channel, weekday, cycle, continuity):
+        super().__init__(channel, weekday, cycle, continuity)
+
+        for i in range(32):
+            self.sequence.append(AlgoCulture.rhythms[weekday][i])
+
+        # most of the time we won't add any additional steps, but sometimes
+        # we will add 1-7 more
+        extra_steps = random.randint(-8, 7)
+        for i in range(extra_steps):
+            self.sequence.append(random.randint(0, 1))
 
 
 class AlgoOver(Algo):
@@ -311,6 +362,66 @@ class AlgoOver(Algo):
     # diamonds
     mood_graphics = bytearray(b'\x00\x01\x80\x00\x00\x01\x80\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x07\xe0\x00\x00\x07\xe0\x00\x00\x0f\xf0\x00\x00\x0f\xf0\x00\x00\x1f\xf8\x00\x00\x1f\xf8\x00\x00?\xfc\x00\x00?\xfc\x00\x00\x7f\xfe\x00\x00\xff\xff\x00\x03\xff\xff\xc0\x0f\xff\xff\xf0\x0f\xff\xff\xf0\x03\xff\xff\xc0\x00\xff\xff\x00\x00\x7f\xfe\x00\x00?\xfc\x00\x00?\xfc\x00\x00\x1f\xf8\x00\x00\x1f\xf8\x00\x00\x0f\xf0\x00\x00\x0f\xf0\x00\x00\x07\xe0\x00\x00\x07\xe0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x01\x80\x00\x00\x01\x80\x00')
 
+    def __init__(self, channel, weekday, cycle, continuity):
+        super().__init__(channel, weekday, cycle, continuity)
+
+        densityPercent = 50
+
+        # same lengths as AlgoPlain
+        if cycle == MoonPhase.NEW_MOON:
+            seqmax = random.randint(5, 7)
+        elif cycle == MoonPhase.WAXING_CRESCENT or cycle == MoonPhase.WANING_CRESCENT:
+            seqmax = random.randint(4, 16)
+        elif cycle == MoonPhase.FIRST_QUARTER or cycle == MoonPhase.THIRD_QUARTER:
+            seqmax = Algo.map(continuity, 0, 100, 6, 12)
+            seqmax = seqmax * self.channel  # channel B is twice as long as A
+        elif cycle == MoonPhase.WAXING_GIBBOUS:
+            seqmax = 12
+        elif cycle == MoonPhase.WANING_GIBBOUS:
+            seqmax = 16
+        else:
+            seqmax = 16
+
+        self.seq1 = []
+        self.seq2 = []
+
+        for i in range(seqmax):
+            if random.randint(0, 99) < densityPercent:
+                self.seq1.append(1)
+            else:
+                self.seq1.append(0)
+
+            if random.randint(0, 99) < densityPercent:
+                self.seq2.append(1)
+            else:
+                self.seq2.append(0)
+
+
+        self.swaps = list(range(seqmax))
+        shuffle(self.swaps)
+        self.switch_index = 0
+        self.swap = True
+
+        for n in self.seq1:
+            self.sequence.append(n)
+
+    def tick(self):
+        super().tick()
+
+        # overwrite steps betwen seq1 and seq2
+        if self.index == 0:
+            overwrite_index = self.swaps[self.switch_index]
+            self.switch_index += 1
+
+            if self.switch_index > len(self.sequence) - 1:
+                self.switch_index = 0
+                self.swap = not self.swap
+
+            if not self.swap:
+                self.sequence[overwrite_index] = self.seq2[overwrite_index]
+            else:
+                self.sequence[overwrite_index] = self.seq1[overwrite_index]
+
 
 class AlgoWonk(Algo):
     """
@@ -319,6 +430,40 @@ class AlgoWonk(Algo):
 
     # shields
     mood_graphics = bytearray(b'\xff\xff\xff\xff\x9f\xff\xff\xff\x8f\xff\xe0?\x87\xff\xf0\x7f\x83\xff\xb8\xef\xc1\xff\x98\xcf\xe0\xff\x80\x0f\xf0\x7f\x80\x0f\xf8?\x80\x0f\xfc\x1f\x98\xcf\xfe\x0f\xb8\xef\xff\x07\xf0\x7f\xff\x83\xe0?\xff\xc1\xff\xff\xff\xe0\xff\xff\xff\xf0\x7f\xff\xff\xf8?\xff\x7f\xfc\x1f\xfe?\xfe\x0f\xfc\x1f\xff\x07\xf8\x0f\xff\x83\xf0\x07\xff\xc1\xe0\x03\xff\xe0\xc0\x01\xff\xf0\x80\x00\xff\xf9\x00\x00\x7f\xfe\x00\x00?\xfc\x00\x00\x1f\xf8\x00\x00\x0f\xf0\x00\x00\x07\xe0\x00\x00\x03\xc0\x00\x00\x01\x80\x00')
+
+    def __init__(self, channel, weekday, cycle, continuity):
+        super().__init__(channel, weekday, cycle, continuity)
+
+        densityPercent = Algo.map(weekday, 1, 7, 30, 60)
+
+        seqmax = 32
+
+        for i in range(seqmax):
+            self.sequence.append(0)
+
+
+        # ensure there is at least 2 filled steps
+        self.sequence[random.randint(0, seqmax - 1)] = 1
+
+        steps_placed = 1
+        for i in range(0, seqmax, 4):
+            if random.randint(0, 99) < densityPercent:
+                self.sequence[i] = 1
+                steps_placed += 1
+
+        steps_to_wonk = Algo.map(cycle, 0, 7, 1, steps_placed)
+        steps_wonked = 0
+        while steps_wonked < steps_to_wonk:
+            chosen_step = random.randint(0, seqmax - 1)
+
+            if self.sequence[chosen_step] == 1:
+                steps_wonked += 1
+                self.sequence[chosen_step] = 0
+
+                if random.randint(0, 99) < 50:
+                    self.sequence[chosen_step + 1] = 1
+                else:
+                    self.sequence[chosen_step - 1] = 1
 
 
 class MoonPhase:
@@ -432,24 +577,40 @@ class Mood:
     Mood is one of 4 colours, which rotates every moon cycle
     """
 
-    MOOD_RED = 0
-    MOOD_BLUE = 1
-    MOOD_YELLOW = 2
-    MOOD_GREEN = 3
-
-    N_MOODS = 4
+    available_moods = [
+        AlgoPlain,
+        AlgoReich,
+        AlgoSparse,
+        AlgoVari
+    ]
 
     @staticmethod
-    def calculate_mood(date):
-        """
-        Calculate the current mood
-
-        @param date  The current UTC DateTime
-        """
-        days_since_new_moon = MoonPhase.calculate_days_since_new_moon(date)
-        cycles = math.floor(days_since_new_moon / 29.53)
-
-        return cycles % Mood.N_MOODS
+    def set_moods(moodstring):
+        if moodstring == "all":
+            Mood.available_moods = [
+                AlgoPlain,
+                AlgoReich,
+                AlgoSparse,
+                AlgoVari,
+                AlgoBlocks,
+                AlgoCulture,
+                AlgoOver,
+                AlgoWonk,
+            ]
+        elif moodstring == "alternate":
+            Mood.available_moods = [
+                AlgoBlocks,
+                AlgoCulture,
+                AlgoOver,
+                AlgoWonk,
+            ]
+        else:  # "classic"
+            Mood.available_moods = [
+                AlgoPlain,
+                AlgoReich,
+                AlgoSparse,
+                AlgoVari,
+            ]
 
     @staticmethod
     def mood_algorithm(date):
@@ -458,15 +619,10 @@ class Mood:
 
         @param date  The current UTC DateTime
         """
-        mood = Mood.calculate_mood(date)
-        if mood == Mood.MOOD_RED:
-            return AlgoPlain
-        elif mood == Mood.MOOD_BLUE:
-            return AlgoReich
-        elif mood == Mood.MOOD_YELLOW:
-            return AlgoSparse
-        else:
-            return AlgoVari
+        days_since_new_moon = MoonPhase.calculate_days_since_new_moon(date)
+        cycles = math.floor(days_since_new_moon / 29.53)
+
+        return Mood.available_moods[cycles % len(Mood.available_moods)]
 
 
 class IntervalTimer:
@@ -523,6 +679,8 @@ class PetRock(EuroPiScript):
     def __init__(self):
         super().__init__()
 
+        Mood.set_moods(self.config.MOODS)
+
         self.seed_offset = 1
         self.generate_sequences()
 
@@ -549,8 +707,26 @@ class PetRock(EuroPiScript):
             fall_cb=self.on_channel_a_fall
         )
 
+    @classmethod
+    def config_points(cls):
+        return [
+            # What moods does the user want to use?
+            # - classic: the original 4 moods from the hardware Pet Rock
+            # - alternate: the 4 deprecated moods that weren't implemented
+            # - all: all 8 possible moods
+            configuration.choice(
+                "MOODS",
+                choices=[
+                    "classic",
+                    "alternate",
+                    "all"
+                ],
+                default="classic",
+            ),
+        ]
+
     def generate_sequences(self):
-        continuity = randint(0, 99)
+        continuity = random.randint(0, 99)
 
         now = clock.utcnow()
         if now.weekday is None:
@@ -591,7 +767,7 @@ class PetRock(EuroPiScript):
         oled.blit(moon_img, 0, 0)
 
         mood_img = FrameBuffer(self.sequence_a.mood_graphics, 32, 32, MONO_HLSB)
-        oled.blit(mood_img, 34, 0)
+        oled.blit(mood_img, 40, 0)
 
         oled.show()
 
