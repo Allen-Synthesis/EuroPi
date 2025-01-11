@@ -342,7 +342,7 @@ class AlgoBlocks(Algo):
         for i in range(numblocks):
             block = AlgoBlocks.blocks[random.randint(0, len(AlgoBlocks.blocks) - 1)]
             for n in block:
-                self.sequence.append(block)
+                self.sequence.append(n)
 
 
 class AlgoCulture(Algo):
