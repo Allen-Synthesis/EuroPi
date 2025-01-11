@@ -39,7 +39,7 @@ Depending on the `MOODS` configured, the following algorithms are used, cycling 
 **Classic**
 - ![swords](./pet_rock-docs/swords.png) Plain
 - ![cups](./pet_rock-docs/cups.png) Reich
-- ![wands](./pet_rock-docs/wands.png) Sparse
+- ![shields](./pet_rock-docs/shield.png) Sparse
 - ![pentacles](./pet_rock-docs/pentacle.png) Vari
 
 **Alternate**
@@ -49,12 +49,28 @@ release.
 - ![hearts](./pet_rock-docs/heart.png) Blocks
 - ![spades](./pet_rock-docs/spade.png) Culture
 - ![diamonds](./pet_rock-docs/diamond.png) Over
-- ![shields](./pet_rock-docs/shield.png) Wonk
+- ![clubs](./pet_rock-docs/wands.png) Wonk
 
 **All**
 
 When `"all"` moods are selected, the order is the 4 classic algorithms, followed by the 4 alternate algorithms,
 in the order listed above.
+
+
+### Note on suits
+
+Yes, I'm aware that "shields" isn't a normal Tarot suit. Originally I used "clubs" (an alternative to the
+traditional "wands" suit in most tarot decks). But it seemed weird having 3/4 English card suits used for
+the alternate moods, and then have "shields" tossed-in to fill it out; "shields" is a suit more associated
+with Swiss playing cards.
+
+Since shields and swords are a natural pairing, I swapped things around to have, in my mind, more logical
+groupings. I'm sorry if this decision causes anyone distress.
+
+Additionally, I realize the "pentacle" symbol has some negative associations for some. No offense is meant;
+this is a traditional suit in tarot cards, and felt appropriate for a moon-phase-tracking program. I did
+consider swapping it for its "coins" alternative, but was concerned that a circular or elliptical coin
+motif might be too visually similar to the full & gibbous moon icons.
 
 
 ## Required Hardware
