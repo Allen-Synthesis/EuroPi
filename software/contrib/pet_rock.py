@@ -53,7 +53,7 @@ class Algo:
     CHANNEL_A = 1
     CHANNEL_B = 2
 
-    def __init__(self, channel, weekday, cycle, continuity):
+    def __init__(self, channel, weekday, cycle, continuity, algorithm, mood_name):
         """
         Child constructors must call this first
 
@@ -63,7 +63,11 @@ class Algo:
         @param weekday  The current weekday 1-7 (M-Su)
         @param cycle  The current moon phase: 0-7 (new to waning crescent)
         @param continuity  A random value shared between both A and B channels: 0-100
+        @param algorithm  The name of the generator algorithm (used for logging only)
+        @param mood_name  The name of the mood symbol/suit (used for logging only)
         """
+        self.algorithm_name = algorithm
+        self.mood_name = mood_name
 
         self.channel = channel
 
@@ -84,6 +88,34 @@ class Algo:
         self.index = 0
 
         self.state_dirty = False
+
+    def sanitize_sequence(self, sequence=None):
+        """
+        Ensure that the sequence is neither all-1 nor all-0
+
+        If either is true, flip a random element
+
+        This should be called after generating the sequence in the child class constructors
+
+        @param sequence  If none, self.sequence is sanitized
+        """
+        if sequence is None:
+            sequence = self.sequence
+
+        empty = True
+        full = True
+        for n in sequence:
+            if n == 0:
+                full = False
+            else:
+                empty = False
+
+        # flip an item if the pattern is wholly uniform
+        if empty or full:
+            sequence[random.randint(0, len(sequence) -1)] = (sequence[random.randint(0, len(sequence) -1)] + 1) % 2
+
+    def __str__(self):
+        return f"{self.sequence}"
 
     @staticmethod
     def map(x, in_min, in_max, out_min, out_max):
@@ -136,7 +168,7 @@ class AlgoPlain(Algo):
     mood_graphics = bytearray(b'\x00\x00\x00\x1f\x00\x00\x00!\x00\x00\x00A\x00\x00\x00\x81\x00\x00\x01\x01\x00\x00\x02\x02\x00\x00\x04\x04\x00\x00\x08\x08\x00\x00\x10\x10\x00\x00  \x00\x00@@\x00\x00\x80\x80\x00\x01\x01\x00\x00\x02\x02\x00\x04\x04\x04\x00\x04\x08\x08\x00\x06\x10\x10\x00\x07  \x00\x03\xc0@\x00\x01\xc0\x80\x00\x00\xe1\x00\x00\x00r\x00\x00\x00\xfc\x00\x00\x01\xdc\x00\x00\x03\x8e\x00\x00\x07\x07\x00\x00~\x03\xc0\x00|\x00\x00\x00|\x00\x00\x00|\x00\x00\x00|\x00\x00\x00\x00\x00\x00\x00')
 
     def __init__(self, channel, weekday, cycle, continuity):
-        super().__init__(channel, weekday, cycle, continuity)
+        super().__init__(channel, weekday, cycle, continuity, "plain", "swords")
 
         seqmax = 0
 
@@ -167,6 +199,8 @@ class AlgoPlain(Algo):
         for i in range(seqmax):
             self.sequence.append(random.randint(0, 1))
 
+        self.sanitize_sequence()
+
 
 class AlgoReich(Algo):
     """
@@ -180,7 +214,7 @@ class AlgoReich(Algo):
     mood_graphics = bytearray(b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x7f\xff\xff\xfe\x7f\xff\xff\xfe\x7f\xff\xff\xfe?\xff\xff\xfc?\xff\xff\xfc\x1f\xff\xff\xf8\x0f\xff\xff\xf0\x07\xff\xff\xe0\x03\xff\xff\xc0\x01\xff\xff\x80\x00\x7f\xfe\x00\x00\x0f\xf0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x0f\xf0\x00\x00\x7f\xfe\x00\x01\xff\xff\x80\x03\xff\xff\xc0')
 
     def __init__(self, channel, weekday, cycle, continuity):
-        super().__init__(channel, weekday, cycle, continuity)
+        super().__init__(channel, weekday, cycle, continuity, "reich", "cups")
 
         if cycle == MoonPhase.NEW_MOON:
             seqmax = random.randint(3, 5)
@@ -209,12 +243,7 @@ class AlgoReich(Algo):
             else:
                 self.sequence.append(0)
 
-        empty = True
-        for i in range(len(self.sequence)):
-            if self.sequence[i] == 1:
-                empty = False
-        if empty:
-            self.sequence[random.randint(0, len(self.sequence)-1)] = 1
+        self.sanitize_sequence()
 
 
 class AlgoSparse(Algo):
@@ -229,7 +258,7 @@ class AlgoSparse(Algo):
     mood_graphics = bytearray(b'\xff\xff\xff\xff\x9f\xff\xff\xff\x8f\xff\xe0?\x87\xff\xf0\x7f\x83\xff\xb8\xef\xc1\xff\x98\xcf\xe0\xff\x80\x0f\xf0\x7f\x80\x0f\xf8?\x80\x0f\xfc\x1f\x98\xcf\xfe\x0f\xb8\xef\xff\x07\xf0\x7f\xff\x83\xe0?\xff\xc1\xff\xff\xff\xe0\xff\xff\xff\xf0\x7f\xff\xff\xf8?\xff\x7f\xfc\x1f\xfe?\xfe\x0f\xfc\x1f\xff\x07\xf8\x0f\xff\x83\xf0\x07\xff\xc1\xe0\x03\xff\xe0\xc0\x01\xff\xf0\x80\x00\xff\xf9\x00\x00\x7f\xfe\x00\x00?\xfc\x00\x00\x1f\xf8\x00\x00\x0f\xf0\x00\x00\x07\xe0\x00\x00\x03\xc0\x00\x00\x01\x80\x00')
 
     def __init__(self, channel, weekday, cycle, continuity):
-        super().__init__(channel, weekday, cycle, continuity)
+        super().__init__(channel, weekday, cycle, continuity, "sparse", "shields")
 
         if cycle == MoonPhase.NEW_MOON:
             seqmax = random.randint(10, 19)
@@ -264,6 +293,8 @@ class AlgoSparse(Algo):
             if random.randint(0, 99) < densityPercent:
                 self.sequence[i] = 1
 
+        self.sanitize_sequence()
+
 
 class AlgoVari(Algo):
     """
@@ -279,7 +310,7 @@ class AlgoVari(Algo):
     mood_graphics = bytearray(b'\x00\x07\xe0\x00\x009\x9c\x00\x00\xc1\x83\x00\x01\x01\x80\x80\x02\x02@@\x04\x02@ \x08\x02@\x10\x10\x04 \x08 \x04 \x04 \x04 \x04@\x08\x10\x02\x7f\xff\xff\xfeP\x08\x10\n\x88\x10\x08\x11\x84\x10\x08!\x83\x10\x08\xc1\x80\xa0\x05\x01\x80`\x06\x01\x800\x0c\x01@H\x12\x02@Fb\x02@A\x82\x02 \x81\x81\x04 \x86a\x04\x10\x88\x11\x08\t0\x0c\x90\x05@\x02\xa0\x03\x80\x01\xc0\x01\x00\x00\x80\x00\xc0\x03\x00\x008\x1c\x00\x00\x07\xe0\x00')
 
     def __init__(self, channel, weekday, cycle, continuity):
-        super().__init__(channel, weekday, cycle, continuity)
+        super().__init__(channel, weekday, cycle, continuity, "vari", "pentacles")
 
         if cycle == MoonPhase.NEW_MOON:
             seqmax = random.randint(3, 19)
@@ -322,6 +353,8 @@ class AlgoVari(Algo):
             for n in seq_b:
                 self.sequence.append(n)
 
+        self.sanitize_sequence()
+
 
 class AlgoBlocks(Algo):
     """
@@ -345,7 +378,7 @@ class AlgoBlocks(Algo):
     ]
 
     def __init__(self, channel, weekday, cycle, continuity):
-        super().__init__(channel, weekday, cycle, continuity)
+        super().__init__(channel, weekday, cycle, continuity, "blocks", "hearts")
 
         # This is wholly original
         # the original, deprecated code has a to-do here
@@ -365,6 +398,8 @@ class AlgoBlocks(Algo):
             block = AlgoBlocks.blocks[random.randint(0, len(AlgoBlocks.blocks) - 1)]
             for n in block:
                 self.sequence.append(n)
+
+        self.sanitize_sequence()
 
 
 class AlgoCulture(Algo):
@@ -393,7 +428,7 @@ class AlgoCulture(Algo):
     ]
 
     def __init__(self, channel, weekday, cycle, continuity):
-        super().__init__(channel, weekday, cycle, continuity)
+        super().__init__(channel, weekday, cycle, continuity, "culture", "spades")
 
         for i in range(32):
             self.sequence.append(AlgoCulture.rhythms[weekday][i])
@@ -403,6 +438,8 @@ class AlgoCulture(Algo):
         extra_steps = random.randint(-8, 7)
         for i in range(extra_steps):
             self.sequence.append(random.randint(0, 1))
+
+        self.sanitize_sequence()
 
 
 class AlgoOver(Algo):
@@ -417,7 +454,7 @@ class AlgoOver(Algo):
     mood_graphics = bytearray(b'\x00\x01\x80\x00\x00\x01\x80\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x07\xe0\x00\x00\x07\xe0\x00\x00\x0f\xf0\x00\x00\x0f\xf0\x00\x00\x1f\xf8\x00\x00\x1f\xf8\x00\x00?\xfc\x00\x00?\xfc\x00\x00\x7f\xfe\x00\x00\xff\xff\x00\x03\xff\xff\xc0\x0f\xff\xff\xf0\x0f\xff\xff\xf0\x03\xff\xff\xc0\x00\xff\xff\x00\x00\x7f\xfe\x00\x00?\xfc\x00\x00?\xfc\x00\x00\x1f\xf8\x00\x00\x1f\xf8\x00\x00\x0f\xf0\x00\x00\x0f\xf0\x00\x00\x07\xe0\x00\x00\x07\xe0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x01\x80\x00\x00\x01\x80\x00')
 
     def __init__(self, channel, weekday, cycle, continuity):
-        super().__init__(channel, weekday, cycle, continuity)
+        super().__init__(channel, weekday, cycle, continuity, "over", "diamonds")
 
         densityPercent = 50
 
@@ -456,6 +493,9 @@ class AlgoOver(Algo):
         self.switch_index = 0
         self.swap = True
 
+        self.sanitize_sequence(self.seq1)
+        self.sanitize_sequence(self.seq2)
+
         for n in self.seq1:
             self.sequence.append(n)
 
@@ -492,7 +532,7 @@ class AlgoWonk(Algo):
     mood_graphics = bytearray(b'\x00\x07\xe0\x00\x00\x0f\xf0\x00\x00\x1f\xf8\x00\x00?\xfc\x00\x00\x7f\xfe\x00\x00\x7f\xfe\x00\x00\x7f\xfe\x00\x00\x7f\xfe\x00\x00\x7f\xfe\x00\x00\x7f\xfe\x00\x0f\xff\xff\xf0\x1f\xff\xff\xf8?\xff\xff\xfc\x7f\xff\xff\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x7f\xfb\xdf\xfe?\xf3\xcf\xfc\x1f\xe3\xc7\xf8\x0f\xc3\xc3\xf0\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x03\xc0\x00\x00\x07\xe0\x00\x00\x0f\xf0\x00\x00\x1f\xf8\x00\x00?\xfc\x00\x00\x7f\xfe\x00')
 
     def __init__(self, channel, weekday, cycle, continuity):
-        super().__init__(channel, weekday, cycle, continuity)
+        super().__init__(channel, weekday, cycle, continuity, "wonk", "clubs")
 
         densityPercent = Algo.map(weekday, 1, 7, 30, 60)
 
@@ -529,6 +569,8 @@ class AlgoWonk(Algo):
                     self.sequence[chosen_step + 1] = 1
                 else:
                     self.sequence[chosen_step - 1] = 1
+
+        self.sanitize_sequence()
 
 
 class MoonPhase:
@@ -799,15 +841,31 @@ class PetRock(EuroPiScript):
         if now.weekday is None:
             now.weekday = 0
 
+        local_weekday = (now + local_timezone).weekday
+
         continuity = random.randint(0, 99)
         cycle = MoonPhase.calculate_phase(now)
         today_seed = now.day + now.month + now.year + self.seed_offset
         random.seed(today_seed)
 
-        self.sequence_a = Mood.mood_algorithm(now)(Algo.CHANNEL_A, now.weekday, cycle, continuity)
-        self.sequence_b = Mood.mood_algorithm(now)(Algo.CHANNEL_B, now.weekday, cycle, continuity)
+        self.sequence_a = Mood.mood_algorithm(now)(Algo.CHANNEL_A, local_weekday, cycle, continuity)
+        self.sequence_b = Mood.mood_algorithm(now)(Algo.CHANNEL_B, local_weekday, cycle, continuity)
 
         self.last_generation_at = clock.localnow()
+
+        # print a YAML-like block with the sequences for debugging
+        print(f"# Generated sequences at {self.last_generation_at} ({local_timezone})")
+        print("parameters:")
+        print(f"  continuity: {continuity}")
+        print(f"  date: '{now} UTC'")
+        print(f"  moon_phase: {cycle}")
+        print(f"  today_seed: {today_seed}")
+        print(f"  weekday: {local_weekday}")
+        print("sequences:")
+        print(f"  algorithm: {self.sequence_a.algorithm_name}")
+        print(f"  mood: {self.sequence_a.mood_name}")
+        print(f"  seq_a: {self.sequence_a}")
+        print(f"  seq_b: {self.sequence_b}")
 
     def on_channel_a_trigger(self):
         self.sequence_a.tick()
