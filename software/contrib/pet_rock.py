@@ -442,9 +442,10 @@ class AlgoCulture(Algo):
         else:
             extra_steps = random.randint(-4, 4)
 
+        rhythm = AlgoCulture.rhythms[(weekday + self.channel) % len(AlgoCulture.rhythms)]
         for i in range(32 + extra_steps):
-            if i < len(AlgoCulture.rhythms[weekday]):
-                self.sequence.append(AlgoCulture.rhythms[weekday][i])
+            if i < len(rhythm):
+                self.sequence.append(rhythm[i])
             else:
                 self.sequence.append(random.randint(0, 1))
 
