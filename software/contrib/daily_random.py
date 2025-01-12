@@ -102,7 +102,7 @@ class DailyRandom(EuroPiScript):
         hour = datetime.hour
         minute = datetime.minute
         second = datetime.second if datetime.second is not None else 0
-        weekday = datetime.weekday if datetime.weekday is not None else 0
+        weekday = datetime.weekday if datetime.weekday is not None else 1
 
         # bit-shift the fields around to reduce collisions
         # mask: 12 bits
@@ -112,9 +112,9 @@ class DailyRandom(EuroPiScript):
         # hour: 6 bits
         # minute: 6 bits
         seeds = [
-            self.BITMASKS[weekday] ^ year ^ (month << 7) ^ day,
-            self.BITMASKS[weekday] ^ year ^ (month << 6) ^ day ^ ~hour,
-            self.BITMASKS[weekday] ^ year ^ (month << 7) ^ day ^ (hour << 6) ^ minute,
+            self.BITMASKS[weekday - 1] ^ year ^ (month << 7) ^ day,
+            self.BITMASKS[weekday - 1] ^ year ^ (month << 6) ^ day ^ ~hour,
+            self.BITMASKS[weekday - 1] ^ year ^ (month << 7) ^ day ^ (hour << 6) ^ minute,
         ]
 
         for i in range(len(self.sequences)):
