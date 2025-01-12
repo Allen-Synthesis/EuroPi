@@ -520,7 +520,12 @@ class AlgoWonk(Algo):
                 steps_wonked += 1
                 self.sequence[chosen_step] = 0
 
-                if random.randint(0, 1) == 0:
+                r = random.randint(0, 1)
+                if chosen_step == 0:
+                    self.sequence[chosen_step + 1] = 1
+                elif chosen_step == seqmax - 1:
+                    self.sequence[chosen_step - 1] = 1
+                elif r == 0:
                     self.sequence[chosen_step + 1] = 1
                 else:
                     self.sequence[chosen_step - 1] = 1
@@ -742,7 +747,7 @@ class PetRock(EuroPiScript):
         Mood.set_moods(self.config.MOODS)
 
         self.seed_offset = 1
-        self.generate_sequences()
+        self.generate_sequences(clock.utcnow())
 
         self.din2 = AnalogReaderDigitalWrapper(
             ain,
@@ -785,15 +790,17 @@ class PetRock(EuroPiScript):
             ),
         ]
 
-    def generate_sequences(self):
-        continuity = random.randint(0, 99)
+    def generate_sequences(self, now):
+        """
+        Regenerate the day's rhythms
 
-        now = clock.utcnow()
+        @param now  The current UTC
+        """
         if now.weekday is None:
             now.weekday = 0
 
+        continuity = random.randint(0, 99)
         cycle = MoonPhase.calculate_phase(now)
-
         today_seed = now.day + now.month + now.year + self.seed_offset
         random.seed(today_seed)
 
@@ -831,6 +838,52 @@ class PetRock(EuroPiScript):
 
         oled.show()
 
+    def run_test(self):
+        self.draw(clock.localnow())
+        last_draw_at = clock.localnow()
+
+        fake_date = clock.utcnow()
+
+        while True:
+            self.din2.update()
+
+            self.timer_a.update_interval()
+            self.timer_b.update_interval()
+
+            self.timer_a.tick()
+            self.timer_b.tick()
+
+            local_time = clock.localnow()
+
+            ui_dirty = local_time.minute != last_draw_at.minute
+
+            if ui_dirty:
+                fake_date.day = fake_date.day + 1
+                fake_date.weekday = fake_date.weekday + 1
+                if fake_date.weekday == 8:
+                    fake_date.weekday = 1
+
+                if fake_date.day > fake_date.days_in_month:
+                    fake_date.day = 1
+                    fake_date.month = fake_date.month + 1
+
+                    if fake_date.month == 13:
+                        fake_date.month = 1
+                        fake_date.year += 1
+
+                self.generate_sequences(fake_date)
+                self.sequence_a.state_dirty = True
+                self.sequence_b.state_dirty = True
+
+                self.draw(local_time)
+                last_draw_at = local_time
+
+            if self.sequence_a.state_dirty:
+                self.sequence_a.set_outputs()
+
+            if self.sequence_b.state_dirty:
+                self.sequence_b.set_outputs()
+
     def main(self):
         self.draw(clock.localnow())
         last_draw_at = clock.localnow()
@@ -851,7 +904,7 @@ class PetRock(EuroPiScript):
             # if the day has rolled over, generate new sequences and mark them as dirty
             # so we'll continue playing
             if local_time.day != self.last_generation_at.day:
-                self.generate_sequences()
+                self.generate_sequences(clock.utcnow())
                 self.sequence_a.state_dirty = True
                 self.sequence_b.state_dirty = True
 
@@ -865,3 +918,8 @@ class PetRock(EuroPiScript):
 
             if ui_dirty:
                 self.draw(local_time)
+                last_draw_at = local_time
+
+
+if __name__ == "__main__":
+    PetRock().main()

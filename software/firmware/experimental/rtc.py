@@ -190,8 +190,8 @@ class DateTime:
             if t.weekday is not None:
                 t.weekday = (t.weekday + 1) % 7
 
-        days_in_month = DateTime.days_in_month(t.month + 1, t.year)
-        days_in_prev_month = DateTime.days_in_month((t.month + 1) % 12 + 1, t.year)
+        days_in_month = DateTime.calculate_days_in_month(t.month + 1, t.year)
+        days_in_prev_month = DateTime.calculate_days_in_month((t.month + 1) % 12 + 1, t.year)
         if t.day < 0:
             t.day = days_in_prev_month - 1  # last day of the month, zero-indexed
             t.month -= 1
@@ -215,17 +215,32 @@ class DateTime:
         return t
 
     @staticmethod
-    def is_leap_year(year):
-        # a year is a leap year if it is divisible by 4
-        return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
-
-    @staticmethod
-    def days_in_month(month, year):
+    def calculate_days_in_month(month, year):
         month_lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        if DateTime.is_leap_year(year) and month == Month.FEBRUARY:
+        if DateTime.calculate_is_leap_year(year) and month == Month.FEBRUARY:
             return 29
         else:
             return month_lengths[month - 1]
+
+    @staticmethod
+    def calculate_is_leap_year(year):
+        # a year is a leap year if it is divisible by 4
+        return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+    @property
+    def is_leap_year(self):
+        return DateTime.calculate_is_leap_year(self.year)
+
+    @property
+    def days_in_month(self):
+        return DateTime.calculate_days_in_month(self.month, self.year)
+
+    @property
+    def days_in_year(self):
+        if self.is_leap_year:
+            return 366
+        else:
+            return 365
 
     def __eq__(self, other):
         # fmt: off
