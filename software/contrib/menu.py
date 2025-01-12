@@ -67,7 +67,8 @@ EUROPI_SCRIPTS = OrderedDict([
     # System tools
     ["_Calibrate",        "calibrate.Calibrate"],
     ["_Config Editor",    "tools.conf_edit.ConfigurationEditor"],
-    ["_BootloaderMode",   "bootloader_mode.BootloaderMode"]
+    ["_Exp Cfg Editor",   "tools.experimental_conf_edit.ExperimentalConfigurationEditor"],
+    ["_BootloaderMode",   "bootloader_mode.BootloaderMode"],
 ])
 # fmt: on
 
