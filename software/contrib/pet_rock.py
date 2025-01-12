@@ -842,7 +842,7 @@ class PetRock(EuroPiScript):
         self.draw(clock.localnow())
         last_draw_at = clock.localnow()
 
-        fake_date = clock.utcnow()
+        fake_date = clock.localnow()
 
         while True:
             self.din2.update()
@@ -858,6 +858,8 @@ class PetRock(EuroPiScript):
             ui_dirty = local_time.minute != last_draw_at.minute
 
             if ui_dirty:
+                fake_date.minute = local_time.minute
+                fake_date.hour = local_time.hour
                 fake_date.day = fake_date.day + 1
                 fake_date.weekday = fake_date.weekday + 1
                 if fake_date.weekday == 8:
@@ -875,7 +877,7 @@ class PetRock(EuroPiScript):
                 self.sequence_a.state_dirty = True
                 self.sequence_b.state_dirty = True
 
-                self.draw(local_time)
+                self.draw(fake_date)
                 last_draw_at = local_time
 
             if self.sequence_a.state_dirty:
