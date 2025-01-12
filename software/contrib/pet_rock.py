@@ -430,14 +430,23 @@ class AlgoCulture(Algo):
     def __init__(self, channel, weekday, cycle, continuity):
         super().__init__(channel, weekday, cycle, continuity, "culture", "spades")
 
-        for i in range(32):
-            self.sequence.append(AlgoCulture.rhythms[weekday][i])
+        # add or remove some steps based on the moon phase
+        if cycle == MoonPhase.NEW_MOON:
+            extra_steps = random.randint(-16, -8)
+        elif cycle == MoonPhase.WAXING_CRESCENT or cycle == MoonPhase.WANING_CRESCENT:
+            extra_steps = random.randint(0, 4)
+        elif cycle == MoonPhase.FIRST_QUARTER or cycle == MoonPhase.THIRD_QUARTER:
+            extra_steps = random.randint(-8, 8)
+        elif cycle == MoonPhase.WAXING_GIBBOUS or cycle == MoonPhase.WANING_GIBBOUS:
+            extra_steps = random.randint(-4, 12)
+        else:
+            extra_steps = random.randint(-4, 4)
 
-        # most of the time we won't add any additional steps, but sometimes
-        # we will add 1-7 more
-        extra_steps = random.randint(-8, 7)
-        for i in range(extra_steps):
-            self.sequence.append(random.randint(0, 1))
+        for i in range(32 + extra_steps):
+            if i < len(AlgoCulture.rhythms[weekday]):
+                self.sequence.append(AlgoCulture.rhythms[weekday][i])
+            else:
+                self.sequence.append(random.randint(0, 1))
 
         self.sanitize_sequence()
 
