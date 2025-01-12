@@ -117,6 +117,17 @@ class Algo:
     def __str__(self):
         return f"{self.sequence}"
 
+    def __eq__(self, other):
+        """
+        Return True if both sequences are identical
+        """
+        if len(self.sequence) == len(other.sequence):
+            for i in range(len(self.sequence)):
+                if self.sequence[i] != other.sequence[i]:
+                    return False
+            return True
+        return False
+
     @staticmethod
     def map(x, in_min, in_max, out_min, out_max):
         # treat the output as inclusive
@@ -660,19 +671,41 @@ class MoonPhase:
         # so use yesterday, today, and tomorrow as a 3-day window
         # if tomorrow is on one side of the curve and yesterday was the other, treat today
         # as the "special" phase
-
         yesterday_fraction = yesterday_new_moons % 1
         today_fraction = today_new_moons % 1
         tomorrow_fraction = tomorrow_new_moons % 1
 
+        # first cases are for the special 1-day events
+        # check if we're in the transition area, and then decide if today is actually closest
+        # to the event
         if yesterday_fraction > 0.75 and tomorrow_fraction < 0.25:
-            return MoonPhase.NEW_MOON
+            if MoonPhase.closest_to_fraction(0.0, yesterday_fraction, today_fraction, tomorrow_fraction) == 0:
+                return MoonPhase.NEW_MOON
+            elif today_fraction > 0.75:
+                return MoonPhase.WANING_CRESCENT
+            else:
+                return MoonPhase.WAXING_CRESCENT
         elif yesterday_fraction < 0.25 and tomorrow_fraction > 0.25:
-            return MoonPhase.FIRST_QUARTER
+            if MoonPhase.closest_to_fraction(0.25, yesterday_fraction, today_fraction, tomorrow_fraction) == 0:
+                return MoonPhase.FIRST_QUARTER
+            elif today_fraction < 0.25:
+                return MoonPhase.WAXING_CRESCENT
+            else:
+                return MoonPhase.WAXING_GIBBOUS
         elif yesterday_fraction < 0.5 and tomorrow_fraction > 0.5:
-            return MoonPhase.FULL_MOON
+            if MoonPhase.closest_to_fraction(0.5, yesterday_fraction, today_fraction, tomorrow_fraction) == 0:
+                return MoonPhase.FULL_MOON
+            elif today_fraction < 0.5:
+                return MoonPhase.WAXING_GIBBOUS
+            else:
+                return MoonPhase.WANING_GIBBOUS
         elif yesterday_fraction < 0.75 and tomorrow_fraction > 0.75:
-            return MoonPhase.THIRD_QUARTER
+            if MoonPhase.closest_to_fraction(0.75, yesterday_fraction, today_fraction, tomorrow_fraction) == 0:
+                return MoonPhase.THIRD_QUARTER
+            elif today_fraction < 0.75:
+                return MoonPhase.WANING_GIBBOUS
+            else:
+                return MoonPhase.WANING_CRESCENT
         elif today_fraction == 0.0:
             return MoonPhase.NEW_MOON
         elif today_fraction < 0.25:
@@ -689,6 +722,19 @@ class MoonPhase:
             return MoonPhase.THIRD_QUARTER
         else:
             return MoonPhase.WANING_CRESCENT
+
+    @staticmethod
+    def closest_to_fraction(fraction, yesterday, today, tomorrow):
+        yesterday = abs(fraction - yesterday)
+        today = abs(fraction - today)
+        tomorrow = abs(fraction - tomorrow)
+
+        if yesterday < tomorrow and yesterday < today:  # yesterday is closest
+            return -1
+        elif today < yesterday and today < tomorrow:  # today is closest
+            return 0
+        else:
+            return 1  # tomorrow is closest
 
 
 class Mood:
@@ -917,6 +963,8 @@ class PetRock(EuroPiScript):
 
         fake_date = clock.utcnow()
 
+
+        yesterday_moon_phase = -1
         while True:
             self.din2.update()
 
@@ -937,7 +985,6 @@ class PetRock(EuroPiScript):
                 fake_date.weekday = fake_date.weekday + 1
                 if fake_date.weekday == 8:
                     fake_date.weekday = 1
-
                 if fake_date.day > fake_date.days_in_month:
                     fake_date.day = 1
                     fake_date.month = fake_date.month + 1
@@ -949,6 +996,23 @@ class PetRock(EuroPiScript):
                 self.generate_sequences(fake_date)
                 self.sequence_a.state_dirty = True
                 self.sequence_b.state_dirty = True
+
+                # check that we don't have two consecutive special-phase days
+                today_moon_phase = MoonPhase.calculate_phase(fake_date)
+                if (
+                    today_moon_phase == MoonPhase.NEW_MOON or
+                    today_moon_phase == MoonPhase.FIRST_QUARTER or
+                    today_moon_phase == MoonPhase.FULL_MOON or
+                    today_moon_phase == MoonPhase.THIRD_QUARTER
+                ):
+                    if today_moon_phase == yesterday_moon_phase:
+                        print(f"WARNING: two consecutive {today_moon_phase}-phases!")
+
+                # check that the two sequences are different
+                if self.sequence_a == self.sequence_b:
+                    print("WARNING: identical sequences generated!")
+
+
 
                 self.draw(fake_date)
                 last_draw_at = local_time
