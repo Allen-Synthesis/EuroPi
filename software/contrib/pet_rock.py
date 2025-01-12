@@ -821,15 +821,16 @@ class PetRock(EuroPiScript):
     def on_channel_b_fall(self):
         self.sequence_b.outputs_off()
 
-    def draw(self, local_time):
+    def draw(self, utc_time):
         oled.fill(0)
 
+        local_time = utc_time + local_timezone
         if local_time.weekday:
             oled.text(Weekday.NAME[local_time.weekday][0:3].upper(), OLED_WIDTH - CHAR_WIDTH * 3, 0, 1)
 
         oled.text(f"{local_time.hour:02}:{local_time.minute:02}", OLED_WIDTH - CHAR_WIDTH * 5, OLED_HEIGHT - CHAR_HEIGHT, 1)
 
-        moon_phase = MoonPhase.calculate_phase(clock.utcnow())
+        moon_phase = MoonPhase.calculate_phase(utc_time)
         moon_img = FrameBuffer(MoonPhase.moon_phase_images[moon_phase], 32, 32, MONO_HLSB)
         oled.blit(moon_img, 0, 0)
 
@@ -839,10 +840,10 @@ class PetRock(EuroPiScript):
         oled.show()
 
     def run_test(self):
-        self.draw(clock.localnow())
-        last_draw_at = clock.localnow()
+        self.draw(clock.utcnow())
+        last_draw_at = clock.utcnow()
 
-        fake_date = clock.localnow()
+        fake_date = clock.utcnow()
 
         while True:
             self.din2.update()
@@ -853,7 +854,7 @@ class PetRock(EuroPiScript):
             self.timer_a.tick()
             self.timer_b.tick()
 
-            local_time = clock.localnow()
+            local_time = clock.utcnow()
 
             ui_dirty = local_time.minute != last_draw_at.minute
 
@@ -887,7 +888,7 @@ class PetRock(EuroPiScript):
                 self.sequence_b.set_outputs()
 
     def main(self):
-        self.draw(clock.localnow())
+        self.draw(clock.utcnow())
         last_draw_at = clock.localnow()
 
         while True:
@@ -919,7 +920,7 @@ class PetRock(EuroPiScript):
                 self.sequence_b.set_outputs()
 
             if ui_dirty:
-                self.draw(local_time)
+                self.draw(clock.utcnow())
                 last_draw_at = local_time
 
 
