@@ -442,12 +442,16 @@ class AlgoCulture(Algo):
         else:
             extra_steps = random.randint(-4, 4)
 
-        rhythm = AlgoCulture.rhythms[(weekday + self.channel) % len(AlgoCulture.rhythms)]
-        for i in range(32 + extra_steps):
+        rhythm = AlgoCulture.rhythms[weekday]
+        for i in range(len(rhythm) + extra_steps):
             if i < len(rhythm):
                 self.sequence.append(rhythm[i])
             else:
-                self.sequence.append(random.randint(0, 1))
+                self.sequence.append(0)
+
+        # backfill the second half-ish of the rhythm with randomness
+        for i in range(15, len(self.sequence)):
+            self.sequence[i] = random.randint(0, 1)
 
         self.sanitize_sequence()
 
