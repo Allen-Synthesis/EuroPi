@@ -175,19 +175,10 @@ If you do not wish to calibrate the module and don't mind your voltages being sl
 > **Note**
 > If you have just installed the menu, simply run the calibration script and skip to step 2.
 
-1. To begin, you need to choose the `calibrate.py` file and save it as `main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/calibrate.py).
+1. To begin, you need to choose the `calibrate.py` file and save it as `main.py` in the root directory, as we did in [Option 2](#copy-someone-elses-program-to-run-on-your-module) above. You can obtain the `calibrate.py` file from either the `lib/tools` directory on your Pico, or from [the firmware directory in the repository](/software/firmware/tools/calibrate.py).
 2. Make sure your module is connected to rack power for the calibration process. It doesn't matter if it connected to USB as well, however if it is it will give an extra warning to turn on rack power which you need to skip using button 1.
 3. Turn on the rack power supply, and the screen will display 'Calibration Mode'. If it doesn't, try [troubleshooting](../troubleshooting.md).
-4. There are 2 options for calibration:
-  - Low Accuracy: Only a single 10V supply is required
-  - High Accuracy: A variable supply is required to produce voltages from 0-10V
-  Press button 1 to choose Low Accuracy mode, or button 2 to choose High Accuracy mode.
-5. Connect your voltage source to the analogue input, and input each voltage displayed on the screen. To take a reading (once your voltage is connected), press button 1.
-6. Once all the required voltages have been input, you now need to disconnect the analogue input from your voltage source, and instead connect it to CV output 1.
-7. Once you have connected the analogue input to CV output 1, press button 1
-8. Wait for each voltage up to 10V to complete. The module will tell you once it has completed.
-9. NOTE: Skip this final step if you are running the calibration script from the menu system.
-The calibration process is now complete! You now need to rename or delete the 'calibrate.py' program, however DO NOT delete the new file created called 'calibration_values.py'. This file is where the calibration values are stored, and if you delete it you will have to complete the calibration again.
+4. See [calibration](/software/firmware/tools/calibrate.md) for details on the calibration process.
 
 
 # Programming Limitations

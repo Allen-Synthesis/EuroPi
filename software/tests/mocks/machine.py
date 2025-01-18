@@ -59,6 +59,7 @@ def freq(_):
 class mem:
     """
     Fakes underlying machine registers.
+
     Shouldn't be used directly, but any registers (e.g. mem32) can be instantiated with this
     """
 

@@ -279,15 +279,6 @@ Using the threshold knob and analogue input, users can determine whether a 1 or 
 <i>Author: [awonak](https://github.com/awonak)</i>
 <br><i>Labels: Clock, Random, CV Generation</i>
 
-### Diagnostic \[ [documentation](/software/contrib/diagnostic.md) | [script](/software/contrib/diagnostic.py) \]
-Test the hardware of the module
-
-The values of all inputs are shown on the display, and the outputs are set to fixed voltages.
-Users can rotate the outputs to ensure they each output the same voltage when sent the same instruction from the script
-
-<i>Author: [mjaskula](https://github.com/mjaskula)</i>
-<br><i>Labels: utility</i>
-
 ### Hello World \[ [script](/software/contrib/hello_world.py) \]
 An example script for the menu system
 

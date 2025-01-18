@@ -30,7 +30,6 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Conway",            "contrib.conway.Conway"],
     ["CVecorder",         "contrib.cvecorder.CVecorder"],
     ["DCSN-2",            "contrib.dscn2.Dcsn2"],
-    ["Diagnostic",        "contrib.diagnostic.Diagnostic"],
     ["EgressusMelodiam",  "contrib.egressus_melodiam.EgressusMelodiam"],
     ["EnvelopeGen",       "contrib.envelope_generator.EnvelopeGenerator"],
     ["Euclid",            "contrib.euclid.EuclideanRhythms"],
@@ -64,11 +63,14 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Turing Machine",    "contrib.turing_machine.EuroPiTuringMachine"],
     ["Volts",             "contrib.volts.OffsetVoltages"],
 
-    # System tools
-    ["_Calibrate",        "calibrate.Calibrate"],
-    ["_Config Editor",    "tools.conf_edit.ConfigurationEditor"],
-    ["_Exp Cfg Editor",   "tools.experimental_conf_edit.ExperimentalConfigurationEditor"],
+    # System tools, in alphabetical order with a _ prefix
+  
+    ["_About",            "tools.about.About"],
     ["_BootloaderMode",   "bootloader_mode.BootloaderMode"],
+    ["_Calibrate",        "tools.calibrate.Calibrate"],
+    ["_Config Editor",    "tools.conf_edit.ConfigurationEditor"],
+    ["_Diagnostic",       "tools.diagnostic.Diagnostic"],
+    ["_Exp Cfg Editor",   "tools.experimental_conf_edit.ExperimentalConfigurationEditor"],
 ])
 # fmt: on
 
