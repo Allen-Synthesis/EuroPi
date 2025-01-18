@@ -45,7 +45,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Lutra",             "contrib.lutra.Lutra"],
     ["MasterClock",       "contrib.master_clock.MasterClock"],
     ["NoddyHolder",       "contrib.noddy_holder.NoddyHolder"],
-    ["Pam's Workout",     "contrib.pams.PamsWorkout"],
+    ["Pam's Workout",     "contrib.pams.PamsWorkout2"],
     ["Particle Phys.",    "contrib.particle_physics.ParticlePhysics"],
     ["Piconacci",         "contrib.piconacci.Piconacci"],
     ["PolyrhythmSeq",     "contrib.polyrhythmic_sequencer.PolyrhythmSeq"],
@@ -64,11 +64,13 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Volts",             "contrib.volts.OffsetVoltages"],
 
     # System tools, in alphabetical order with a _ prefix
-
+  
     ["_About",            "tools.about.About"],
     ["_BootloaderMode",   "bootloader_mode.BootloaderMode"],
     ["_Calibrate",        "tools.calibrate.Calibrate"],
+    ["_Config Editor",    "tools.conf_edit.ConfigurationEditor"],
     ["_Diagnostic",       "tools.diagnostic.Diagnostic"],
+    ["_Exp Cfg Editor",   "tools.experimental_conf_edit.ExperimentalConfigurationEditor"],
 ])
 # fmt: on
 

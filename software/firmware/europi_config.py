@@ -103,43 +103,55 @@ class EuroPiConfig:
                 default=False,
             ),
             configuration.integer(
+                name="DISPLAY_CONTRAST",
+                minimum=0,
+                maximum=255,
+                default=255,
+            ),
+            configuration.integer(
                 name="DISPLAY_WIDTH",
                 minimum=8,
                 maximum=1024,
                 default=128,
+                danger=True,
             ),
             configuration.integer(
                 name="DISPLAY_HEIGHT",
                 minimum=8,
                 maximum=1024,
                 default=32,
+                danger=True,
             ),
             configuration.choice(
                 name="DISPLAY_SDA",
                 choices=[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 26],
                 default=0,
+                danger=True,
             ),
             configuration.choice(
                 name="DISPLAY_SCL",
                 choices=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 27],
                 default=1,
+                danger=True,
             ),
             configuration.choice(
                 name="DISPLAY_CHANNEL",
                 choices=[0, 1],
                 default=0,
-            ),
-            configuration.integer(
-                name="DISPLAY_CONTRAST",
-                minimum=0,
-                maximum=255,
-                default=255
-            ),
-            configuration.integer(
+                danger=True,
+            ),            
+            configuration.choice(
                 name="DISPLAY_FREQUENCY",
-                minimum=0,
-                maximum=1000000,
+                choices=[
+                    100000,  # 100k (Sm)
+                    400000,  # 400k (Fm)
+                    1000000, # 1M   (Fm+)
+                    1700000, # 1.7M (Hs)
+                    3400000, # 3.4M (Hs)
+                    5000000, # 5M   (UFm)
+                ],
                 default=400000,
+                danger=True,
             ),
 
             # External I2C connection (header between Pico & power connector)
@@ -158,17 +170,23 @@ class EuroPiConfig:
                 choices=[0, 1],
                 default=1,
             ),
-            configuration.integer(
+            configuration.choice(
                 name="EXTERNAL_I2C_FREQUENCY",
-                minimum=0,
-                maximum=1000000,  # 1M max
-                default=100000,   # 100k default
+                choices=[
+                    100000,  # 100k (Sm)
+                    400000,  # 400k (Fm)
+                    1000000, # 1M   (Fm+)
+                    1700000, # 1.7M (Hs)
+                    3400000, # 3.4M (Hs)
+                    5000000, # 5M   (UFm)
+                ],
+                default=100000,
             ),
             configuration.integer(
                 name="EXTERNAL_I2C_TIMEOUT",
                 minimum=0,
-                maximum=100000,
-                default=50000,
+                maximum=5000,
+                default=1000
             ),
 
             # I/O voltage settings
