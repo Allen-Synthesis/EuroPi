@@ -89,13 +89,14 @@ point’s name, pointing to a value that may be of any type.</p>
 of the valid values that it may have. There are several different types of COnfigPoints available.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.BooleanConfigPoint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">BooleanConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.BooleanConfigPoint" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">BooleanConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.BooleanConfigPoint" title="Permalink to this definition"></a></dt>
 <dd><p>A <cite>ConfigPoint</cite> that allows True/False values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to look up the configured value.</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
 </ul>
 </dd>
 </dl>
@@ -110,7 +111,7 @@ validation result, as well as an error message containing the reason for a valid
 
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.ChoiceConfigPoint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ChoiceConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ChoiceConfigPoint" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ChoiceConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ChoiceConfigPoint" title="Permalink to this definition"></a></dt>
 <dd><p>A <cite>ConfigPoint</cite> that requires selection from a limited number of choices. The default value
 must exist in the given choices.</p>
 <dl class="field-list simple">
@@ -119,6 +120,7 @@ must exist in the given choices.</p>
 <li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
 <li><p><strong>choices</strong> – A List of all of the valid choices for this ConfigPoint</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
 </ul>
 </dd>
 </dl>
@@ -155,9 +157,19 @@ representing the class’s config file.  Otherwise an empty ConfigSettings objec
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="configuration.ConfigFile.load_from_file">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#configuration.ConfigSpec" title="configuration.ConfigSpec"><span class="pre">ConfigSpec</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigFile.load_from_file" title="Permalink to this definition"></a></dt>
+<dd><p>Load the configuration settings from an arbitrary file</p>
+<p>&#64;param path  The path to the fole to read
+&#64;param config_spec  The specification of the configuration we’re saving</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="configuration.ConfigFile.save_config">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigFile.save_config" title="Permalink to this definition"></a></dt>
 <dd><p>Take config as a dict and save to this class’s config file.</p>
+<p>This will create the default configuration directory <cite>/config</cite> if it
+does not already exist</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Be mindful of how often <cite>_save_config()</cite> is called because
@@ -167,11 +179,22 @@ adding a time since last save check to reduce save frequency.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="configuration.ConfigFile.save_to_file">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigFile.save_to_file" title="Permalink to this definition"></a></dt>
+<dd><p>Save the configuration dict and save it to an arbitrary file</p>
+<p>Unlike save_config, this method will NOT create any directories; if you
+intend to save to a directory that may not exist, make sure to create it
+first.</p>
+<p>&#64;param path  The path to the file we’re saving to
+&#64;param dict  The data to save</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.ConfigPoint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigPoint" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigPoint" title="Permalink to this definition"></a></dt>
 <dd><p>Base class for defining <cite>ConfigPoint</cite> types.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -179,6 +202,7 @@ adding a time since last save check to reduce save frequency.</p>
 <li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
 <li><p><strong>type</strong> – The name of this ConfigPoint’s type</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
 </ul>
 </dd>
 </dl>
@@ -231,7 +255,7 @@ validation result, as well as an error message containing the reason for a valid
 
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.FloatConfigPoint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">FloatConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.FloatConfigPoint" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">FloatConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.FloatConfigPoint" title="Permalink to this definition"></a></dt>
 <dd><p>A <cite>ConfigPoint</cite> that requires the selection from a range of floats.  The default value
 must lie within the specified range</p>
 <dl class="field-list simple">
@@ -241,6 +265,7 @@ must lie within the specified range</p>
 <li><p><strong>minimum</strong> – The minimum allowed value</p></li>
 <li><p><strong>maximum</strong> – The maximum allowed value</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
 </ul>
 </dd>
 </dl>
@@ -255,7 +280,7 @@ validation result, as well as an error message containing the reason for a valid
 
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.IntegerConfigPoint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">IntegerConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.IntegerConfigPoint" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">IntegerConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.IntegerConfigPoint" title="Permalink to this definition"></a></dt>
 <dd><p>A <cite>ConfigPoint</cite> that requires selection from a range of integers. The default value
 must lie within the specified range</p>
 <dl class="field-list simple">
@@ -265,6 +290,7 @@ must lie within the specified range</p>
 <li><p><strong>minimum</strong> – The minimum allowed value</p></li>
 <li><p><strong>maximum</strong> – The maximum allowed value</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
 </ul>
 </dd>
 </dl>
@@ -324,7 +350,7 @@ validation result, as well as an error message containing the reason for a valid
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuration.boolean">
-<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">boolean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.BooleanConfigPoint" title="configuration.BooleanConfigPoint"><span class="pre">BooleanConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.boolean" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">boolean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.BooleanConfigPoint" title="configuration.BooleanConfigPoint"><span class="pre">BooleanConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.boolean" title="Permalink to this definition"></a></dt>
 <dd><p>A helper function to simplify the creation of BooleanConfigPoints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -338,7 +364,7 @@ validation result, as well as an error message containing the reason for a valid
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuration.choice">
-<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.ChoiceConfigPoint" title="configuration.ChoiceConfigPoint"><span class="pre">ChoiceConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.choice" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.ChoiceConfigPoint" title="configuration.ChoiceConfigPoint"><span class="pre">ChoiceConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.choice" title="Permalink to this definition"></a></dt>
 <dd><p>A helper function to simplify the creation of ChoiceConfigPoints. Requires selection from a
 limited number of choices. The default value must exist in the given choices.</p>
 <dl class="field-list simple">
@@ -347,6 +373,7 @@ limited number of choices. The default value must exist in the given choices.</p
 <li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
 <li><p><strong>choices</strong> – A List of all of the valid choices for this ConfigPoint</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
 </ul>
 </dd>
 </dl>
@@ -354,7 +381,7 @@ limited number of choices. The default value must exist in the given choices.</p
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuration.floatingPoint">
-<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">floatingPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.FloatConfigPoint" title="configuration.FloatConfigPoint"><span class="pre">FloatConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.floatingPoint" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">floatingPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.FloatConfigPoint" title="configuration.FloatConfigPoint"><span class="pre">FloatConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.floatingPoint" title="Permalink to this definition"></a></dt>
 <dd><p>A helper function to simplify the creation of FloatConfigPoints. Requires selection from a
 range of floats. The default value must exist in the given range.</p>
 <dl class="field-list simple">
@@ -364,6 +391,7 @@ range of floats. The default value must exist in the given range.</p>
 <li><p><strong>minumum</strong> – The minumum allowed value</p></li>
 <li><p><strong>maximum</strong> – The maximum allowed value</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
 </ul>
 </dd>
 </dl>
@@ -371,7 +399,7 @@ range of floats. The default value must exist in the given range.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuration.integer">
-<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">integer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.IntegerConfigPoint" title="configuration.IntegerConfigPoint"><span class="pre">IntegerConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.integer" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">integer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.IntegerConfigPoint" title="configuration.IntegerConfigPoint"><span class="pre">IntegerConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.integer" title="Permalink to this definition"></a></dt>
 <dd><p>A helper function to simplify the creation of IntegerConfigPoints. Requires selection from a
 range of integers. The default value must exist in the given range.</p>
 <dl class="field-list simple">
@@ -381,6 +409,7 @@ range of integers. The default value must exist in the given range.</p>
 <li><p><strong>minimum</strong> – The minimum allowed value</p></li>
 <li><p><strong>maximum</strong> – The maximum allowed value</p></li>
 <li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
 </ul>
 </dd>
 </dl>
