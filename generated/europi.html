@@ -383,7 +383,7 @@ would only return values which go up in steps of 2.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="europi.Output">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">6300,</span> <span class="pre">12575,</span> <span class="pre">19150,</span> <span class="pre">25375,</span> <span class="pre">31625,</span> <span class="pre">38150,</span> <span class="pre">44225,</span> <span class="pre">50525,</span> <span class="pre">56950,</span> <span class="pre">63475]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output" title="Permalink to this definition"></a></dt>
 <dd><p>A class for sending digital or analogue voltage to an output jack.</p>
 <p>The outputs are capable of providing 0-10V, which can be achieved using
 the <code class="docutils literal notranslate"><span class="pre">cvx.voltage()</span></code> method.</p>
@@ -425,14 +425,14 @@ calibration is important if you want to be able to output precise voltages.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="europi.Thermometer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Thermometer</span></span><a class="headerlink" href="#europi.Thermometer" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper for the temperature sensor connected to Pin 4
-Reports the module’s current temperature in Celsius.
-If the module’s temperature sensor is not working correctly, the temperature will always be reported as None</p>
+<dd><p>Wrapper for the temperature sensor connected to Pin 4</p>
+<p>Reports the module’s current temperature in Celsius.</p>
+<p>If the module’s temperature sensor is not working correctly, the temperature will always be reported as None</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.Thermometer.read_temperature">
 <span class="sig-name descname"><span class="pre">read_temperature</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Thermometer.read_temperature" title="Permalink to this definition"></a></dt>
-<dd><p>Read the ADC and return the current temperature
-&#64;return  The current temperature in Celsius, or None if the hardware did not initialze properly</p>
+<dd><p>Read the ADC and return the current temperature</p>
+<p>&#64;return  The current temperature in Celsius, or None if the hardware did not initialze properly</p>
 </dd></dl>
 
 </dd></dl>
@@ -440,8 +440,8 @@ If the module’s temperature sensor is not working correctly, the temperature w
 <dl class="py class">
 <dt class="sig sig-object py" id="europi.UsbConnection">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">UsbConnection</span></span><a class="headerlink" href="#europi.UsbConnection" title="Permalink to this definition"></a></dt>
-<dd><p>Checks the USB terminal is connected or not
-On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
+<dd><p>Checks the USB terminal is connected or not</p>
+<p>On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
 check the SIE_STATUS register and check bit 16</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.UsbConnection.value">
