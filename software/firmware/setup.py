@@ -11,13 +11,11 @@ def build_firmware_module_list():
     excluded = {"__init__.py", "setup.py"}
 
     # grab files from the local directory first
-    modules = [
-        f[:-3] for f in os.listdir(".") if f.endswith(".py") and not f in excluded
-    ]
+    modules = [f[:-3] for f in os.listdir(".") if f.endswith(".py") and not f in excluded]
 
     # add any modules in additional directories
     for d in dirs:
-        for (root_dir, subdirs, files) in os.walk(d):
+        for root_dir, subdirs, files in os.walk(d):
             for f in files:
                 if f.endswith(".py") and not f in excluded:
                     modules.append(root_dir.replace("/", ".") + "." + f[:-3])
