@@ -82,11 +82,24 @@ shows the default configuration:
 ```json
 {
     "VOLTS_PER_OCTAVE": 1.0,
+    "RTC_IMPLEMENTATION": "",
+    "UTC_OFFSET_HOURS": 0,
+    "UTC_OFFSET_MINUTES": 0,
 }
 ```
 
+Quantization options:
 - `VOLTS_PER_OCTAVE` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard). Default: `1.0`
 
+RTC options:
+- `RTC_IMPLEMENTATION` is one of the following, representing the realtime clock enabled on your module:
+  - `""`: there is no RTC present. (default)
+  - `"ds3231"`: use a DS3231 module connected to the external I2C interface
+  - `"ds1307"`: use a DS1307 module connected to the external I2C interface (THIS IS UNTESTED! USE AT YOUR OWN RISK)
+
+Timezone options:
+- `UTC_OFFSET_HOURS`: The number of hours ahead/behind UTC the local timezone is (-24 to +24)
+- `UTC_OFFSET_MINUTES`: The number of minutes ahead/behind UTC the local timezone is (-59 to +59)
 
 # Accessing config members in Python code
 

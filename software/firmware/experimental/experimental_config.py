@@ -13,6 +13,11 @@ MOOG_VOLTS_PER_OCTAVE = 1.0
 # Buchla standard is 1.2 volts per octave (0.1 volts per semitone)
 BUCHLA_VOLTS_PER_OCTAVE = 1.2
 
+# RTC implementations
+RTC_NONE = ""
+RTC_DS3231 = "ds3231"
+RTC_DS1307 = "ds1307"
+
 
 class ExperimentalConfig:
     """This class provides global config points for experimental features.
@@ -37,6 +42,32 @@ class ExperimentalConfig:
                 name="VOLTS_PER_OCTAVE",
                 choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
                 default=MOOG_VOLTS_PER_OCTAVE,
+            ),
+
+            # RTC implementation
+            # by default there is no RTC
+            configuration.choice(
+                name="RTC_IMPLEMENTATION",
+                choices=[
+                    RTC_NONE,
+                    RTC_DS3231,
+                    RTC_DS1307,
+                ],
+                default=RTC_NONE,
+            ),
+
+            # RTC Timezone offset for local time
+            configuration.integer(
+                "UTC_OFFSET_HOURS",
+                minimum=-24,
+                maximum=24,
+                default=0,
+            ),
+            configuration.integer(
+                "UTC_OFFSET_MINUTES",
+                minimum=-59,
+                maximum=59,
+                default=0,
             ),
         ]
         # fmt: on
