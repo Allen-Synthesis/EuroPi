@@ -1105,7 +1105,9 @@ class PamsOutput:
         @param tick  The current tick, in the range [0, n_ticks)
         @param n_ticks  The number of ticks in which the wave must complete
         """
-        if tick == 0:
+        # respect phase shifting when updating the shift register
+        start_tick = int(self.phase.value * n_ticks / 100.0)
+        if tick == start_tick:
             self.turing_shift()  # shift on the first tick of every node
 
         active_bit = self.turing_register & 0x0001
