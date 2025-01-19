@@ -563,7 +563,8 @@ class PamsOutput:
         self.cv_out = cv_out
         self.clock = clock
 
-        self.turing_register = 0xFFFF  # 16-bit integer, initially all-on
+        # 16-bit integer, initially random
+        self.turing_register = random.randint(0, 65535)
 
         ## What quantization are we using?
         #
