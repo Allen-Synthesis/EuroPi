@@ -211,27 +211,29 @@ WAVE_KNOB = 6
 WAVE_TURING = 7
 
 ## Available wave shapes
+#
+#  These must be placed in the desired order
 WAVE_SHAPES = [
     WAVE_SQUARE,
     WAVE_TRIANGLE,
     WAVE_SIN,
     WAVE_ADSR,
+    WAVE_TURING,
     WAVE_RANDOM,
     WAVE_AIN,
     WAVE_KNOB,
-    WAVE_TURING,
 ]
 
-## Ordered list of labels for the wave shape chooser menu
+## Labels for the wave shape chooser menu
 WAVE_SHAPE_LABELS = {
     WAVE_SQUARE: "Square",
     WAVE_TRIANGLE: "Triangle",
     WAVE_SIN: "Sine",
     WAVE_ADSR: "ADSR",
+    WAVE_TURING: "Turing",
     WAVE_RANDOM: "Random",
     WAVE_AIN: "AIN (S&H)",
     WAVE_KNOB: "KNOB (S&H)",
-    WAVE_TURING: "Turing",
 }
 
 # Turing machine modes of operation
@@ -249,7 +251,7 @@ TURING_MODE_LABELS = {
     MODE_TURING_CV: "CV",
 }
 
-## Images of teh wave shapes
+## Images of the wave shapes
 #
 #  These are 12x12 bitmaps. See:
 #  - https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md
@@ -259,10 +261,10 @@ WAVE_SHAPE_IMGS = {
     WAVE_TRIANGLE: bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'),
     WAVE_SIN: bytearray(b'\x10\x00(\x00D\x00D\x00\x82\x00\x82\x00\x82\x10\x82\x10\x01\x10\x01\x10\x00\xa0\x00@'),
     WAVE_ADSR: bytearray(b' \x00 \x000\x000\x00H\x00H\x00G\xc0@@\x80 \x80 \x80\x10\x80\x10'),
+    WAVE_TURING: bytearray(b'\xff\xf0\x04\x00\xf8\x00\x00\x00\xff\xf0\x04\x00\xf8\x00\x00\x00\xff\xf0\x04\x00\xf8\x00\x00\x00'),
     WAVE_RANDOM: bytearray(b'\x00\x00\x08\x00\x08\x00\x14\x00\x16\x80\x16\xa0\x11\xa0Q\xf0Pp`P@\x10\x80\x00'),
     WAVE_AIN: bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00'),
     WAVE_KNOB: bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00'),
-    WAVE_TURING: bytearray(b'\xff\xf0\x04\x00\xf8\x00\x00\x00\xff\xf0\x04\x00\xf8\x00\x00\x00\xff\xf0\x04\x00\xf8\x00\x00\x00'),
 }
 
 STATUS_IMG_PLAY = bytearray(b'\x00\x00\x18\x00\x18\x00\x1c\x00\x1c\x00\x1e\x00\x1f\x80\x1e\x00\x1e\x00\x1c\x00\x18\x00\x18\x00')
