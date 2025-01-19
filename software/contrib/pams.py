@@ -1108,11 +1108,11 @@ class PamsOutput:
         # respect phase shifting when updating the shift register
         start_tick = int(self.phase.value * n_ticks / 100.0)
         if tick == start_tick:
-            self.turing_shift()  # shift on the first tick of every node
+            self.turing_shift()
 
         active_bit = self.turing_register & 0x0001
         if self.t_lock.value < 0 and self.wave_counter % (2 * self.t_length.value) >= self.t_length.value:
-            # turing machine outputs the [registerm ~register] when "locked-left",
+            # turing machine outputs the [register, ~register] when "locked-left",
             # effectively doubling the length of the pattern
             active_bit = active_bit ^ 0x01
 
