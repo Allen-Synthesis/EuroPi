@@ -571,7 +571,7 @@ class PamsOutput:
         self.quantizer = SettingMenuItem(
             config_point = ChoiceConfigPoint(
                 f"cv{n}_quantizer",
-                QUANTIZER_NAMES,
+                list(QUANTIZER_NAMES),
                 "None"
             ),
             prefix=f"CV{n}",
@@ -858,8 +858,6 @@ class PamsOutput:
             prefix = f"CV{n}",
             title = "TMode",
             labels = TURING_MODE_LABELS,
-            autoselect_knob = False,
-            autoselect_cv = False,
         )
 
         ## All settings in an array so we can iterate through them in reset_settings(self)
@@ -1091,29 +1089,6 @@ class PamsOutput:
     def turing_shift(self):
         """Shift the turing machine register by 1 bit
         """
-        sequence_masks = [
-            0b0000000000000000,
-            0b0000000000000001,
-            0b0000000000000011,
-            0b0000000000000111,
-            0b0000000000001111,
-            0b0000000000011111,
-            0b0000000000111111,
-            0b0000000001111111,
-            0b0000000011111111,
-            0b0000000111111111,
-            0b0000001111111111,
-            0b0000011111111111,
-            0b0000111111111111,
-            0b0001111111111111,
-            0b0011111111111111,
-            0b0111111111111111,
-            0b1111111111111111,
-        ]
-
-        # mask off all bits we don't care about
-        self.turing_register = self.turing_register & sequence_masks[self.t_length.value]
-
         r = random.randint(0, 100)
         if r >= abs(self.t_lock.value):
             incoming_bit = random.randint(0, 1)
