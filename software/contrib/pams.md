@@ -132,14 +132,16 @@ The submenu for each CV output has the following options:
     triangle to ramp)
   - ![Sine Wave](./pams-docs/wave_sine.png) Sine: bog-standard sine wave
   - ![ADSR Envelope](./pams-docs/wave_adsr.png) ADSR: an Attack/Decay/Sustain/Release envelope
+  - ![Turing](./pams-docs/wave_turing.png) Turing: a shift-register like the Music Thing Modular Turing Machine. Can either
+    output pulses or stepped CV.
   - ![Random Wave](./pams-docs/wave_random.png) Random: outputs a random voltage at the start of every euclidean pulse,
     holding that voltage until the next pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean
     pulse)
-  - ![AIN](./pams-docs/wave_ain.png) AIN: acts as a sample & hold of `ain`, with a sample taken at the start of every
+  - ![AIN](./pams-docs/wave_ain.png) AIN (S&H): acts as a sample & hold of `ain`, with a sample taken at the start of every
     euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
-  - ![KNOB](./pams-docs/wave_knob.png) Knob: acts as a sample & hold of `k1`, with a sample taken at the start of every
+  - ![KNOB](./pams-docs/wave_knob.png) KNOB (S&H): acts as a sample & hold of `k1`, with a sample taken at the start of every
     euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
-  - ![TURING](./pams-docs/wave_turing.png) Turing: act as a shift-register like the Music Thing Modular Turing Machine
+
 - `Width` -- width of the resulting wave. See below for the effects of width adjustment on different wave shapes
 - `Phase` -- the phase offset of the wave. Starting a triangle at 50% would start it midway through
 - `Ampl.` -- the maximum amplitude of the output as a percentage of the 10V hardware maximum
