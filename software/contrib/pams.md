@@ -137,8 +137,9 @@ The submenu for each CV output has the following options:
     pulse)
   - ![AIN](./pams-docs/wave_ain.png) AIN: acts as a sample & hold of `ain`, with a sample taken at the start of every
     euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
-  - ![KNOB](./pams-docs/wave_knob.png) KNOB: acts as a sample & hold of `k1`, with a sample taken at the start of every
+  - ![KNOB](./pams-docs/wave_knob.png) Knob: acts as a sample & hold of `k1`, with a sample taken at the start of every
     euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
+  - ![TURING](./pams-docs/wave_turing.png) Turing: act as a shift-register like the Music Thing Modular Turing Machine
 - `Width` -- width of the resulting wave. See below for the effects of width adjustment on different wave shapes
 - `Phase` -- the phase offset of the wave. Starting a triangle at 50% would start it midway through
 - `Ampl.` -- the maximum amplitude of the output as a percentage of the 10V hardware maximum
@@ -147,6 +148,9 @@ The submenu for each CV output has the following options:
 - `Sustain` -- the percentage level of the sustain phase of an ADSR envelope
 - `Release` -- the percentage of of the cyle time minus the attack & decay phases dedicated to the release phase of
   an ADSR envelope
+- `TLen` -- The length of the Turning machine shift register
+- `TLock` -- The lock value of the Turing machine shift register
+- `TMode` -- The mode of the Turing machine: either `Gate` or `CV`
 - `Skip%` -- the probability that a square pulse or euclidean trigger will be skipped
 - `EStep` -- the number of steps in the euclidean rhythm. If zero, the euclidean generator is disabled
 - `ETrig` -- the number of pulses in the euclidean rhythm
