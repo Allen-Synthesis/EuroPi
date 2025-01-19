@@ -1090,7 +1090,7 @@ class PamsOutput:
     def turing_shift(self):
         """Shift the turing machine register by 1 bit
         """
-        r = random.randint(0, 100)
+        r = random.randint(0, 99)
         if r >= abs(self.t_lock.value):
             incoming_bit = random.randint(0, 1)
         else:
