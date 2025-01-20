@@ -574,7 +574,7 @@ class PamsOutput:
         self.quantizer = SettingMenuItem(
             config_point = ChoiceConfigPoint(
                 f"cv{n}_quantizer",
-                list(QUANTIZER_NAMES),
+                QUANTIZER_NAMES,
                 "None"
             ),
             prefix=f"CV{n}",
@@ -607,7 +607,7 @@ class PamsOutput:
         self.clock_mod = SettingMenuItem(
             config_point = ChoiceConfigPoint(
                 f"cv{n}_mod",
-                list(CLOCK_MOD_NAMES),
+                CLOCK_MOD_NAMES,
                 "x1"
             ),
             prefix = f"CV{n}",
