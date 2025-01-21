@@ -205,29 +205,53 @@ WAVE_AIN = 5
 #  etc...
 WAVE_KNOB = 6
 
+## Turing machine shift register
+#
+#  Requires a sub-setting for either gate or CV mode
+WAVE_TURING = 7
+
 ## Available wave shapes
+#
+#  These must be placed in the desired order
 WAVE_SHAPES = [
     WAVE_SQUARE,
     WAVE_TRIANGLE,
     WAVE_SIN,
     WAVE_ADSR,
+    WAVE_TURING,
     WAVE_RANDOM,
     WAVE_AIN,
-    WAVE_KNOB
+    WAVE_KNOB,
 ]
 
-## Ordered list of labels for the wave shape chooser menu
+## Labels for the wave shape chooser menu
 WAVE_SHAPE_LABELS = {
     WAVE_SQUARE: "Square",
     WAVE_TRIANGLE: "Triangle",
     WAVE_SIN: "Sine",
     WAVE_ADSR: "ADSR",
+    WAVE_TURING: "Turing",
     WAVE_RANDOM: "Random",
     WAVE_AIN: "AIN (S&H)",
     WAVE_KNOB: "KNOB (S&H)",
 }
 
-## Images of teh wave shapes
+# Turing machine modes of operation
+#
+# We can either output the gate pulses OR we can
+# output the semi-random CV
+MODE_TURING_GATE = 0
+MODE_TURING_CV = 1
+TURING_MODES = [
+    MODE_TURING_GATE,
+    MODE_TURING_CV,
+]
+TURING_MODE_LABELS = {
+    MODE_TURING_GATE: "Gate",
+    MODE_TURING_CV: "CV",
+}
+
+## Images of the wave shapes
 #
 #  These are 12x12 bitmaps. See:
 #  - https://github.com/Allen-Synthesis/EuroPi/blob/main/software/oled_tips.md
@@ -237,6 +261,7 @@ WAVE_SHAPE_IMGS = {
     WAVE_TRIANGLE: bytearray(b'\x06\x00\x06\x00\t\x00\t\x00\x10\x80\x10\x80 @ @@ @ \x80\x10\x80\x10'),
     WAVE_SIN: bytearray(b'\x10\x00(\x00D\x00D\x00\x82\x00\x82\x00\x82\x10\x82\x10\x01\x10\x01\x10\x00\xa0\x00@'),
     WAVE_ADSR: bytearray(b' \x00 \x000\x000\x00H\x00H\x00G\xc0@@\x80 \x80 \x80\x10\x80\x10'),
+    WAVE_TURING: bytearray(b'\xff\xf0\x04\x00\xf8\x00\x00\x00\xff\xf0\x04\x00\xf8\x00\x00\x00\xff\xf0\x04\x00\xf8\x00\x00\x00'),
     WAVE_RANDOM: bytearray(b'\x00\x00\x08\x00\x08\x00\x14\x00\x16\x80\x16\xa0\x11\xa0Q\xf0Pp`P@\x10\x80\x00'),
     WAVE_AIN: bytearray(b'\x00\x00|\x00|\x00d\x00d\x00g\x80a\x80\xe1\xb0\xe1\xb0\x01\xf0\x00\x00\x00\x00'),
     WAVE_KNOB: bytearray(b'\x06\x00\x19\x80 @@ @ \x80\x10\x82\x10A @\xa0 @\x19\x80\x06\x00'),
@@ -540,6 +565,9 @@ class PamsOutput:
         self.cv_out = cv_out
         self.clock = clock
 
+        # 16-bit integer, initially random
+        self.turing_register = random.randint(0, 65535)
+
         ## What quantization are we using?
         #
         #  See contrib.pams.QUANTIZERS
@@ -799,6 +827,42 @@ class PamsOutput:
             autoselect_cv = True,
         )
 
+        # Turing machine settings
+        self.t_length = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                f"cv{n}_t_len",
+                2,
+                16,
+                8
+            ),
+            prefix = f"CV{n}",
+            title = "TLen",
+            autoselect_knob = True,
+            autoselect_cv = True,
+        )
+        self.t_lock = SettingMenuItem(
+            config_point = IntegerConfigPoint(
+                f"cv{n}_t_lock",
+                -100,
+                100,
+                0
+            ),
+            prefix = f"CV{n}",
+            title = "TLock",
+            autoselect_knob = True,
+            autoselect_cv = True,
+        )
+        self.t_mode = SettingMenuItem(
+            config_point = ChoiceConfigPoint(
+                f"cv{n}_t_mode",
+                TURING_MODES,
+                MODE_TURING_GATE,
+            ),
+            prefix = f"CV{n}",
+            title = "TMode",
+            labels = TURING_MODE_LABELS,
+        )
+
         ## All settings in an array so we can iterate through them in reset_settings(self)
         self.all_settings = [
             self.quantizer,
@@ -811,6 +875,9 @@ class PamsOutput:
             self.e_step,
             self.e_trig,
             self.e_rot,
+            self.t_length,
+            self.t_lock,
+            self.t_mode,
             self.skip,
             self.swing,
             self.mute,
@@ -873,17 +940,16 @@ class PamsOutput:
         show_width = wave_shape != WAVE_AIN and wave_shape != WAVE_KNOB and wave_shape != WAVE_SIN
         self.width.is_visible = show_width
 
+        # hide the turing machine settings if we're not in Turing mode
+        show_turing = wave_shape == WAVE_TURING
+        self.t_length.is_visible = show_turing
+        self.t_lock.is_visible = show_turing
+        self.t_mode.is_visible = show_turing
+
     def change_e_length(self, new_value=None, old_value=None, config_point=None, arg=None):
         self.e_trig.modify_choices(list(range(self.e_step.value+1)), self.e_step.value)
         self.e_rot.modify_choices(list(range(self.e_step.value+1)), self.e_step.value)
         self.recalculate_e_pattern()
-
-    def request_clock_mod(self, new_value=None, old_value=None, config_point=None, arg=None):
-        self.clock_mod_dirty = True
-
-    def change_clock_mod(self):
-        self.real_clock_mod = self.clock_mod.mapped_value
-        self.clock_mod_dirty = False
 
     def recalculate_e_pattern(self, new_value=None, old_value=None, config_point=None, arg=None):
         """Recalulate the euclidean pattern this channel outputs
@@ -894,6 +960,13 @@ class PamsOutput:
             e_pattern = generate_euclidean_pattern(self.e_step.value, self.e_trig.value, self.e_rot.value)
 
         self.next_e_pattern = e_pattern
+
+    def request_clock_mod(self, new_value=None, old_value=None, config_point=None, arg=None):
+        self.clock_mod_dirty = True
+
+    def change_clock_mod(self):
+        self.real_clock_mod = self.clock_mod.mapped_value
+        self.clock_mod_dirty = False
 
     def square_wave(self, tick, n_ticks):
         """Calculate the [0, 1] value of a square wave with PWM
@@ -911,8 +984,10 @@ class PamsOutput:
         start_tick = self.phase.value * n_ticks / 100.0
         end_tick = (start_tick + duty_cycle) % n_ticks
 
-        if (start_tick < end_tick and tick >= start_tick and tick < end_tick) or \
-           (start_tick > end_tick and (tick < end_tick or tick >= start_tick)):
+        if (
+            (start_tick < end_tick and tick >= start_tick and tick < end_tick) or
+            (start_tick > end_tick and (tick < end_tick or tick >= start_tick))
+        ):
             return 1.0
         else:
             return 0.0
@@ -978,6 +1053,9 @@ class PamsOutput:
         /            \
         -A--D---S---R-
         ---n_ticks----
+
+        @param tick  The current tick, in the range [0, n_ticks)
+        @param n_ticks  The number of ticks in which the wave must complete
         """
 
         # apply the phase offset
@@ -1010,6 +1088,48 @@ class PamsOutput:
         else:
             # outside of the ADSR
             return 0.0
+
+    def turing_shift(self):
+        """Shift the turing machine register by 1 bit
+        """
+        r = random.randint(0, 99)
+        if r >= abs(self.t_lock.value):
+            incoming_bit = random.randint(0, 1)
+        else:
+            incoming_bit = (self.turing_register >> (self.t_length.value - 1)) & 0x01
+        self.turing_register = ((self.turing_register << 1) & 0xffff) | incoming_bit
+
+    def turing_wave(self, tick, n_ticks):
+        """Calculate the [0, 1] output of a Turing Machine wave
+
+        @param tick  The current tick, in the range [0, n_ticks)
+        @param n_ticks  The number of ticks in which the wave must complete
+        """
+        # respect phase shifting when updating the shift register
+        start_tick = int(self.phase.value * n_ticks / 100.0)
+        if tick == start_tick:
+            self.turing_shift()
+
+        active_bit = self.turing_register & 0x0001
+        if self.t_lock.value < 0 and self.wave_counter % (2 * self.t_length.value) >= self.t_length.value:
+            # turing machine outputs the [register, ~register] when "locked-left",
+            # effectively doubling the length of the pattern
+            active_bit = active_bit ^ 0x01
+
+        if self.t_mode.value == MODE_TURING_GATE:
+            if active_bit:
+                return self.square_wave(tick, n_ticks)
+            else:
+                return 0
+        else:
+            value = self.turing_register & 0xff  # consider only the lowest 8 bits
+
+            if self.t_lock.value < 0 and self.wave_counter % (2 * self.t_length.value) >= self.t_length.value:
+                # if we're in the second half of a doubled pattern, invert the value
+                value = (~value) & 0xff
+
+            return value / 256
+        return 0
 
     def reset(self):
         """Reset the current output to the beginning
@@ -1097,6 +1217,8 @@ class PamsOutput:
                 wave_sample = wave_sample * self.sine_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
             elif self.wave_shape.value == WAVE_ADSR:
                 wave_sample = wave_sample * self.adsr_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
+            elif self.wave_shape.value == WAVE_TURING:
+                wave_sample = self.turing_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
             else:
                 wave_sample = 0.0
 
@@ -1211,6 +1333,9 @@ class PamsWorkout2(EuroPiScript):
             ch.clock_mod.add_child(ch.e_step)
             ch.clock_mod.add_child(ch.e_trig)
             ch.clock_mod.add_child(ch.e_rot)
+            ch.clock_mod.add_child(ch.t_length)
+            ch.clock_mod.add_child(ch.t_lock)
+            ch.clock_mod.add_child(ch.t_mode)
             ch.clock_mod.add_child(ch.swing)
             ch.clock_mod.add_child(ch.quantizer)
             ch.clock_mod.add_child(ch.root)

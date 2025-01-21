@@ -132,13 +132,16 @@ The submenu for each CV output has the following options:
     triangle to ramp)
   - ![Sine Wave](./pams-docs/wave_sine.png) Sine: bog-standard sine wave
   - ![ADSR Envelope](./pams-docs/wave_adsr.png) ADSR: an Attack/Decay/Sustain/Release envelope
+  - ![Turing](./pams-docs/wave_turing.png) Turing: a shift-register like the Music Thing Modular Turing Machine. Can either
+    output pulses or stepped CV.
   - ![Random Wave](./pams-docs/wave_random.png) Random: outputs a random voltage at the start of every euclidean pulse,
     holding that voltage until the next pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean
     pulse)
-  - ![AIN](./pams-docs/wave_ain.png) AIN: acts as a sample & hold of `ain`, with a sample taken at the start of every
+  - ![AIN](./pams-docs/wave_ain.png) AIN (S&H): acts as a sample & hold of `ain`, with a sample taken at the start of every
     euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
-  - ![KNOB](./pams-docs/wave_knob.png) KNOB: acts as a sample & hold of `k1`, with a sample taken at the start of every
+  - ![KNOB](./pams-docs/wave_knob.png) KNOB (S&H): acts as a sample & hold of `k1`, with a sample taken at the start of every
     euclidean pulse (if `EStep` is zero then every clock tick is assumed to be a euclidean pulse)
+
 - `Width` -- width of the resulting wave. See below for the effects of width adjustment on different wave shapes
 - `Phase` -- the phase offset of the wave. Starting a triangle at 50% would start it midway through
 - `Ampl.` -- the maximum amplitude of the output as a percentage of the 10V hardware maximum
@@ -147,6 +150,9 @@ The submenu for each CV output has the following options:
 - `Sustain` -- the percentage level of the sustain phase of an ADSR envelope
 - `Release` -- the percentage of of the cyle time minus the attack & decay phases dedicated to the release phase of
   an ADSR envelope
+- `TLen` -- The length of the Turning machine shift register
+- `TLock` -- The lock value of the Turing machine shift register
+- `TMode` -- The mode of the Turing machine: either `Gate` or `CV`
 - `Skip%` -- the probability that a square pulse or euclidean trigger will be skipped
 - `EStep` -- the number of steps in the euclidean rhythm. If zero, the euclidean generator is disabled
 - `ETrig` -- the number of pulses in the euclidean rhythm
@@ -299,6 +305,27 @@ CV1 Output
 _____|         |____|         |__________
 ```
 
+### Turing Waves
+
+`Turing` wave mode can operate in one of two sub-modes: `Gate` (default) or `CV`.
+
+In `Gate` mode, it outputs simple of/off square waves.
+
+Like the [original Turing Machine](https://github.com/TomWhitwell/TuringMachine) module, the `TLock` parameter
+controls the likelihood that bits are randomly flipped when the register shifts.  When `TLock` is _positive_, the
+output pattern is equal to the `TLength` parameter. When `TLock` is _negative_ the output pattern is the initial
+`TLength` bits, followed by their compliment.  The further from zero in either direction, the less likely it is that
+bits will be flipped during the shift.
+
+For example if `TLength` is 8 and the register contains `10101100`, and `TLock` is `+100` the gate output will be
+`[1, 0, 1, 0, 1, 1, 0, 0]`.  If `TLock` is `-100` instead the gate output will be
+`[1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1]`.
+
+In `CV` mode it outputs a pseudo-random control voltage,similar to the `Random` wave. The value of the wave is
+determined by looking at the lowest 8 bits in the register (the register always contains 16 bits, regardless of
+`TLength`), treating them as a binary integer, and dividing that value by 256.  The resulting value in the range
+`[0, 1)` is multiplied by the output amplitude to generate the output voltage.
+
 ### Effects of Width on Different Wave Shapes
 
 - Square: Duty cycle control. 0% is always off, 100% is always on
@@ -306,8 +333,10 @@ _____|         |____|         |__________
   100% results in a ramp
 - Sine: ignored
 - Random: offset voltage as a percentage of the maximum output
-- AIN: ignored
-- KNOB: ignored
+- AIN (S&H): ignored
+- KNOB (S&H): ignored
+- Turing (Gate): Duty cycle control. 0% is always off, 100% will smear adjacent on-gates together
+- Turing (CV): ignored.
 
 ### Reset and Start Triggers
 
@@ -382,9 +411,10 @@ as an offset voltage.
 There is digital attenuation/gain via the `AIN > Gain` or `KNOB > Gain` settings.  This sets the
 percentage of the input signal that is passed to settings listenting to these inputs.
 
-For example, if your modulation source can only output up to 5V you should set the gain to
-`12.0 / 5.0 * 100.0 = 240%`.  This will allow the modulation source to fully sweep the
-range of options available.
+For example, if EuroPi is configured to use 10V as its maximum input voltage, but you patch
+an LFO that can only generate 0-5V, choosing `AIN` will only allow the LFO to sweep through the
+first half of the available options. To sweep the whole range, set `AIN > Gain` to
+`MAX_INPUT_VOLTAGE / (voltage source's max output) * 100 = 10.0 / 5.0 * 100 = 200`.
 
 The `AIN > Precision` and `KNOB > Precision` settings allow control over the number of samples
 taken when reading the input.  Higher precision can result in slower processing, which may introduce

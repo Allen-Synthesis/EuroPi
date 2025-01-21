@@ -421,7 +421,7 @@ class SettingMenuItem(ChoiceMenuItem):
         elif t is BooleanConfigPoint:
             items = [False, True]
         elif t is ChoiceConfigPoint:
-            items = self.src_config.choices
+            items = list(self.src_config.choices)  # make a copy of the items so we can append the autoselect items!
         else:
             raise Exception(f"Unsupported ConfigPoint type: {type(self.src_config)}")
 
