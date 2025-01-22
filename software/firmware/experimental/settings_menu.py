@@ -25,6 +25,7 @@ from configuration import *
 from experimental.knobs import KnobBank
 from framebuf import FrameBuffer, MONO_HLSB
 from machine import Timer
+import os
 import time
 
 
@@ -740,6 +741,12 @@ class SettingsMenu:
         data = {}
         for item in self.menu_items_by_name.values():
             data[item.config_point.name] = item.value_choice
+        try:
+            # ensure the /config directory exists
+            # save_to_file won't create it for us!
+            os.mkdir("config")
+        except OSError:
+            pass
         ConfigFile.save_to_file(settings_file, data)
         self.settings_dirty = False
 
