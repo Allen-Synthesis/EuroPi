@@ -28,6 +28,13 @@ Smooth random voltages based on bezier curves. Inspired by the ADDAC507 Random B
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: Random</i>
 
+### Binary Counter \[ [documentation](/software/contrib/binary_counter.md) | [script](/software/contrib/binary_counter.py) \]
+
+A simple gate sequencer implemented using a 6-bit binary counter.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: gates, sequencer, binary</i>
+
 ### Bit Garden \[ [documentation](/software/contrib/bit_garden.md) | [script](/software/contrib/bit_garden.py) \]
 
 Mirrors a gate/trigger input, with adjustable skip probability across channels.
