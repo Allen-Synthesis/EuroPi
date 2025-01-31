@@ -146,6 +146,13 @@ building multifunction knobs.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.change_lock_value">
+<span class="sig-name descname"><span class="pre">change_lock_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.change_lock_value" title="Permalink to this definition"></a></dt>
+<dd><p>Change the current value to reflect a desired percentage</p>
+<p>&#64;param percent  The 0-1 value we want to re-lock the knob at</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.choice">
 <span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.choice" title="Permalink to this definition"></a></dt>
 <dd><p>Return a value from a list chosen by the current voltage value.</p>
@@ -364,6 +371,13 @@ current position of a <cite>LockableKnob</cite>, first lock the knob, then read 
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.knobs.LockableKnob.change_lock_value">
+<span class="sig-name descname"><span class="pre">change_lock_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.change_lock_value" title="Permalink to this definition"></a></dt>
+<dd><p>Change the current value to reflect a desired percentage</p>
+<p>&#64;param percent  The 0-1 value we want to re-lock the knob at</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob.choice">
 <span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.choice" title="Permalink to this definition"></a></dt>
