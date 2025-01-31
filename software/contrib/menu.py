@@ -23,6 +23,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Arpeggiator",       "contrib.arp.Arpeggiator"],
     ["Bernoulli Gates",   "contrib.bernoulli_gates.BernoulliGates"],
     ["Bezier Curves",     "contrib.bezier.Bezier"],
+    ["Binary Counter",    "contrib.binary_counter.BinaryCounter"],
     ["Bit Garden",        "contrib.bit_garden.BitGarden"],
     ["Clock Modifier",    "contrib.clock_mod.ClockModifier"],
     ["Coin Toss",         "contrib.coin_toss.CoinToss"],
