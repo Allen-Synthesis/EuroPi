@@ -33,30 +33,20 @@ class Logic(EuroPiScript):
         self.x_nor_y = 0
         self.x_xnor_y = 0
 
-        @b1.handler
-        def on_b1_press():
-            ssoled.notify_user_interaction()
-
-        @b2.handler
-        def on_b2_press():
-            ssoled.notify_user_interaction()
-
-        @din.handler
-        def on_din_rising():
-            self.update_logic()
-
-        @din.handler_falling
-        def on_din_falling():
-            self.update_logic()
-
-        def on_ain_rising():
-            self.update_logic()
-
-        def on_ain_falling():
-            self.update_logic()
-
         self.din1 = din
-        self.din2 = AnalogReaderDigitalWrapper(ain, cb_rising = on_ain_rising, cb_falling = on_ain_falling)
+        self.din2 = AnalogReaderDigitalWrapper(ain, cb_rising = self.update_logic, cb_falling = self.update_logic)
+
+        # connect ISRs
+        self.din1.handler(self.update_logic)
+        self.din1.handler_falling(self.update_logic)
+        b1.handler(self.button_state_change)
+        b1.handler_falling(self.button_state_change)
+        b2.handler(self.button_state_change)
+        b2.handler_falling(self.button_state_change)
+
+    def button_state_change(self):
+        self.update_logic()
+        ssoled.notify_user_interaction()
 
     @classmethod
     def display_name(cls):
@@ -65,8 +55,8 @@ class Logic(EuroPiScript):
     def update_logic(self):
         """Updates the values of our 6 logic operations
         """
-        x = self.din1.value()
-        y = self.din2.value()
+        x = self.din1.value() | b1.value()
+        y = self.din2.value() | b2.value()
 
         self.x_and_y = x & y
         self.x_or_y = x | y
