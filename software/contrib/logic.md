@@ -41,6 +41,4 @@ use only one button at a time when using the logic module performatively.
 ## Screensaver
 
 The screen will go to sleep after 20 minutes of inactivity. Pressing
-either button will wake the screen up.
-
-The knobs are not used in this program.
+either button or moving either knob will wake the screen up.

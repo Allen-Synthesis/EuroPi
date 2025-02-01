@@ -66,14 +66,26 @@ class Logic(EuroPiScript):
         self.x_xnor_y = abs(self.x_xor_y -1)  # so some simple int math will suffice
 
     def main(self):
-        """The main loop
+        knob_wakeup_threshold = 0.05
 
-        Connects event handlers for clock-in and button presses
-        and runs the main loop
-        """
+        prev_k1 = k1.percent()
+        prev_k2 = k2.percent()
+
         while True:
             # update ain
             self.din2.update()
+
+            # check to see if we've wiggled a knob to exit the screensaver
+            current_k1 = k1.percent()
+            current_k2 = k2.percent()
+
+            if (
+                abs(current_k1 - prev_k1) >= knob_wakeup_threshold or
+                abs(current_k2 - prev_k2) >= knob_wakeup_threshold
+            ):
+                ssoled.notify_user_interaction()
+                prev_k1 = current_k1
+                prev_k2 = current_k2
 
             # set the output voltages
             cv1.value(self.x_and_y)
