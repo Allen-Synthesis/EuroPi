@@ -1283,6 +1283,52 @@ class PamsOutput:
                 setting.choose(bank[key])
 
 
+class Visualizer(MenuItem):
+    """Draws the states of CV1-6 in a graph
+    """
+    def __init__(
+        self,
+        script,
+        children: list[object] = None,
+        parent: object = None,
+        is_visible: bool = True
+    ):
+        """Constructor
+
+        @param script  the PamsWorkout instance that this visualizer belongs to
+        """
+        super().__init__(children, parent, is_visible)
+        self.pams = script
+        self.ui_dirty = True  # this is always dirty, so the UI updates continuously
+
+    def draw(self, oled=europi.oled):
+        """Draw the values of the 6 output channels as a horizontal bar graph
+
+        We _could_ have a rolling graph, but I'm worried about the memory usage that would necessitate
+
+        The OLED must be cleared before calling this function. You must call oled.show() after
+        calling this function
+        """
+        BAR_HEIGHT = 2
+        BAR_SEPARATION = 1
+        y = 0
+        w = 0
+        for ch in self.pams.channels:
+            w = max(1, int(ch.out_volts / MAX_OUTPUT_VOLTAGE * OLED_WIDTH))
+            oled.fill_rect(0, y, w, BAR_HEIGHT, 1)
+            y += BAR_HEIGHT + BAR_SEPARATION
+
+        for ch in CV_INS.keys():
+            w = max(1, int(CV_INS[ch].percent() * OLED_WIDTH))
+            oled.fill_rect(0, y, w, BAR_HEIGHT, 1)
+            y += BAR_HEIGHT + BAR_SEPARATION
+
+        if din.value():
+            w = OLED_WIDTH
+        else:
+            w = 1
+
+
 class PamsWorkout2(EuroPiScript):
     """The main script for the Pam's Workout implementation
     """
@@ -1382,6 +1428,10 @@ class PamsWorkout2(EuroPiScript):
         for cv in CV_INS.values():
             cv.gain.add_child(cv.precision),
             menu_items.append(cv.gain)
+
+        # Add a visualization as the last item
+        self.visualizer = Visualizer(self)
+        menu_items.append(self.visualizer)
 
         ## The main application menu
         self.main_menu = SettingsMenu(
