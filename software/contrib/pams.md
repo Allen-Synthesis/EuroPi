@@ -79,6 +79,8 @@ CV2 to 6
 AIN
  +-- Gain
  |    +-- Precision
+ |
+Visualization
 ```
 
 `*` These settings can be automatically selected using voltage coming into `ain`.
@@ -87,6 +89,8 @@ AIN
 
 Some settings (e.g. ADSR envelope parameters, quantization root) are hidden from the menu if they would be ignored
 by the current configuration for that channel.
+
+The vizualization does not have any submenu items and simply displays the voltages of `CV1`-`6`, `AIN`, and `K1`.
 
 ## Main Clock Options
 
