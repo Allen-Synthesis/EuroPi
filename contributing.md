@@ -203,3 +203,25 @@ Changes or additions to public API functions must include the corresponding upda
 ### Testing
 
 All existing automated tests must pass. An effort should be made to improve the test suite by adding tests for new or changed functionality.
+
+### License
+
+All software in this repository is licensed under the [Apache 2.0](/software/LICENSE) license. In accordance with this license, please place a comment block at the top of your Python source files indicating the copyright and license:
+
+```python
+# Copyright [YEAR] Allen Synthesis
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+```
+
+Please substitute `[YEAR]` with the current year, e.g. `2025`.
