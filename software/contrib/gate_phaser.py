@@ -1,3 +1,16 @@
+# Copyright 2024 Allen Synthesis
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from europi import *
 from time import ticks_diff, ticks_ms
 #from random import uniform
@@ -32,13 +45,13 @@ class GatePhaser(EuroPiScript):
         self.gateOnTimes = []
         self.gateOffTimes = []
         self.gateStates = []
-        
+
         self.lastK1Reading = 0
         self.lastK2Reading = 0
         self.lastSaveState = ticks_ms()
         self.pendingSaveState = False
         self.screenRefreshNeeded = True
-        
+
         self.smoothK1 = 0
         self.smoothK2 = 0
         self.loadState()
@@ -69,7 +82,7 @@ class GatePhaser(EuroPiScript):
             self.buildIntervalStr()
             self.screenRefreshNeeded = True
             self.pendingSaveState = True
-            
+
 
         @b2.handler_falling
         def b2Pressed():
@@ -122,7 +135,7 @@ class GatePhaser(EuroPiScript):
     def getKnobValues(self):
         """Get k1 and k2 values and adjust working parameters if knobs have moved"""
         changed = False
-        
+
         # Get knob values and smooth using a simple low pass filter
         self.smoothK1 = int(self.lowPassFilter(0.15, self.lastK1Reading, k1.read_position(100) + 2))
         self.smoothK2 = int(self.lowPassFilter(0.15, self.lastK2Reading, k2.read_position(100) + 2))
@@ -150,7 +163,7 @@ class GatePhaser(EuroPiScript):
             self.getKnobValues()
             if self.screenRefreshNeeded:
                 self.updateScreen()
-            
+
             # Cycle through outputs turning gates on and off as needed
             # When a gate is triggered it's next on and off time is calculated
             self.currentTimeStampMs = ticks_ms()
