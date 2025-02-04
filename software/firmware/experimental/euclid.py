@@ -16,6 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+
 def generate_euclidean_pattern(steps, pulses, rot=0):
     """Generates an array indicating the on/off steps of Euclid(k, n)
 
