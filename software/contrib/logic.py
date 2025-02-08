@@ -34,11 +34,13 @@ class Logic(EuroPiScript):
         self.x_xnor_y = 0
 
         self.din1 = din
-        self.din2 = AnalogReaderDigitalWrapper(ain, cb_rising = self.update_logic, cb_falling = self.update_logic)
+        self.din2 = AnalogReaderDigitalWrapper(ain)
 
         # connect ISRs
         self.din1.handler(self.update_logic)
         self.din1.handler_falling(self.update_logic)
+        self.din2.handler(self.update_logic)
+        self.din2.handler_falling(self.update_logic)
         b1.handler(self.button_state_change)
         b1.handler_falling(self.button_state_change)
         b2.handler(self.button_state_change)
