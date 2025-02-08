@@ -399,7 +399,8 @@ calibration is important if you want to be able to output precise voltages.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.Output.on">
 <span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output.on" title="Permalink to this definition"></a></dt>
-<dd><p>Set the voltage HIGH at 5 volts.</p>
+<dd><p>Set the voltage HIGH according to the gate voltage</p>
+<p>By default this is 5V, but can be overridden via the configuration file</p>
 </dd></dl>
 
 <dl class="py method">
@@ -412,12 +413,15 @@ calibration is important if you want to be able to output precise voltages.</p>
 <dt class="sig sig-object py" id="europi.Output.value">
 <span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output.value" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the output to 0V or 5V based on a binary input, 0 or 1.</p>
+<p>&#64;param value  HIGH or LOW, according to the desired state.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="europi.Output.voltage">
 <span class="sig-name descname"><span class="pre">voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output.voltage" title="Permalink to this definition"></a></dt>
-<dd><p>Set the output voltage to the provided value within the range of 0 to 10.</p>
+<dd><p>Set the output voltage to the provided value within the range of MIN_VOLTAGE to MAX_VOLTAGE</p>
+<p>By default this range is 0-10, but can be overridden via the configuration file</p>
+<p>&#64;param voltage  The desired volts to send to the output. If None the current voltage is returned</p>
 </dd></dl>
 
 </dd></dl>
