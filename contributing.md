@@ -163,11 +163,11 @@ Just write any labels that apply to your program, including any not listed here 
 
 ### File Naming
 
-Please use all lowercase and separate words with underscores for your program names. If additional resources are needed, such as image files, a directory with the same name and suffixed with `docs` can be included. e.g. the files associated with a program for a Sample and Hold function would look as follows:
+Please use all lowercase and separate words with underscores for your program names. If additional resources are needed, such as image files, a directory with the same name and suffixed with `-docs` can be included. e.g. the files associated with a program for a Sample and Hold function would look as follows:
 
 ```
 software/contrib
-├── sample_and_hold_docs
+├── sample_and_hold-docs
 │   └── sample_and_hold.png
 ├── sample_and_hold.md
 ├── sample_and_hold.py
@@ -177,11 +177,32 @@ software/contrib
 
 In order to be included in the menu a program needs to meet a few additional requirements. See [menu.md](/software/contrib/menu.md) for details. Programs are not required to participate in the menu in order to be accepted, but it is nice.
 
-
-
 ## Firmware
 
 Changes to firmware code must adhere to more stringent requirements than other changes. Firmware changes have the potential to affect every contrib script that runs on the EuroPi as well as the behavior of the module itself. Any change must have a clear and well described purpose and be well tested against the suite of available contrib scripts.
+
+### Experimental Libraries
+
+User-contributed additions to the firmware, or code intended to be re-used across multiple `contrib` programs should be placed in the `firmware/experimental` directory:
+
+```
+software/
+├── contrib/
+│   └── my_program.md
+│   └── my_program.py
+│   └── your_program.md
+├── firmware/
+│   ├── experimental/
+│   |   └── my_common_features.py
+```
+
+Examples of user-contributed shared code include:
+- lockable knobs
+- screensaver
+- quantizer
+- euclidean pattern generator
+- custom fonts
+- additional `math` and `random` functions included in standard Python3, but not included in MicroPython
 
 ### Code Style Requirements
 
@@ -203,3 +224,25 @@ Changes or additions to public API functions must include the corresponding upda
 ### Testing
 
 All existing automated tests must pass. An effort should be made to improve the test suite by adding tests for new or changed functionality.
+
+## License
+
+All software in this repository is licensed under the [Apache 2.0](/software/LICENSE) license. In accordance with this license, please place a comment block at the top of your Python source files indicating the copyright and license:
+
+```python
+# Copyright [YEAR] Allen Synthesis
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+```
+
+Please substitute `[YEAR]` with the current year, e.g. `2025`.
