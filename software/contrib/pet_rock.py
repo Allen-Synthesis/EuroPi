@@ -16,7 +16,9 @@ Instead of using colours to differentiate between the moods, this program
 displays moods using Tarot and/or playing card suits:
 - swords (red)
 - cups (blue)
-- wands/clubs (yellow)
+- shields (wands/clubs is the official tarot suit here, but clubs goes with the
+  english card suits below, and shields fit with swords, and are found in some
+  swiss-german decks of cards) (yellow)
 - pentacles (green)
 
 An additional 4 moods were included in the original C++ firmware, but were
@@ -24,8 +26,7 @@ deprecated. They are also re-implemented here, but disabled by default:
 - hearts
 - spades
 - diamonds
-- shields (since clubs overlap with the original tarot suits; some Swiss-German
-  decks of cards include shields as an additional suit)
+- clubs
 """
 
 from europi import *
@@ -38,6 +39,7 @@ import random
 import time
 
 from experimental.a_to_d import AnalogReaderDigitalWrapper
+from experimental.experimental_config import RTC_NONE
 from experimental.math_extras import rescale
 from experimental.random_extras import shuffle
 from experimental.rtc import *
@@ -841,10 +843,23 @@ class IntervalTimer:
                 self.next_rise = True
 
 
+class NoClockError(Exception):
+    """
+    A custom exception we can raise if the RTC is not configured correctly
+    """
+    def __init__(self, message):
+        super().__init__(message)
+
+
 class PetRock(EuroPiScript):
 
     def __init__(self):
         super().__init__()
+
+        # validate the clock and raise a NoClockError if
+        # we are using the default no-RTC implementation
+        if experimental_config.RTC_IMPLEMENTATION == RTC_NONE:
+            raise NoClockError("No clock configured")
 
         Mood.set_moods(self.config.MOODS)
 
