@@ -13,4 +13,4 @@
 # limitations under the License.
 
 # EuroPi firmware and contrib package version
-__version__ = "0.17.0"
+__version__ = "0.17.1"
