@@ -99,9 +99,16 @@ class Conway(EuroPiScript):
         # Set to True if we want to clear the field & respawn
         self.reset_requested = False
 
+        # statically allocated array of the indices of the cells around the one we're considering
+        # this is just an optimization to avoid re-allocating this array
+        self.neighbourhood = [0, 0, 0, 0, 0, 0, 0, 0]
+
         # keep the last few changes in population in a list to check if it's oscillating predictably
         self.population_deltas = []
         self.MAX_DELTAS = 12
+
+        # statically allocated array we use to store the sums of cells when checking for statis
+        self.statis_sums = [0] * self.MAX_DELTAS
 
         @b1.handler
         def on_b1():
@@ -130,14 +137,12 @@ class Conway(EuroPiScript):
         def rowcol2index(r, c):
             return (r % OLED_HEIGHT) * OLED_WIDTH + (c % OLED_WIDTH)
 
-        neighbours = []
-
+        n = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if i != 0 or j != 0:
-                    neighbours.append(rowcol2index(row+i, col+j))
-
-        return neighbours
+                    self.neighbourhood[n] = rowcol2index(row+i, col+j)
+                    n += 1
 
     def calculate_spawn_level(self):
         """Calculate what percentage of the field should contain new cells
@@ -211,34 +216,36 @@ class Conway(EuroPiScript):
             self.reset()
 
         for bit_index in range(NUM_PIXELS):
-            if get_bit(self.changed_spaces, bit_index):
-                neighbourhood = self.get_neigbour_indices(bit_index)
-                num_neighbours = sum(1 for n in neighbourhood if get_bit(self.field, n))
+            if not get_bit(self.changed_spaces, bit_index):
+                continue
 
-                if get_bit(self.field, bit_index):
-                    if num_neighbours == 2 or num_neighbours == 3:        # happy cell, stays alive
-                        set_bit(self.next_field, bit_index, True)
-                    else:                                                 # sad cell, dies
-                        set_bit(self.next_field, bit_index, False)
-                        self.num_died += 1
-                        self.num_alive -= 1
+            self.get_neigbour_indices(bit_index)
+            num_neighbours = sum(1 for n in self.neighbourhood if get_bit(self.field, n))
 
-                        self.num_changes += 1
-                        set_bit(self.next_changed_spaces, bit_index, 1)
-                        for n in neighbourhood:
-                            set_bit(self.next_changed_spaces, n, 1)
-                else:
-                    if num_neighbours == 3:                               # baby cell is born!
-                        set_bit(self.next_field, bit_index, True)
-                        self.num_alive += 1
-                        self.num_born += 1
+            if get_bit(self.field, bit_index):
+                if num_neighbours == 2 or num_neighbours == 3:        # happy cell, stays alive
+                    set_bit(self.next_field, bit_index, True)
+                else:                                                 # sad cell, dies
+                    set_bit(self.next_field, bit_index, False)
+                    self.num_died += 1
+                    self.num_alive -= 1
 
-                        self.num_changes += 1
-                        set_bit(self.next_changed_spaces, bit_index, 1)
-                        for n in neighbourhood:
-                            set_bit(self.next_changed_spaces, n, 1)
-                    else:                                                 # empty space remains empty
-                        set_bit(self.next_field, bit_index, False)
+                    self.num_changes += 1
+                    set_bit(self.next_changed_spaces, bit_index, 1)
+                    for n in self.neighbourhood:
+                        set_bit(self.next_changed_spaces, n, 1)
+            else:
+                if num_neighbours == 3:                               # baby cell is born!
+                    set_bit(self.next_field, bit_index, True)
+                    self.num_alive += 1
+                    self.num_born += 1
+
+                    self.num_changes += 1
+                    set_bit(self.next_changed_spaces, bit_index, 1)
+                    for n in self.neighbourhood:
+                        set_bit(self.next_changed_spaces, n, 1)
+                else:                                                 # empty space remains empty
+                    set_bit(self.next_field, bit_index, False)
 
         # swap field & next_field so we don't need to copy between arrays
         tmp = self.next_field
@@ -268,13 +275,13 @@ class Conway(EuroPiScript):
         # if the population is oscillating up and down predicatbly, we've probably reached stasis
         # check for 2, 3, and 4 step repetitions
         for pattern_length in range(2, 5):
-            sums = []
-            for i in range(self.MAX_DELTAS // pattern_length):
-                sums.append(sum(self.population_deltas[i*pattern_length:i*pattern_length+pattern_length]))
+            count = self.MAX_DELTAS // pattern_length
+            for i in range(count):
+                self.statis_sums[i] = sum(self.population_deltas[i*pattern_length:i*pattern_length+pattern_length])
 
             # check the standard deviation
-            deviation = stdev(sums)
-            mean = sum(sums)/len(sums)
+            deviation = stdev(self.statis_sums[0:count])
+            mean = sum(self.statis_sums[0:count])/count
             if deviation <= 1 and abs(mean) <= 1:
                 return True
 
