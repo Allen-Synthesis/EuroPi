@@ -1313,8 +1313,8 @@ class Visualizer(MenuItem):
         BAR_SEPARATION = 1
         y = 0
         w = 0
-        for ch in self.pams.channels:
-            w = max(1, int(ch.out_volts / MAX_OUTPUT_VOLTAGE * OLED_WIDTH))
+        for cv in cvs:
+            w = max(1, int(cv.voltage() / MAX_OUTPUT_VOLTAGE * OLED_WIDTH))
             oled.fill_rect(0, y, w, BAR_HEIGHT, 1)
             y += BAR_HEIGHT + BAR_SEPARATION
 
@@ -1323,10 +1323,12 @@ class Visualizer(MenuItem):
             oled.fill_rect(0, y, w, BAR_HEIGHT, 1)
             y += BAR_HEIGHT + BAR_SEPARATION
 
-        if din.value():
-            w = OLED_WIDTH
-        else:
-            w = 1
+        # put verical bars at the quarters
+        oled.line(0, 0, 0, OLED_HEIGHT, 1)
+        oled.line(OLED_WIDTH // 4, 0, OLED_WIDTH // 4, OLED_HEIGHT, 1)
+        oled.line(OLED_WIDTH // 2, 0, OLED_WIDTH // 2, OLED_HEIGHT, 1)
+        oled.line(3 * OLED_WIDTH // 4, 0, 3 * OLED_WIDTH // 4, OLED_HEIGHT, 1)
+        oled.line(OLED_WIDTH - 1, 0, OLED_WIDTH - 1, OLED_HEIGHT, 1)
 
 
 class PamsWorkout2(EuroPiScript):
