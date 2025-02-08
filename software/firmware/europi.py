@@ -536,15 +536,25 @@ class Output:
         self._duty = cycle
 
     def voltage(self, voltage=None):
-        """Set the output voltage to the provided value within the range of 0 to 10."""
+        """
+        Set the output voltage to the provided value within the range of MIN_VOLTAGE to MAX_VOLTAGE
+
+        By default this range is 0-10, but can be overridden via the configuration file
+
+        @param voltage  The desired volts to send to the output. If None the current voltage is returned
+        """
         if voltage is None:
-            return self._duty / MAX_UINT16
+            return self._duty / MAX_UINT16 * self.MAX_VOLTAGE
         voltage = clamp(voltage, self.MIN_VOLTAGE, self.MAX_VOLTAGE)
         index = int(voltage // 1)
         self._set_duty(self._calibration_values[index] + (self._gradients[index] * (voltage % 1)))
 
     def on(self):
-        """Set the voltage HIGH at 5 volts."""
+        """
+        Set the voltage HIGH according to the gate voltage
+
+        By default this is 5V, but can be overridden via the configuration file
+        """
         self.voltage(self.gate_voltage)
 
     def off(self):
@@ -559,8 +569,12 @@ class Output:
             self.on()
 
     def value(self, value):
-        """Sets the output to 0V or 5V based on a binary input, 0 or 1."""
-        if value == HIGH:
+        """
+        Sets the output to 0V or 5V based on a binary input, 0 or 1.
+
+        @param value  HIGH or LOW, according to the desired state.
+        """
+        if value:  # silently allow booleans too!
             self.on()
         else:
             self.off()
