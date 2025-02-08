@@ -68,3 +68,15 @@ class AnalogReaderDigitalWrapper:
 
     def last_falling_ms(self):
         return self.last_falling_time
+
+    def handler(self, func):
+        """Define the callback function to call when rising edge detected."""
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self.cb_rising = func
+
+    def handler_falling(self, func):
+        """Define the callback function to call when falling edge detected."""
+        if not callable(func):
+            raise ValueError("Provided handler func is not callable")
+        self.cb_falling = func
