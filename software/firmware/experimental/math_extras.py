@@ -18,6 +18,7 @@ Assorted mathematical and statistical functions that can be re-used across scrip
 Intended to augment Python's standard math library with additional useful functions
 """
 
+
 def prod(l):
     """
     Calculate the product of all items in a list
@@ -167,26 +168,26 @@ def solve_linear_system(m):
 
     # sort the rows
     for i in range(n_eqs):
-        for j in range(i+1, n_eqs):
+        for j in range(i + 1, n_eqs):
             if abs(m[i][i]) < abs(m[j][i]):
                 # swap rows i and j with each other
-                for k in range(n_eqs+1):
+                for k in range(n_eqs + 1):
                     tmp = m[j][k]
                     m[j][k] = m[i][k]
                     m[i][k] = tmp
 
     # gaussian elimination
     for i in range(n_eqs-1):
-        for j in range(i+1, n_eqs):
+        for j in range(i + 1, n_eqs):
             f = m[j][i] / m[i][i]
-            for k in range(n_eqs+1):
+            for k in range(n_eqs + 1):
                 m[j][k] = m[j][k] - f * m[i][k]
 
     # back substitution
     results = list(range(n_eqs))
     for i in range(n_eqs - 1, -1, -1):
         results[i] = m[i][n_eqs]
-        for j in range(i+1, n_eqs):
+        for j in range(i + 1, n_eqs):
             if i != j:
                 results[i] = results[i] - m[i][j] * results[j]
         results[i] = results[i] / m[i][i]
