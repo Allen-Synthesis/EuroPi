@@ -22,6 +22,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.knobs import *
+from experimental.math_extras import solve_linear_system
 from experimental.screensaver import OledWithScreensaver
 
 import configuration
@@ -104,45 +105,6 @@ def linear_interpolate(x1, x2, t):
     @return   The interpolated value of x
     """
     return x1 * (1-t) + x2 * t
-
-
-def solve_linear_system(m):
-    """
-    Use gaussian elimination to solve a series of linear equations
-
-    @param m  The augmented matrix representation of the series of equations. This array is mangled in the process
-              of calculation
-    @return   A matrix of the coefficients of the equation
-    """
-    n_eqs = len(m)
-
-    # sort the rows
-    for i in range(n_eqs):
-        for j in range(i+1, n_eqs):
-            if abs(m[i][i]) < abs(m[j][i]):
-                # swap rows i and j with each other
-                for k in range(n_eqs+1):
-                    tmp = m[j][k]
-                    m[j][k] = m[i][k]
-                    m[i][k] = tmp
-
-    # gaussian elimination
-    for i in range(n_eqs-1):
-        for j in range(i+1, n_eqs):
-            f = m[j][i] / m[i][i]
-            for k in range(n_eqs+1):
-                m[j][k] = m[j][k] - f * m[i][k]
-
-    # back substitution
-    results = list(range(n_eqs))
-    for i in range(n_eqs - 1, -1, -1):
-        results[i] = m[i][n_eqs]
-        for j in range(i+1, n_eqs):
-            if i != j:
-                results[i] = results[i] - m[i][j] * results[j]
-        results[i] = results[i] / m[i][i]
-
-    return results
 
 
 class BezierCurve:
