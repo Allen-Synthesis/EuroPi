@@ -177,7 +177,7 @@ def solve_linear_system(m):
                     m[i][k] = tmp
 
     # gaussian elimination
-    for i in range(n_eqs-1):
+    for i in range(n_eqs - 1):
         for j in range(i + 1, n_eqs):
             f = m[j][i] / m[i][i]
             for k in range(n_eqs + 1):
