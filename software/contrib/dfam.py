@@ -51,7 +51,7 @@ class Dfam(EuroPiScript):
         while True:
             din2.update()
 
-            self.max_steps = int(k1.percent() * 8)
+            self.max_steps = max(int(k1.percent() * 8), 1)
 
             if self.reset_request:
                 self.reset_request = False
