@@ -3,8 +3,16 @@ from europi_script import EuroPiScript
 
 from experimental.a_to_d import AnalogReaderDigitalWrapper
 
-din1 = din
-din2 = AnalogReaderDigitalWrapper(ain)
+clock_input = din
+reset_input = AnalogReaderDigitalWrapper(ain)
+advance_button = b1
+reset_button = b2
+
+advance_output = cv1
+end_of_sequence_output = cv2
+
+sequence_length_knob = k1
+
 
 class Dfam(EuroPiScript):
     def __init__(self):
@@ -21,11 +29,11 @@ class Dfam(EuroPiScript):
         # the maximum number of steps in the sequence
         self.max_steps = 8
 
-        b1.handler(self.request_advance)
-        din1.handler(self.request_advance)
+        clock_input.handler(self.request_advance)
+        advance_button.handler(self.request_advance)
 
-        b2.handler(self.request_reset)
-        din2.handler(self.request_reset)
+        reset_input.handler(self.request_reset)
+        reset_button.handler(self.request_reset)
 
     def request_reset(self):
         self.reset_request = True
@@ -37,21 +45,21 @@ class Dfam(EuroPiScript):
         pulses = (8 - self.current_step) % 8
         self.current_step = 0
         for i in range(pulses):
-            cv1.on()
+            advance_output.on()
             time.sleep(0.0001)
-            cv1.off()
+            advance_output.off()
             time.sleep(0.0001)
 
     def advance(self):
-        cv1.on()
+        advance_output.on()
         time.sleep(0.0001)
-        cv1.off()
+        advance_output.off()
 
     def main(self):
         while True:
-            din2.update()
+            reset_input.update()  # a-to-d wrapper, so we need to poll it!
 
-            self.max_steps = max(int(k1.percent() * 8), 1)
+            self.max_steps = max(int(sequence_length_knob.percent() * 15), 1)
 
             if self.reset_request:
                 self.reset_request = False
@@ -59,12 +67,12 @@ class Dfam(EuroPiScript):
 
             if self.advance_request:
                 self.advance_request = False
-                self.current_step = (self.current_step + 1) % 8
+                self.current_step += 1
                 if self.current_step >= self.max_steps:
-                    cv2.on()
+                    end_of_sequence_output.on()
                     self.reset()
                 else:
-                    cv2.off()
+                    end_of_sequence_output.off()
 
                 self.advance()
 
