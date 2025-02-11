@@ -14,7 +14,7 @@ end_of_sequence_output = cv2
 sequence_length_knob = k1
 
 
-class Dfam(EuroPiScript):
+class DfamController(EuroPiScript):
     def __init__(self):
         super().__init__()
 
@@ -77,3 +77,7 @@ class Dfam(EuroPiScript):
                 self.advance()
 
             oled.centre_text(f"{self.current_step + 1}/{self.max_steps}")
+
+
+if __name__ == "__main__":
+    DfamController().main()
