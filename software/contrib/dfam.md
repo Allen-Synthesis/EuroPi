@@ -12,7 +12,7 @@ This program is intended to be used with the Moog DFAM semi-modular. It allows f
 | `b1`          | Manual advance button    |
 | `b2`          | Manual reset button      |
 | `k1`          | Pattern length selection |
-| `k2`          | Unused                   |
+| `k2`          | Step size selection      |
 | `cv1`         | Clock output             |
 | `cv2`         | End of sequence gate     |
 | `cv3`         | Unused                   |

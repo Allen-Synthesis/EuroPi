@@ -25,6 +25,9 @@ advance_output = cv1
 end_of_sequence_output = cv2
 
 sequence_length_knob = k1
+step_size_knob = k2
+
+TRIGGER_DURATION = 0.0001
 
 
 class DfamController(EuroPiScript):
@@ -34,13 +37,17 @@ class DfamController(EuroPiScript):
         self.reset_request = False
         self.advance_request = False
 
-        # the current step of the sequence, [0, max_steps)
-        # this is the NEXT step in DFAM's sequencer, so if the last LED
-        # is lit up, current_step is 0
+        # the current step within our internal sequencer
         self.current_step = 0
 
         # the maximum number of steps in the sequence
         self.max_steps = 8
+
+        # the number of advances we output per input step
+        self.step_size = 1
+
+        # the current step on DFAM's sequencer
+        self.dfam_sync_counter = 0
 
         clock_input.handler(self.request_advance)
         advance_button.handler(self.request_advance)
@@ -55,18 +62,22 @@ class DfamController(EuroPiScript):
         self.advance_request = True
 
     def reset(self):
-        pulses = (8 - self.current_step) % 8
+        pulses = (8 - self.dfam_sync_counter) % 8
         self.current_step = 0
-        for i in range(pulses):
+        self.dfam_sync_counter = 0
+        for _ in range(pulses):
             advance_output.on()
-            time.sleep(0.0001)
+            time.sleep(TRIGGER_DURATION)
             advance_output.off()
-            time.sleep(0.0001)
+            time.sleep(TRIGGER_DURATION)
 
     def advance(self):
-        advance_output.on()
-        time.sleep(0.0001)
-        advance_output.off()
+        for _ in range(self.step_size):
+            advance_output.on()
+            time.sleep(TRIGGER_DURATION)
+            advance_output.off()
+            time.sleep(TRIGGER_DURATION)
+        self.dfam_sync_counter = (self.dfam_sync_counter + self.step_size) % 8
 
     def main(self):
         render_needed = True
@@ -78,6 +89,11 @@ class DfamController(EuroPiScript):
             if new_steps != self.max_steps:
                 render_needed = True
                 self.max_steps = new_steps
+
+            new_size = max(int(step_size_knob.percent() * 7), 1)
+            if new_size != self.step_size:
+                render_needed = True
+                self.step_size = new_size
 
             if self.reset_request:
                 render_needed = True
@@ -98,7 +114,7 @@ class DfamController(EuroPiScript):
 
             if render_needed:
                 render_needed = False
-                oled.centre_text(f"{self.current_step + 1}/{self.max_steps}")
+                oled.centre_text(f"{self.current_step + 1}/{self.max_steps}\nx{self.step_size}")
 
 
 if __name__ == "__main__":
