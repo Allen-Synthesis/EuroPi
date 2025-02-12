@@ -1,3 +1,16 @@
+# Copyright 2025 Allen Synthesis
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from europi import *
 from europi_script import EuroPiScript
 
@@ -56,16 +69,23 @@ class DfamController(EuroPiScript):
         advance_output.off()
 
     def main(self):
+        render_needed = True
+
         while True:
             reset_input.update()  # a-to-d wrapper, so we need to poll it!
 
-            self.max_steps = max(int(sequence_length_knob.percent() * 15), 1)
+            new_steps = max(int(sequence_length_knob.percent() * 15), 1)
+            if new_steps != self.max_steps:
+                render_needed = True
+                self.max_steps = new_steps
 
             if self.reset_request:
+                render_needed = True
                 self.reset_request = False
                 self.reset()
 
             if self.advance_request:
+                render_needed = True
                 self.advance_request = False
                 self.current_step += 1
                 if self.current_step >= self.max_steps:
@@ -76,7 +96,9 @@ class DfamController(EuroPiScript):
 
                 self.advance()
 
-            oled.centre_text(f"{self.current_step + 1}/{self.max_steps}")
+            if render_needed:
+                render_needed = False
+                oled.centre_text(f"{self.current_step + 1}/{self.max_steps}")
 
 
 if __name__ == "__main__":
