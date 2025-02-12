@@ -34,3 +34,12 @@ Patch EuroPi and DFAM as described above.
 Manually advance DFAM so the last sequence LED is
 illuminated. Then start DFAM by pressing the Start/Stop button. DFAM will now automatically
 advance every time a pulse is sent from `cv1` of EuroPi
+
+## A Note on DFAM's Sequencer
+
+When using DFAM Controller with a pattern length that is not 8, DFAM will skip steps
+between `length - 1` and `7`; this is to say, the last Velocity and Pitch knobs on DFAM's
+sequencer will always control the last element of the sequence.
+
+For example, if you only want a 5-step sequence, you should set DFAM's 1, 2, 3, 4, and 8 knobs,
+not 1, 2, 3, 4, and 5.
