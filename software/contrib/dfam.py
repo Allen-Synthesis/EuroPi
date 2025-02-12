@@ -105,16 +105,31 @@ class DfamController(EuroPiScript):
                 self.advance_request = False
                 self.current_step += 1
                 if self.current_step >= self.max_steps:
+                    if self.max_steps == 1:
+                        self.advance()
+
                     end_of_sequence_output.on()
                     self.reset()
                 else:
+
                     end_of_sequence_output.off()
 
-                self.advance()
+                    self.advance()
 
             if render_needed:
                 render_needed = False
-                oled.centre_text(f"{self.current_step + 1}/{self.max_steps}\nx{self.step_size}")
+                oled.fill(0)
+                oled.centre_text(f"{self.current_step + 1}/{self.max_steps}\nx{self.step_size}\n", auto_show=False, clear_first=False)
+
+                for i in range(8):
+                    # the 0th LED is actually the last one, so the pattern should be shifted 1 to the left
+                    if i == (self.dfam_sync_counter - 1) % 8:
+                        fill = -1
+                    else:
+                        fill = 0
+                    oled.ellipse(i * OLED_WIDTH // 8 + 4, OLED_HEIGHT - 5, 4, 4, 1, fill)
+
+                oled.show()
 
 
 if __name__ == "__main__":
