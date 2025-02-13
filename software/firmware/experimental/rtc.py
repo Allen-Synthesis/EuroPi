@@ -24,7 +24,7 @@ that can be used externally.
 
 import europi
 from experimental.clocks.clock_source import ExternalClockSource
-from experimental.experimental_config import RTC_NONE, RTC_DS1307, RTC_DS3231
+from experimental.experimental_config import RTC_DS1307, RTC_DS3231, RTC_NTP
 
 
 class Month:
@@ -381,6 +381,9 @@ if europi.experimental_config.RTC_IMPLEMENTATION == RTC_DS1307:
 elif europi.experimental_config.RTC_IMPLEMENTATION == RTC_DS3231:
     from experimental.clocks.ds3231 import DS3231
     source = DS3231(europi.external_i2c)
+elif europi.experimental_config.RTC_IMPLEMENTATION == RTC_NTP:
+    from experimental.clocks.ntp_source import NtpClock
+    source = NtpClock()
 else:
     from experimental.clocks.null_clock import NullClock
     source = NullClock()
