@@ -31,6 +31,7 @@ class NtpError(Exception):
     def __init__(self, message):
         super().__init__(message)
 
+
 try:
     import ntptime
     import socket
