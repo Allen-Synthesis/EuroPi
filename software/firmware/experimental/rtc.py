@@ -382,7 +382,7 @@ elif europi.experimental_config.RTC_IMPLEMENTATION == RTC_DS3231:
     from experimental.clocks.ds3231 import DS3231
     source = DS3231(europi.external_i2c)
 elif europi.experimental_config.RTC_IMPLEMENTATION == RTC_NTP:
-    from experimental.clocks.ntp_source import NtpClock
+    from experimental.clocks.ntp import NtpClock
     source = NtpClock()
 else:
     from experimental.clocks.null_clock import NullClock
