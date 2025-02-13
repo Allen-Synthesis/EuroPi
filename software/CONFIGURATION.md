@@ -76,17 +76,7 @@ set the `PICO_MODEL` setting to `"pico2"`.
 
 Other configuration properties are used by [experimental features](/software/firmware/experimental/__init__.py)
 and can be set using a similar static configuration file. This file is located at `/config/ExperimentalConfig.json`
-on the Raspberry Pi Pico. If this file does not exist, default settings will be loaded.  The following
-shows the default configuration:
-
-```json
-{
-    "VOLTS_PER_OCTAVE": 1.0,
-    "RTC_IMPLEMENTATION": "",
-    "UTC_OFFSET_HOURS": 0,
-    "UTC_OFFSET_MINUTES": 0,
-}
-```
+on the Raspberry Pi Pico. If this file does not exist, default settings will be loaded.
 
 Quantization options:
 - `VOLTS_PER_OCTAVE` must be one of `1.0` (Eurorack standard) or `1.2` (Buchla standard). Default: `1.0`
@@ -96,10 +86,23 @@ RTC options:
   - `""`: there is no RTC present. (default)
   - `"ds3231"`: use a DS3231 module connected to the external I2C interface
   - `"ds1307"`: use a DS1307 module connected to the external I2C interface (THIS IS UNTESTED! USE AT YOUR OWN RISK)
+  - `"ntp"`: use an NTP source as the external clock. Requires wifi-supported Pico and valid network configuration
+    (see WiFi setup below)
+- `NTP_SERVER`: if `RTC_IMPLEMENTATION` is `ntp`, sets the NTP server to use as a clock source. Default: `0.pool.ntp.org`.
 
 Timezone options:
 - `UTC_OFFSET_HOURS`: The number of hours ahead/behind UTC the local timezone is (-24 to +24)
 - `UTC_OFFSET_MINUTES`: The number of minutes ahead/behind UTC the local timezone is (-59 to +59)
+
+WiFi connection options:
+- `WIFI_MODE`: the wireless operation mode, either `client` or `access_point`. Default: `access_point`
+- `WIFI_SSID`: the SSID of the wireless network to connect to (in `client` mode) or to broadcast
+  (in `access_point` mode)
+- `WIFI_PASSWORD`: the password of the wireless network
+- `WIFI_CHANNEL`: the WiFi channel 1-13 to use in `access_point` mode; ignored in `client` mode. Default: `10`
+
+WiFi options are only applicable if EuroPi has the Raspberry Pi Pico W or Raspberry Pi Pico 2 W board;
+other Pico models do not contain wireless support
 
 # Accessing config members in Python code
 
