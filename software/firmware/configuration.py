@@ -67,9 +67,8 @@ class StringConfigPoint(ConfigPoint):
     :param default: The default value
     :param danger: If true, mark this option as dangerous to modify in the config editor
     """
-    def __init__(
-        self, name: str, default: str, danger: bool = False
-    ):
+
+    def __init__(self, name: str, default: str, danger: bool = False):
         super().__init__(name=name, type=float, default=default, danger=danger)
 
     def validate(self, value) -> Validation:
@@ -77,6 +76,7 @@ class StringConfigPoint(ConfigPoint):
         validation result, as well as an error message containing the reason for a validation failure.
         """
         return type(value) is str
+
 
 class FloatConfigPoint(ConfigPoint):
     """A `ConfigPoint` that requires the selection from a range of floats.  The default value
@@ -239,9 +239,8 @@ def integer(
         name=name, minimum=minimum, maximum=maximum, default=default, danger=danger
     )
 
-def string(
-    name: str, default: str, danger: bool = False
-) -> StringConfigPoint:
+
+def string(name: str, default: str, danger: bool = False) -> StringConfigPoint:
     """A helper function to simplify the creation of StringConfigPoints. Allows the input of
     any arbitrary string
 
@@ -249,9 +248,8 @@ def string(
     :param default: The default value
     :param danger: If true, mark this option as dangerous to modify in the config editor
     """
-    return StringConfigPoint(
-        name=name, default=default, danger=danger
-    )
+    return StringConfigPoint(name=name, default=default, danger=danger)
+
 
 class ConfigSpec:
     """

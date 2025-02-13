@@ -19,9 +19,12 @@ class WIFI:
 
     See: https://docs.micropython.org/en/latest/library/network.WLAN.html
     """
+
+    # TODO: are these correct?
     IF_STA = 0
     IF_AP = 1
 
+    # TODO: are these correct?
     PM_PERFORMANCE = 0
     PM_POWERSAVE = 1
     PM_NONE = 2
@@ -40,7 +43,7 @@ class WIFI:
 
     def ifconfig(self, params=None):
         if params is None:
-            return ('10.0.0.100', '255.0.0.0', '10.0.0.1', '8.8.8.8')
+            return ("10.0.0.100", "255.0.0.0", "10.0.0.1", "8.8.8.8")
         else:
             pass
 

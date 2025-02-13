@@ -40,6 +40,7 @@ class WifiConnection:
 
     Raises a WifiError if the model doesn't support wifi
     """
+
     def __init__(self):
         try:
             import network
