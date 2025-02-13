@@ -15,6 +15,9 @@
 Enables managing the wireless connection on the Pico W and Pico 2 W
 
 Wifi credentials are saved via experimental_config
+
+See https://docs.micropython.org/en/latest/library/network.WLAN.html for details on
+wifi implementation
 """
 from europi_config import (
     load_europi_config,
@@ -22,7 +25,6 @@ from europi_config import (
     MODEL_PICO_2W,
 )
 from experimental.experimental_config import *
-from mpython import wifi
 
 
 class WifiError(Exception):
@@ -39,37 +41,58 @@ class WifiConnection:
     Raises a WifiError if the model doesn't support wifi
     """
     def __init__(self):
+        try:
+            import network
+        except ImportError:
+            raise WifiError("Failed to import network module")
+
         eu_cfg = load_europi_config()
         ex_cfg = load_experimental_config()
 
         if eu_cfg.PICO_MODEL != MODEL_PICO_2W and eu_cfg.PICO_MODEL != MODEL_PICO_W:
             raise WifiError(f"Hardware {eu_cfg.PICO_MODEL} doesn't support wifi")
 
-        self.ssid = ex_cfg.WIFI_SSID
-        self.password = ex_cfg.WIFI_PASSWORD
-        self.wifi = wifi()
+        ssid = ex_cfg.WIFI_SSID
+        password = ex_cfg.WIFI_PASSWORD
+        channel = ex_cfg.WIFI_CHANNEL
+        if ex_cfg.WIFI_BSSID:
+            bssid = ex_cfg.WIFI_BSSID
+        else:
+            bssid = None
 
         if ex_cfg.WIFI_MODE == WIFI_MODE_AP:
-            self.enable_ap()
+            try:
+                self._nic = network.WLAN(network.WLAN.IF_AP)
+                self._nic.config(
+                    ssid=ssid,
+                    channel=channel,
+                    key=password,
+                )
+            except Exception as err:
+                raise WifiError(f"Failed to enable AP mode: {err}")
         else:
-            self.connect()
+            try:
+                self._nic = network.WLAN(network.WLAN.IF_STA)
+                self._nic.connect(
+                    ssid=ssid,
+                    key=password,
+                    bssid=bssid,
+                )
+            except Exception as err:
+                raise WifiError(f"Failed to connect to network {ssid}: {err}")
 
-    def connect(self):
-        try:
-            self.wifi = wifi()
-            wifi.connectWiFi(
-                self.ssid,
-                self.password,
-                timeout=30
-            )
-        except Exception as err:
-            raise WifiError(f"Failed to connect to network: {err}")
+    @property
+    def is_connected(self):
+        """
+        Is the Pico connected to anything?
 
-    def disconnect(self):
-        self.wifi.disconnectWiFi()
+        In client mode this returns True if we're connected to an access point
 
-    def enable_ap(self):
-        self.wifi.enable_APWiFi(self.ssid, self.password, timeout=30)
+        In AP mode this returns True if at least one client is connected to us
+        """
+        return self._nic.isconnected()
 
-    def disable_ap(self):
-        self.wifi.disable_APWiFi()
+    @property
+    def interface(self):
+        """Get the underlying network.WLAN interface"""
+        return self._nic

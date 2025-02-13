@@ -29,3 +29,9 @@ def ticks_diff(*args):
 
 def ticks_ms():
     return 0
+
+def localtime():
+    return (1970, 1, 1, 0, 0, 0)
+
+def gmtime():
+    return (1970, 1, 1, 0, 0, 0)

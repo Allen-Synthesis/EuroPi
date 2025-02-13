@@ -116,7 +116,10 @@ class ExperimentalConfig:
                 maximum=13,
                 default=10,
             ),
-
+            configuration.string(
+                "WIFI_BSSID",
+                default="",
+            ),
         ]
         # fmt: on
 

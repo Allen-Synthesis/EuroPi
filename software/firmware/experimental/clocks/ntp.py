@@ -22,14 +22,18 @@ This will only work if
 from experimental.clocks.clock_source import ExternalClockSource
 from experimental.experimental_config import load_experimental_config
 
-import ntptime
 import utime
-
 
 class NtpError(Exception):
     """Custom NTP-related errors"""
     def __init__(self, message):
         super().__init__(message)
+
+try:
+    import ntptime
+    import socket
+except ImportError as err:
+    raise NtpError(f"Failed to load NTP dependency: {err}")
 
 
 class NtpClock(ExternalClockSource):
@@ -55,9 +59,4 @@ class NtpClock(ExternalClockSource):
 
         @return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
         """
-        # TODO
-        # see: https://mpython.readthedocs.io/en/v2.2.1/library/micropython/ntptime.html
-        # i'm not sure the Pico implementation of utime supports .localtime()
-        # testing needed.
-        t = utime.localtime()
-        return t  # TODO: won't work; what does localtime() actually return?
+        return utime.gmtime()
