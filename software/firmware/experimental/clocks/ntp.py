@@ -24,8 +24,10 @@ from experimental.experimental_config import load_experimental_config
 
 import utime
 
+
 class NtpError(Exception):
     """Custom NTP-related errors"""
+
     def __init__(self, message):
         super().__init__(message)
 
@@ -37,6 +39,12 @@ except ImportError as err:
 
 
 class NtpClock(ExternalClockSource):
+    """
+    Realtime clock source that uses an external NTP server
+
+    Requires a valid network connection on a Pico W or Pico 2 W
+    """
+
     def __init__(self):
         super().__init__()
         cfg = load_experimental_config()
