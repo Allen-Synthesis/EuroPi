@@ -30,6 +30,11 @@ BUCHLA_VOLTS_PER_OCTAVE = 1.2
 RTC_NONE = ""
 RTC_DS3231 = "ds3231"
 RTC_DS1307 = "ds1307"
+RTC_NTP = "ntp"
+
+# WIFI modes
+WIFI_MODE_AP = "access_point"
+WIFI_MODE_CLIENT = "client"
 
 
 class ExperimentalConfig:
@@ -52,7 +57,7 @@ class ExperimentalConfig:
             # Normally this is intended for Eurorack compatibility, but being open-source someone may
             # want to use it in an ecosystem that uses different specs
             configuration.choice(
-                name="VOLTS_PER_OCTAVE",
+                "VOLTS_PER_OCTAVE",
                 choices=[MOOG_VOLTS_PER_OCTAVE, BUCHLA_VOLTS_PER_OCTAVE],
                 default=MOOG_VOLTS_PER_OCTAVE,
             ),
@@ -60,13 +65,17 @@ class ExperimentalConfig:
             # RTC implementation
             # by default there is no RTC
             configuration.choice(
-                name="RTC_IMPLEMENTATION",
+                "RTC_IMPLEMENTATION",
                 choices=[
                     RTC_NONE,
                     RTC_DS3231,
                     RTC_DS1307,
                 ],
                 default=RTC_NONE,
+            ),
+            configuration.string(
+                "NTP_SERVER",
+                default="0.pool.ntp.org",
             ),
 
             # RTC Timezone offset for local time
@@ -82,6 +91,32 @@ class ExperimentalConfig:
                 maximum=59,
                 default=0,
             ),
+
+            # Wifi connection options
+            # only applicable with Pico W, Pico 2 W
+            configuration.choice(
+                "WIFI_MODE",
+                choices=[
+                    WIFI_MODE_CLIENT,
+                    WIFI_MODE_AP
+                ],
+                default=WIFI_MODE_AP,
+            ),
+            configuration.string(
+                "WIFI_SSID",
+                default="",
+            ),
+            configuration.string(
+                "WIFI_PASSWORD",
+                default="",
+            ),
+            configuration.integer(
+                "WIFI_CHANNEL",
+                minimum=1,
+                maximum=13,
+                default=10,
+            ),
+
         ]
         # fmt: on
 
