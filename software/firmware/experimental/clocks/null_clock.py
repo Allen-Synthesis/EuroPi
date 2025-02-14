@@ -45,5 +45,6 @@ class NullClock(ExternalClockSource):
         mm = 1
         yy = 1970
         wd = (4 + dd) % 7  # 1 jan 1970 was a thursday
+        yd = 0  # ignore yearday
 
-        return (yy, mm, dd, h, m, s, wd)
+        return (yy, mm, dd, h, m, s, wd, yd)
