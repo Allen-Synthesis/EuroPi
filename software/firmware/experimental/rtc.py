@@ -255,6 +255,19 @@ class DateTime:
         else:
             return 365
 
+    @property
+    def tuple(self):
+        return (
+            self.year,
+            self.month,
+            self.day,
+            self.hour,
+            self.minute,
+            self.second,
+            self.weekday,
+            0,
+        )
+
     def __eq__(self, other):
         # fmt: off
         return (
@@ -361,6 +374,7 @@ class RealtimeClock:
             t[ExternalClockSource.MINUTE],
             t[ExternalClockSource.SECOND],
             t[ExternalClockSource.WEEKDAY],
+            t[ExternalClockSource.YEARDAY],
         )
 
     def localnow(self):
