@@ -34,13 +34,17 @@ class HttpControl(EuroPiScript):
             raise NotImplementedError("WIP - Not implemented yet")
 
     def main(self):
-        (ip_addr, netmask, gateway, dns) = wifi_connection.interface.ifconfig()
+        if wifi_connection is None:
+            raise WifiError("No wifi connection")
 
-        oled.fill(0)
-        oled.centre_text(f"""{ip_addr}
-{netmask}
-{gateway}""")
-        oled.show()
+        while not wifi_connection.is_connected:
+            oled.centre_text(f"""{wifi_connection.ssid}
+Waiting for
+connection...""")
+
+        oled.centre_text(f"""{wifi_connection.ssid}
+{wifi_connection.ip_addr}
+Connected""")
 
         while True:
             self.server.check_requests()
