@@ -61,6 +61,7 @@ class WifiConnection:
         else:
             bssid = None
 
+        self._ssid = ssid
         if ex_cfg.WIFI_MODE == WIFI_MODE_AP:
             try:
                 self._nic = network.WLAN(network.WLAN.IF_AP)
@@ -83,7 +84,36 @@ class WifiConnection:
                 raise WifiError(f"Failed to connect to network {ssid}: {err}")
 
     @property
-    def is_connected(self):
+    def ip_addr(self) -> str:
+        """Get our current IP address"""
+        (addr, _, _, _) = self._nic.ifconfig()
+        return addr
+
+    @property
+    def netmask(self) -> str:
+        """Get our current netmask"""
+        (_, netmask, _, _) = self._nic.ifconfig()
+        return netmask
+
+    @property
+    def gateway(self) -> str:
+        """Get our current gateway"""
+        (_, _, gateway, _) = self._nic.ifconfig()
+        return gateway
+
+    @property
+    def dns(self) -> str:
+        """Get our primary DNS"""
+        (_, _, _, dns) = self._nic.ifconfig()
+        return dns
+
+    @property
+    def ssid(self) -> str:
+        """Get the SSID of our wireless network"""
+        return self._ssid
+
+    @property
+    def is_connected(self) -> bool:
         """
         Is the Pico connected to anything?
 
