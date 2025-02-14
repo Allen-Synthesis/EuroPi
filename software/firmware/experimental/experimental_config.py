@@ -104,11 +104,11 @@ class ExperimentalConfig:
             ),
             configuration.string(
                 "WIFI_SSID",
-                default="",
+                default="EuroPi",
             ),
             configuration.string(
                 "WIFI_PASSWORD",
-                default="",
+                default="europi",
             ),
             configuration.integer(
                 "WIFI_CHANNEL",
