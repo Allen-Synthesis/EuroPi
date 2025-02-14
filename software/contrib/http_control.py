@@ -34,6 +34,14 @@ class HttpControl(EuroPiScript):
             raise NotImplementedError("WIP - Not implemented yet")
 
     def main(self):
+        (ip_addr, netmask, gateway, dns) = wifi_connection.interface.ifconfig()
+
+        oled.fill(0)
+        oled.centre_text(f"""{ip_addr}
+{netmask}
+{gateway}""")
+        oled.show()
+
         while True:
             self.server.check_requests()
 
