@@ -83,7 +83,7 @@ class HttpServer:
     def __init__(self, port=80):
         self.port = 80
 
-        self.request_callback = lambda *args, **kwargs: None
+        self.request_callback = self.default_request_handler
 
         if wifi_connection is None:
             raise WifiError("Unable to start HTTP server: no wifi connection")
@@ -93,6 +93,9 @@ class HttpServer:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(addr)
         s.listen()
+
+    def default_request_handler(self, connection=None, request=None):
+        raise NotImplementedError("No request handler set")
 
     def check_requests(self):
         """
@@ -106,12 +109,13 @@ class HttpServer:
             conn, addr = self.socket.accept()
 
             request = conn.recv(2048)
-            request = str(request=request, connection=conn)
+            request = str(request)
 
-            self.request_callback(request)
-
+            self.request_callback(request=request, connection=conn)
+            conn.close()
         except OSError as err:
             print(f"Connection closed: {err}")
+            conn.close()
         except NotImplementedError as err:
             self.send_response(
                 conn,
@@ -122,6 +126,7 @@ class HttpServer:
                 status=HttpStatus.NOT_IMPLEMENTED,
                 content_type=MimeTypes.HTML,
             )
+            conn.close()
         except Exception as err:
             self.send_response(
                 conn,
@@ -132,6 +137,7 @@ class HttpServer:
                 status=HttpStatus.INTERNAL_SERVER_ERROR,
                 content_type=MimeTypes.HTML,
             )
+            conn.close()
 
     def request_handler(self, func):
         """
@@ -166,4 +172,3 @@ class HttpServer:
         """
         connection.send(f"HTTP/1.0 200 OK\r\nContent-type: {content_type}\r\n\r\n")
         connection.send(response)
-        connection.close()
