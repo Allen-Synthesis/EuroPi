@@ -16,6 +16,7 @@ A simple HTTP server for the Raspberry Pi Pico
 """
 
 import europi
+import experimental.wifi
 
 try:
     import socket
@@ -87,7 +88,7 @@ class HttpServer:
         self.request_callback = self.default_request_handler
 
         if europi.wifi_connection is None:
-            raise WifiError("Unable to start HTTP server: no wifi connection")
+            raise experimental.wifi.WifiError("Unable to start HTTP server: no wifi connection")
 
         self.socket = socket.socket()
         addr = socket.getaddrinfo("0.0.0.0", port)[0][-1]
