@@ -82,7 +82,6 @@ class HttpServer:
 
     def __init__(self, port=80):
         self.port = 80
-
         self.request_callback = self.default_request_handler
 
         if wifi_connection is None:
@@ -90,9 +89,10 @@ class HttpServer:
 
         self.socket = socket.socket()
         addr = socket.getaddrinfo("0.0.0.0", port)[0][-1]
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind(addr)
-        s.listen()
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.settimeout(0)
+        self.socket.bind(addr)
+        self.socket.listen()
 
     def default_request_handler(self, connection=None, request=None):
         raise NotImplementedError("No request handler set")
@@ -105,39 +105,47 @@ class HttpServer:
 
         This function should be called inside the main loop of the program
         """
-        try:
-            conn, addr = self.socket.accept()
+        conn = None
+        while True:
+            try:
+                conn, addr = self.socket.accept()
 
-            request = conn.recv(2048)
-            request = str(request)
+                request = conn.recv(2048)
+                request = str(request)
 
-            self.request_callback(request=request, connection=conn)
-            conn.close()
-        except OSError as err:
-            print(f"Connection closed: {err}")
-            conn.close()
-        except NotImplementedError as err:
-            self.send_response(
-                conn,
-                self.ERROR_PAGE.format(
-                    title=HttpStatus.NOT_IMPLEMENTED,
-                    body=str(err),
-                ),
-                status=HttpStatus.NOT_IMPLEMENTED,
-                content_type=MimeTypes.HTML,
-            )
-            conn.close()
-        except Exception as err:
-            self.send_response(
-                conn,
-                self.ERROR_PAGE.format(
-                    title=HttpStatus.INTERNAL_SERVER_ERROR,
-                    body=str(err),
-                ),
-                status=HttpStatus.INTERNAL_SERVER_ERROR,
-                content_type=MimeTypes.HTML,
-            )
-            conn.close()
+                self.request_callback(request=request, connection=conn)
+            except NotImplementedError as err:
+                # send a 501 error page
+                self.send_response(
+                    conn,
+                    self.ERROR_PAGE.format(
+                        title=HttpStatus.NOT_IMPLEMENTED,
+                        body=str(err),
+                    ),
+                    status=HttpStatus.NOT_IMPLEMENTED,
+                    content_type=MimeTypes.HTML,
+                )
+            except OSError as err:
+                return
+            except BlockingIOError as err:
+                return
+            except TimeoutError as err:
+                return
+            except Exception as err:
+                # send a 500 error page
+                self.send_response(
+                    conn,
+                    self.ERROR_PAGE.format(
+                        title=HttpStatus.INTERNAL_SERVER_ERROR,
+                        body=str(err),
+                    ),
+                    status=HttpStatus.INTERNAL_SERVER_ERROR,
+                    content_type=MimeTypes.HTML,
+                )
+            finally:
+                if conn is not None:
+                    conn.close()
+                    conn = None
 
     def request_handler(self, func):
         """
@@ -158,10 +166,10 @@ class HttpServer:
 
     def send_response(
         self,
-        connection: socket.socket,
-        response: str,
-        status: str = HttpStatus.OK,
-        content_type: str = MimeTypes.HTML,
+        connection,
+        response,
+        status=HttpStatus.OK,
+        content_type=MimeTypes.HTML,
     ):
         """
         Send a response to the client
@@ -170,5 +178,5 @@ class HttpServer:
         @param response  The response payload
         @param content_type  The MIME type to include in the HTTP header
         """
-        connection.send(f"HTTP/1.0 200 OK\r\nContent-type: {content_type}\r\n\r\n")
-        connection.send(response)
+        connection.send(f"HTTP/1.0 {status}\r\nContent-type: {content_type}\r\ncharset=utf-8\r\n\r\n".encode("UTF-8"))
+        connection.send(response.encode("UTF-8"))
