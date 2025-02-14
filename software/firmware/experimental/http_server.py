@@ -27,6 +27,7 @@ class HttpStatus:
 
     This collection is not exhaustive, just what we need to handle this minimal server implementation
     """
+
     OK = "200 OK"
 
     BAD_REQUEST = "400 Bad Request"
@@ -37,10 +38,12 @@ class HttpStatus:
     INTERNAL_SERVER_ERROR = "500 Internal Server Error"
     NOT_IMPLEMENTED = "501 Not Implemented"
 
+
 class MimeTypes:
     """
     Common MIME types we can support with this HTTP server implementation
     """
+
     CSV = "text/csv"
     HTML = "text/html"
     JSON = "text/json"
@@ -86,7 +89,7 @@ class HttpServer:
             raise WifiError("Unable to start HTTP server: no wifi connection")
 
         self.socket = socket.socket()
-        addr = socket.getaddrinfo('0.0.0.0', port)[0][-1]
+        addr = socket.getaddrinfo("0.0.0.0", port)[0][-1]
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(addr)
         s.listen()
@@ -117,7 +120,7 @@ class HttpServer:
                     body=str(err),
                 ),
                 status=HttpStatus.NOT_IMPLEMENTED,
-                content_type="text/html"
+                content_type=MimeTypes.HTML,
             )
         except Exception as err:
             self.send_response(
@@ -127,7 +130,7 @@ class HttpServer:
                     body=str(err),
                 ),
                 status=HttpStatus.INTERNAL_SERVER_ERROR,
-                content_type="text/html"
+                content_type=MimeTypes.HTML,
             )
 
     def request_handler(self, func):
@@ -140,6 +143,7 @@ class HttpServer:
 
         @param func  The function to handle the request.
         """
+
         def wrapper(*args, **kwargs):
             func(*args, **kwargs)
 
@@ -148,10 +152,10 @@ class HttpServer:
 
     def send_response(
         self,
-        connection:socket.socket,
-        response:str,
-        status:str=HttpStatus.OK,
-        content_type:str=MimeTypes.HTML,
+        connection: socket.socket,
+        response: str,
+        status: str = HttpStatus.OK,
+        content_type: str = MimeTypes.HTML,
     ):
         """
         Send a response to the client
