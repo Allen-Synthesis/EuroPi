@@ -181,5 +181,9 @@ class HttpServer:
         @param response  The response payload
         @param content_type  The MIME type to include in the HTTP header
         """
-        connection.send(f"HTTP/1.0 {status}\r\nContent-type: {content_type}\r\ncharset=utf-8\r\n\r\n".encode("UTF-8"))
+        connection.send(
+            f"HTTP/1.0 {status}\r\nContent-type: {content_type}\r\ncharset=utf-8\r\n\r\n".encode(
+                "UTF-8"
+            )
+        )
         connection.send(response.encode("UTF-8"))
