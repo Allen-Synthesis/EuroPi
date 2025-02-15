@@ -42,6 +42,7 @@ Most commercially-made heatinks have a self-adhesive, thermally-conductive pad o
 backing and carefully press the heatink directly onto the CPU. Make sure the Pico is powered off while doing this,
 and follow the manufacturer's guidelines for ESD protection to avoid accidentally damaging the electronics.
 
+
 <img src="https://github.com/user-attachments/assets/09e3aa3e-d4bc-4956-9ea6-2e49a877a6ef" width="360">
 
 _A Raspberry Pi Pico with an aluminium heatsink installed on the CPU_
