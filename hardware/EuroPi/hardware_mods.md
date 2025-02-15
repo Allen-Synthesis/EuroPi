@@ -31,3 +31,17 @@ solder the 1nF capacitor directly to the back-side of `R23`, as shown below:
 _A 1nF capacitor soldered to the back-side of the EuroPi PCB, in parallel with `R23`_
 
 After soldering the 1nF capactor in place, you should [recalibrate EuroPi](/software/firmware/tools/calibrate.md).
+
+## Heatsink installation
+
+Several vendors sell aluminium or copper heatsink blocks that can be installed on the Raspberry Pi Pico's processor
+to help dissipate heat. If you find your EuroPi's CPU getting too warm during operation, you may find installing
+a heatsink beneficial.
+
+Most commercially-made heatinks have a self-adhesive, thermally-conductive pad on the back. Simply peel off the
+backing and carefully press the heatink directly onto the CPU. Make sure the Pico is powered off while doing this,
+and follow the manufacturer's guidelines for ESD protection to avoid accidentally damaging the electronics.
+
+<img src="https://github.com/user-attachments/assets/09e3aa3e-d4bc-4956-9ea6-2e49a877a6ef" width="360">
+
+_A Raspberry Pi Pico with an aluminium heatsink installed on the CPU_
