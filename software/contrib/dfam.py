@@ -15,6 +15,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.a_to_d import AnalogReaderDigitalWrapper
+from experimental.math_extras import rescale
 
 clock_input = din
 reset_input = AnalogReaderDigitalWrapper(ain)
@@ -27,7 +28,34 @@ end_of_sequence_output = cv2
 sequence_length_knob = k1
 step_size_knob = k2
 
-TRIGGER_DURATION = 0.0001
+# Duration of triggers sent to DFAM to advance
+# based on experimentation, 1ms is sufficient and doesn't produce
+# audio artefacts when burst-advancing
+TRIGGER_DURATION = 0.001
+
+# What length of sequences can we output?
+# We allow up to DFAM's max length of 8
+MIN_SEQUENCE_LEN = 1
+MAX_SEQUENCE_LEN = 8
+
+# How many steps does DFAM advance with each trigger
+# This is all modular, so setting to 7 will advance 1 space backwards
+MIN_STEP = 1
+MAX_STEP = 7
+
+# DFAM has an 8-step sequencer
+DFAM_SEQUENCER_LENGTH = 8
+
+# The size of the circles we draw on the UI
+CIRCLE_SIZE = 4
+
+# Screen colours
+BLACK = 0
+WHITE = 1
+
+# Circle fill constants
+YES_FILL = -1
+NO_FILL = 0
 
 
 class DfamController(EuroPiScript):
@@ -41,10 +69,10 @@ class DfamController(EuroPiScript):
         self.current_step = 0
 
         # the maximum number of steps in the sequence
-        self.max_steps = 8
+        self.max_steps = MAX_SEQUENCE_LEN
 
         # the number of advances we output per input step
-        self.step_size = 1
+        self.step_size = MIN_STEP
 
         # the current step on DFAM's sequencer
         self.dfam_sync_counter = 0
@@ -62,7 +90,7 @@ class DfamController(EuroPiScript):
         self.advance_request = True
 
     def reset(self):
-        pulses = (8 - self.dfam_sync_counter) % 8
+        pulses = (DFAM_SEQUENCER_LENGTH - self.dfam_sync_counter) % DFAM_SEQUENCER_LENGTH
         self.current_step = 0
         self.dfam_sync_counter = 0
         for _ in range(pulses):
@@ -77,7 +105,7 @@ class DfamController(EuroPiScript):
             time.sleep(TRIGGER_DURATION)
             advance_output.off()
             time.sleep(TRIGGER_DURATION)
-        self.dfam_sync_counter = (self.dfam_sync_counter + self.step_size) % 8
+        self.dfam_sync_counter = (self.dfam_sync_counter + self.step_size) % DFAM_SEQUENCER_LENGTH
 
     def main(self):
         render_needed = True
@@ -85,12 +113,12 @@ class DfamController(EuroPiScript):
         while True:
             reset_input.update()  # a-to-d wrapper, so we need to poll it!
 
-            new_steps = max(int(sequence_length_knob.percent() * 15), 1)
+            new_steps = int(rescale(sequence_length_knob.percent(), 0, 1, MIN_SEQUENCE_LEN, MAX_SEQUENCE_LEN))
             if new_steps != self.max_steps:
                 render_needed = True
                 self.max_steps = new_steps
 
-            new_size = max(int(step_size_knob.percent() * 7), 1)
+            new_size = int(rescale(step_size_knob.percent(), 0, 1, MIN_STEP, MAX_STEP))
             if new_size != self.step_size:
                 render_needed = True
                 self.step_size = new_size
@@ -121,13 +149,20 @@ class DfamController(EuroPiScript):
                 oled.fill(0)
                 oled.centre_text(f"{self.current_step + 1}/{self.max_steps}\nx{self.step_size}\n", auto_show=False, clear_first=False)
 
-                for i in range(8):
+                for i in range(DFAM_SEQUENCER_LENGTH):
                     # the 0th LED is actually the last one, so the pattern should be shifted 1 to the left
-                    if i == (self.dfam_sync_counter - 1) % 8:
-                        fill = -1
+                    if i == (self.dfam_sync_counter - 1) % DFAM_SEQUENCER_LENGTH:
+                        fill = YES_FILL
                     else:
-                        fill = 0
-                    oled.ellipse(i * OLED_WIDTH // 8 + 4, OLED_HEIGHT - 5, 4, 4, 1, fill)
+                        fill = NO_FILL
+                    oled.ellipse(
+                        i * OLED_WIDTH // DFAM_SEQUENCER_LENGTH + CIRCLE_SIZE,
+                        OLED_HEIGHT - CIRCLE_SIZE - 1,
+                        CIRCLE_SIZE,
+                        CIRCLE_SIZE,
+                        WHITE,
+                        fill
+                    )
 
                 oled.show()
 
