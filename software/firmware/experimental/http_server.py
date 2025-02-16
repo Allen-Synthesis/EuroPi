@@ -18,6 +18,8 @@ A simple HTTP server for the Raspberry Pi Pico
 import europi
 import experimental.wifi
 
+import json
+
 try:
     import socket
 except ImportError as err:
@@ -287,6 +289,7 @@ class HttpServer:
         error,
         connection,
         status=HttpStatus.INTERNAL_SERVER_ERROR,
+        headers=None,
     ):
         """
         Serve our customized HTTP error page
@@ -294,6 +297,7 @@ class HttpServer:
         @param error  The exception that caused the error
         @param connection  The socket to send the response over
         @param status  The error status to respond with
+        @param headers  Optional additional headers
         """
         self.send_response(
             connection,
@@ -304,6 +308,111 @@ class HttpServer:
             ),
             status=status,
             content_type=MimeTypes.HTML,
+            headers=headers
+        )
+
+    def send_current_state_json(
+        self,
+        connection,
+        headers=None,
+        ain=europi.ain,
+        din=europi.din,
+        b1=europi.b1,
+        b2=europi.b2,
+        k1=europi.k1,
+        k2=europi.k2,
+        cv1=europi.cv1,
+        cv2=europi.cv2,
+        cv3=europi.cv3,
+        cv4=europi.cv4,
+        cv5=europi.cv5,
+        cv6=europi.cv6,
+    ):
+        """
+        Send the current state of the inputs & outputs as a JSON object
+
+        The result object is of the form
+        ```json
+            {
+                "inputs": {
+                    "ain": 0-MAX_INPUT_VOLTAGE,
+                    "din": 0/1,
+                    "k1": 0-1,
+                    "k2": 0-1,
+                    "b1": 0/1,
+                    "b2": 0/1
+                },
+                "outputs": {
+                    "cv1": 0-MAX_OUTPUT_VOLTAGE,
+                    "cv2": 0-MAX_OUTPUT_VOLTAGE,
+                    "cv3": 0-MAX_OUTPUT_VOLTAGE,
+                    "cv4": 0-MAX_OUTPUT_VOLTAGE,
+                    "cv5": 0-MAX_OUTPUT_VOLTAGE,
+                    "cv6": 0-MAX_OUTPUT_VOLTAGE
+                }
+            }
+        ```
+
+        Calling this will re-sample the CV inputs; if this behaviour is not desired, you should
+        use a buffered wrapper for the input and pass that as the relevant parameter.
+
+        @param connection  The socket connection to the client
+        @param headers  Optional additional HTTP headers to include
+        @param ain  Must provide the read_voltage() method to return the current input voltage
+        @param din  Must provide the value() method to return 0 or 1
+        @param b1   Must provide the value() method to return 0 or 1
+        @param b2   Must provide the value() method to return 0 or 1
+        @param k1   Must provide the percent() method to return 0-1
+        @param k2   Must provide the percent() method to return 0-1
+        @param cv1  Must provide the voltage() method to return the current output voltage
+        @param cv2  Must provide the voltage() method to return the current output voltage
+        @param cv3  Must provide the voltage() method to return the current output voltage
+        @param cv4  Must provide the voltage() method to return the current output voltage
+        @param cv5  Must provide the voltage() method to return the current output voltage
+        @param cv6  Must provide the voltage() method to return the current output voltage
+        """
+        self.send_json(
+            connection,
+            {
+                "inputs": {
+                    "ain": ain.read_voltage(),
+                    "din": din.value(),
+                    "k1": k1.percent(),
+                    "k2": k2.percent(),
+                    "b1": b1.value(),
+                    "b2": b2.value(),
+                },
+                "outputs": {
+                    "cv1": cv1.voltage(),
+                    "cv2": cv2.voltage(),
+                    "cv3": cv3.voltage(),
+                    "cv4": cv4.voltage(),
+                    "cv5": cv5.voltage(),
+                    "cv6": cv6.voltage(),
+                }
+            },
+            headers=headers
+        )
+
+    def send_json(
+        self,
+        connection,
+        data,
+        headers=None
+    ):
+        """
+        Send a JSON object to the client
+
+        @param connection  The socket connection to the client
+        @param data  A dict to be converted to a JSON object
+        @param headers  Optional additional HTTP headers to include
+        """
+        self.send_response(
+            connection,
+            json.dumps(data),
+            status=HttpStatus.OK,
+            content_type=MimeTypes.JSON,
+            headers=headers,
         )
 
     def send_response(
