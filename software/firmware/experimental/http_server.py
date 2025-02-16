@@ -479,12 +479,7 @@ class HttpServer:
             headers=headers,
         )
 
-    def send_html(
-        self,
-        connection,
-        html_page,
-        status=HttpStatus.OK,
-        headers=None):
+    def send_html(self, connection, html_page, status=HttpStatus.OK, headers=None):
         """
         Send an HTML document to the client
 
@@ -494,11 +489,7 @@ class HttpServer:
         @param headers  Optional additional HTTP headers
         """
         self.send_response(
-            connection,
-            html_page,
-            content_type=MimeTypes.HTML,
-            status=status,
-            headers=headers
+            connection, html_page, content_type=MimeTypes.HTML, status=status, headers=headers
         )
 
     def send_response(
