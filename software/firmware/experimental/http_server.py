@@ -254,9 +254,5 @@ class HttpServer:
             for k in headers.keys():
                 header = f"{header}\r\n{k}={headers[k]}"
 
-        connection.send(
-            f"{header}\r\n\r\n".encode(
-                "UTF-8"
-            )
-        )
+        connection.send(f"{header}\r\n\r\n".encode("UTF-8"))
         connection.send(response.encode("UTF-8"))
