@@ -42,10 +42,11 @@ from version import __version__
 from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB
 
-from europi_config import load_europi_config, CPU_FREQS
+from europi_config import load_europi_config, CPU_FREQS, MODEL_PICO_2W, MODEL_PICO_W
 from europi_display import Display, DummyDisplay
 
 from experimental.experimental_config import load_experimental_config
+from experimental.wifi import WifiConnection, WifiError
 
 
 if sys.implementation.name == "micropython":
@@ -715,6 +716,17 @@ external_i2c = I2C(
 # By default this will overclock the CPU, but some users may not want to
 # e.g. to lower power consumption on a very power-constrained system
 freq(CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ])
+
+# Connect to wifi, if supported
+if europi_config.PICO_MODEL == MODEL_PICO_W or europi_config.PICO_MODEL == MODEL_PICO_2W:
+    try:
+        wifi_connection = WifiConnection()
+    except WifiError as err:
+        print(err)
+        wifi_connection = None
+else:
+    wifi_connection = None
+
 
 # Reset the module state upon import.
 reset_state()
