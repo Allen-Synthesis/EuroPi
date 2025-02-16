@@ -89,8 +89,10 @@ class DfamController(EuroPiScript):
     def request_advance(self):
         self.advance_request = True
 
-    def reset(self):
+    def reset(self, force_trigger=False):
         pulses = (DFAM_SEQUENCER_LENGTH - self.dfam_sync_counter) % DFAM_SEQUENCER_LENGTH
+        if force_trigger and pulses == 0:
+            pulses = DFAM_SEQUENCER_LENGTH
         self.current_step = 0
         self.dfam_sync_counter = 0
         for _ in range(pulses):
@@ -137,11 +139,9 @@ class DfamController(EuroPiScript):
                         self.advance()
 
                     end_of_sequence_output.on()
-                    self.reset()
+                    self.reset(force_trigger=True)
                 else:
-
                     end_of_sequence_output.off()
-
                     self.advance()
 
             if render_needed:
