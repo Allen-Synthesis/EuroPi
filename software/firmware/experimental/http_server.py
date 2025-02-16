@@ -394,8 +394,7 @@ class HttpServer:
             headers=headers,
         )
 
-    def send_json(self, connection, data, headers=None
-    ):
+    def send_json(self, connection, data, headers=None):
         """
         Send a JSON object to the client
 
