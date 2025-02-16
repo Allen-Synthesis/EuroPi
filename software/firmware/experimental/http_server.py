@@ -95,25 +95,25 @@ class HttpServer:
 <html lang="en">
     <head>
         <style>
-            body {
+            body {{
                 font-family: Montserrat;
                 text-align: center;
-            }
-            h1 {
+            }}
+            h1 {{
                 font-weight: normal;
                 font-size: 2.5rem;
                 letter-spacing: 1.75rem;
                 padding-left: 1.75rem;
-            }
-            h2 {
+            }}
+            h2 {{
                 font-weight:  bold;
                 font-size: 3.0rem;
-            }
-            p {
+            }}
+            p {{
                 font-weight: lighter;
                 font-size: 2.0rem;
-            }
-            .content-wrapper {
+            }}
+            .content-wrapper {{
                 margin: 0;
                 position: absolute;
                 top: 50%;
@@ -121,7 +121,7 @@ class HttpServer:
                 width: 100%;
                 -ms-transform: translateY(-50%);
                 transform: translateY(-50%);
-            }
+            }}
         </style>
         <title>EuroPi Error {errno}</title>
     </head>
