@@ -369,7 +369,7 @@ class HttpServer:
         @param status  The error status to respond with
         @param headers  Optional additional headers
         """
-        self.send_response(
+        self.send_html(
             connection,
             self.ERROR_PAGE.format(
                 errno=status,
@@ -377,7 +377,6 @@ class HttpServer:
                 message=str(error),
             ),
             status=status,
-            content_type=MimeTypes.HTML,
             headers=headers,
         )
 
@@ -478,6 +477,28 @@ class HttpServer:
             status=HttpStatus.OK,
             content_type=MimeTypes.JSON,
             headers=headers,
+        )
+
+    def send_html(
+        self,
+        connection,
+        html_page,
+        status=HttpStatus.OK,
+        headers=None):
+        """
+        Send an HTML document to the client
+
+        @param connection  The socket to send the data over
+        @param html_page  A string containing the HTML document.
+        @param status  The HTTP status to send the page with
+        @param headers  Optional additional HTTP headers
+        """
+        self.send_response(
+            connection,
+            html_page,
+            content_type=MimeTypes.HTML,
+            status=status,
+            headers=headers
         )
 
     def send_response(
