@@ -18,9 +18,11 @@ A simple HTTP server for the Raspberry Pi Pico
 try:
     import europi
     import experimental.wifi
+
     LOCAL_DEV = False
 except ImportError:
     LOCAL_DEV = True
+
     class europi:
         ain = None
         din = None
@@ -34,6 +36,7 @@ except ImportError:
         cv4 = None
         cv5 = None
         cv6 = None
+
 
 import json
 
