@@ -15,8 +15,25 @@
 A simple HTTP server for the Raspberry Pi Pico
 """
 
-import europi
-import experimental.wifi
+try:
+    import europi
+    import experimental.wifi
+    LOCAL_DEV = False
+except ImportError:
+    LOCAL_DEV = True
+    class europi:
+        ain = None
+        din = None
+        k1 = None
+        k2 = None
+        b1 = None
+        b2 = None
+        cv1 = None
+        cv2 = None
+        cv3 = None
+        cv4 = None
+        cv5 = None
+        cv6 = None
 
 import json
 
@@ -80,14 +97,19 @@ class HttpServer:
     """
     The main server instance
 
-    You should define a callback to handle incoming requests, e.g.:
+    You should define a callback to handle incoming GET and/or POST requests, e.g.:
 
     server = HttpServer(port=8080)
 
-    @server.request_handler
-    def handle_http_request(request:str=None, conn:Socket=None):
+    @server.get_handler
+    def handle_http_get(request:str=None, connection:Socket=None):
         # process the request
-        server.send_response()
+        server.send_response(...)
+
+    @server.post_handler
+    def handle_http_post(request:str=None, connection:Socket=None):
+        # process the request
+        server.send_response(...)
     """
 
     # A basic error page template
@@ -206,9 +228,10 @@ class HttpServer:
         @param port  The port to listen on
         """
         self.port = 80
-        self.request_callback = self.default_request_handler
+        self.get_callback = self.default_request_handler
+        self.post_callback = self.default_request_handler
 
-        if europi.wifi_connection is None:
+        if not LOCAL_DEV and europi.wifi_connection is None:
             raise experimental.wifi.WifiError("Unable to start HTTP server: no wifi connection")
 
         self.socket = socket.socket()
@@ -220,7 +243,7 @@ class HttpServer:
 
     def default_request_handler(self, connection=None, request=None):
         """
-        The default request handler for the server.
+        The default request handler for GET and POST requests the server.
 
         The intent is that whatever program is using the HTTP server will create their own callback
         to replace this function. So all we do is raise a NotImplementedError that's handled
@@ -246,10 +269,37 @@ class HttpServer:
             try:
                 conn, addr = self.socket.accept()
 
-                request = conn.recv(2048)
-                request = str(request)
+                # the request should look something like this
+                #
+                # GET / HTTP/1.1
+                # Host: localhost:8080
+                # User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0
+                # Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                # Accept-Language: en-US,en;q=0.5
+                # Accept-Encoding: gzip, deflate, br, zstd
+                # Connection: keep-alive
+                # Upgrade-Insecure-Requests: 1
+                # Sec-Fetch-Dest: document
+                # Sec-Fetch-Mode: navigate
+                # Sec-Fetch-Site: none
+                # Sec-Fetch-User: ?1
+                # Priority: u=0, i
 
-                self.request_callback(request=request, connection=conn)
+                request = conn.recv(2048)
+                request = request.decode("UTF-8")
+
+                if request.startswith("GET"):
+                    self.get_callback(request=request, connection=conn)
+                elif request.startswith("POST"):
+                    self.post_callback(request=request, connection=conn)
+                else:
+                    method = request.strip().split()[0]
+                    self.send_error_page(
+                        Exception(f"Unsupported HTTP method {method}"),
+                        conn,
+                        status=HttpStatus.BAD_REQUEST,
+                        headers=None,
+                    )
             except NotImplementedError as err:
                 # send a 501 error page
                 self.send_error_page(err, conn, HttpStatus.NOT_IMPLEMENTED)
@@ -267,9 +317,9 @@ class HttpServer:
                     conn.close()
                     conn = None
 
-    def request_handler(self, func):
+    def get_handler(self, func):
         """
-        Decorator for the function to handle HTTP requests
+        Decorator for the function to handle HTTP GET requests
 
         The provided function must accept the following keyword arguments:
         - request: str  The request the client sent
@@ -281,7 +331,24 @@ class HttpServer:
         def wrapper(*args, **kwargs):
             func(*args, **kwargs)
 
-        self.request_callback = wrapper
+        self.get_callback = wrapper
+        return wrapper
+
+    def post_handler(self, func):
+        """
+        Decorator for the function to handle HTTP POST requests
+
+        The provided function must accept the following keyword arguments:
+        - request: str  The request the client sent
+        - conn: socket  A socket connection to the client
+
+        @param func  The function to handle the request.
+        """
+
+        def wrapper(*args, **kwargs):
+            func(*args, **kwargs)
+
+        self.post_callback = wrapper
         return wrapper
 
     def send_error_page(
