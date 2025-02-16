@@ -151,12 +151,9 @@ class HttpControl(EuroPiScript):
 
         @self.server.get_handler
         def handle_get(connection=None, request=None):
-            self.server.send_response(
+            self.server.send_html(
                 connection,
                 HTML_DOCUMENT,
-                status=HttpStatus.OK,
-                content_type=MimeTypes.HTML,
-                headers=None,
             )
 
         @self.server.post_handler
