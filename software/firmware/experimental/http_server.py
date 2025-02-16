@@ -138,6 +138,68 @@ class HttpServer:
 """
 
     def __init__(self, port=80):
+        """
+        Create a new HTTP server.
+
+        This will open a socket on the specified port, allowing for clients to connect to us.
+        Only HTTP is supported, not HTTPS. Basic GET/POST requests should work, but websockets
+        and anything fancy likely won't.
+
+        Port 80 is officially reserved for HTTP traffic, and can be used by default. Port 8080
+        is also commonly used for HTTP traffic.
+
+        If you're operating in WiFi Client mode you may be subject to the whims of whatever
+        port filter/firewall your IT administrator has implemented, so some ports may not work/
+        may not be available.
+
+        Operating in WiFi AP mode should allow the use of any port you want.
+
+        After creating the HTTP server, you should assign a handler function to process requests:
+
+        ```python
+            srv = HttpServer(8080)
+            @srv.request_handler
+            def handle_http_request(connection=None, request=None):
+                # 1. process the request, take any necessary actions
+                ...
+                my_response = f"{...}"
+
+                # 2. send the response back
+                srv.send_response(
+                    connection,
+                    my_response,
+                    HttpStatus.OK,
+                    MimeTypes.HTML,
+                )
+        ```
+        Response can be an HTTP page, plain text, or JSON/CSV/YAML/XML formatted data. See
+        MimeTypes for supported types. The response should always be a string; if sending
+        a dict as JSON data you'll need to stringify it before passing it to send_response.
+
+        You may send your own error codes as desired:
+        ```python
+            def handle_http_request(connection=None, request=None):
+                srv.send_error_page(
+                    Exception("We're out of coffee!")
+                    connection,
+                    HttpStatus.TEAPOT,  # send error 418 "I'm a teapot"
+                )
+        ```
+
+        Inside the program's main loop you should call srv.check_connections() to process any
+        incoming requests:
+
+        ```python
+            def main(self):
+                # ...
+                while True:
+                    # ...
+                    srv.check_requests()
+                    # ...
+        ```
+
+        @param port  The port to listen on
+        """
         self.port = 80
         self.request_callback = self.default_request_handler
 
@@ -152,6 +214,16 @@ class HttpServer:
         self.socket.listen()
 
     def default_request_handler(self, connection=None, request=None):
+        """
+        The default request handler for the server.
+
+        The intent is that whatever program is using the HTTP server will create their own callback
+        to replace this function. So all we do is raise a NotImplementedError that's handled
+        by self.check_requests() and will serve our HTTP 501 error page accordingly.
+
+        @param connection  The socket the client connected on
+        @param request  The client's request
+        """
         raise NotImplementedError("No request handler set")
 
     def check_requests(self):
