@@ -308,7 +308,7 @@ class HttpServer:
             ),
             status=status,
             content_type=MimeTypes.HTML,
-            headers=headers
+            headers=headers,
         )
 
     def send_current_state_json(
@@ -389,16 +389,12 @@ class HttpServer:
                     "cv4": cv4.voltage(),
                     "cv5": cv5.voltage(),
                     "cv6": cv6.voltage(),
-                }
+                },
             },
-            headers=headers
+            headers=headers,
         )
 
-    def send_json(
-        self,
-        connection,
-        data,
-        headers=None
+    def send_json(self, connection, data, headers=None
     ):
         """
         Send a JSON object to the client
