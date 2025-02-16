@@ -22,6 +22,126 @@ from europi_script import EuroPiScript
 
 from experimental.http import *
 
+HTTP_DOCUMENT = """<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            body {
+                font-family: Montserrat;
+                text-align: center;
+            }
+            h1 {
+                font-weight: normal;
+                font-size: 2.5rem;
+                letter-spacing: 1.75rem;
+                padding-left: 1.75rem;
+                text-align: center;
+            }
+            h2 {
+                font-weight:  bold;
+                font-size: 3.0rem;
+            }
+            td {
+                font-weight: lighter;
+                font-size: 2.0rem;
+            }
+            .content-wrapper {
+                margin: 0;
+                position: absolute;
+                top: 50%;
+                align-content: center;
+                width: 100%;
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+            }
+            table {
+                margin: auto;
+            }
+        </style>
+        <title>
+            EuroPi Web Control
+        </title>
+        <script type="text/javascript">
+            function on_change() {
+                cvs = {
+                    "cv1": parseFloat(document.getElementById("cv1").value),
+                    "cv2": parseFloat(document.getElementById("cv2").value),
+                    "cv3": parseFloat(document.getElementById("cv3").value),
+                    "cv4": parseFloat(document.getElementById("cv4").value),
+                    "cv5": parseFloat(document.getElementById("cv5").value),
+                    "cv6": parseFloat(document.getElementById("cv6").value)
+                }
+                console.debug(cvs)
+
+                var xhr = new XMLHttpRequest();
+                var url = document.URL;
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "text/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var json = JSON.parse(xhr.responseText);
+                        console.log(json);
+                    }
+                };
+                var data = JSON.stringify(cvs);
+                xhr.send(data);
+            }
+        </script>
+    </head>
+    <body>
+        <h1>EuroPi Web Control</h1>
+        <div class="content-wrapper"?>
+            <table>
+                <tr>
+                    <td>
+                        CV1
+                    </td>
+                    <td>
+                        CV2
+                    </td>
+                    <td>
+                        CV3
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="range" min="0" max="10" step="0.001" value="0" id="cv1" oninput="on_change()">
+                    </td>
+                    <td>
+                        <input type="range" min="0" max="10" step="0.001" value="0" id="cv2" oninput="on_change()">
+                    </td>
+                    <td>
+                        <input type="range" min="0" max="10" step="0.001" value="0" id="cv3" oninput="on_change()">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        CV4
+                    </td>
+                    <td>
+                        CV5
+                    </td>
+                    <td>
+                        CV6
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="range" min="0" max="10" step="0.001" value="0" id="cv4" oninput="on_change()">
+                    </td>
+                    <td>
+                        <input type="range" min="0" max="10" step="0.001" value="0" id="cv5" oninput="on_change()">
+                    </td>
+                    <td>
+                        <input type="range" min="0" max="10" step="0.001" value="0" id="cv6" oninput="on_change()">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>"""
+
+
 class HttpControl(EuroPiScript):
 
     def __init__(self):
