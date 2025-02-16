@@ -31,8 +31,10 @@ class HttpStatus:
     This collection is not exhaustive, just what we need to handle this minimal server implementation
     """
 
+    # 200 series - everything's fine
     OK = 200
 
+    # 400 series - error is on the client end
     BAD_REQUEST = 400
     UNAUTHORIZED = 401
     FORBIDDEN = 403
@@ -40,19 +42,20 @@ class HttpStatus:
     REQUEST_TIMEOUT = 408
     TEAPOT = 418
 
+    # 500 series - error is on the server end
     INTERNAL_SERVER_ERROR = 500
     NOT_IMPLEMENTED = 501
 
+    # Human-readable names/descriptions of the error codes above
+    # If you add another error code, make sure to add it here too!
     StatusText = {
         OK: "OK",
-
         BAD_REQUEST: "Bad Request",
         UNAUTHORIZED: "Unauthorized",
         FORBIDDEN: "Forbidden",
         NOT_FOUND: "Not Found",
         REQUEST_TIMEOUT: "Request Timeout",
         TEAPOT: "I'm a teapot",
-
         INTERNAL_SERVER_ERROR: "Internal Server Error",
         NOT_IMPLEMENTED: "Not Implemented",
     }
