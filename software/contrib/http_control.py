@@ -22,7 +22,7 @@ from europi_script import EuroPiScript
 
 from experimental.http import *
 
-HTTP_DOCUMENT = """<!DOCTYPE html>
+HTML_DOCUMENT = """<!DOCTYPE html>
 <html lang="en">
     <head>
         <style>
@@ -149,9 +149,20 @@ class HttpControl(EuroPiScript):
 
         self.server = HttpServer(80)
 
-        @self.server.request_handler
-        def handle_request(connection=None, request=None):
-            raise NotImplementedError("WIP - Not implemented yet")
+        @self.server.get_handler
+        def handle_get(connection=None, request=None):
+            self.server.send_response(
+                connection,
+                HTML_DOCUMENT,
+                status=HttpStatus.OK,
+                content_type=MimeTypes.HTML,
+                headers=None,
+            )
+
+        @self.server.post_handler
+        def handle_post(connection=None, request=None):
+            # TODO: read the request JSON and set the output CV levels
+            self.server.send_current_state_json()
 
     def main(self):
         if wifi_connection is None:
