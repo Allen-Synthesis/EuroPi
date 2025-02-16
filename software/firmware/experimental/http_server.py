@@ -31,15 +31,31 @@ class HttpStatus:
     This collection is not exhaustive, just what we need to handle this minimal server implementation
     """
 
-    OK = "200 OK"
+    OK = 200
 
-    BAD_REQUEST = "400 Bad Request"
-    FORBIDDEN = "403 Forbidden"
-    NOT_FOUND = "404 Not Found"
-    TEAPOT = "418 I'm a teapot"  # for fun & debugging!
+    BAD_REQUEST = 400
+    UNAUTHORIZED = 401
+    FORBIDDEN = 403
+    NOT_FOUND = 404
+    REQUEST_TIMEOUT = 408
+    TEAPOT = 418
 
-    INTERNAL_SERVER_ERROR = "500 Internal Server Error"
-    NOT_IMPLEMENTED = "501 Not Implemented"
+    INTERNAL_SERVER_ERROR = 500
+    NOT_IMPLEMENTED = 501
+
+    StatusText = {
+        OK: "OK",
+
+        BAD_REQUEST: "Bad Request",
+        UNAUTHORIZED: "Unauthorized",
+        FORBIDDEN: "Forbidden",
+        NOT_FOUND: "Not Found",
+        REQUEST_TIMEOUT: "Request Timeout",
+        TEAPOT: "I'm a teapot",
+
+        INTERNAL_SERVER_ERROR: "Internal Server Error",
+        NOT_IMPLEMENTED: "Not Implemented",
+    }
 
 
 class MimeTypes:
@@ -70,16 +86,54 @@ class HttpServer:
     """
 
     # A basic error page template
+    # Contains 3 parameters for the user to fill:
+    # - errno: the error number (e.g. 404, 500)
+    # - errname: the human-legible error name (e.g Not Found, Internal Server Error)
+    # - message: free-form error message, stack trace, etc...
     ERROR_PAGE = """<!DOCTYPE html>
-<html>
-  <head>
-    <title>EuroPi Error: {title}</title>
-  </head>
-  <body>
-    <h1>EuroPi Error</h1>
-    <h2>{title}</h2>
-    <p>{body}</p>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            body {
+                font-family: Montserrat;
+                text-align: center;
+            }
+            h1 {
+                font-weight: normal;
+                font-size: 2.5rem;
+                letter-spacing: 1.75rem;
+                padding-left: 1.75rem;
+            }
+            h2 {
+                font-weight:  bold;
+                font-size: 3.0rem;
+            }
+            p {
+                font-weight: lighter;
+                font-size: 2.0rem;
+            }
+            .content-wrapper {
+                margin: 0;
+                position: absolute;
+                top: 50%;
+                align-content: center;
+                width: 100%;
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+            }
+        </style>
+        <title>EuroPi Error {errno}</title>
+    </head>
+    <body>
+        <div class="content-wrapper"?>
+            <h1>EuroPi</h1>
+            <h2>{errno} {errname}</h2>
+            <p>
+                {message}
+            </p>
+        </div>
+    </body>
 </html>
 """
 
@@ -107,6 +161,8 @@ class HttpServer:
         This will invoke the request handler function if it has been defined
 
         This function should be called inside the main loop of the program
+
+        The client socket is closed after we send our response
         """
         conn = None
         while True:
@@ -119,15 +175,7 @@ class HttpServer:
                 self.request_callback(request=request, connection=conn)
             except NotImplementedError as err:
                 # send a 501 error page
-                self.send_response(
-                    conn,
-                    self.ERROR_PAGE.format(
-                        title=HttpStatus.NOT_IMPLEMENTED,
-                        body=str(err),
-                    ),
-                    status=HttpStatus.NOT_IMPLEMENTED,
-                    content_type=MimeTypes.HTML,
-                )
+                self.send_error_page(err, conn, HttpStatus.NOT_IMPLEMENTED)
             except OSError as err:
                 return
             except BlockingIOError as err:
@@ -136,15 +184,7 @@ class HttpServer:
                 return
             except Exception as err:
                 # send a 500 error page
-                self.send_response(
-                    conn,
-                    self.ERROR_PAGE.format(
-                        title=HttpStatus.INTERNAL_SERVER_ERROR,
-                        body=str(err),
-                    ),
-                    status=HttpStatus.INTERNAL_SERVER_ERROR,
-                    content_type=MimeTypes.HTML,
-                )
+                self.send_error_page(err, conn, HttpStatus.INTERNAL_SERVER_ERROR)
             finally:
                 if conn is not None:
                     conn.close()
@@ -167,22 +207,55 @@ class HttpServer:
         self.request_callback = wrapper
         return wrapper
 
+    def send_error_page(
+        self,
+        error,
+        connection,
+        status=HttpStatus.INTERNAL_SERVER_ERROR,
+    ):
+        """
+        Serve our customized HTTP error page
+
+        @param error  The exception that caused the error
+        @param connection  The socket to send the response over
+        @param status  The error status to respond with
+        """
+        self.send_response(
+            connection,
+            self.ERROR_PAGE.format(
+                errno=status,
+                errname=HttpStatus.StatusText[status],
+                message=str(error),
+            ),
+            status=status,
+            content_type=MimeTypes.HTML,
+        )
+
     def send_response(
         self,
         connection,
         response,
         status=HttpStatus.OK,
         content_type=MimeTypes.HTML,
+        headers=None,
     ):
         """
         Send a response to the client
 
         @param connection  The socket connection to the client
         @param response  The response payload
+        @param status  The HTTP status to respond with
         @param content_type  The MIME type to include in the HTTP header
+        @param headers  Optional dict of key/value pairs for addtional HTTP headers. Charset is ALWAYS utf-8
         """
+        header = f"HTTP/1.0 {status} {HttpStatus.StatusText[status]}\r\nContent-type: {content_type}\r\ncharset=utf-8"
+
+        if headers is not None:
+            for k in headers.keys():
+                header = f"{header}\r\n{k}={headers[k]}"
+
         connection.send(
-            f"HTTP/1.0 {status}\r\nContent-type: {content_type}\r\ncharset=utf-8\r\n\r\n".encode(
+            f"{header}\r\n\r\n".encode(
                 "UTF-8"
             )
         )
