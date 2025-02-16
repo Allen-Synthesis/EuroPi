@@ -45,6 +45,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["CVecorder",         "contrib.cvecorder.CVecorder"],
     ["Daily Random",      "contrib.daily_random.DailyRandom"],
     ["DCSN-2",            "contrib.dscn2.Dcsn2"],
+    ["DFAM Controller",   "contrib.dfam.DfamController"],
     ["EgressusMelodiam",  "contrib.egressus_melodiam.EgressusMelodiam"],
     ["EnvelopeGen",       "contrib.envelope_generator.EnvelopeGenerator"],
     ["Euclid",            "contrib.euclid.EuclideanRhythms"],

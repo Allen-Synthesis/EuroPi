@@ -100,6 +100,16 @@ A loopable random gate sequencer based on a binary tree.  Inspired by the Robaux
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: sequencer, gates, triggers, randomness</i>
 
+### DFAM Controller \[ [documentation](/software/contrib/dfam.md) | [script](/software/contrib/dfam.md) \]
+
+A trigger sequencer designed to interact with the [Moog DFAM](https://www.moogmusic.com/products/dfam-drummer-another-mother).
+Allows DFAM to play sequences of different lengths and adds a reset button & patch point.
+
+Inspired by the [Sonoclast MAFD](https://sonoclast.com/products/mafd/).
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: trigger, dfam</i>
+
 ### Egressus Melodium \[ [documentation](/software/contrib/egressus_melodiam.md) | [script](/software/contrib/egressus_melodiam.py) \]
 
 Clockable and free-running LFO and random CV pattern generator
