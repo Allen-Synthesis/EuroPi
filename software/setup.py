@@ -26,9 +26,7 @@ setup(
     author_email="contact@allensynthesis.co.uk",
     license="Apache 2.0",
     packages=["contrib"],
-    data_files=[
-        ('/', ['main.py'])
-    ],
+    data_files=[("/", ["main.py"])],
     py_modules=["firmware.version"],
     namespace_packages=["contrib"],
 )
