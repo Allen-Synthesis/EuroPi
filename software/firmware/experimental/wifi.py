@@ -60,7 +60,7 @@ class WifiConnection:
             bssid = ex_cfg.WIFI_BSSID
         else:
             bssid = None
-            
+
         if password:
             security = network.WLAN.SEC_WPA_WPA2
         else:
@@ -73,14 +73,14 @@ class WifiConnection:
                 self._nic = network.WLAN(network.WLAN.IF_AP)
                 if self._nic.active():
                     self._nic.active(False)
-                    
+
                 self._nic.config(
                     ssid=ssid,
                     channel=channel,
                     key=password,
                     security=security,
                 )
-                
+
                 if not self._nic.active():
                     self._nic.active(True)
             except Exception as err:
@@ -99,8 +99,7 @@ class WifiConnection:
                     bssid=bssid,
                     security=security,
                 )
-                
-                
+
             except Exception as err:
                 raise WifiError(f"Failed to connect to network {ssid}: {err}")
 
