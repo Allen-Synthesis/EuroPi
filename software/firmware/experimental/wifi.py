@@ -60,26 +60,47 @@ class WifiConnection:
             bssid = ex_cfg.WIFI_BSSID
         else:
             bssid = None
+            
+        if password:
+            security = network.WLAN.SEC_WPA_WPA2
+        else:
+            security = network.WLAN.SEC_OPEN
 
         self._ssid = ssid
         if ex_cfg.WIFI_MODE == WIFI_MODE_AP:
+            print("Starting wifi in AP mode...")
             try:
                 self._nic = network.WLAN(network.WLAN.IF_AP)
+                if self._nic.active():
+                    self._nic.active(False)
+                    
                 self._nic.config(
                     ssid=ssid,
                     channel=channel,
                     key=password,
+                    security=security,
                 )
+                
+                if not self._nic.active():
+                    self._nic.active(True)
             except Exception as err:
                 raise WifiError(f"Failed to enable AP mode: {err}")
         else:
+            print("Starting wifi in client mode...")
             try:
                 self._nic = network.WLAN(network.WLAN.IF_STA)
+                if self._nic.active():
+                    self._nic.active(False)
+                if not self._nic.active():
+                    self._nic.active(True)
                 self._nic.connect(
                     ssid=ssid,
                     key=password,
                     bssid=bssid,
+                    security=security,
                 )
+                
+                
             except Exception as err:
                 raise WifiError(f"Failed to connect to network {ssid}: {err}")
 

@@ -15,29 +15,6 @@
 A simple HTTP server for the Raspberry Pi Pico
 """
 
-try:
-    import europi
-    import experimental.wifi
-
-    LOCAL_DEV = False
-except ImportError:
-    LOCAL_DEV = True
-
-    class europi:
-        ain = None
-        din = None
-        k1 = None
-        k2 = None
-        b1 = None
-        b2 = None
-        cv1 = None
-        cv2 = None
-        cv3 = None
-        cv4 = None
-        cv5 = None
-        cv6 = None
-
-
 import json
 
 try:
@@ -230,19 +207,18 @@ class HttpServer:
 
         @param port  The port to listen on
         """
-        self.port = 80
+        self.port = port
         self.get_callback = self.default_request_handler
         self.post_callback = self.default_request_handler
 
-        if not LOCAL_DEV and europi.wifi_connection is None:
-            raise experimental.wifi.WifiError("Unable to start HTTP server: no wifi connection")
-
         self.socket = socket.socket()
-        addr = socket.getaddrinfo("0.0.0.0", port)[0][-1]
+        addr = socket.getaddrinfo("0.0.0.0", port)
+        print(addr)
+        addr = addr[0][-1]
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.settimeout(0)
         self.socket.bind(addr)
-        self.socket.listen()
+        self.socket.listen(5)
 
     def default_request_handler(self, connection=None, request=None):
         """
@@ -288,7 +264,7 @@ class HttpServer:
                 # Sec-Fetch-User: ?1
                 # Priority: u=0, i
 
-                request = conn.recv(2048)
+                request = conn.recv(1024)
                 request = request.decode("UTF-8")
 
                 if request.startswith("GET"):
@@ -304,18 +280,18 @@ class HttpServer:
                         headers=None,
                     )
             except NotImplementedError as err:
+                print(f"{err}")
                 # send a 501 error page
                 self.send_error_page(err, conn, HttpStatus.NOT_IMPLEMENTED)
             except OSError as err:
-                return
-            except BlockingIOError as err:
-                return
-            except TimeoutError as err:
+                #print(f"{err}")
                 return
             except Exception as err:
+                print(f"{err}")
                 # send a 500 error page
                 self.send_error_page(err, conn, HttpStatus.INTERNAL_SERVER_ERROR)
             finally:
+                #print("Closing connection")
                 if conn is not None:
                     conn.close()
                     conn = None
@@ -377,89 +353,6 @@ class HttpServer:
                 message=str(error),
             ),
             status=status,
-            headers=headers,
-        )
-
-    def send_current_state_json(
-        self,
-        connection,
-        headers=None,
-        ain=europi.ain,
-        din=europi.din,
-        b1=europi.b1,
-        b2=europi.b2,
-        k1=europi.k1,
-        k2=europi.k2,
-        cv1=europi.cv1,
-        cv2=europi.cv2,
-        cv3=europi.cv3,
-        cv4=europi.cv4,
-        cv5=europi.cv5,
-        cv6=europi.cv6,
-    ):
-        """
-        Send the current state of the inputs & outputs as a JSON object
-
-        The result object is of the form
-        ```json
-            {
-                "inputs": {
-                    "ain": 0-MAX_INPUT_VOLTAGE,
-                    "din": 0/1,
-                    "k1": 0-1,
-                    "k2": 0-1,
-                    "b1": 0/1,
-                    "b2": 0/1
-                },
-                "outputs": {
-                    "cv1": 0-MAX_OUTPUT_VOLTAGE,
-                    "cv2": 0-MAX_OUTPUT_VOLTAGE,
-                    "cv3": 0-MAX_OUTPUT_VOLTAGE,
-                    "cv4": 0-MAX_OUTPUT_VOLTAGE,
-                    "cv5": 0-MAX_OUTPUT_VOLTAGE,
-                    "cv6": 0-MAX_OUTPUT_VOLTAGE
-                }
-            }
-        ```
-
-        Calling this will re-sample the CV inputs; if this behaviour is not desired, you should
-        use a buffered wrapper for the input and pass that as the relevant parameter.
-
-        @param connection  The socket connection to the client
-        @param headers  Optional additional HTTP headers to include
-        @param ain  Must provide the read_voltage() method to return the current input voltage
-        @param din  Must provide the value() method to return 0 or 1
-        @param b1   Must provide the value() method to return 0 or 1
-        @param b2   Must provide the value() method to return 0 or 1
-        @param k1   Must provide the percent() method to return 0-1
-        @param k2   Must provide the percent() method to return 0-1
-        @param cv1  Must provide the voltage() method to return the current output voltage
-        @param cv2  Must provide the voltage() method to return the current output voltage
-        @param cv3  Must provide the voltage() method to return the current output voltage
-        @param cv4  Must provide the voltage() method to return the current output voltage
-        @param cv5  Must provide the voltage() method to return the current output voltage
-        @param cv6  Must provide the voltage() method to return the current output voltage
-        """
-        self.send_json(
-            connection,
-            {
-                "inputs": {
-                    "ain": ain.read_voltage(),
-                    "din": din.value(),
-                    "k1": k1.percent(),
-                    "k2": k2.percent(),
-                    "b1": b1.value(),
-                    "b2": b2.value(),
-                },
-                "outputs": {
-                    "cv1": cv1.voltage(),
-                    "cv2": cv2.voltage(),
-                    "cv3": cv3.voltage(),
-                    "cv4": cv4.voltage(),
-                    "cv5": cv5.voltage(),
-                    "cv6": cv6.voltage(),
-                },
-            },
             headers=headers,
         )
 

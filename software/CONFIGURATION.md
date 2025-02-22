@@ -121,7 +121,11 @@ Options:
 - `WIFI_CHANNEL`: the WiFi channel 1-13 to use in `access_point` mode; ignored in `client` mode. Default: `10`
 
 WiFi options are only applicable if EuroPi has the Raspberry Pi Pico W or Raspberry Pi Pico 2 W board;
-other Pico models do not contain wireless support
+other Pico models do not contain wireless support.
+
+**NOTE**: At the time of writing, the latest Micropython firmware for the Raspberry Pi Pico 2 W has a bug in
+which the wireless card will not reliably work if the CPU is overclocked. If you have problems using wifi please
+try changing `CPU_FREQ` to `normal` in `EuroPiConfig.json`.
 
 # Accessing config members in Python code
 
