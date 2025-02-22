@@ -99,8 +99,6 @@ Options:
   - `"ds1307"`: use a DS1307 module connected to the external I2C interface (THIS IS UNTESTED! USE AT YOUR OWN RISK)
   - `"ntp"`: use an NTP source as the external clock. Requires wifi-supported Pico and valid network configuration
     (see WiFi connection below)
-- `NTP_SERVER`: if `RTC_IMPLEMENTATION` is `ntp`, sets the NTP server to use as a clock source.
-  Default: `0.pool.ntp.org`.
 
 ## Timezone
 
