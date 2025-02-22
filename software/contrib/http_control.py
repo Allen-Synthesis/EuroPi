@@ -20,7 +20,7 @@ Requires a Pico W or Pico 2 W with a valid wifi setup to work
 from europi import *
 from europi_script import EuroPiScript
 
-from experimental.http import *
+from experimental.http_server import *
 
 HTML_DOCUMENT = """<!DOCTYPE html>
 <html lang="en">
@@ -159,7 +159,28 @@ class HttpControl(EuroPiScript):
         @self.server.post_handler
         def handle_post(connection=None, request=None):
             # TODO: read the request JSON and set the output CV levels
-            self.server.send_current_state_json()
+            self.server.send_json(
+                connection,
+                {
+                    "inputs": {
+                        "ain": ain.read_voltage(),
+                        "din": din.value(),
+                        "k1": k1.percent(),
+                        "k2": k2.percent(),
+                        "b1": b1.value(),
+                        "b2": b2.value(),
+                    },
+                    "outputs": {
+                        "cv1": cv1.voltage(),
+                        "cv2": cv2.voltage(),
+                        "cv3": cv3.voltage(),
+                        "cv4": cv4.voltage(),
+                        "cv5": cv5.voltage(),
+                        "cv6": cv6.voltage(),
+                    },
+                },
+                headers=None,
+            )
 
     def main(self):
         if wifi_connection is None:
