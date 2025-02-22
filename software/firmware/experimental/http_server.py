@@ -284,14 +284,12 @@ class HttpServer:
                 # send a 501 error page
                 self.send_error_page(err, conn, HttpStatus.NOT_IMPLEMENTED)
             except OSError as err:
-                #print(f"{err}")
                 return
             except Exception as err:
                 print(f"{err}")
                 # send a 500 error page
                 self.send_error_page(err, conn, HttpStatus.INTERNAL_SERVER_ERROR)
             finally:
-                #print("Closing connection")
                 if conn is not None:
                     conn.close()
                     conn = None
