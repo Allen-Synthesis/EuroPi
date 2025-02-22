@@ -70,12 +70,9 @@ class ExperimentalConfig:
                     RTC_NONE,
                     RTC_DS3231,
                     RTC_DS1307,
+                    RTC_NTP,
                 ],
                 default=RTC_NONE,
-            ),
-            configuration.string(
-                "NTP_SERVER",
-                default="0.pool.ntp.org",
             ),
 
             # RTC Timezone offset for local time

@@ -34,7 +34,6 @@ class NtpError(Exception):
 
 try:
     import ntptime
-    import socket
 except ImportError as err:
     raise NtpError(f"Failed to load NTP dependency: {err}")
 
@@ -50,7 +49,8 @@ class NtpClock(ExternalClockSource):
         super().__init__()
         cfg = load_experimental_config()
         try:
-            ntptime.settime(cfg.UTC_OFFSET_HOURS + cfg.UTC_OFFSET_MINUTES / 60, cfg.NTP_SERVER)
+            # set the clock to UTC from the default NTP source
+            ntptime.settime()
         except Exception as err:
             raise NtpError(f"Failed to initialize NTP clock: {err}")
 
