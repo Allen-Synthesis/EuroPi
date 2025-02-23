@@ -21,6 +21,8 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.http_server import *
+import json
+
 
 HTML_DOCUMENT = """<!DOCTYPE html>
 <html lang="en">
@@ -158,29 +160,63 @@ class HttpControl(EuroPiScript):
 
         @self.server.post_handler
         def handle_post(connection=None, request=None):
-            # TODO: read the request JSON and set the output CV levels
-            self.server.send_json(
-                connection,
-                {
-                    "inputs": {
-                        "ain": ain.read_voltage(),
-                        "din": din.value(),
-                        "k1": k1.percent(),
-                        "k2": k2.percent(),
-                        "b1": b1.value(),
-                        "b2": b2.value(),
+            """
+            Process a POST request from the client
+
+            The request should look like
+
+                POST / HTTP/1.1
+                Host: 10.0.0.167
+                User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0
+                Accept: */*
+                Accept-Language: en-US,en;q=0.5
+                Accept-Encoding: gzip, deflate
+                Content-Type: text/json
+                Content-Length: 63
+                Origin: http://10.0.0.167
+                Connection: keep-alive
+                Referer: http://10.0.0.167/
+
+                {"cv1":7.071,"cv2":8.5,"cv3":0,"cv4":0,"cv5":3.857,"cv6":5.929}
+
+            We only care about the actual JSON body
+            """
+            try:
+                (_, body) = request.split("\r\n\r\n")
+                jdata = json.loads(body)
+
+                for i in range(NUM_CVS):
+                    cvs[i].voltage(jdata.get(f"cv{i+1}", 0.0))
+
+                self.server.send_json(
+                    connection,
+                    {
+                        "inputs": {
+                            "ain": ain.read_voltage(),
+                            "din": din.value(),
+                            "k1": k1.percent(),
+                            "k2": k2.percent(),
+                            "b1": b1.value(),
+                            "b2": b2.value(),
+                        },
+                        "outputs": {
+                            "cv1": cv1.voltage(),
+                            "cv2": cv2.voltage(),
+                            "cv3": cv3.voltage(),
+                            "cv4": cv4.voltage(),
+                            "cv5": cv5.voltage(),
+                            "cv6": cv6.voltage(),
+                        },
                     },
-                    "outputs": {
-                        "cv1": cv1.voltage(),
-                        "cv2": cv2.voltage(),
-                        "cv3": cv3.voltage(),
-                        "cv4": cv4.voltage(),
-                        "cv5": cv5.voltage(),
-                        "cv6": cv6.voltage(),
-                    },
-                },
-                headers=None,
-            )
+                    headers=None,
+                )
+            except ValueError as err:
+                log_warn(f"{body} is not valid json")
+                self.server.send_error_page(
+                    err,
+                    connection,
+                    status=HttpStatus.BAD_REQUEST,
+                )
 
     def main(self):
         if wifi_connection is None:
