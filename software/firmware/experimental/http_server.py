@@ -22,6 +22,8 @@ try:
 except ImportError as err:
     raise Exception(f"Failed to load HTTP server dependencies: {err}")
 
+from europi_log import *
+
 
 class HttpStatus:
     """
@@ -213,7 +215,6 @@ class HttpServer:
 
         self.socket = socket.socket()
         addr = socket.getaddrinfo("0.0.0.0", port)
-        print(addr)
         addr = addr[0][-1]
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.settimeout(0)
@@ -280,13 +281,13 @@ class HttpServer:
                         headers=None,
                     )
             except NotImplementedError as err:
-                print(f"{err}")
+                log_warning(f"{err}", "http_server")
                 # send a 501 error page
                 self.send_error_page(err, conn, HttpStatus.NOT_IMPLEMENTED)
             except OSError as err:
                 return
             except Exception as err:
-                print(f"{err}")
+                log_warning(f"{err}", "http_server")
                 # send a 500 error page
                 self.send_error_page(err, conn, HttpStatus.INTERNAL_SERVER_ERROR)
             finally:

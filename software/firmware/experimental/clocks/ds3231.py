@@ -51,6 +51,8 @@ Note that the clock _should_ be set to UTC, not local time. If you choose to use
 some scripts that assume the clock is set to UTC may behave incorrectly.
 """
 
+from europi_log import *
+
 from experimental.clocks.clock_source import ExternalClockSource
 from micropython import const
 
@@ -146,7 +148,7 @@ class DS3231(ExternalClockSource):
         year = bcdtodec(self._timebuf[6]) + 2000
 
         if self.OSF():
-            print("WARNING: Oscillator stop flag set. Time may not be accurate.")
+            log_warning("Oscillator stop flag set. Time may not be accurate", "ds3231")
 
         return (
             year,

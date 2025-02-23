@@ -26,6 +26,9 @@ from europi_config import (
 )
 from experimental.experimental_config import *
 
+from europi_log import *
+import utime
+
 
 class WifiError(Exception):
     """Custom exception for wifi related errors"""
@@ -68,7 +71,7 @@ class WifiConnection:
 
         self._ssid = ssid
         if ex_cfg.WIFI_MODE == WIFI_MODE_AP:
-            print("Starting wifi in AP mode...")
+            log_info("Starting wifi in AP mode...", "wifi")
             try:
                 self._nic = network.WLAN(network.WLAN.IF_AP)
                 if self._nic.active():
@@ -86,13 +89,16 @@ class WifiConnection:
             except Exception as err:
                 raise WifiError(f"Failed to enable AP mode: {err}")
         else:
-            print("Starting wifi in client mode...")
+            log_info("Starting wifi in client mode...", "wifi")
             try:
                 self._nic = network.WLAN(network.WLAN.IF_STA)
                 if self._nic.active():
                     self._nic.active(False)
                 if not self._nic.active():
                     self._nic.active(True)
+
+                log_info(f"Connecting to {self.ssid}...", "wifi")
+
                 self._nic.connect(
                     ssid=ssid,
                     key=password,
@@ -100,7 +106,21 @@ class WifiConnection:
                     security=security,
                 )
 
+                connect_timeout_ms = 10_000
+                start_time = utime.ticks_ms()
+                while (
+                    not self.is_connected and
+                    utime.ticks_diff(utime.ticks_ms(), start_time) <= connect_timeout_ms
+                ):
+                    pass
+
+                if self.is_connected:
+                    log_info(f"Connected to {self.ssid}: {self.ip_addr}", "wifi")
+                else:
+                    raise WifiError("Timed out waiting for connection")
+
             except Exception as err:
+                log_error(f"Failed to connect to network {ssid}: {err}")
                 raise WifiError(f"Failed to connect to network {ssid}: {err}")
 
     @property

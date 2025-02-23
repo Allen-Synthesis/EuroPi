@@ -15,6 +15,8 @@ import errno
 import os
 import json
 
+from europi_log import *
+
 
 def load_file(filename, mode: str = "r") -> any:
     """Load a file and return its contents
@@ -28,7 +30,7 @@ def load_file(filename, mode: str = "r") -> any:
         with open(filename, mode) as file:
             return file.read()
     except OSError as e:
-        print(f"Unable to read {filename}: {e}")
+        log_warning(f"Unable to read {filename}: {e}", "file_utils")
         if "b" in mode:
             return b""
         else:
@@ -47,13 +49,13 @@ def load_json_file(filename, mode="r") -> dict:
         with open(filename, mode) as file:
             return json.load(file)
     except ValueError as e:
-        print(f"Unable to parse JSON data from {filename}: {e}")
+        log_warning(f"Unable to parse JSON data from {filename}: {e}", "file_utils")
         return {}
     except OSError as e:
         if e.errno == errno.ENOENT:
-            print(f"/{filename} does not exist. Using default settings")
+            log_info(f"/{filename} does not exist. Using default settings", "file_utils")
         else:
-            print(f"Unable to open {filename}: {e}")
+            log_warning(f"Unable to open {filename}: {e}", "file_utils")
         return {}
 
 
