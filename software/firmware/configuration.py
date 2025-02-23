@@ -78,7 +78,9 @@ class StringConfigPoint(ConfigPoint):
         if type(value) is str:
             return VALID
         else:
-            return Validation(is_valid=False, message=f"Value {value} is of type {type(value)}, not str")
+            return Validation(
+                is_valid=False, message=f"Value {value} is of type {type(value)}, not str"
+            )
 
 
 class FloatConfigPoint(ConfigPoint):
