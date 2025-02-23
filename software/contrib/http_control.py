@@ -61,7 +61,7 @@ HTML_DOCUMENT = """<!DOCTYPE html>
         <title>
             EuroPi Web Control
         </title>
-        <script type="text/javascript">
+        <script>
             function on_change() {
                 cvs = {
                     "cv1": parseFloat(document.getElementById("cv1").value),
@@ -90,7 +90,7 @@ HTML_DOCUMENT = """<!DOCTYPE html>
     </head>
     <body>
         <h1>EuroPi Web Control</h1>
-        <div class="content-wrapper"?>
+        <div class="content-wrapper">
             <table>
                 <tr>
                     <td>
