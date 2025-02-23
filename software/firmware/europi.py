@@ -678,18 +678,14 @@ if not TEST_ENV:
         )
     except Exception as err:
         log_warning(
-            f"Failed to initialize display: {err}. Is the hardware connected properly?",
-            "europi"
+            f"Failed to initialize display: {err}. Is the hardware connected properly?", "europi"
         )
         oled = DummyDisplay(
             width=europi_config.DISPLAY_WIDTH,
             height=europi_config.DISPLAY_HEIGHT,
         )
 else:
-    log_warning(
-        "No display hardware detected; falling back to DummyDisplay",
-        "europi"
-    )
+    log_warning("No display hardware detected; falling back to DummyDisplay", "europi")
     oled = DummyDisplay(
         width=europi_config.DISPLAY_WIDTH,
         height=europi_config.DISPLAY_HEIGHT,

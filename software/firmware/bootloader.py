@@ -43,7 +43,7 @@ class PrintMemoryUse:
             after = gc.mem_free()
             log_info(
                 f"free: {after/1024: >6.2f}k, used: {(self.before - after)/1024: >6.2f}k   {self.label}",
-                "bootloader"
+                "bootloader",
             )
 
 
@@ -87,7 +87,7 @@ class BootloaderMenu(EuroPiScript):
         except Exception as e:
             log_warning(
                 f"Warning: Ignoring bad qualified class name: {script_class_name}\n  caused by: {e}",
-                "bootloader"
+                "bootloader",
             )
             return None
 

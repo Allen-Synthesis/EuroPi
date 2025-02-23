@@ -109,8 +109,8 @@ class WifiConnection:
                 connect_timeout_ms = 10_000
                 start_time = utime.ticks_ms()
                 while (
-                    not self.is_connected and
-                    utime.ticks_diff(utime.ticks_ms(), start_time) <= connect_timeout_ms
+                    not self.is_connected
+                    and utime.ticks_diff(utime.ticks_ms(), start_time) <= connect_timeout_ms
                 ):
                     pass
 
