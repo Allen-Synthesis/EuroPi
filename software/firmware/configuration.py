@@ -75,7 +75,10 @@ class StringConfigPoint(ConfigPoint):
         """Validates the given value with this ConfigPoint. Returns a `Validation` containing the
         validation result, as well as an error message containing the reason for a validation failure.
         """
-        return type(value) is str
+        if type(value) is str:
+            return VALID
+        else:
+            return Validation(is_valid=False, message=f"Value {value} is of type {type(value)}, not str")
 
 
 class FloatConfigPoint(ConfigPoint):
