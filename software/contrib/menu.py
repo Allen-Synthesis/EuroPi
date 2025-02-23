@@ -53,6 +53,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["Gate Phaser",       "contrib.gate_phaser.GatePhaser"],
     ["Hamlet",            "contrib.hamlet.Hamlet"],
     ["HarmonicLFOs",      "contrib.harmonic_lfos.HarmonicLFOs"],
+    ["HTTP Control",      "contrib.http_control.HttpControl"],
     ["Itty Bitty",        "contrib.itty_bitty.IttyBitty"],
     ["Kompari",           "contrib.kompari.Kompari"],
     ["Logic",             "contrib.logic.Logic"],
