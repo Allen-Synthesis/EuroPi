@@ -86,6 +86,8 @@ class WifiConnection:
 
                 if not self._nic.active():
                     self._nic.active(True)
+
+                log_info(f"Access point {self.ssid} is up. {self.ip_addr}", "wifi")
             except Exception as err:
                 raise WifiError(f"Failed to enable AP mode: {err}")
         else:
