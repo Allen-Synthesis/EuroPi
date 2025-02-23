@@ -19,6 +19,7 @@ import time
 
 from collections import OrderedDict
 from europi import oled, OLED_HEIGHT, OLED_WIDTH, CHAR_HEIGHT, CHAR_WIDTH, reset_state
+from europi_log import *
 from europi_script import EuroPiScript
 from ui import Menu
 
@@ -40,8 +41,9 @@ class PrintMemoryUse:
         if DEBUG:
             gc.collect()
             after = gc.mem_free()
-            print(
-                f"free: {after/1024: >6.2f}k, used: {(self.before - after)/1024: >6.2f}k   {self.label}"
+            log_info(
+                f"free: {after/1024: >6.2f}k, used: {(self.before - after)/1024: >6.2f}k   {self.label}",
+                "bootloader"
             )
 
 
@@ -83,8 +85,9 @@ class BootloaderMenu(EuroPiScript):
             module, clazz = script_class_name.rsplit(".", 1)
             return getattr(__import__(module, None, None, [None]), clazz)
         except Exception as e:
-            print(
-                f"Warning: Ignoring bad qualified class name: {script_class_name}\n  caused by: {e}"
+            log_warning(
+                f"Warning: Ignoring bad qualified class name: {script_class_name}\n  caused by: {e}",
+                "bootloader"
             )
             return None
 
@@ -187,7 +190,7 @@ class BootloaderMenu(EuroPiScript):
 
                 # in case we have the USB cable connected, print the stack trace for debugging
                 # otherwise, just halt and show the error message
-                print(f"[ERR ] Failed to run script: {err}")
+                log_error(f"Failed to run script: {err}", "bootloader")
                 sys.print_exception(err)
 
                 # show the type & first portion of the exception on the OLED

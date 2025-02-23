@@ -44,6 +44,7 @@ from framebuf import FrameBuffer, MONO_HLSB
 
 from europi_config import load_europi_config, CPU_FREQS, MODEL_PICO_2W, MODEL_PICO_W
 from europi_display import Display, DummyDisplay
+from europi_log import *
 
 from experimental.experimental_config import load_experimental_config
 from experimental.wifi import WifiConnection, WifiError
@@ -676,13 +677,19 @@ if not TEST_ENV:
             rotate=europi_config.ROTATE_DISPLAY,
         )
     except Exception as err:
-        print(f"Failed to initialize display: {err}. Is the hardware connected properly?")
+        log_warning(
+            f"Failed to initialize display: {err}. Is the hardware connected properly?",
+            "europi"
+        )
         oled = DummyDisplay(
             width=europi_config.DISPLAY_WIDTH,
             height=europi_config.DISPLAY_HEIGHT,
         )
 else:
-    print("No display hardware detected; falling back to DummyDisplay")
+    log_warning(
+        "No display hardware detected; falling back to DummyDisplay",
+        "europi"
+    )
     oled = DummyDisplay(
         width=europi_config.DISPLAY_WIDTH,
         height=europi_config.DISPLAY_HEIGHT,
@@ -722,7 +729,6 @@ if europi_config.PICO_MODEL == MODEL_PICO_W or europi_config.PICO_MODEL == MODEL
     try:
         wifi_connection = WifiConnection()
     except WifiError as err:
-        print(err)
         wifi_connection = None
 else:
     wifi_connection = None
