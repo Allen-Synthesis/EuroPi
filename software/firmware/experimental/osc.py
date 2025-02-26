@@ -127,7 +127,7 @@ class OpenSoundServer:
     ```
     """
 
-    def __init__(self, port=9000):
+    def __init__(self, recv_port=9000):
         """
         Create the OSC server
 
@@ -135,22 +135,18 @@ class OpenSoundServer:
 
         @param port  The UDP port we accept messages on.
         """
-        addr = socket.getaddrinfo("0.0.0.0", port)[0][-1]
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self.socket.settimeout(0)
-        self.socket.bind(addr)
-        self.port = port
+        addr = socket.getaddrinfo("0.0.0.0", recv_port)[0][-1]
+        self.recv_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.recv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.recv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.recv_socket.settimeout(0)
+        self.recv_socket.bind(addr)
 
-        addr = europi.wifi_connection.ip_addr
-        if addr.startswith("10."):
-            self.bcast_addr = "10.255.255.255"
-        elif addr.startswith("192.168"):
-            self.bcast_addr = "192.168.255.255"
-        else:
-            # TODO: technically we shoud support 172.16-172.31 with a 20-bit mask too
-            self.bcast_addr = "255.255.255.255"
+        #addr = socket.getaddrinfo(bcast_address, send_port)
+        #self.send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        #self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        #self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        #self.send_socket.bind(addr)
 
         self.recv_callback = self.default_callback
 
@@ -183,7 +179,7 @@ class OpenSoundServer:
         """Check if we have any new data to process, invoke data_handler as needed"""
         while True:
             try:
-                (data, connection) = self.socket.recvfrom(1024)
+                (data, connection) = self.recv_socket.recvfrom(1024)
                 packet = OpenSoundPacket(data)
                 self.recv_callback(connection=connection, data=packet)
             except ValueError as err:
@@ -195,6 +191,9 @@ class OpenSoundServer:
     def send_data(self, address, *args):
         """
         Transmit a packet
+
+        @param address  The OSC address to send to
+        @param args  The values to encode in the packet
         """
 
         def pad_length(arr):
@@ -253,4 +252,4 @@ class OpenSoundServer:
                 pad_length(data)
 
         data = bytearray(data)
-        self.socket.sendto(data, (self.bcast_addr, self.port))
+        self.send_socket.send(data)
