@@ -54,12 +54,12 @@ class OpenSoundPacket:
 
         @param data  The raw byte data read from the UDP socket
         """
-        address_end = data.index(b'\0', 1)
+        address_end = data.index(b"\0", 1)
         self.address = data[0:address_end].decode("utf-8")
 
         self.types = []
         self.values = []
-        type_start = data.index(b',', address_end)
+        type_start = data.index(b",", address_end)
         i = type_start + 1
         while data[i] != 0x00:
             t = chr(data[i])
@@ -194,8 +194,9 @@ class OpenSoundServer:
 
     def send_data(self, address, *args):
         """
-        Broadcast a packet
+        Transmit a packet
         """
+
         def pad_length(arr):
             # pad with nulls until we get to the next multiple of 4
             for i in range((4 - (len(arr) % 4)) % 4):
@@ -225,10 +226,10 @@ class OpenSoundServer:
         for arg in args:
             if type(arg) is int:
                 # big-endian, 32-bit int
-                data.append((arg >> 24) & 0xff)
-                data.append((arg >> 16) & 0xff)
-                data.append((arg >> 8) & 0xff)
-                data.append(arg & 0xff)
+                data.append((arg >> 24) & 0xFF)
+                data.append((arg >> 16) & 0xFF)
+                data.append((arg >> 8) & 0xFF)
+                data.append(arg & 0xFF)
             elif type(arg) is bool:
                 # treat boolean as a 0/1 integer for convenience
                 if arg:
