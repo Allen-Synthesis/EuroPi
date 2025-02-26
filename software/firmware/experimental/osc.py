@@ -46,7 +46,8 @@ class OpenSoundPacket:
                 a. "f" character for 32-bit float
                 b. "i" character for 32-bit signed integer
                 c. "s" character for string (null-terminated)
-                d. assorted non-standard types we just drop
+                d. "b" character for blob (32-bit int -> n, followed by n bytes of data)
+                e. assorted non-standard types
             6. null terminator(s)
             7. payload bytes (lengths are type dependent)
 
@@ -85,6 +86,17 @@ class OpenSoundPacket:
                     d += 1
                 self.values.append(s)
                 d += (4 - (d % 4)) % 4
+            elif t == "b":
+                # blob; int32 -> n, followed by n bytes
+                self.types.append(bytearray)
+                n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 1]
+                d += 4
+                b = []
+                for i in range(n):
+                    b.append(data[d + i])
+                d += n
+                d += (4 - (d % 4)) % 4
+                self.values.append(bytearray(b))
             elif t == "T" or t == "F":
                 # zero-byte boolean; skip
                 pass
@@ -114,6 +126,15 @@ class OpenSoundPacket:
                     data[d + 3].decode()  # data is in the 4th byte; padded with leading zeros
                 )
                 d += 4
+            elif t == "m":
+                # 4-byte midi; skip
+                d += 4
+            elif t == "N":
+                # nil; skip
+                pass
+            elif t == "I":
+                # infinity; skip
+                pass
             else:
                 log_warning(f"Unsupported type {t}", "osc")
 
