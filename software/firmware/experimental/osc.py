@@ -80,7 +80,7 @@ class OpenSoundPacket:
             elif t == "s" or t == "S":  # include the alternate "S" here
                 self.types.append(str)
                 s = ""
-                while(data[d] != b"\0"):
+                while data[d] != b"\0":
                     s += chr(data[d])
                     d += 1
                 self.values.append(s)
@@ -96,21 +96,23 @@ class OpenSoundPacket:
                 # treat as a normal int
                 self.types.append(int)
                 n = (
-                    (data[d] << 56) |
-                    (data[d + 1] << 48) |
-                    (data[d + 2] << 40) |
-                    (data[d + 3] << 32) |
-                    (data[d + 4] << 24) |
-                    (data[d + 5] << 16) |
-                    (data[d + 6] << 8)  |
-                    data[d + 7]
+                    (data[d] << 56)
+                    | (data[d + 1] << 48)
+                    | (data[d + 2] << 40)
+                    | (data[d + 3] << 32)
+                    | (data[d + 4] << 24)
+                    | (data[d + 5] << 16)
+                    | (data[d + 6] << 8)
+                    | data[d + 7]
                 )
                 self.values.append(n)
                 d += 8
             elif t == "c":
                 # a single character; treat as a string
                 self.types.append(str)
-                self.values.append(data[d+3].decode())  # data is in the 4th byte; padded with leading zeros
+                self.values.append(
+                    data[d+3].decode()  # data is in the 4th byte; padded with leading zeros
+                )
                 d += 4
             else:
                 log_warning(f"Unsupported type {t}", "osc")
