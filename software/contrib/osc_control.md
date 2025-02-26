@@ -24,6 +24,8 @@ else for on).
 The above accepts 6 parameters of either float or integer, and will set all 6 outputs
 with a single packet.
 
+**Not yet implemented**
+
 In addition to the input addresses above, EuroPi will broadcast the following addresses
 at 10Hz:
 
