@@ -31,7 +31,7 @@ class OpenSoundPacket:
     Contains the address and the data
     """
 
-    def __init__(self, data:bytes):
+    def __init__(self, data: bytes):
         """
         Read the raw packet and create this container
 
@@ -85,7 +85,7 @@ class OpenSoundPacket:
                 i += 4
             elif t is float:
                 # read a 4-byte floating-point value
-                n = struct.unpack("f", data[i:i + 4])
+                n = struct.unpack("f", data[i : i + 4])
                 self.values.append(n)
                 n += 4
             elif t is str:
