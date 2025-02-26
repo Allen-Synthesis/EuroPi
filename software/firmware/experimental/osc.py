@@ -23,6 +23,8 @@ from europi_log import *
 import socket
 import struct
 
+import europi
+
 
 class OpenSoundPacket:
     """
@@ -47,17 +49,17 @@ class OpenSoundPacket:
             6. null terminator(s)
             7. payload bytes (lengths are type dependent)
 
-        Every argument starts on an 8-aligned byte, so there are
+        Every argument starts on an 4-aligned byte, so there are
         filler nulls to pad strings out to a multiple of 32 bytes
 
         @param data  The raw byte data read from the UDP socket
         """
-        address_end = data.index(0x00, 1)
+        address_end = data.index(b'\0', 1)
         self.address = data[0:address_end].decode("utf-8")
 
         self.types = []
         self.values = []
-        type_start = data.index(ord(","), address_end)
+        type_start = data.index(b',', address_end)
         i = type_start + 1
         while data[i] != 0x00:
             t = chr(data[i])
@@ -85,7 +87,7 @@ class OpenSoundPacket:
                 i += 4
             elif t is float:
                 # read a 4-byte floating-point value
-                n = struct.unpack("f", data[i : i + 4])
+                n = struct.unpack(">f", data[i : i + 4])[0]
                 self.values.append(n)
                 n += 4
             elif t is str:
@@ -136,7 +138,19 @@ class OpenSoundServer:
         addr = socket.getaddrinfo("0.0.0.0", port)[0][-1]
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.socket.settimeout(0)
         self.socket.bind(addr)
+        self.port = port
+
+        addr = europi.wifi_connection.ip_addr
+        if addr.startswith("10."):
+            self.bcast_addr = "10.255.255.255"
+        elif addr.startswith("192.168"):
+            self.bcast_addr = "192.168.255.255"
+        else:
+            # TODO: technically we shoud support 172.16-172.31 with a 20-bit mask too
+            self.bcast_addr = "255.255.255.255"
 
         self.recv_callback = self.default_callback
 
@@ -177,3 +191,65 @@ class OpenSoundServer:
                 break
             except OSError as err:
                 break
+
+    def send_data(self, address, *args):
+        """
+        Broadcast a packet
+        """
+        def pad_length(arr):
+            # pad with nulls until we get to the next multiple of 4
+            for i in range((4 - (len(arr) % 4)) % 4):
+                arr.append(0)
+
+        data = []
+        for ch in address:
+            data.append(ord(ch))
+        data.append(0)
+        pad_length(data)
+
+        # comma denoting start of types
+        data.append(ord(","))
+
+        # types
+        for arg in args:
+            if type(arg) is int or type(arg) is bool:
+                data.append(ord("i"))
+            elif type(arg) is float:
+                data.append(ord("s"))
+            elif type(arg) is str:
+                data.append(ord("s"))
+        data.append(0)
+        pad_length(data)
+
+        # values
+        for arg in args:
+            if type(arg) is int:
+                # big-endian, 32-bit int
+                data.append((arg >> 24) & 0xff)
+                data.append((arg >> 16) & 0xff)
+                data.append((arg >> 8) & 0xff)
+                data.append(arg & 0xff)
+            elif type(arg) is bool:
+                # treat boolean as a 0/1 integer for convenience
+                if arg:
+                    data.append(0)
+                    data.append(0)
+                    data.append(0)
+                    data.append(1)
+                else:
+                    data.append(0)
+                    data.append(0)
+                    data.append(0)
+                    data.append(0)
+            elif type(arg) is float:
+                bytes = struct.pack(">f", arg)
+                for b in bytes:
+                    data.append(b)
+            elif type(arg) is str:
+                for ch in arg:
+                    data.append(ord(ch))
+                data.append(0)
+                pad_length(data)
+
+        data = bytearray(data)
+        self.socket.sendto(data, (self.bcast_addr, self.port))
