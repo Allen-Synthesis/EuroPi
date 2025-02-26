@@ -142,13 +142,11 @@ class OpenSoundServer:
         self.recv_socket.settimeout(0)
         self.recv_socket.bind(addr)
 
-        # fmt: off
-        #addr = socket.getaddrinfo(bcast_address, send_port)
-        #self.send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        #self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        #self.send_socket.bind(addr)
-        # fmt: on
+        # addr = socket.getaddrinfo(bcast_address, send_port)
+        # self.send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        # self.send_socket.bind(addr)
 
         self.recv_callback = self.default_callback
 
