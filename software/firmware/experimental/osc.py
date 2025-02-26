@@ -46,6 +46,7 @@ class OpenSoundPacket:
                 a. "f" character for 32-bit float
                 b. "i" character for 32-bit signed integer
                 c. "s" character for string (null-terminated)
+                d. assorted non-standard types we just drop
             6. null terminator(s)
             7. payload bytes (lengths are type dependent)
 
@@ -60,15 +61,57 @@ class OpenSoundPacket:
         self.types = []
         self.values = []
         type_start = data.index(b",", address_end)
+        data_start = data.index(b"\0", type_start)
+        data_start += (4 - (data_start % 4)) % 4  # move ahead to the next 4-aligned byte
         i = type_start + 1
+        d = data_start
         while data[i] != 0x00:
             t = chr(data[i])
             if t == "i":
                 self.types.append(int)
+                n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 1]
+                self.values.append(n)
+                d += 4
             elif t == "f":
                 self.types.append(float)
-            elif t == "s":
+                n = struct.unpack(">f", data[d : d + 4])[0]
+                self.values.append(n)
+                d += 4
+            elif t == "s" or t == "S":  # include the alternate "S" here
                 self.types.append(str)
+                s = ""
+                while(data[d] != b"\0"):
+                    s += chr(data[d])
+                    d += 1
+                self.values.append(s)
+                d += (4 - (d % 4)) % 4
+            elif t == "T" or t == "F":
+                # zero-byte boolean; skip
+                pass
+            elif t == "t":
+                # 8-byte timestamp; skip
+                d += 8
+            elif t == "h":
+                # 64-bit signed integer
+                # treat as a normal int
+                self.types.append(int)
+                n = (
+                    (data[d] << 56) |
+                    (data[d + 1] << 48) |
+                    (data[d + 2] << 40) |
+                    (data[d + 3] << 32) |
+                    (data[d + 4] << 24) |
+                    (data[d + 5] << 16) |
+                    (data[d + 6] << 8)  |
+                    data[d + 7]
+                )
+                self.values.append(n)
+                d += 8
+            elif t == "c":
+                # a single character; treat as a string
+                self.types.append(str)
+                self.values.append(data[d+3].decode())  # data is in the 4th byte; padded with leading zeros
+                d += 4
             else:
                 log_warning(f"Unsupported type {t}", "osc")
 
