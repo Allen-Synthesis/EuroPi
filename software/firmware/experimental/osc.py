@@ -30,6 +30,7 @@ class OpenSoundPacket:
 
     Contains the address and the data
     """
+
     def __init__(self, data:bytes):
         """
         Read the raw packet and create this container
@@ -84,7 +85,7 @@ class OpenSoundPacket:
                 i += 4
             elif t is float:
                 # read a 4-byte floating-point value
-                n = struct.unpack("f", data[i:i+4])
+                n = struct.unpack("f", data[i:i + 4])
                 self.values.append(n)
                 n += 4
             elif t is str:
@@ -132,14 +133,14 @@ class OpenSoundServer:
 
         @param port  The UDP port we accept messages on.
         """
-        addr = socket.getaddrinfo('0.0.0.0', port)[0][-1]
+        addr = socket.getaddrinfo("0.0.0.0", port)[0][-1]
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(addr)
 
         self.recv_callback = self.default_callback
 
-    def default_callback(self, connection=None, data:OpenSoundPacket=None):
+    def default_callback(self, connection=None, data: OpenSoundPacket = None):
         """
         Default callback function when we receive data
 
@@ -166,7 +167,7 @@ class OpenSoundServer:
 
     def receive_data(self):
         """Check if we have any new data to process, invoke data_handler as needed"""
-        while(True):
+        while True:
             try:
                 (data, connection) = self.socket.recvfrom(1024)
                 packet = OpenSoundPacket(data)
