@@ -111,7 +111,7 @@ class OpenSoundPacket:
                 # a single character; treat as a string
                 self.types.append(str)
                 self.values.append(
-                    data[d+3].decode()  # data is in the 4th byte; padded with leading zeros
+                    data[d + 3].decode()  # data is in the 4th byte; padded with leading zeros
                 )
                 d += 4
             else:
