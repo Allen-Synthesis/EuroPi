@@ -126,7 +126,7 @@ class Timezone:
 class DateTime:
     """Represents a date and time"""
 
-    def __init__(self, year, month, day, hour, minute, second=None, weekday=None):
+    def __init__(self, year, month, day, hour, minute, second=None, weekday=None, yearday=None):
         """
         Create a DateTime representing a specific moment
 
@@ -137,6 +137,7 @@ class DateTime:
         @param minute  The current minute within the hour (0-59)
         @param second  The current second within the minute (0-59, optional)
         @param weekday  The current day of the week (e.g. Weekday.MONDAY, optional)
+        @param yearday  The current day of the year (1-365, 1-366 if leap year, optional)
         """
         self.year = year
         self.month = month
