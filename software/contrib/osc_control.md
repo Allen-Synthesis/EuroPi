@@ -60,3 +60,32 @@ the default with a different port, set the port in `/config/OscControl.json`, e.
     "PORT": 6024
 }
 ```
+
+## Configuring TouchOSC
+
+[TouchOSC](https://hexler.net/touchosc) is a commercial program available for a variety
+of platforms that allows you to create custom OSC input interfaces.
+
+The simplest way to control EuroPi via TouchOSC is to add six sliders to your panel.
+Then edit each slider to set its name to `europi/cvN` where `N` is the number `1` to
+`6`.
+
+![TouchOSC Setup](./osc_control-docs/touchosc-setup.png)
+
+_Configuring a slider's name in TouchOSC on Android_
+
+Then configure TouchOSC's `OSC` connection to connect to your EuroPi's IP address. Your
+phone/table must either be connected to EuroPi's access point, or both must be connected
+to the same wifi network.
+
+Once configured, start TouchOSC's interface by pressing the triangular "Play" button.
+
+![TouchOSC Setup](./osc_control-docs/touchosc-sliders.png)
+
+_TouchOSC's sliders_
+
+EuroPi's OLED will show bars indicating the levels of TouchOSC's sliders
+
+![EuroPi OLED](./osc_control-docs/osc-oled.jpg)
+
+_EuroPi's OLED showing the same slider levels as TouchOSC_
