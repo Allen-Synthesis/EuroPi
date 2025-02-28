@@ -193,7 +193,7 @@ class OpenSoundServer:
     ```
     """
 
-    def __init__(self, recv_port=9000):
+    def __init__(self, recv_port=9000, send_port=9001, send_addr="192.168.4.100"):
         """
         Create the OSC server
 
@@ -201,18 +201,19 @@ class OpenSoundServer:
 
         @param port  The UDP port we accept messages on.
         """
+        log_info(f"Listening for OSC packets on port {recv_port}", "osc")
         addr = socket.getaddrinfo("0.0.0.0", recv_port)[0][-1]
         self.recv_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.recv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.recv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        #self.recv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.recv_socket.settimeout(0)
         self.recv_socket.bind(addr)
 
-        # addr = socket.getaddrinfo(bcast_address, send_port)
-        # self.send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        # self.send_socket.bind(addr)
+        log_info(f"Sending OSC packets to {send_addr}:{send_port}", "osc")
+        addr = socket.getaddrinfo(send_addr, send_port)[0][-1]
+        self.send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.send_port = send_port
+        self.send_addr = send_addr
 
         self.recv_callback = self.default_callback
 
@@ -249,7 +250,7 @@ class OpenSoundServer:
                 packet = OpenSoundPacket(data)
                 self.recv_callback(connection=connection, data=packet)
             except ValueError as err:
-                log_warning("Failed to process packet: {err}")
+                log_warning("Failed to process packet: {err}", "osc")
                 break
             except OSError as err:
                 break
@@ -318,4 +319,4 @@ class OpenSoundServer:
                 pad_length(data)
 
         data = bytearray(data)
-        self.send_socket.send(data)
+        self.send_socket.sendto(data, (self.send_addr, self.send_port))

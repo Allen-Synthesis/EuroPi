@@ -24,10 +24,8 @@ else for on).
 The above accepts 6 parameters of either float or integer, and will set all 6 outputs
 with a single packet.
 
-**Not yet implemented**
-
 In addition to the input addresses above, EuroPi will broadcast the following addresses
-at 10Hz:
+at 20Hz:
 
 - `/europi/ain`: float, the 0-1 input level
 - `/europi/k1`: float, the knob position as a value in the range 0-1
@@ -57,7 +55,19 @@ the default with a different port, set the port in `/config/OscControl.json`, e.
 
 ```json
 {
-    "PORT": 6024
+    "RECV_PORT": 6024
+}
+```
+
+## Sending data
+
+To configure the port & IP address that button, knob, `ain`, and `din` states are send,
+set the `SEND_PORT` and `SEND_ADDR` keys in `/config/OscControl.json`, e.g.:
+
+```json
+{
+    "SEND_ADDR": "192.168.4.100",
+    "SEND_PORT": 9001,
 }
 ```
 
@@ -65,6 +75,25 @@ the default with a different port, set the port in `/config/OscControl.json`, e.
 
 [TouchOSC](https://hexler.net/touchosc) is a commercial program available for a variety
 of platforms that allows you to create custom OSC input interfaces.
+
+### Network setup
+
+Press the link button to configure TouchOSC's connection to your EuroPi.
+
+Select `UDP` as the connection type and enter the IP address of your EuroPi and
+enter the following:
+- `Host`: EuroPi's IP address
+- `Send Port`: the `RECV_PORT` value configured on EuroPi; this is the port TouchOSC
+  sends data, and the port that EuroPi correspondingly listens on
+- `Receive Port`: the `SEND_PORT` value that you configured on EuroPi; this is the
+  port TouchOSC listens for data on, and correspondingly the port EuroPi sends data on
+- `Zeroconf`: leave as `Default` unless you have a specific requirement to change this
+
+![TouchOSC network setup](./osc_control-docs/touchosc-ports.png)
+
+_Configuring TouchOSC's networking_
+
+### UI setup
 
 The simplest way to control EuroPi via TouchOSC is to add six sliders to your panel.
 Then edit each slider to set its name to `europi/cvN` where `N` is the number `1` to
