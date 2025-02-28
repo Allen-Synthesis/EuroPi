@@ -282,7 +282,7 @@ class OpenSoundServer:
             if type(arg) is int or type(arg) is bool:
                 data.append(ord("i"))
             elif type(arg) is float:
-                data.append(ord("s"))
+                data.append(ord("f"))
             elif type(arg) is str:
                 data.append(ord("s"))
         data.append(0)
