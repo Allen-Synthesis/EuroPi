@@ -318,5 +318,10 @@ class OpenSoundServer:
                 data.append(0)
                 pad_length(data)
 
-        data = bytearray(data)
-        self.send_socket.sendto(data, (self.send_addr, self.send_port))
+        try:
+            data = bytearray(data)
+            self.send_socket.sendto(data, (self.send_addr, self.send_port))
+        except OSError:
+            pass
+        except Exception as err:
+            log_warning(f"Failed to send OSC data: {err}", "osc")
