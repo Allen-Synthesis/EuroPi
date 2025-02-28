@@ -42,10 +42,12 @@ from version import __version__
 from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB
 
-from europi_config import load_europi_config, CPU_FREQS
+from europi_config import load_europi_config, CPU_FREQS, MODEL_PICO_2W, MODEL_PICO_W
 from europi_display import Display, DummyDisplay
+from europi_log import *
 
 from experimental.experimental_config import load_experimental_config
+from experimental.wifi import WifiConnection, WifiError
 
 
 if sys.implementation.name == "micropython":
@@ -154,6 +156,7 @@ def reset_state():
     """Return device to initial state with all components off and handlers reset."""
     if not TEST_ENV:
         oled.fill(0)
+        oled.show()
     turn_off_all_cvs()
     for d in (b1, b2, din):
         d.reset_handler()
@@ -675,13 +678,15 @@ if not TEST_ENV:
             rotate=europi_config.ROTATE_DISPLAY,
         )
     except Exception as err:
-        print(f"Failed to initialize display: {err}. Is the hardware connected properly?")
+        log_warning(
+            f"Failed to initialize display: {err}. Is the hardware connected properly?", "europi"
+        )
         oled = DummyDisplay(
             width=europi_config.DISPLAY_WIDTH,
             height=europi_config.DISPLAY_HEIGHT,
         )
 else:
-    print("No display hardware detected; falling back to DummyDisplay")
+    log_warning("No display hardware detected; falling back to DummyDisplay", "europi")
     oled = DummyDisplay(
         width=europi_config.DISPLAY_WIDTH,
         height=europi_config.DISPLAY_HEIGHT,
@@ -715,6 +720,21 @@ external_i2c = I2C(
 # By default this will overclock the CPU, but some users may not want to
 # e.g. to lower power consumption on a very power-constrained system
 freq(CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ])
+
+# Connect to wifi, if supported
+if europi_config.PICO_MODEL == MODEL_PICO_W or europi_config.PICO_MODEL == MODEL_PICO_2W:
+    try:
+        oled.centre_text(
+            f"""Connecting to wifi...
+SSID:
+{experimental_config.WIFI_SSID}"""
+        )
+        wifi_connection = WifiConnection()
+    except WifiError as err:
+        wifi_connection = None
+else:
+    wifi_connection = None
+
 
 # Reset the module state upon import.
 reset_state()

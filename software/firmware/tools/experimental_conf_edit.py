@@ -18,7 +18,6 @@ Used to edit the global EuroPiConfig settings -- use at your own peril!
 """
 
 from europi import *
-from europi_config import EuroPiConfig
 from europi_script import EuroPiScript
 
 from configuration import ConfigFile
@@ -26,6 +25,8 @@ from configuration import ConfigFile
 from experimental.experimental_config import *
 from experimental.knobs import KnobBank
 from experimental.settings_menu import *
+
+from framebuf import FrameBuffer, MONO_HLSB
 
 
 ## Lockable knob bank for K2 to make menu navigation a little easier
@@ -41,6 +42,15 @@ k2_bank = (
 )
 
 
+class SectionHeader(MenuItem):
+    def __init__(self, title, children):
+        super().__init__(children=children)
+        self.title = title
+
+    def draw(self, oled):
+        oled.centre_text(f"{self.title}\n\nHold B2 to edit")
+
+
 class ExperimentalConfigurationEditor(EuroPiScript):
     def __init__(self):
         super().__init__()
@@ -51,7 +61,9 @@ class ExperimentalConfigurationEditor(EuroPiScript):
             False: "No"
         }
 
-        items = []
+        quantizer_items = []
+        rtc_items = []
+        wifi_items = []
 
         config_points = ExperimentalConfig.config_points()
         for cfg in config_points:
@@ -60,8 +72,18 @@ class ExperimentalConfigurationEditor(EuroPiScript):
             else:
                 labels = None
 
-            title = cfg.name.replace("_", " ").lower().strip()
-            prefix = "Ex."
+            if cfg.name == "VOLTS_PER_OCTAVE":
+                title = "V/Oct"
+                prefix = "Quant"
+                items = quantizer_items
+            elif "RTC" in cfg.name or "UTC" in cfg.name:
+                title = cfg.name.replace("RTC", "").replace("_", ' ').lower().strip()
+                prefix = "RTC"
+                items = rtc_items
+            elif "WIFI" in cfg.name:
+                title = cfg.name.replace("WIFI", "").replace("_", ' ').lower().strip()
+                prefix = "WiFi"
+                items = wifi_items
 
             items.append(
                 SettingMenuItem(
@@ -74,7 +96,25 @@ class ExperimentalConfigurationEditor(EuroPiScript):
             )
 
         self.menu = SettingsMenu(
-            menu_items=items,
+            menu_items=[
+                # Voltage properties
+                SectionHeader(
+                    title="Quantizer",
+                    children=quantizer_items,
+                ),
+
+                # System properties
+                SectionHeader(
+                    title="Realtime Clk",
+                    children=rtc_items,
+                ),
+
+                # Display properties
+                SectionHeader(
+                    title="WiFi",
+                    children=wifi_items,
+                ),
+            ],
             navigation_knob=k2_bank,
         )
         self.menu.load_defaults(ConfigFile.config_filename(ExperimentalConfig))
