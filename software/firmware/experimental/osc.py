@@ -205,7 +205,6 @@ class OpenSoundServer:
         addr = socket.getaddrinfo("0.0.0.0", recv_port)[0][-1]
         self.recv_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.recv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        #self.recv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.recv_socket.settimeout(0)
         self.recv_socket.bind(addr)
 

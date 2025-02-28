@@ -724,9 +724,11 @@ freq(CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ])
 # Connect to wifi, if supported
 if europi_config.PICO_MODEL == MODEL_PICO_W or europi_config.PICO_MODEL == MODEL_PICO_2W:
     try:
-        oled.centre_text(f"""Connecting to wifi...
+        oled.centre_text(
+            f"""Connecting to wifi...
 SSID:
-{experimental_config.WIFI_SSID}""")
+{experimental_config.WIFI_SSID}"""
+        )
         wifi_connection = WifiConnection()
     except WifiError as err:
         wifi_connection = None
