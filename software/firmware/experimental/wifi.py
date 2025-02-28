@@ -108,7 +108,7 @@ class WifiConnection:
                     security=security,
                 )
 
-                connect_timeout_ms = 15_000
+                connect_timeout_ms = 30_000
                 start_time = utime.ticks_ms()
                 while (
                     not self.is_connected
