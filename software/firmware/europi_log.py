@@ -24,30 +24,41 @@ Each log item has a level and a tag associated with it. The tag should be
 unique to each module to make tracing the source of warnings easier
 """
 
+import os
 
 def log_info(message, tag=None):
     if tag:
-        print(f"[INFO] [{tag}] {message}")
+        write_log_entry(f"[INFO] [{tag}] {message}")
     else:
-        print(f"[INFO] {message}")
+        write_log_entry(f"[INFO] {message}")
 
 
 def log_warning(message, tag=None):
     if tag:
-        print(f"[WARN] [{tag}] {message}")
+        write_log_entry(f"[WARN] [{tag}] {message}")
     else:
-        print(f"[WARN] {message}")
+        write_log_entry(f"[WARN] {message}")
 
 
 def log_error(message, tag=None):
     if tag:
-        print(f"[ERR ] [{tag}] {message}")
+        write_log_entry(f"[ERR ] [{tag}] {message}")
     else:
-        print(f"[ERR ] {message}")
+        write_log_entry(f"[ERR ] {message}")
 
 
 def log_debug(message, tag=None):
     if tag:
-        print(f"[DBUG] [{tag}] {message}")
+        write_log_entry(f"[DBUG] [{tag}] {message}")
     else:
-        print(f"[DBUG] {message}")
+        write_log_entry(f"[DBUG] {message}")
+
+def write_log_entry(log_entry:str):
+    print(log_entry)
+    with open('/europi_log.txt', 'a') as log_out:
+        log_out.write(log_entry)
+        log_out.write('\n')
+
+def init_log():
+    if os.path.exists('/europi_log.txt'):
+        os.remove('/europi_log.txt')
