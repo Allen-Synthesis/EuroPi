@@ -133,7 +133,7 @@ class WifiConnection:
                 log_info("Connection established!", "wifi")
                 current_try = -1
             else:
-                log_warn("Timed-out waiting for connection. Will try again.", "wifi")
+                log_warning("Timed-out waiting for connection. Will try again.", "wifi")
                 current_try += 1
 
         if current_try > 0:
