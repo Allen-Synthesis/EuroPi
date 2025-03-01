@@ -1,4 +1,4 @@
-# Open Sound Control (OSC)
+# Open Sound Control (OSC) Interface
 
 This program allows the use of Open Sound Control packets over UDP to control
 EuroPi.

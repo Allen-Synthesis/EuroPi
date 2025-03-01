@@ -229,6 +229,16 @@ Users have a copy of the original trigger signal, a sample and hold and a track 
 <i>Author: [seanbechhofer](https://github.com/seanbechhofer)</i>
 <br><i>Labels: gates, sample&hold, track&hold</i>
 
+### OSC Interface \[ [documentation](/software/contrib/osc_control.md) | [script](/software/contrib/osc_control.py) \]
+
+Interface program for sending & receiving Open Sound Control (OSC) packets over UDP. Compatible with TouchOSC and
+other programs that support OSC over UDP.
+
+Requires a Raspberry Pi Pico W or Pico 2 W with a properly-configured wifi connection to your other devices.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: osc, wifi</i>
+
 ### Pam's "EuroPi" Workout \[ [documentation](/software/contrib/pams.md) | [script](/software/contrib/pams.py) \]
 
 A re-imaging of [ALM/Busy Circuit's Pamela's "NEW" Workout](https://busycircuits.com/alm017/). Turns the EuroPi into a clocked modulation
