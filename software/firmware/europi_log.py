@@ -55,10 +55,10 @@ def log_debug(message, tag=None):
 
 def write_log_entry(log_entry:str):
     print(log_entry)
-    with open('/europi_log.txt', 'a') as log_out:
+    with open("/europi_log.txt", "a") as log_out:
         log_out.write(log_entry)
-        log_out.write('\n')
+        log_out.write("\n")
 
 def init_log():
-    if os.path.exists('/europi_log.txt'):
-        os.remove('/europi_log.txt')
+    if os.path.exists("/europi_log.txt"):
+        os.remove("/europi_log.txt")
