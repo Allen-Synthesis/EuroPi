@@ -26,6 +26,7 @@ unique to each module to make tracing the source of warnings easier
 
 import os
 
+
 def log_info(message, tag=None):
     if tag:
         write_log_entry(f"[INFO] [{tag}] {message}")
@@ -53,11 +54,13 @@ def log_debug(message, tag=None):
     else:
         write_log_entry(f"[DBUG] {message}")
 
+
 def write_log_entry(log_entry:str):
     print(log_entry)
     with open("/europi_log.txt", "a") as log_out:
         log_out.write(log_entry)
         log_out.write("\n")
+
 
 def init_log():
     if os.path.exists("/europi_log.txt"):
