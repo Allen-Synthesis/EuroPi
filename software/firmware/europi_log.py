@@ -55,7 +55,7 @@ def log_debug(message, tag=None):
         write_log_entry(f"[DBUG] {message}")
 
 
-def write_log_entry(log_entry:str):
+def write_log_entry(log_entry: str):
     print(log_entry)
     with open("/europi_log.txt", "a") as log_out:
         log_out.write(log_entry)
