@@ -117,6 +117,26 @@ class ExperimentalConfig:
                 "WIFI_BSSID",
                 default="",
             ),
+            configuration.boolean(
+                "WIFI_DHCP",
+                default=True
+            ),
+            configuration.string(
+                "WIFI_IP",
+                default="192.168.4.1"
+            ),
+            configuration.string(
+                "WIFI_NETMASK",
+                default="255.255.255.0"
+            ),
+            configuration.string(
+                "WIFI_GATEWAY",
+                default="0.0.0.0"
+            ),
+            configuration.string(
+                "WIFI_DNS",
+                default="8.8.8.8"
+            ),
         ]
         # fmt: on
 

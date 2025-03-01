@@ -56,74 +56,119 @@ class WifiConnection:
         if eu_cfg.PICO_MODEL != MODEL_PICO_2W and eu_cfg.PICO_MODEL != MODEL_PICO_W:
             raise WifiError(f"Hardware {eu_cfg.PICO_MODEL} doesn't support wifi")
 
-        ssid = ex_cfg.WIFI_SSID
-        password = ex_cfg.WIFI_PASSWORD
-        channel = ex_cfg.WIFI_CHANNEL
-        if ex_cfg.WIFI_BSSID:
-            bssid = ex_cfg.WIFI_BSSID
-        else:
-            bssid = None
+        self._ssid = ex_cfg.WIFI_SSID
 
-        if password:
-            security = network.WLAN.SEC_WPA_WPA2
-        else:
-            security = network.WLAN.SEC_OPEN
-
-        self._ssid = ssid
         if ex_cfg.WIFI_MODE == WIFI_MODE_AP:
             log_info("Starting wifi in AP mode...", "wifi")
             try:
-                self._nic = network.WLAN(network.WLAN.IF_AP)
-                if self._nic.active():
-                    self._nic.active(False)
-
-                self._nic.config(
-                    ssid=ssid,
-                    channel=channel,
-                    key=password,
-                    security=security,
-                )
-
-                if not self._nic.active():
-                    self._nic.active(True)
-
+                self.connect_ap(ex_cfg)
                 log_info(f"Access point {self.ssid} is up. {self.ip_addr}", "wifi")
             except Exception as err:
                 raise WifiError(f"Failed to enable AP mode: {err}")
         else:
             log_info("Starting wifi in client mode...", "wifi")
             try:
-                self._nic = network.WLAN(network.WLAN.IF_STA)
-                if self._nic.active():
-                    self._nic.active(False)
-                if not self._nic.active():
-                    self._nic.active(True)
-
-                log_info(f"Connecting to {self.ssid}...", "wifi")
-
-                self._nic.connect(
-                    ssid=ssid,
-                    key=password,
-                    bssid=bssid,
-                    security=security,
-                )
-
-                connect_timeout_ms = 30_000
-                start_time = utime.ticks_ms()
-                while (
-                    not self.is_connected
-                    and utime.ticks_diff(utime.ticks_ms(), start_time) <= connect_timeout_ms
-                ):
-                    pass
-
-                if self.is_connected:
-                    log_info(f"Connected to {self.ssid}: {self.ip_addr}", "wifi")
-                else:
-                    raise WifiError("Timed out waiting for connection")
-
+                self.connect_station(ex_cfg)
+                log_info(f"Connected to {self.ssid}: {self.ip_addr}", "wifi")
             except Exception as err:
-                log_error(f"Failed to connect to network {ssid}: {err}")
-                raise WifiError(f"Failed to connect to network {ssid}: {err}")
+                log_error(f"Failed to connect to network {ex_cfg.WIFI_SSID}: {err}", "wifi")
+                raise WifiError(f"Failed to connect to network {ex_cfg.WIFI_SSID}: {err}")
+
+    def connect_station(self, cfg):
+        """
+        Connect to an external wireless router as a client
+
+        @param cfg  The ExperimentalConfig object
+        """
+        import network
+
+        ssid = cfg.WIFI_SSID
+        password = cfg.WIFI_PASSWORD
+        bssid = cfg.WIFI_BSSID
+        if len(bssid) == 0:
+            bssid = None
+        if password:
+            security = network.WLAN.SEC_WPA_WPA2
+        else:
+            security = network.WLAN.SEC_OPEN
+
+        self._nic = network.WLAN(network.WLAN.IF_STA)
+        if self._nic.active():
+            self._nic.active(False)
+
+        if not cfg.WIFI_DHCP:
+            self._nic.ifconfig((
+                cfg.WIFI_IP,
+                cfg.WIFI_NETMASK,
+                cfg.WIFI_GATEWAY,
+                cfg.WIFI_DNS,
+            ))
+
+        if not self._nic.active():
+            self._nic.active(True)
+
+        # connecting can take some time, so give it a couple of tries
+        max_tries = 3
+        current_try = 1
+        while current_try < max_tries and current_try > 0:
+            log_info(f"Connecting to {ssid}... ({current_try})", "wifi")
+            self._nic.connect(
+                ssid=ssid,
+                key=password,
+                bssid=bssid,
+                security=security,
+            )
+
+            connect_timeout_ms = 15_000
+            start_time = utime.ticks_ms()
+            while (
+                not self.is_connected
+                and utime.ticks_diff(utime.ticks_ms(), start_time) <= connect_timeout_ms
+            ):
+                pass
+
+            if self.is_connected:
+                log_info("Connection established!", "wifi")
+                current_try = -1
+            else:
+                log_warn("Timed-out waiting for connection. Will try again.", "wifi")
+                current_try += 1
+
+        if current_try > 0:
+            raise WifiError(f"Failed to connect to network {ssid}")
+
+    def connect_ap(self, cfg):
+        """
+        Connect in access point mode
+
+        We can optionally set the IP address and netmask in this mode
+
+        @param cfg  The ExperimentalConfig object
+        """
+        import network
+
+        ssid = cfg.WIFI_SSID
+        password = cfg.WIFI_PASSWORD
+        channel = cfg.WIFI_CHANNEL
+
+        if password:
+            security = network.WLAN.SEC_WPA_WPA2
+        else:
+            security = network.WLAN.SEC_OPEN
+
+        self._nic = network.WLAN(network.WLAN.IF_AP)
+        if self._nic.active():
+            self._nic.active(False)
+
+        self._nic.config(
+            ssid=ssid,
+            channel=channel,
+            key=password,
+            security=security,
+        )
+
+        if not self._nic.active():
+            self._nic.active(True)
 
     @property
     def ip_addr(self) -> str:
