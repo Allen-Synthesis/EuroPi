@@ -57,11 +57,16 @@ def log_debug(message, tag=None):
 
 def write_log_entry(log_entry: str):
     print(log_entry)
-    with open("/europi_log.txt", "a") as log_out:
-        log_out.write(log_entry)
-        log_out.write("\n")
+    try:
+        with open("/europi_log.txt", "a") as log_out:
+            log_out.write(log_entry)
+            log_out.write("\n")
+    except Exception:
+        pass
 
 
 def init_log():
-    if os.path.exists("/europi_log.txt"):
+    try:
         os.remove("/europi_log.txt")
+    except Exception:
+        pass
