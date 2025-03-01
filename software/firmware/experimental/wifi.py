@@ -97,12 +97,14 @@ class WifiConnection:
             self._nic.active(False)
 
         if not cfg.WIFI_DHCP:
-            self._nic.ifconfig((
-                cfg.WIFI_IP,
-                cfg.WIFI_NETMASK,
-                cfg.WIFI_GATEWAY,
-                cfg.WIFI_DNS,
-            ))
+            self._nic.ifconfig(
+                (
+                    cfg.WIFI_IP,
+                    cfg.WIFI_NETMASK,
+                    cfg.WIFI_GATEWAY,
+                    cfg.WIFI_DNS,
+                )
+            )
 
         if not self._nic.active():
             self._nic.active(True)
