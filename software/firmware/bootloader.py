@@ -205,6 +205,8 @@ class BootloaderMenu(EuroPiScript):
                     with open("last_crash.log", "w") as log_file:
                         log_file.write(f"{time.ticks_ms()}: {err}\n")
                         sys.print_exception(err, log_file)
+
+                    log_error(f"Crash! See last_crash.txt for details: {err}", "bootloader")
                 except:
                     # If we fail to create the error log, just silently fail; we don't need
                     # an additional exception to handle
