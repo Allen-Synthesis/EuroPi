@@ -405,6 +405,10 @@ class SettingMenuItem(ChoiceMenuItem):
         This enters edit mode, or applies the selection and
         exits edit mode
         """
+        # don't allow edit-mode for strings!
+        if type(self.src_config) is StringConfigPoint:
+            return
+
         if self.is_editable:
             new_choice = self.menu.knob.choice(self.config_point.choices)
             if new_choice != self.value_choice:
@@ -436,6 +440,9 @@ class SettingMenuItem(ChoiceMenuItem):
             items = [False, True]
         elif t is ChoiceConfigPoint:
             items = list(self.src_config.choices)  # make a copy of the items so we can append the autoselect items!
+        elif t is StringConfigPoint:
+            # don't allow autoselect for strings; they're not editable/selectable
+            return [self.src_config.default]
         else:
             raise Exception(f"Unsupported ConfigPoint type: {type(self.src_config)}")
 
@@ -475,6 +482,14 @@ class SettingMenuItem(ChoiceMenuItem):
 
         @exception  ValueError if the given choice is not valid for this setting
         """
+        # choose whatever string we're given
+        if type(self.src_config) is StringConfigPoint:
+            self.src_config.default = choice
+            self.config_point.choices = [choice]
+            self._value = choice
+            self._value_choice = choice
+            return
+
         # kick out early if we aren't actually choosing anything
         if choice == self.value_choice:
             return
@@ -506,12 +521,19 @@ class SettingMenuItem(ChoiceMenuItem):
         if self.value_choice == AUTOSELECT_AIN or self.value_choice == AUTOSELECT_KNOB:
             oled.text(f"({self.value})", europi.OLED_WIDTH//2, self.SELECT_OPTION_Y, 1)
 
-
         # add a ! to the lower-right corner to indicate a potentially
         # volatile, edit-at-your-own-risk item
         if self.config_point.danger:
             fb = FrameBuffer(DANGER_GRAPHICS, 12, 12, MONO_HLSB)
             oled.blit(fb, europi.OLED_WIDTH - 12, europi.OLED_HEIGHT - 12)
+
+        if type(self.src_config) is StringConfigPoint:
+            oled.text(
+                "R/O",
+                europi.OLED_WIDTH - 3 * europi.CHAR_WIDTH,
+                europi.OLED_HEIGHT - europi.CHAR_HEIGHT,
+                1
+            )
 
     @property
     def value_choice(self):
