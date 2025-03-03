@@ -142,14 +142,12 @@ When enabled, `WebREPL` will use the password `EuroPi` by default. To change thi
 `/webrepl_cfg.py` to enter your new password.
 
 To access `WebREPL`, direct your computer's browser to `http://<EuroPi's IP address>:8622`, e.g.
-`http://192.168.4.1:8622`.
+`http://192.168.4.1:8622`. Alternatively you can configure Thonny's terminal to connect via `WebREPL`
+by selecting Run > Configure Interpreter, selecting `WebREPL` from the drop-down, and entering
+EuroPi's IP address and port 8622.
 
 Options:
 - `ENABLE_WEBREPL`: enable or disable `WebREPL`. Default: `false`
-
-> **NOTE**
-> At the time of writing, sending & receiving files on the Pico 2 W works, but the
-> interactive Python terminal does not.
 
 # Accessing config members in Python code
 
