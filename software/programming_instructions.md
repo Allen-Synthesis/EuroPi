@@ -113,19 +113,69 @@ the Pico 2.
 
 Now that you have installed the europi.py and ssd1306 libraries, you are ready to take the next step with the module.
 
-* [Option 1](#write-your-own-program-from-scratch): Start writing your own program from scratch
-* [Option 2](#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/software/contrib/)
-* [Option 3](#install-the-contrib-scripts-and-setup-the-menu): Install all of the contrib scripts and use the bootloader menu
+* [Option 1](#install-the-contrib-scripts-and-setup-the-menu): Install all of the contrib scripts and use the bootloader menu
+* [Option 2](#write-your-own-program-from-scratch): Start writing your own program from scratch
+* [Option 3](#copy-someone-elses-program-to-run-on-your-module): Use someone else's program from the [contrib folder](/software/contrib/)
 * [Option 4](#calibrate-the-module): Calibrate the module for higher accuracy
+
+
+### Install the contrib scripts and setup the menu
+
+The easiest way to start using EuroPi is to [install the `europi_contrib` library](#optional-installing-the-europi-contrib-library).
+This will automatically create `main.py` containing the following:
+
+```python
+import gc
+from contrib.menu import *
+
+gc.collect()
+BootloaderMenu(EUROPI_SCRIPTS).main()
+```
+
+This will automatically run a menu when EuroPi boots, allowing you to select a program from
+the list to run.  After choosing a program, EuroPi will automatically restart that program
+next time it powers-on.  To return to the menu, reset EuroPi by holding `B1` and `B2` for
+a few seconds.
+
+If this is a brand new EuroPi, or you have just reinstalled the software, we recommend running
+the [`~Calibrate`](#calibrate-the-module) program first. Calibrating is optional, but if you
+plan on using EuroPi to produce [quantized](/software/contrib/quantizer.md) outputs it will
+improve the accuracy.
+
+
+#### Navigating the menu
+
+To navigate the menu use the right knob. Turning clockwise will scroll down and turning anticlockwise will scroll up.
+
+To run the selected program, press the either button once.  The last-run program will automatically start the next time you power-on your EuroPi.
+
+To return to the main menu at any time, press and hold both buttons for 0.5s.
 
 
 ### Write your own program from scratch
 
 To program the module, just create a new Python file, and then press Ctrl-Shift-S to save as to the Raspberry Pi Pico, and name it 'main.py'.
-Do not save files to the 'lib' folder, as this is just for libraries to be imported rather than programs that you will write.
-Now import the entire europi library by simply adding the line 'from europi import *'
+If you have [installed `europi_contrib`](#optional-installing-the-europi-contrib-library)
+your module will already have the default `main.py` installed on it. If this is the case, you
+may freely modify its contents. Note that if you reinstall or upgrade `europi_contrib` you will
+lose any modifications you've made to `main.py`, so make sure to keep a backup.
+
+Alternatively, you can create your program inside the `lib/contrib` directory, and add it to
+`lib/contrib/menu.py` to launch it from the main menu.
+
+#### Accessing EuroPi Hardware
+
+For your program to make use of EuroPi's inputs and outputs add the line
+`from europi import *` to the top of your program:
 
   ![From europi import](https://i.imgur.com/UK3nJcV.jpg)
+
+The `europi` module contains all of the objects and methods necessary for reading the six inputs
+- `ain`, the analogue input jack;
+- `din`, the digital input jack;
+- `b1` and `b2`,  the two buttons; and
+- `k1` and `k2`, the two knobs
+and the six outputs: `cv1`-`cv6`.
 
 Now you have access to the inputs and outputs using easy methods, which you can read about more in the [README.md](/software/README.md) of the software folder.
 
@@ -146,25 +196,6 @@ Now you have access to the inputs and outputs using easy methods, which you can 
 
   ![image](https://user-images.githubusercontent.com/79809962/151054018-0f495bb5-067e-4cd6-9640-c38e44a216de.png)
 6. Now you can disconnect the module from your computer, connect it to rack power, and the your chosen script will run automatically.
-
-
-### Install the contrib scripts and setup the menu
-
-1. Make sure you've [Installed the EuroPi Contrib library](#optional-installing-the-europi-contrib-library).
-2. Complete all of the steps for [Option 2](#copy-someone-elses-program-to-run-on-your-module), but you must use ``menu.py`` as the file to save to the root directory. Name it ``main.py`` as you would any other script.
-3. Now you can disconnect the module from your computer, connect it to rack power, and the menu will open automatically.
-
-One of the scripts that is installed with the menu system is named '~ Calibrate', and it requires you to send precise voltages to the module to calibrate it for the future, allowing you to input and output precise values from your module.
-This is entirely optional and it will work with a usable degree of accuracy without calibration, however if you do want to then move to the ['Calibrate the module'](#calibrate-the-module) step.
-
-
-#### Navigating the menu
-
-To navigate the menu use the right knob. Turning clockwise will scroll down and turning anticlockwise will scroll up.
-
-To run the selected program, press the either button once.  The last-run program will automatically start the next time you power-on your EuroPi.
-
-To return to the main menu at any time, press and hold both buttons for 0.5s.
 
 
 ### Calibrate the module
