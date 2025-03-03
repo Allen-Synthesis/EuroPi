@@ -230,15 +230,17 @@ class WifiConnection:
         - /boot.py (empty)
         - /webrepl_cfg.py (contains default WebREPL password)
         """
+
         def exists(path):
             import os
+
             try:
                 os.stat(path)
                 return True
             except OSError:
                 return False
 
-        if not exists('/boot.py'):
+        if not exists("/boot.py"):
             log_info("Creating empty /boot.py for WebREPL...", "wifi")
             with open("/boot.py", "w") as boot_py:
                 boot_py.write("\n")
@@ -250,4 +252,5 @@ class WifiConnection:
 
     def start_webrepl(self):
         import webrepl
+
         webrepl.start()
