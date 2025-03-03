@@ -725,7 +725,7 @@ freq(CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ])
 if europi_config.PICO_MODEL == MODEL_PICO_W or europi_config.PICO_MODEL == MODEL_PICO_2W:
     try:
         oled.centre_text(
-            f"""Connecting to wifi...
+            f"""WiFi connecting
 SSID:
 {experimental_config.WIFI_SSID}"""
         )
