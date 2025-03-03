@@ -131,6 +131,26 @@ other Pico models do not contain wireless support.
 which the wireless card will not reliably work if the CPU is overclocked. If you have problems using wifi please
 try changing `CPU_FREQ` to `normal` in `EuroPiConfig.json`.
 
+## WebREPL Configuration
+
+`WebREPL` allows accessing the Python shell over WiFi, as well as enabling sending/receiving files wirelessly.
+This can be useful if you lack a USB cable long enought to reach from your computer to your EuroPi.
+
+Enabling `WebREPL` requires a Raspberry Pi Pico W or Pico 2 W, as well as a valid wifi configuration (see above).
+
+When enabled, `WebREPL` will use the password `EuroPi` by default. To change this password you will need to modify
+`/webrepl_cfg.py` to enter your new password.
+
+To access `WebREPL`, direct your computer's browser to `http://<EuroPi's IP address>:8622`, e.g.
+`http://192.168.4.1:8622`.
+
+Options:
+- `ENABLE_WEBREPL`: enable or disable `WebREPL`. Default: `false`
+
+> **NOTE**
+> At the time of writing, sending & receiving files on the Pico 2 W works, but the
+> interactive Python terminal does not.
+
 # Accessing config members in Python code
 
 The firmware converts the JSON file into a `ConfigSettings` object, where the JSON keys are converted

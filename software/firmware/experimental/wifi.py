@@ -74,6 +74,11 @@ class WifiConnection:
                 log_error(f"Failed to connect to network {ex_cfg.WIFI_SSID}: {err}", "wifi")
                 raise WifiError(f"Failed to connect to network {ex_cfg.WIFI_SSID}: {err}")
 
+        if ex_cfg.ENABLE_WEBREPL:
+            log_info("Starting WebREPL...", "wifi")
+            self.setup_webrepl()
+            self.start_webrepl()
+
     def connect_station(self, cfg):
         """
         Connect to an external wireless router as a client
@@ -216,3 +221,33 @@ class WifiConnection:
     def interface(self):
         """Get the underlying network.WLAN interface"""
         return self._nic
+
+    def setup_webrepl(self):
+        """
+        Create the additional configuration files needed for WebREPL.
+
+        Creates the following files (if they do not exist already):
+        - /boot.py (empty)
+        - /webrepl_cfg.py (contains default WebREPL password)
+        """
+        def exists(path):
+            import os
+            try:
+                os.stat(path)
+                return True
+            except OSError:
+                return False
+
+        if not exists('/boot.py'):
+            log_info("Creating empty /boot.py for WebREPL...", "wifi")
+            with open("/boot.py", "w") as boot_py:
+                boot_py.write("\n")
+
+        if not exists("/webrepl_cfg.py"):
+            log_info("Creating default /webrepl_cfg.py for WebREPL...", "wifi")
+            with open("/webrepl_cfg.py", "w") as webrepl_cfg_py:
+                webrepl_cfg_py.write('PASS = "EuroPi"\n')
+
+    def start_webrepl(self):
+        import webrepl
+        webrepl.start()

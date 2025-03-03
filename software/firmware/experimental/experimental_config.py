@@ -137,6 +137,13 @@ class ExperimentalConfig:
                 "WIFI_DNS",
                 default="8.8.8.8"
             ),
+
+            # WebREPL support
+            # requires wifi configuration (above)
+            configuration.boolean(
+                "ENABLE_WEBREPL",
+                default=False
+            ),
         ]
         # fmt: on
 
