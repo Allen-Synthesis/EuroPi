@@ -118,3 +118,12 @@ EuroPi's OLED will show bars indicating the levels of TouchOSC's sliders
 ![EuroPi OLED](./osc_control-docs/osc-oled.jpg)
 
 _EuroPi's OLED showing the same slider levels as TouchOSC_
+
+## Using 8mu
+
+If you have a [Music Thing Modular 8mu](https://www.musicthing.co.uk/8mu_page/)
+you can use it to control EuroPi via OSC.
+
+Refer to the [OSC 8mu interface](/software/desktop/osc_8mu.md) for details on
+how to set up your computer to read 8mu's sliders and convert them to OSC
+messages for EuroPi.
