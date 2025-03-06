@@ -21,19 +21,7 @@ interface between 8mu and EuroPi.
 EuroPi must be running the `OSC Interface` program.
 
 Prerequisites:
-- python-rtmidi and mido, installed with Pip:
-
-Linux:
-```bash
-pip3 install python-rtmidi
-pip3 install mido
-```
-
-Windows:
-```
-pip install python3-rtmidi
-pip3 install mido
-```
+- python-rtmidi and mido, installed with pip
 """
 
 import argparse
