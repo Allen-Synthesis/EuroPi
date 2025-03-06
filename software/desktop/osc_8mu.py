@@ -42,13 +42,13 @@ class MusicThing8muToEuroPi:
     ipv4_re = re.compile(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$")
 
     def __init__(
-            self,
-            europi_ip: str,
-            osc_port: int,
-            europi_namespace: str,
-            controls: dict[int, int],
-            debug: bool = False,
-        ):
+        self,
+        europi_ip: str,
+        osc_port: int,
+        europi_namespace: str,
+        controls: dict[int, int],
+        debug: bool = False,
+    ):
         """
         Create the interface between 8mu and EuroPi
 
@@ -78,7 +78,6 @@ class MusicThing8muToEuroPi:
 
         if not self.europi_namespace.startswith("/"):
             self.europi_namespace = f"/{self.europi_namespace}"
-
 
         inputs = mido.get_input_names()
         self.midi_in = None
@@ -265,7 +264,7 @@ def main():
             args.cv5: 5,
             args.cv6: 6,
         },
-        debug=args.debug
+        debug=args.debug,
     )
 
     print("Press CTRL+C to terminate")
