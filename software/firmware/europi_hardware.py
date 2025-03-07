@@ -34,20 +34,20 @@ import time
 from europi_config import load_europi_config, CPU_FREQS
 from experimental.experimental_config import load_experimental_config
 
-# Load the configuration objects as "private" variables so we can initialize
+# Load the configuration objects so we can initialize
 # the hardware according to user preferences
-__europi_config = load_europi_config()
-__experimental_config = load_experimental_config()
+europi_config = load_europi_config()
+experimental_config = load_experimental_config()
 
 # Analogue voltage read range.
 MIN_INPUT_VOLTAGE = 0
-MAX_INPUT_VOLTAGE = __europi_config.MAX_INPUT_VOLTAGE
-GATE_VOLTAGE = __europi_config.GATE_VOLTAGE
+MAX_INPUT_VOLTAGE = europi_config.MAX_INPUT_VOLTAGE
+GATE_VOLTAGE = europi_config.GATE_VOLTAGE
 DEFAULT_SAMPLES = 32
 
 # Output voltage range
 MIN_OUTPUT_VOLTAGE = 0
-MAX_OUTPUT_VOLTAGE = __europi_config.MAX_OUTPUT_VOLTAGE
+MAX_OUTPUT_VOLTAGE = europi_config.MAX_OUTPUT_VOLTAGE
 
 PWM_FREQ = 100_000
 
@@ -576,7 +576,7 @@ class UsbConnection:
     """
 
     def __init__(self):
-        if __europi_config.PICO_MODEL == "pico2":
+        if europi_config.PICO_MODEL == "pico2":
             self.pin = None
         else:
             self.pin = DigitalReader(PIN_USB_CONNECTED)
@@ -621,14 +621,14 @@ usb_connected = UsbConnection()
 
 # External I2C
 external_i2c = I2C(
-    __europi_config.EXTERNAL_I2C_CHANNEL,
-    sda=Pin(__europi_config.EXTERNAL_I2C_SDA),
-    scl=Pin(__europi_config.EXTERNAL_I2C_SCL),
-    freq=__europi_config.EXTERNAL_I2C_FREQUENCY,
-    timeout=__europi_config.EXTERNAL_I2C_TIMEOUT,
+    europi_config.EXTERNAL_I2C_CHANNEL,
+    sda=Pin(europi_config.EXTERNAL_I2C_SDA),
+    scl=Pin(europi_config.EXTERNAL_I2C_SCL),
+    freq=europi_config.EXTERNAL_I2C_FREQUENCY,
+    timeout=europi_config.EXTERNAL_I2C_TIMEOUT,
 )
 
 # Set the desired clock speed according to the configuration
 # By default this will overclock the CPU, but some users may not want to
 # e.g. to lower power consumption on a very power-constrained system
-freq(CPU_FREQS[__europi_config.PICO_MODEL][__europi_config.CPU_FREQ])
+freq(CPU_FREQS[europi_config.PICO_MODEL][europi_config.CPU_FREQ])
