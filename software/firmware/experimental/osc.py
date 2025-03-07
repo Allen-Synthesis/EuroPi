@@ -52,7 +52,7 @@ class OpenSoundPacket:
             7. payload bytes (lengths are type dependent)
 
         Every argument starts on an 4-aligned byte, so there are
-        filler nulls to pad strings out to a multiple of 32 bytes
+        filler nulls to pad strings out to a multiple of 32 bits
 
         @param data  The raw byte data read from the UDP socket
         """
