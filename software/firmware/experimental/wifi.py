@@ -24,6 +24,7 @@ from europi_config import (
     MODEL_PICO_W,
     MODEL_PICO_2W,
 )
+from europi_hardware import b1, b2
 from experimental.experimental_config import *
 
 from europi_log import *
@@ -128,13 +129,18 @@ class WifiConnection:
 
             connect_timeout_ms = 15_000
             start_time = utime.ticks_ms()
+            abort_wifi = False
             while (
-                not self.is_connected
+                not abort_wifi
+                and not self.is_connected
                 and utime.ticks_diff(utime.ticks_ms(), start_time) <= connect_timeout_ms
             ):
-                pass
+                abort_wifi = b1.value() != 0 or b2.value() != 0
 
-            if self.is_connected:
+            if abort_wifi:
+                log_info("User aborted wifi connection", "wifi")
+                raise(WifiError("User aborted wifi connection"))
+            elif self.is_connected:
                 log_info("Connection established!", "wifi")
                 current_try = -1
             else:
