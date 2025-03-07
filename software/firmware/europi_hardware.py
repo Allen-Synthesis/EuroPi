@@ -107,7 +107,7 @@ if type(OUTPUT_CALIBRATION_VALUES[0]) is int:
         OUTPUT_CALIBRATION_VALUES.append(cv1_values)
 
 
-def clamp(value: int|float, low: int|float, high: int|float):
+def clamp(value: int | float, low: int | float, high: int | float):
     """
     Returns a value that is no lower than 'low' and no higher than 'high'.
 

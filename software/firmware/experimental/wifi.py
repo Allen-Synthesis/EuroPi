@@ -139,7 +139,7 @@ class WifiConnection:
 
             if abort_wifi:
                 log_info("User aborted wifi connection", "wifi")
-                raise(WifiError("User aborted wifi connection"))
+                raise WifiError("User aborted wifi connection")
             elif self.is_connected:
                 log_info("Connection established!", "wifi")
                 current_try = -1
