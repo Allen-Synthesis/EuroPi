@@ -234,7 +234,10 @@ class HarmonicLFOs(EuroPiScript):
         elif shape == self.MODES_SHAPES['SAW']:
             voltage = (degree_three_sixty / three_sixty) * MAX_VOLTAGE
         elif shape == self.MODES_SHAPES['SQUARE']:
-            voltage = MAX_VOLTAGE * (int((degree_three_sixty / three_sixty) * MAX_VOLTAGE) < (MAX_VOLTAGE / 2))
+            if degree_three_sixty / three_sixty < 0.5:
+                voltage = MAX_VOLTAGE
+            else:
+                voltage = 0
         elif shape == self.MODES_SHAPES['RANDOM']:  # This is NOT actually random, it is the sum of 3 out of sync sine waves, but it produces a fluctuating voltage that is near impossible to predict over time, and which can be clocked to be in time
             voltage = (((0 - (cos(self.rad * (1 / multiplier))) + 1) * (MAX_VOLTAGE / 2)) / 3) \
                     + (((0 - (cos(self.rad * (1 / (multiplier * 2.3)))) + 1) * (MAX_VOLTAGE / 2)) / 3) \
