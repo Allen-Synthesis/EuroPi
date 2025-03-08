@@ -62,8 +62,8 @@ class WifiConnection:
         nic = network.WLAN()
         if nic.status() == network.STAT_GOT_IP:
             # see if we have a lingering connection from the previous boot
-            log_info("NIC reports we already have an IP address", "wifi")
             self._nic = nic
+            log_info(f"NIC reports we already have an IP address: {self.ip_addr}. Re-using exising connection", "wifi")
         elif ex_cfg.WIFI_MODE == WIFI_MODE_AP:
             log_info("Starting wifi in AP mode...", "wifi")
             try:
