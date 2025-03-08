@@ -97,8 +97,8 @@ Options:
   - `""`: there is no RTC present. (default)
   - `"ds3231"`: use a DS3231 module connected to the external I2C interface
   - `"ds1307"`: use a DS1307 module connected to the external I2C interface (THIS IS UNTESTED! USE AT YOUR OWN RISK)
-  - `"ntp"`: use an NTP source as the external clock. Requires wifi-supported Pico and valid network configuration
-    (see WiFi connection below)
+  - `"ntp"`: use an NTP source as the external clock. Requires wifi-supported Pico (e.g. Rasperry Pi Pico W or Pico 2 W)
+    and valid network configuration (see [WiFi connection](#wifi-connection), below)
 
 ## Timezone
 
