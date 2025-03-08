@@ -76,6 +76,10 @@ class ExperimentalConfigurationEditor(EuroPiScript):
                 title = "V/Oct"
                 prefix = "Quant"
                 items = quantizer_items
+            elif cfg.name == "ENABLE_WEBREPL":
+                title = "WebREPL"
+                prefix = "WiFi"
+                items = wifi_items
             elif "RTC" in cfg.name or "UTC" in cfg.name:
                 title = cfg.name.replace("RTC", "").replace("_", ' ').lower().strip()
                 prefix = "RTC"
