@@ -250,7 +250,9 @@ class OpenSoundServer:
         Transmit a packet
 
         @param address  The OSC address to send to
-        @param args  The values to encode in the packet
+        @param args  The values to encode in the packet. Allowed types are
+                     int, float, bool, str, and bytearray.
+                     Bools are converted to 0/1 integers
         """
 
         def pad_length(arr):
@@ -275,6 +277,8 @@ class OpenSoundServer:
                 data.append(ord("f"))
             elif type(arg) is str:
                 data.append(ord("s"))
+            elif type(arg) is bytearray:
+                data.append(ord("b"))
         data.append(0)
         pad_length(data)
 
@@ -306,6 +310,15 @@ class OpenSoundServer:
                 for ch in arg:
                     data.append(ord(ch))
                 data.append(0)
+                pad_length(data)
+            elif type(arg) is bytearray:
+                n = len(arg)
+                data.append((n >> 24) & 0xFF)
+                data.append((n >> 16) & 0xFF)
+                data.append((n >> 8) & 0xFF)
+                data.append(n & 0xFF)
+                for b in arg:
+                    data.append(b)
                 pad_length(data)
 
         try:
