@@ -118,11 +118,11 @@ Options:
 - `WIFI_PASSWORD`: the password of the wireless network. Default: `"europi"`
 - `WIFI_CHANNEL`: the WiFi channel 1-13 to use in `access_point` mode; ignored in `client` mode. Default: `10`
 - `WIFI_DHCP`: ignored if `WIFI_MODE` is `access_point`. Otherwise this controls whether or not
-  EuroPi requests a DHCP lease from the external access point
-- `WIFI_IP`: a static IP address to use in `client` mode if DHCP is disabled
-- `WIFI_GATEWAY`: the static gateway in `client` mode when DHCP is disabled
-- `WIFI_NETMASK`: the netmask to use in `client` mode, if DHCP is disabled
-- `WIFI_DNS`: the IP address of the DNS server to use when DHCP is disabled
+  EuroPi requests a DHCP lease from the external access point. Default: `true`.
+- `WIFI_IP`: a static IP address to use in `client` mode if DHCP is disabled. Default: `192.168.4.1`
+- `WIFI_GATEWAY`: the static gateway in `client` mode when DHCP is disabled. Default: `0.0.0.0`
+- `WIFI_NETMASK`: the netmask to use in `client` mode, if DHCP is disabled. Default: `255.255.255.0`
+- `WIFI_DNS`: the IP address of the DNS server to use when DHCP is disabled. Default: `8.8.8.8`
 
 WiFi options are only applicable if EuroPi has the Raspberry Pi Pico W or Raspberry Pi Pico 2 W board;
 other Pico models do not contain wireless support.
