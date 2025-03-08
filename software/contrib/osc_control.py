@@ -76,12 +76,12 @@ class OscControl(EuroPiScript):
         @param cv_out  CV1-6
         @param data  The OpenSoundPacket we're processing
         """
-        if data.types[0] is int:
+        if type(data.values[0]) is int:
             if data.values[0] == 0:
                 cv_out.off()
             else:
                 cv_out.on()
-        elif data.types[0] is float:
+        elif type(data.values[0]) is float:
             cv_out.voltage(data.values[0] * europi_config.MAX_OUTPUT_VOLTAGE)
 
     def set_cvs(data):
@@ -91,8 +91,8 @@ class OscControl(EuroPiScript):
         @param data  The OpenSoundPacket we're processing
         """
         for i in range(len(cvs)):
-            t = data.types[i]
             v = data.values[i]
+            t = type(data.values[i])
             cv = cvs[i]
 
             if t is int:

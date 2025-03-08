@@ -30,7 +30,10 @@ class OpenSoundPacket:
     """
     A container object for the Open Sound Control packet(s) we receive.
 
-    Contains the address and the data
+    Contains the address of the message and the data
+
+    @property address  The address string of the packet
+    @property values  The values included in the packet
     """
 
     def __init__(self, data: bytes):
@@ -57,10 +60,10 @@ class OpenSoundPacket:
         @param data  The raw byte data read from the UDP socket
         """
         address_end = data.index(b"\0", 1)
-        self.address = data[0:address_end].decode("utf-8")
+        self._address = data[0:address_end].decode("utf-8")
 
-        self.types = []
-        self.values = []
+        types = []
+        self._values = []
         type_start = data.index(b",", address_end)
         data_start = data.index(b"\0", type_start)
         data_start += (4 - (data_start % 4)) % 4  # move ahead to the next 4-aligned byte
@@ -69,17 +72,17 @@ class OpenSoundPacket:
         while data[i] != 0x00:
             t = chr(data[i])
             if t == "i":
-                self.types.append(int)
+                types.append(int)
                 n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 1]
                 self.values.append(n)
                 d += 4
             elif t == "f":
-                self.types.append(float)
+                types.append(float)
                 n = struct.unpack(">f", data[d : d + 4])[0]
                 self.values.append(n)
                 d += 4
             elif t == "s" or t == "S":  # include the alternate "S" here
-                self.types.append(str)
+                types.append(str)
                 s = ""
                 while data[d] != b"\0":
                     s += chr(data[d])
@@ -88,7 +91,7 @@ class OpenSoundPacket:
                 d += (4 - (d % 4)) % 4
             elif t == "b":
                 # blob; int32 -> n, followed by n bytes
-                self.types.append(bytearray)
+                types.append(bytearray)
                 n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 1]
                 d += 4
                 b = []
@@ -106,7 +109,7 @@ class OpenSoundPacket:
             elif t == "h":
                 # 64-bit signed integer
                 # treat as a normal int
-                self.types.append(int)
+                types.append(int)
                 n = (
                     (data[d] << 56)
                     | (data[d + 1] << 48)
@@ -121,7 +124,7 @@ class OpenSoundPacket:
                 d += 8
             elif t == "c":
                 # a single character; treat as a string
-                self.types.append(str)
+                types.append(str)
                 self.values.append(
                     data[d + 3].decode()  # data is in the 4th byte; padded with leading zeros
                 )
@@ -140,31 +143,19 @@ class OpenSoundPacket:
 
             i += 1
 
-        # find the start of the data block
-        # it's the next index divisible by 4
-        i += (4 - (i % 4)) % 4
+    @property
+    def values(self) -> list[int|float|str|bytearray]:
+        """
+        The array of values included in this packet
 
-        for t in self.types:
-            # read the data for the type
-            if t is int:
-                # read a 4-byte, big-endian integer
-                n = (data[i] << 24) | (data[i + 1] << 16) | (data[i + 2] << 8) | data[i + 1]
-                self.values.append(n)
-                i += 4
-            elif t is float:
-                # read a 4-byte floating-point value
-                n = struct.unpack(">f", data[i : i + 4])[0]
-                self.values.append(n)
-                n += 4
-            elif t is str:
-                # read string data until we hit a null terminator
-                s = ""
-                while data[i] != 0x00:
-                    s += chr(data[i])
-                    i += 1
+        We support OSC 1.0 + a subset of 1.1 types
+        """
+        return self._values
 
-                self.values.append(s)
-                i += (4 - (i % 4)) % 4
+    @property
+    def address(self) -> str:
+        """This packet's address"""
+        return self._address
 
 
 class OpenSoundServer:
