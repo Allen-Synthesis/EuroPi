@@ -59,7 +59,12 @@ class WifiConnection:
 
         self._ssid = ex_cfg.WIFI_SSID
 
-        if ex_cfg.WIFI_MODE == WIFI_MODE_AP:
+        nic = network.WLAN()
+        if nic.status() == network.STAT_GOT_IP:
+            # see if we have a lingering connection from the previous boot
+            log_info("NIC reports we already have an IP address", "wifi")
+            self._nic = nic
+        elif ex_cfg.WIFI_MODE == WIFI_MODE_AP:
             log_info("Starting wifi in AP mode...", "wifi")
             try:
                 self.connect_ap(ex_cfg)
