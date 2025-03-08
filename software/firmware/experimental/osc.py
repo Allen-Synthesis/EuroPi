@@ -144,7 +144,7 @@ class OpenSoundPacket:
             i += 1
 
     @property
-    def values(self) -> list[int|float|str|bytearray]:
+    def values(self) -> list[int | float | str | bytearray]:
         """
         The array of values included in this packet
 
