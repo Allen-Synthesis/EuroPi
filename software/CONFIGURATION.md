@@ -131,6 +131,15 @@ other Pico models do not contain wireless support.
 which the wireless card will not reliably work if the CPU is overclocked. If you have problems using wifi please
 try changing `CPU_FREQ` to `normal` in `EuroPiConfig.json`.
 
+### WiFi Security
+
+If `WIFI_PASSWORD` is empty EuroPi will assume the network is _unencrypted_. This applies to both `client` and
+`access_point` modes. If `WIFI_PASSWORD` contains any text, WPA/WPA2 will be used (WPA2 is preferred, but
+in `client` mode WPA will be used if the router requires it).
+
+Other wireless authentication models, including the use of cerfificates, VPN connections, etc... are not supported
+at this time on the Raspberry Pi Pico (2) W.
+
 ## WebREPL Configuration
 
 `WebREPL` allows accessing the Python shell over WiFi, as well as enabling sending/receiving files wirelessly.
@@ -148,6 +157,13 @@ EuroPi's IP address and port 8622.
 
 Options:
 - `ENABLE_WEBREPL`: enable or disable `WebREPL`. Default: `false`
+
+### `WebREPL` Security
+
+Enabling `WebREPL` can be a security risk: it potentially allows anyone to access the Python interpreter of
+your EuroPi, giving them complete access to run code, modify files, etc.... If you choose to enable `WebREPL`
+it is highly recommended that you choose a strong password and that you make sure your wifi connection is
+using WPA2 (see [WiFi Security](#wifi-security), above).
 
 # Accessing config members in Python code
 
