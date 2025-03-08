@@ -65,7 +65,7 @@ class WifiConnection:
             self._nic = nic
             log_info(
                 f"NIC reports we already have an IP address: {self.ip_addr}. Re-using exising connection",
-                "wifi"
+                "wifi",
             )
         elif ex_cfg.WIFI_MODE == WIFI_MODE_AP:
             log_info("Starting wifi in AP mode...", "wifi")
