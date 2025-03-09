@@ -240,9 +240,16 @@ class OpenSoundServer:
                 packet = OpenSoundPacket(data)
                 self.recv_callback(connection=connection, data=packet)
             except ValueError as err:
-                log_warning("Failed to process packet: {err}", "osc")
+                log_warning(f"Failed to process packet: {err}", "osc")
                 break
             except OSError as err:
+                break
+            except Exception as err:
+                log_warning(f"Failed to process packet. Malformed? {err}", "osc")
+                s = ""
+                for byte in data:
+                    s += f"{byte:02x} "
+                log_debug(f"Raw packet: {s}")
                 break
 
     def send_data(self, address, *args):
