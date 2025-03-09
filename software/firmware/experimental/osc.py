@@ -26,6 +26,18 @@ import struct
 import europi
 
 
+def align_next_word(n):
+    """
+    Return the index of the next word-alined byte
+
+    We assume 4-byte/32-bit words. If we're already word-aligned,
+    we increment to the next one
+
+    @param n  The current index in a byte array
+    """
+    return n + (4 - (n % 4)) % 4
+
+
 class OpenSoundPacket:
     """
     A container object for the Open Sound Control packet(s) we receive.
@@ -61,12 +73,14 @@ class OpenSoundPacket:
         """
         address_end = data.index(b"\0", 1)
         self._address = data[0:address_end].decode("utf-8")
+        if self._address.endswith("/"):
+            self._address = self._address.rstrip("/")
 
         types = []
         self._values = []
         type_start = data.index(b",", address_end)
         data_start = data.index(b"\0", type_start)
-        data_start += (4 - (data_start % 4)) % 4  # move ahead to the next 4-aligned byte
+        data_start = align_next_word(data_start)
         i = type_start + 1
         d = data_start
         while data[i] != 0x00:
@@ -84,11 +98,12 @@ class OpenSoundPacket:
             elif t == "s" or t == "S":  # include the alternate "S" here
                 types.append(str)
                 s = ""
-                while data[d] != b"\0":
-                    s += chr(data[d])
-                    d += 1
+                string_end = data.index(b"\0", d)
+                for c in range(d, string_end):
+                    s += chr(data[c])
                 self.values.append(s)
-                d += (4 - (d % 4)) % 4
+                d = string_end
+                d = align_next_word(d)
             elif t == "b":
                 # blob; int32 -> n, followed by n bytes
                 types.append(bytearray)
@@ -98,7 +113,7 @@ class OpenSoundPacket:
                 for i in range(n):
                     b.append(data[d + i])
                 d += n
-                d += (4 - (d % 4)) % 4
+                d = align_next_word(d)
                 self.values.append(bytearray(b))
             elif t == "T" or t == "F":
                 # zero-byte boolean; skip
