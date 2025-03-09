@@ -29,7 +29,7 @@ The quickest way to get your EuroPi flashed with the latest firmware is to head 
 ## Pico Setup
 
 This section assumes you are using the Raspberry Pi Pico (or a compatible clone) featuring the RP2040 processor.  If you
-are using the newer Raspberry Pi Pico 2, with the RP2350 processor, see [below](#pico-2-setup).
+are using a different model of Pico, e.g. the Pico W, or Pico 2, see [below](#alternative-picos).
 
 ### Downloading Thonny
 To start with, you'll need to download the [Thonny IDE](https://thonny.org/). This is what you will use to program and debug the module.
@@ -94,19 +94,27 @@ The EuroPi Contrib library will make user-contributed software available on your
 1. Click 'Install'.
 1. You will now see a `contrib` folder inside the `lib` folder which contains several software options with the extension `.py`.
 
-## Pico 2 Setup
+## Alternative Picos
 
-If you are using the Raspberry Pi Pico 2, or a compatible clone, with the RP2350 processor, you must download the
-MicroPython firmware for that board:
-- [Download here](https://micropython.org/download/RPI_PICO2/). At the time of writing, the latest supported version is 1.24.0
+The Raspberry Pi Pico family has several different versions, all of which are mechanically and electronically interchangeable. This means
+you can swap the Raspberry Pi Pico for the newer Pico 2 to take advantage of the RP2350 CPU's higher clock speed, or a Pico W/Pico 2 W
+to add wi-fi connectivity to your EuroPi.
+
+Each Pico model has its own MicroPython firmware:
+- [Raspberry Pi Pico](https://micropython.org/download/RPI_PICO/) (the default for EuroPi)
+- [Raspberry Pi Pico W](https://micropython.org/download/RPI_PICO_W/)
+- [Raspberry Pi Pico 2](https://micropython.org/download/RPI_PICO2/)
+- [Raspberry Pi Pico 2 W](https://micropython.org/download/RPI_PICO2_W/)
+It is recommended to download the latest stable release (`1.24.1` at the time of writing) for your Pico model, if possible.
+At the time of writing, the Pico 2 W's latest version of `1.25.0-preview-*`.
 
 Once the firmware is installed, continue installing the rest of the software:
 1. [Installing the OLED library](#installing-the-oled-library)
 2. [Installing the EuroPi library](#installing-the-oled-library)
 3. [Installing the EuroPi Contrib library](#optional-installing-the-europi-contrib-library)
 
-Once the software is installed, you will need to [configure the software](/software/CONFIGURATION.md) to finish setting up
-the Pico 2.
+Once the software is installed, you will need to [configure the software](/software/CONFIGURATION.md#system) to finish setting up
+the Pico.
 
 
 ## Next Steps
