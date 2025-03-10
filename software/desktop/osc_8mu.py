@@ -193,7 +193,7 @@ def main():
         action="store",
         type=float,
         default=1.0,
-        help="MIDI to EuroPi scale factor. Default: 1.0"
+        help="MIDI to EuroPi scale factor. Default: 1.0",
     )
     parser.add_argument(
         "-d",
