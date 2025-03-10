@@ -60,3 +60,24 @@ For more information about the available parameters, run
 ```bash
 python3 osc_8mu.py --help
 ```
+
+## MIDI to OSC to EuroPi conversion
+
+The 8mu slider position is reported as a MIDI value from `0` to `127`. This is converted
+to a `0.0` to `1.0` value for OSC, which is then multiplied by `MAX_OUTPUT_VOLTAGE` on
+EuroPi to set the value of the output channel. Obviously 128 positions in the MIDI source
+doesn't provide super-fine resolution on EuroPi's voltage.
+
+To work around this the `-s|--scale` parameter can be set to provide an additional
+scale factor during the MIDI to OSC conversion:
+
+```
+X_midi <- Read from 8mu: 0-127
+
+X_osc = X_midi / 127.0 * scale
+V_out = X_osc * MAX_OUTPUT_VOLTAGE
+```
+
+For example, setting `scale` to 0.1 will reduce EuroPi's output range from 0-10V
+to 0-1V, but will compress all 128 steps within the 1V range, allowing finer control
+over a smaller voltage range.

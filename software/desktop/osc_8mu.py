@@ -47,6 +47,7 @@ class MusicThing8muToEuroPi:
         osc_port: int,
         europi_namespace: str,
         controls: dict[int, int],
+        scale: float = 1.0,
         debug: bool = False,
     ):
         """
@@ -74,6 +75,7 @@ class MusicThing8muToEuroPi:
         self.europi_ip = europi_ip
         self.europi_namespace = europi_namespace.strip().rstrip("/")
 
+        self.scale = scale
         self.controls = controls
 
         if not self.europi_namespace.startswith("/"):
@@ -101,7 +103,7 @@ class MusicThing8muToEuroPi:
             print(f"Processing message {msg}")
 
         cv_out = self.controls[msg.control]
-        osc_value = msg.value / 127.0  # convert to 0-1 float
+        osc_value = msg.value / 127.0 * self.scale  # convert to 0-1 float
         address = f"{self.europi_namespace}/cv{cv_out}"
         packet = self.encode_packet(address, osc_value)
 
@@ -185,6 +187,15 @@ def main():
         help="EuroPi's IP address. Default: 192.168.4.1",
     )
     parser.add_argument(
+        "-s",
+        "--scale",
+        dest="scale",
+        action="store",
+        type=float,
+        default=1.0,
+        help="MIDI to EuroPi scale factor. Default: 1.0"
+    )
+    parser.add_argument(
         "-d",
         "--debug",
         dest="debug",
@@ -264,6 +275,7 @@ def main():
             args.cv5: 5,
             args.cv6: 6,
         },
+        scale=args.scale,
         debug=args.debug,
     )
 
