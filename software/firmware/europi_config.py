@@ -48,7 +48,7 @@ CPU_FREQS = {
     },
     MODEL_PICO_2W: {
         DEFAULT_FREQ: 150_000_000,      # Pico 2 W default frequency is 150MHz
-        OVERCLOCKED_FREQ: 300_000_000,  # Overclocked frequency is 300MHz
+        OVERCLOCKED_FREQ: 250_000_000,  # Overclocked frequency is 250MHz; 300MHz breaks wifi. See https://github.com/micropython/micropython/issues/16799
         UNDERCLOCKED_FREQ: 75_000_000,  # Underclock to 75MHz
     },
     MODEL_PICO_H: {
