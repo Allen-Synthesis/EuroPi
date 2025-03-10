@@ -91,7 +91,6 @@ class WIFI:
     PM_POWERSAVE = 17
     PM_PERFORMANCE = 10555714
 
-
     def __init__(self, mode):
         pass
 
