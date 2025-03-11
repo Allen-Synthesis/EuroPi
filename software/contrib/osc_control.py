@@ -47,13 +47,10 @@ class OscControl(EuroPiScript):
         if not self.namespace.endswith("/"):
             self.namespace = f"{self.namespace}/"
 
-        self.osc_packet_recvd = False
-        self.ui_dirty = True
+        self.ui_dirty = False
 
         @self.server.data_handler
         def on_data_recv(connection=None, data=None):
-            self.osc_packet_recvd = True
-
             if data.address == f"{self.namespace}cv1":
                 self.set_cv(cv1, data)
             elif data.address == f"{self.namespace}cv2":
@@ -144,21 +141,13 @@ class OscControl(EuroPiScript):
 
     def draw(self):
         oled.fill(0)
-        if self.osc_packet_recvd:
-            width = OLED_WIDTH // 6 -2
-            for i in range(len(cvs)):
-                cv = cvs[i]
-                left = i * OLED_WIDTH // 6
-                height = int(max(OLED_HEIGHT * cv.voltage() / europi_config.MAX_OUTPUT_VOLTAGE, 1))
+        width = OLED_WIDTH // 6 -2
+        for i in range(len(cvs)):
+            cv = cvs[i]
+            left = i * OLED_WIDTH // 6
+            height = int(max(OLED_HEIGHT * cv.voltage() / europi_config.MAX_OUTPUT_VOLTAGE, 1))
 
-                oled.fill_rect(left + 1, OLED_HEIGHT - height, width, height, 1)
-        else:
-            oled.centre_text(f"""{wifi_connection.ip_addr}
-waiting...""",
-                clear_first=False,
-                auto_show=False,
-            )
-
+            oled.fill_rect(left + 1, OLED_HEIGHT - height, width, height, 1)
         oled.show()
         self.ui_dirty = False
 
@@ -166,8 +155,8 @@ waiting...""",
         if wifi_connection is None:
             raise experimental.wifi.WifiError("No wifi connection")
 
-        oled.fill(0)
-        oled.show()
+        oled.centre_text(f"""{wifi_connection.ip_addr}
+waiting...""")
 
         # start a timer to send our input state at 10Hz
         timer = Timer()
