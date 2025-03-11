@@ -225,6 +225,31 @@ Changes or additions to public API functions must include the corresponding upda
 
 All existing automated tests must pass. An effort should be made to improve the test suite by adding tests for new or changed functionality.
 
+## Desktop Scripts
+
+Python programs intended to be run on a laptop or desktop computer connected to EuroPi (either via USB or serial communication, or over WiFi) should be located
+in the `software/desktop` directory:
+
+```
+software
+├── contrib/
+├── desktop/
+│   └── my_desktop_program.md
+│   └── my_desktop_program.py
+├── firmware/
+```
+
+As with `contrib` scripts, you should include a `.md` file explaining how your desktop program operates, any additional libraries it depends on (and how to install them),
+and any configuration the user must do to set up your program.  Also include whether or not EuroPi requires a specific program to be started or a command to be run
+in order to facilitate the communication between the desktop and EuroPi.
+
+Desktop scripts should target Python 3, ideally Python 3.10 or later. If you need a very specific version of Python (e.g. because of a particular dependency that is
+only available on some versions) this should be noted in the `.md` file.
+
+Any desktop programs should be written in Python, with only the necessary `.py` files included; do not include IDE-specific project files, Python bytecode (`*.pyc`) files,
+or any other generated files. Additional source files, e.g. `.proto` (Protocol Buffer definitions), `.ui` (Qt GUI definitions), and the like may be included if they are
+required for the program and have their dependencies explained in the `.md` file.
+
 ## License
 
 All software in this repository is licensed under the [Apache 2.0](/software/LICENSE) license. In accordance with this license, please place a comment block at the top of your Python source files indicating the copyright and license:
