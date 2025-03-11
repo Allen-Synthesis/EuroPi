@@ -48,6 +48,7 @@ class OscControl(EuroPiScript):
             self.namespace = f"{self.namespace}/"
 
         self.osc_packet_recvd = False
+        self.ui_dirty = True
 
         @self.server.data_handler
         def on_data_recv(connection=None, data=None):
@@ -83,6 +84,7 @@ class OscControl(EuroPiScript):
                 cv_out.on()
         elif type(data.values[0]) is float:
             cv_out.voltage(data.values[0] * europi_config.MAX_OUTPUT_VOLTAGE)
+        self.ui_dirty = True
 
     def set_cvs(data):
         """
@@ -102,6 +104,7 @@ class OscControl(EuroPiScript):
                     cv.on()
             elif t is float:
                 cv.voltage(v * europi_config.MAX_OUTPUT_VOLTAGE)
+        self.ui_dirty = True
 
     @classmethod
     def config_points(cls):
@@ -157,6 +160,7 @@ waiting...""",
             )
 
         oled.show()
+        self.ui_dirty = False
 
     def main(self):
         if wifi_connection is None:
@@ -171,8 +175,8 @@ waiting...""",
 
         while True:
             self.server.receive_data()
-
-            self.draw()
+            if self.ui_dirty:
+                self.draw()
 
 
 if __name__ == "__main__":
