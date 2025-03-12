@@ -65,7 +65,7 @@ class OscControl(EuroPiScript):
                 self.set_cv(cv6, data)
             elif data.address == f"{self.namespace}cvs":
                 # set all CVs at once
-                pass
+                self.set_cvs(data)
 
     def set_cv(self, cv_out, data):
         """
