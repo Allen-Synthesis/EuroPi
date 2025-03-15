@@ -260,11 +260,11 @@ class OpenSoundServer:
             except OSError as err:
                 break
             except Exception as err:
-                log_warning(f"Failed to process packet. Malformed? {err}", "osc")
-                s = ""
-                for byte in data:
-                    s += f"{byte:02x} "
-                log_debug(f"Raw packet: {s}")
+                # log_warning(f"Failed to process packet. Malformed? {err}", "osc")
+                # s = ""
+                # for byte in data:
+                #     s += f"{byte:02x} "
+                # log_debug(f"Raw packet: {s}")
                 break
 
     def send_data(self, address, *args):
