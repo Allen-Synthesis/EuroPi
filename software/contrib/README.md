@@ -167,7 +167,7 @@ The division of the master clock that each LFO runs at, as well as each of their
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: LFO</i>
 
-### HTTP Control \[ [documentation](/software/contrib/http_control.md) | [script](/software/contrib/http_control.py) \]
+### HTTP Interface \[ [documentation](/software/contrib/http_control.md) | [script](/software/contrib/http_control.py) \]
 
 Control the levels of CV1-6 using sliders in a web interface. Requires installation and configuration
 of a Raspberry Pi Pico W or Pico 2 W.
