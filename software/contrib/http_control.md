@@ -1,4 +1,4 @@
-# HTTP Control
+# HTTP Interface
 
 This program provides a simple HTTP interface to control the levels of CV1-6.
 
