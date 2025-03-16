@@ -59,6 +59,30 @@ class ConfigPoint:
         raise NotImplementedError
 
 
+class StringConfigPoint(ConfigPoint):
+    """A `ConfigPoint` that allows the input of arbitrary strings
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
+    :param type: The name of this ConfigPoint's type
+    :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
+    """
+
+    def __init__(self, name: str, default: str, danger: bool = False):
+        super().__init__(name=name, type=float, default=default, danger=danger)
+
+    def validate(self, value) -> Validation:
+        """Validates the given value with this ConfigPoint. Returns a `Validation` containing the
+        validation result, as well as an error message containing the reason for a validation failure.
+        """
+        if type(value) is str:
+            return VALID
+        else:
+            return Validation(
+                is_valid=False, message=f"Value {value} is of type {type(value)}, not str"
+            )
+
+
 class FloatConfigPoint(ConfigPoint):
     """A `ConfigPoint` that requires the selection from a range of floats.  The default value
     must lie within the specified range
@@ -138,7 +162,7 @@ class ChoiceConfigPoint(ConfigPoint):
     :param danger: If true, mark this option as dangerous to modify in the config editor
     """
 
-    def __init__(self, name: str, choices: "List", default, danger: bool = False):
+    def __init__(self, name: str, choices: list, default, danger: bool = False):
         if default not in choices:
             raise ValueError("default value must be available in given choices")
         super().__init__(name=name, type="choice", default=default, danger=danger)
@@ -175,7 +199,7 @@ def boolean(name: str, default: bool, danger: bool = False) -> BooleanConfigPoin
     return BooleanConfigPoint(name=name, default=default, danger=danger)
 
 
-def choice(name: str, choices: "List", default, danger: bool = False) -> ChoiceConfigPoint:
+def choice(name: str, choices: list, default, danger: bool = False) -> ChoiceConfigPoint:
     """A helper function to simplify the creation of ChoiceConfigPoints. Requires selection from a
     limited number of choices. The default value must exist in the given choices.
 
@@ -221,13 +245,24 @@ def integer(
     )
 
 
+def string(name: str, default: str, danger: bool = False) -> StringConfigPoint:
+    """A helper function to simplify the creation of StringConfigPoints. Allows the input of
+    any arbitrary string
+
+    :param name: The name of this `ConfigPoint`, will be used by scripts to lookup the configured value.
+    :param default: The default value
+    :param danger: If true, mark this option as dangerous to modify in the config editor
+    """
+    return StringConfigPoint(name=name, default=default, danger=danger)
+
+
 class ConfigSpec:
     """
     A container for `ConfigPoints` representing the set of configuration options for a specific
     script.
     """
 
-    def __init__(self, config_points: "List[ConfigPoint]") -> None:
+    def __init__(self, config_points: list[ConfigPoint]) -> None:
         self.points = {}
         for point in config_points:
             if point.name in self.points:
@@ -240,7 +275,7 @@ class ConfigSpec:
     def __iter__(self):
         return iter(self.points.values())
 
-    def default_config(self) -> "dict(str, any)":
+    def default_config(self) -> dict[str, any]:
         """Returns the default configuration for this spec."""
         return {point.name: point.default for point in self.points.values()}
 

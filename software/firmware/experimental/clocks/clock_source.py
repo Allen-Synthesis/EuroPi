@@ -44,6 +44,7 @@ class ExternalClockSource:
     MINUTE = 4
     SECOND = 5
     WEEKDAY = 6
+    YEARDAY = 7
 
     # fmt: off
     # The lengths of the months in a non-leap-year
@@ -70,7 +71,9 @@ class ExternalClockSource:
         """
         Get the current UTC time as a tuple.
 
-        @return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
+        see: https://docs.micropython.org/en/latest/library/time.html#time.localtime
+
+        @return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         raise NotImplementedError()
 
@@ -81,7 +84,9 @@ class ExternalClockSource:
         If the clock does not support setting (e.g. it's an NTP source we can only read from)
         your sub-class should implement this method anyway and simply pass.
 
-        @param datetime  A tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
+        see: https://docs.micropython.org/en/latest/library/time.html#time.localtime
+
+        @param datetime  A tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         raise NotImplementedError()
 

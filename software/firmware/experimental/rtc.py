@@ -24,7 +24,7 @@ that can be used externally.
 
 import europi
 from experimental.clocks.clock_source import ExternalClockSource
-from experimental.experimental_config import RTC_NONE, RTC_DS1307, RTC_DS3231
+from experimental.experimental_config import RTC_DS1307, RTC_DS3231, RTC_NTP
 
 
 class Month:
@@ -126,7 +126,7 @@ class Timezone:
 class DateTime:
     """Represents a date and time"""
 
-    def __init__(self, year, month, day, hour, minute, second=None, weekday=None):
+    def __init__(self, year, month, day, hour, minute, second=None, weekday=None, yearday=None):
         """
         Create a DateTime representing a specific moment
 
@@ -137,6 +137,7 @@ class DateTime:
         @param minute  The current minute within the hour (0-59)
         @param second  The current second within the minute (0-59, optional)
         @param weekday  The current day of the week (e.g. Weekday.MONDAY, optional)
+        @param yearday  The current day of the year (1-365, 1-366 if leap year, optional)
         """
         self.year = year
         self.month = month
@@ -255,6 +256,19 @@ class DateTime:
         else:
             return 365
 
+    @property
+    def tuple(self):
+        return (
+            self.year,
+            self.month,
+            self.day,
+            self.hour,
+            self.minute,
+            self.second,
+            self.weekday,
+            0,
+        )
+
     def __eq__(self, other):
         # fmt: off
         return (
@@ -361,6 +375,7 @@ class RealtimeClock:
             t[ExternalClockSource.MINUTE],
             t[ExternalClockSource.SECOND],
             t[ExternalClockSource.WEEKDAY],
+            t[ExternalClockSource.YEARDAY],
         )
 
     def localnow(self):
@@ -381,6 +396,9 @@ if europi.experimental_config.RTC_IMPLEMENTATION == RTC_DS1307:
 elif europi.experimental_config.RTC_IMPLEMENTATION == RTC_DS3231:
     from experimental.clocks.ds3231 import DS3231
     source = DS3231(europi.external_i2c)
+elif europi.experimental_config.RTC_IMPLEMENTATION == RTC_NTP:
+    from experimental.clocks.ntp import NtpClock
+    source = NtpClock()
 else:
     from experimental.clocks.null_clock import NullClock
     source = NullClock()

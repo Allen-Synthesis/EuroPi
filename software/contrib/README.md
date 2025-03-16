@@ -167,6 +167,14 @@ The division of the master clock that each LFO runs at, as well as each of their
 <i>Author: [roryjamesallen](https://github.com/roryjamesallen)</i>
 <br><i>Labels: LFO</i>
 
+### HTTP Interface \[ [documentation](/software/contrib/http_control.md) | [script](/software/contrib/http_control.py) \]
+
+Control the levels of CV1-6 using sliders in a web interface. Requires installation and configuration
+of a Raspberry Pi Pico W or Pico 2 W.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: cv, http, wifi</i>
+
 ### Itty Bitty \[ [documentation](/software/contrib/itty_bitty.md) | [script](/software/contrib/itty_bitty.py) \]
 
 Dual-channel 8-bit trigger+gate+cv sequencer based on the binary representation of an 8-bit number.
@@ -220,6 +228,16 @@ Users have a copy of the original trigger signal, a sample and hold and a track 
 
 <i>Author: [seanbechhofer](https://github.com/seanbechhofer)</i>
 <br><i>Labels: gates, sample&hold, track&hold</i>
+
+### OSC Interface \[ [documentation](/software/contrib/osc_control.md) | [script](/software/contrib/osc_control.py) \]
+
+Interface program for sending & receiving Open Sound Control (OSC) packets over UDP. Compatible with TouchOSC and
+other programs that support OSC over UDP.
+
+Requires a Raspberry Pi Pico W or Pico 2 W with a properly-configured wifi connection to your other devices.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: osc, wifi</i>
 
 ### Pam's "EuroPi" Workout \[ [documentation](/software/contrib/pams.md) | [script](/software/contrib/pams.py) \]
 

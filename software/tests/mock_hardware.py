@@ -13,7 +13,7 @@
 # limitations under the License.
 from machine import ADC, Pin
 
-from europi import (
+from europi_hardware import (
     AnalogueReader,
     DigitalReader,
     Knob,

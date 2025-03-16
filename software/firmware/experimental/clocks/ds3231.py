@@ -44,12 +44,14 @@ the clock.  To do so:
     >>> clock.source.set_datetime((2025, 6, 14, 22, 59, 0, 6))
 
 This will set the clock to 14 June 2025, 22:59:00, and set the weekday to Saturday (6).
-The tuple is of the form (Year, Month, Day, Hour, Minute [, Second[, Weekday]]). It is recommended
+The tuple is of the form (Year, Month, Day, Hour, Minute, Second, Weekday, Yearday). It is recommended
 to set the seconds & weekday, but it is optional.
 
 Note that the clock _should_ be set to UTC, not local time. If you choose to use local time instead
 some scripts that assume the clock is set to UTC may behave incorrectly.
 """
+
+from europi_log import *
 
 from experimental.clocks.clock_source import ExternalClockSource
 from micropython import const
@@ -117,7 +119,7 @@ class DS3231(ExternalClockSource):
         Get the current time.
 
         Returns in 24h format, converts to 24h if clock is set to 12h format
-        @return a tuple, (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
+        @return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         self.i2c.readfrom_mem_into(self.addr, DATETIME_REG, self._timebuf)
         # 0x00 - Seconds    BCD
@@ -146,7 +148,7 @@ class DS3231(ExternalClockSource):
         year = bcdtodec(self._timebuf[6]) + 2000
 
         if self.OSF():
-            print("WARNING: Oscillator stop flag set. Time may not be accurate.")
+            log_warning("Oscillator stop flag set. Time may not be accurate", "ds3231")
 
         return (
             year,
@@ -156,13 +158,14 @@ class DS3231(ExternalClockSource):
             minutes,
             seconds,
             weekday,
+            0,
         )
 
     def set_datetime(self, datetime):
         """
         Set the current time.
 
-        @param datetime : tuple, (0-year, 1-month, 2-day, 3-hour, 4-minutes[, 5-seconds[, 6-weekday]])
+        @param datetime : tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         self.check_valid_datetime(datetime)
 

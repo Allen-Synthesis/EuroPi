@@ -15,6 +15,7 @@
 import machine
 from europi_script import EuroPiScript
 from europi import b1, b2, oled
+from europi_log import log_warning
 from os import remove
 
 
@@ -30,7 +31,7 @@ class BootloaderMode(EuroPiScript):
                 "saved_state_BootloaderMenu.txt"
             )  # This file needs to be removed so that the menu is returned to rather than this script once it's entered bootloader mode
         except OSError:
-            print("OSError: File Not Found")
+            log_warning("OSError: File Not Found", "bootloader")
         machine.reset()  # Restart the module so that it will boot back into the menu
 
     def enter_bootloader(self):

@@ -122,6 +122,23 @@ autumn, you will need to manually adjust EuroPi twice per year to keep the local
 
 The sign of the minutes and hours must match.
 
+## NTP Clock
+
+If you have a Raspberry Pi Pico W or Pico 2 W, you can use the Network Time Protocol (NTP) to provide the external
+clock signal to your module. To do this you must:
+
+1. Use Thonny to install the following _additional_ packages on your module:
+   - `micropython-socket`
+   - `ntptime`
+1. [Connect to a wireless network](/software/CONFIGURATION.md#experimental-configuration) by entering your network's
+   SSID and password into the experimental configuration file
+1. Set the `RTC_IMPLEMENTATION` to `ntp`
+1. (optional) Enter a valid, accessible NTP server. By default `0.pool.ntp.org` will be used, but you may wish to use
+   a different NTP server closer to your location.
+
+Once configured, restart the module.  Your EuroPi should connect to the wifi network and get clock data from the
+specified NTP server.
+
 ## Troubleshooting
 
 If you see a warning of the form
