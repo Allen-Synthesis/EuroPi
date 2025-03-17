@@ -275,7 +275,7 @@ class ConfigSpec:
     def __iter__(self):
         return iter(self.points.values())
 
-    def default_config(self) -> dict[str, Any]:
+    def default_config(self) -> dict[str, object]:
         """Returns the default configuration for this spec."""
         return {point.name: point.default for point in self.points.values()}
 
