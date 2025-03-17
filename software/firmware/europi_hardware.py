@@ -388,19 +388,17 @@ class DigitalInput(DigitalReader):
     Here is another example how you can write digital input handlers to react
     to a clock source and match its trigger duration.::
 
-    .. code-block:: python
+        @din.handler
+        def gate_on():
+            # Trigger outputs with a probability set by knobs.
+            cv1.value(random() > k1.percent())
+            cv2.value(random() > k2.percent())
 
-            @din.handler
-            def gate_on():
-                # Trigger outputs with a probability set by knobs.
-                cv1.value(random() > k1.percent())
-                cv2.value(random() > k2.percent())
-
-            @din.handler_falling
-            def gate_off():
-                # Turn off all triggers on falling clock trigger to match clock.
-                cv1.off()
-                cv2.off()
+        @din.handler_falling
+        def gate_off():
+            # Turn off all triggers on falling clock trigger to match clock.
+            cv1.off()
+            cv2.off()
 
     When writing a handler, try to keep the code as minimal as possible.
     Ideally handlers should be used to change state and allow your main loop
