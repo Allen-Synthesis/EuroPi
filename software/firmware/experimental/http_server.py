@@ -81,6 +81,7 @@ class HttpServer:
 
     You should define a callback to handle incoming GET and/or POST requests, e.g.:
 
+    ```python
     server = HttpServer(port=8080)
 
     @server.get_handler
@@ -92,6 +93,7 @@ class HttpServer:
     def handle_http_post(request:str=None, connection:Socket=None):
         # process the request
         server.send_response(...)
+    ```
     """
 
     # A basic error page template
