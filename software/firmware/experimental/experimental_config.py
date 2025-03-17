@@ -41,12 +41,7 @@ class ExperimentalConfig:
     """This class provides global config points for experimental features.
 
     To override the default values, create /config/config_ExperimentalConfig.json on the Raspberry Pi Pico
-    and populate it with a JSON object. e.g. if your build needs Buchla compatibility using 1.2V/octave
-    quantization, it should look like this:
-
-    {
-        "VOLTS_PER_OCTAVE": 1.2
-    }
+    and populate it with a JSON object. See CONFIGURATION.md for details on available keys.
     """
 
     @classmethod

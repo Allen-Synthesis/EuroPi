@@ -69,12 +69,7 @@ class EuroPiConfig:
     """This class provides EuroPi's global config points.
 
     To override the default values, create /config/EuroPiConfig.json on the Raspberry Pi Pico
-    and populate it with a JSON object. e.g. if your build has the oled mounted upside-down compared
-    to normal, the contents of /config/EuroPiConfig.json should look like this:
-
-    {
-        "ROTATE_DISPLAY": true
-    }
+    and populate it with a JSON object.  See CONFIGURATION.md for details on available keys.
     """
 
     @classmethod
