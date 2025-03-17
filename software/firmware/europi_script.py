@@ -75,8 +75,6 @@ class EuroPiScript:
 
     Here is an extension of the script above with some added trivial features that incorporate saving and loading script state::
 
-    .. code-block:: python
-
         from europi import oled
         from europi_script import EuroPiScript
 
