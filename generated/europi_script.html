@@ -138,24 +138,34 @@
 </div>
 <p>To include your script in the menu it must be added to the <code class="docutils literal notranslate"><span class="pre">EUROPI_SCRIPTS</span></code> list in <code class="docutils literal notranslate"><span class="pre">contrib/menu.py</span></code>.</p>
 <p><strong>Save/Load Script State</strong></p>
-<p>Optionally, you can add a bit of code to enable your script to save state, and load previous state at startup. By default, when exiting the script to menu selection, <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> will be called. Additionally, you can add calls to <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> whenever state changes.</p>
+<p>Optionally, you can add a bit of code to enable your script to save state, and load previous state at startup. By
+default, when exiting the script to menu selection, <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> will be called. Additionally, you can add calls
+to <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> whenever state changes.</p>
 <p>When adding <code class="docutils literal notranslate"><span class="pre">save_state()</span></code> calls to your script, there are a few important considerations to keep in mind:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Frequency of saves - scripts should only save state to disk when state changes, and should not save too frequently because os write operations are expensive in terms of time. Saving too frequently will affect the performance of a script.</p></li>
-<li><p>Save state file size - The pico only has about 1MB of free space available so save state storage format is important to keep as minimal as possible.</p></li>
-<li><p>No externally influenced input - The instance variables your script saves should not be externally influenced, meaning you should not save the current knob position, current analog input value or current digital input value.</p></li>
+<li><p>Frequency of saves - scripts should only save state to disk when state changes, and should not save too frequently
+because os write operations are expensive in terms of time. Saving too frequently will affect the performance of a script.</p></li>
+<li><p>Save state file size - The pico only has about 1MB of free space available so save state storage format is important to
+keep as minimal as possible.</p></li>
+<li><p>No externally influenced input - The instance variables your script saves should not be externally influenced,
+meaning you should not save the current knob position, current analog input value or current digital input value.</p></li>
 </ul>
 </div></blockquote>
 <p>To add the ability to save and load state, you must:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li><p><strong>Initialize base classes</strong> When implementing the <code class="docutils literal notranslate"><span class="pre">EuroPiScript</span></code> base class, its initialization method must be called to initialize its intance variables.</p></li>
-<li><p><strong>Call the inherited EuroPiScript method load_state_X().</strong> The <code class="docutils literal notranslate"><span class="pre">EuroPiScript</span></code> base class has <code class="docutils literal notranslate"><span class="pre">load_state_X()</span></code> methods to check for a previously saved state of a specific format. When initializing your script, call <code class="docutils literal notranslate"><span class="pre">load_state_X()</span></code> where <code class="docutils literal notranslate"><span class="pre">X</span></code> is the persistance format of choice. If no state is found, an empty value will be returned.</p></li>
+<li><p><strong>Initialize base classes</strong> When implementing the <code class="docutils literal notranslate"><span class="pre">EuroPiScript</span></code> base class, its initialization method must be
+called to initialize its intance variables.</p></li>
+<li><p><strong>Call the inherited EuroPiScript method load_state_X().</strong> The <code class="docutils literal notranslate"><span class="pre">EuroPiScript</span></code> base class has <code class="docutils literal notranslate"><span class="pre">load_state_X()</span></code>
+methods to check for a previously saved state of a specific format. When initializing your script, call <code class="docutils literal notranslate"><span class="pre">load_state_X()</span></code>
+where <code class="docutils literal notranslate"><span class="pre">X</span></code> is the persistance format of choice. If no state is found, an empty value will be returned.</p></li>
 <li><p><strong>Apply saved state variables to this instance.</strong> Set state variables with default fallback values if not found in the json save state.</p></li>
 <li><p><strong>Save state upon state change.</strong> When a state variable changes, call the save state function.</p></li>
-<li><p><strong>Implement save_state() method.</strong> Provide an implementation to serialize the state variables into a string, JSON, or bytes an call the appropriate save state method.</p></li>
-<li><p><strong>Throttle the frequency of saves.</strong> Saving state too often could negatively impact the performance of your script, so it is advised to add some checks in your code to ensure it doesn’t save too frequently.</p></li>
+<li><p><strong>Implement save_state() method.</strong> Provide an implementation to serialize the state variables into a string, JSON, or
+bytes an call the appropriate save state method.</p></li>
+<li><p><strong>Throttle the frequency of saves.</strong> Saving state too often could negatively impact the performance of your script, so it is
+advised to add some checks in your code to ensure it doesn’t save too frequently.</p></li>
 </ol>
 </div></blockquote>
 <p>Here is an extension of the script above with some added trivial features that incorporate saving and loading script state:</p>
