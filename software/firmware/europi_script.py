@@ -50,27 +50,39 @@ class EuroPiScript:
 
     **Save/Load Script State**
 
-    Optionally, you can add a bit of code to enable your script to save state, and load previous state at startup. By default, when exiting the script to menu selection, ``save_state()`` will be called. Additionally, you can add calls to ``save_state()`` whenever state changes.
+    Optionally, you can add a bit of code to enable your script to save state, and load previous state at startup. By
+    default, when exiting the script to menu selection, ``save_state()`` will be called. Additionally, you can add calls
+    to ``save_state()`` whenever state changes.
 
     When adding ``save_state()`` calls to your script, there are a few important considerations to keep in mind:
 
-        * Frequency of saves - scripts should only save state to disk when state changes, and should not save too frequently because os write operations are expensive in terms of time. Saving too frequently will affect the performance of a script.
-        * Save state file size - The pico only has about 1MB of free space available so save state storage format is important to keep as minimal as possible.
-        * No externally influenced input - The instance variables your script saves should not be externally influenced, meaning you should not save the current knob position, current analog input value or current digital input value.
+        * Frequency of saves - scripts should only save state to disk when state changes, and should not save too frequently
+          because os write operations are expensive in terms of time. Saving too frequently will affect the performance of a script.
+
+        * Save state file size - The pico only has about 1MB of free space available so save state storage format is important to
+          keep as minimal as possible.
+
+        * No externally influenced input - The instance variables your script saves should not be externally influenced,
+          meaning you should not save the current knob position, current analog input value or current digital input value.
 
     To add the ability to save and load state, you must:
 
-        #. **Initialize base classes** When implementing the ``EuroPiScript`` base class, its initialization method must be called to initialize its intance variables.
+        #. **Initialize base classes** When implementing the ``EuroPiScript`` base class, its initialization method must be
+           called to initialize its intance variables.
 
-        #. **Call the inherited EuroPiScript method load_state_X().** The ``EuroPiScript`` base class has ``load_state_X()`` methods to check for a previously saved state of a specific format. When initializing your script, call ``load_state_X()`` where ``X`` is the persistance format of choice. If no state is found, an empty value will be returned.
+        #. **Call the inherited EuroPiScript method load_state_X().** The ``EuroPiScript`` base class has ``load_state_X()``
+           methods to check for a previously saved state of a specific format. When initializing your script, call ``load_state_X()``
+           where ``X`` is the persistance format of choice. If no state is found, an empty value will be returned.
 
         #. **Apply saved state variables to this instance.** Set state variables with default fallback values if not found in the json save state.
 
         #. **Save state upon state change.** When a state variable changes, call the save state function.
 
-        #. **Implement save_state() method.** Provide an implementation to serialize the state variables into a string, JSON, or bytes an call the appropriate save state method.
+        #. **Implement save_state() method.** Provide an implementation to serialize the state variables into a string, JSON, or
+           bytes an call the appropriate save state method.
 
-        #. **Throttle the frequency of saves.** Saving state too often could negatively impact the performance of your script, so it is advised to add some checks in your code to ensure it doesn't save too frequently.
+        #. **Throttle the frequency of saves.** Saving state too often could negatively impact the performance of your script, so it is
+           advised to add some checks in your code to ensure it doesn't save too frequently.
 
 
     Here is an extension of the script above with some added trivial features that incorporate saving and loading script state::

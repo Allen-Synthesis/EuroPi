@@ -17,9 +17,7 @@ Interface for using an NTP server as a realtime clock source
 This will only work if
 
 #. we're using a wifi-supported Pico model
-
 #. we have a valid network configuration
-
 #. there's an accessible NTP server on the network (important if we're in AP mode)
 """
 from experimental.clocks.clock_source import ExternalClockSource
