@@ -171,24 +171,23 @@ class Intervals:
 
     For example, if you have a Quantizer and want to enable the Perfect4th you can simply use
 
-    q = Quantizer(...)
-    q[Intervals.P4] = True
+    .. code-block:: python
+
+        q = Quantizer(...)
+        q[Intervals.P4] = True
 
     This class uses the short notation for intervals.  See https://en.wikipedia.org/wiki/Interval_(music)
     for more information.
 
     The abridged summary:
-    - single case-sensitive letter for the interval type
-    - a number from 1-8 indicating the size of the interval
-    - P = perfect
-    - M = major
-    - m = minor
-    - d = diminished
-    - A = augmented
-    - three exceptions:
-        - S = semitone (equivalent to m2/A1)
-        - T = Tone (equivalent to M2/d3)
-        - TT = Tritone (equivalent to d5/A4)
+    * single case-sensitive letter for the interval type
+    * a number from 1-8 indicating the size of the interval
+    * P = perfect
+    * M = major
+    * m = minor
+    * d = diminished
+    * A = augmented
+    * three exceptions: S = semitone (equivalent to m2/A1), T = Tone (equivalent to M2/d3), TT = Tritone (equivalent to d5/A4)
     """
 
     # fmt: off
