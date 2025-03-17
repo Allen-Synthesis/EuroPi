@@ -17,10 +17,8 @@ Interface class for the DS3231 Realtime Clock
 This class is designed to work with a DS3231 chip mounted on an I2C carrier board
 that can be connected to EuroPi's external I2C interface. The user is required to
 1) provide their own RTC module
-2) create/source an appropriate adapter to connect the GND, VCC, SDA, and SCL pins on EuroPi
-   to the RTC module
-3) Mount the RTC module securely in such a way that it won't come loose nor accidentally short out
-   any other components.
+2) create/source an appropriate adapter to connect the GND, VCC, SDA, and SCL pins on EuroPi to the RTC module
+3) Mount the RTC module securely in such a way that it won't come loose nor accidentally short out any other components.
 
 Compatible RTC modules can be purchased relatively cheaply online. e.g.:
 - https://www.amazon.ca/DS3231-Precision-AT24C32-Arduino-Raspberry/dp/B07V68443F (not an afficliate link)
