@@ -33,11 +33,14 @@ changes to support EuroPi's RTC interface.
 """
 
 from experimental.clocks.clock_source import ExternalClockSource
+
 try:
     from micropython import const
 except ImportError:
+
     def const(x):
         return x
+
 
 # fmt: off
 DATETIME_REG = const(0)    # 0x00-0x06
