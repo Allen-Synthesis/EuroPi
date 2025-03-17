@@ -23,19 +23,17 @@ class AnalogReaderDigitalWrapper:
     the analogue input and trigger any rising/falling edge callbacks.
 
     The value returned by `.value()` is accurate to the last time `.update()` was called.
+
+    :param ain:  The AnalogReader we're wrapping
+    :param debounce:  The number of consecutive high/low signals needed to flip the digital state
+    :param high_low_cutoff:  The threshold at which the analog signal is considered high
+    :param cb_rising:  A function to call on the rising edge of the signal
+    :param cb_falling:  A function to call on the falling edge of the signal
     """
 
     def __init__(
         self, ain, debounce=1, high_low_cutoff=0.8, cb_rising=lambda: None, cb_falling=lambda: None
     ):
-        """Constructor
-
-        :param ain:  The AnalogReader we're wrapping
-        :param debounce:  The number of consecutive high/low signals needed to flip the digital state
-        :param high_low_cutoff:  The threshold at which the analog signal is considered high
-        :param cb_rising:  A function to call on the rising edge of the signal
-        :param cb_falling:  A function to call on the falling edge of the signal
-        """
         self.ain = ain
         self.debounce = debounce
         self.high_low_cutoff = high_low_cutoff

@@ -40,19 +40,17 @@ class Quantizer:
     by setting scale[n] = True/False, where n is the index of the semitone to toggle
 
     Implements __get_item__ and __set_item__ so you can use Quantizer like an array to set notes on/off
+
+    :param notes:  A boolean array of length SEMITONES_PER_OCTAVE indicating what semitones
+        are enabled (True) or disabled (False). If None, all notes are enabled. If not-none,
+        the provided array is copied into this instance.
+    :param name:  The human-readable name for this scale. The name can be displayed on the
+        module's screen by some scripts.
+
+    :raises ValueError: if len(notes) is not equal to SEMITONES_PER_OCTAVE
     """
 
     def __init__(self, notes=None, name=""):
-        """Constructor; can specify what notes are enabled/disabled
-
-        By default all notes are enabled (chromatic scale). The provided array is
-        deep-copied into this object
-
-        :param notes:  A boolean array of length SEMITONES_PER_OCTAVE indicating what semitones
-            are enabled (True) or disabled (False)
-
-        :raises ValueError: if len(notes) is not equal to SEMITONES_PER_OCTAVE
-        """
         if notes is None:
             self.notes = [True] * SEMITONES_PER_OCTAVE
         else:
