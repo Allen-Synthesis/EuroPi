@@ -42,7 +42,7 @@ class LockableKnob(Knob):
         internal_rep = lockable_knob.value
 
     :param knob: The knob to wrap.
-    :param initial_uint16_value: The UINT16 (0-`europi.MAXINT16`) value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.
+    :param initial_uint16_value: The UINT16 (0-`europi_hardware.MAXINT16`) value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.
     :param initial_percentage_value: The percentage (as a decimal 0-1) value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.
     :param threshold: a decimal between 0 and 1 representing how close the knob must be to the locked value in order to unlock. The percentage is in terms of the knobs full range. Defaults to 5% (0.05)
     """
@@ -263,7 +263,7 @@ class KnobBank:
 
             `threshold_from_choice_count` is a convenience parameter to be used in the case where
             this knob will be used to select from a relatively few number of choices, via the
-            :meth:`~europi.Knob.choice()` method. Pass the number of choices to this parameter and
+            :meth:`~europi_hardware.Knob.choice()` method. Pass the number of choices to this parameter and
             an appropriate threshold value will be calculated.
 
             :param name: the name of this virtual knob
@@ -294,7 +294,7 @@ class KnobBank:
 
             `threshold_from_choice_count` is a convenience parameter to be used in the case where
             this knob will be used to select from a relatively few number of choices, via the
-            :meth:`~europi.Knob.choice()` method. Pass the number of choices to this parameter and
+            :meth:`~europi_hardware.Knob.choice()` method. Pass the number of choices to this parameter and
             an appropriate threshold value will be calculated.
 
             :param name: the name of this virtual knob
@@ -370,14 +370,14 @@ class BufferedKnob(Knob):
         """Create a buffered wrapper for the given analogue input
 
         The parameter @knob can be any Knob instance, including:
-        - europi.k1
-        - europi.k2
+        - europi_hardware.k1
+        - europi_hardware.k2
 
         Until the .update() method is called, this class will return a value of 0.
 
         @param knob The analogue input to wrap e.g.:
                     ```python
-                    from europi import *
+                    from europi_hardware import *
                     from experimental.knobs import *
                     k1_buffered = BufferedKnob(k1)
                     ```
@@ -398,7 +398,7 @@ class BufferedKnob(Knob):
         """Re-read the ADC and update the buffered value
 
         @param samples  Specifies the number of samples to average to de-noise the ADC reading
-                        See europi.AnalogueReader for details on ADC sampling
+                        See europi_hardware.AnalogueReader for details on ADC sampling
         """
         self.value = super()._sample_adc(samples)
 
