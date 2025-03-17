@@ -18,7 +18,7 @@ import json
 from europi_log import *
 
 
-def load_file(filename, mode: str = "r") -> any:
+def load_file(filename, mode: str = "r"):
     """Load a file and return its contents
 
     @param filename  The name of the file to load
