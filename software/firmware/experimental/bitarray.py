@@ -42,8 +42,7 @@ def get_bit(arr, index):
     """Get the value of the bit at the nth position in a bytearray
 
     Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
-    the first bit of [0]:
-        [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
+    the first bit of `[0]`: `[ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]`
 
     @param arr    The bytearray to operate on
     @param index  The bit index to retrieve
@@ -61,8 +60,7 @@ def set_bit(arr, index, value):
     """Set the bit at the nth position in a bytearray
 
     Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
-    the first bit of [0]:
-        [ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]
+    the first bit of `[0]`: `[ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]`
 
     @param arr    The bytearray to operate on
     @param index  The bit position within the array
