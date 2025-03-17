@@ -53,11 +53,14 @@ some scripts that assume the clock is set to UTC may behave incorrectly.
 from europi_log import *
 
 from experimental.clocks.clock_source import ExternalClockSource
+
 try:
     from micropython import const
 except ImportError:
+
     def const(x):
         return x
+
 
 # fmt: off
 DATETIME_REG    = const(0)   # 7 bytes
