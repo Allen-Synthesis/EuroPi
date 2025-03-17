@@ -118,20 +118,33 @@ wifi implementation</p>
 <dt class="sig sig-object py" id="experimental.wifi.WifiConnection">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.wifi.</span></span><span class="sig-name descname"><span class="pre">WifiConnection</span></span><a class="headerlink" href="#experimental.wifi.WifiConnection" title="Permalink to this definition"></a></dt>
 <dd><p>Class to manage the wifi connection</p>
-<p>Raises a WifiError if the model doesn’t support wifi</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#experimental.wifi.WifiError" title="experimental.wifi.WifiError"><strong>WifiError</strong></a> – if the model doesn’t support wifi, if we fail to import the
+necessary libraries, or if the network fails to connect</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.wifi.WifiConnection.connect_ap">
 <span class="sig-name descname"><span class="pre">connect_ap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.wifi.WifiConnection.connect_ap" title="Permalink to this definition"></a></dt>
 <dd><p>Connect in access point mode</p>
 <p>We can optionally set the IP address and netmask in this mode</p>
-<p>&#64;param cfg  The ExperimentalConfig object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cfg</strong> – The ExperimentalConfig object</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.wifi.WifiConnection.connect_station">
 <span class="sig-name descname"><span class="pre">connect_station</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.wifi.WifiConnection.connect_station" title="Permalink to this definition"></a></dt>
 <dd><p>Connect to an external wireless router as a client</p>
-<p>&#64;param cfg  The ExperimentalConfig object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cfg</strong> – The ExperimentalConfig object</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">

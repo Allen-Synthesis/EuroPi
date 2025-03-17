@@ -121,21 +121,33 @@ when the state of the digital input changes.</p>
 <p>In your main loop you must call <cite>.update()</cite> to read the current state of the inputs &amp; invoke the callback
 functions</p>
 <p>Calling <cite>.update()</cite> will populate the following fields of the DigitalInputHelper:
-- b1_last_pressed: the ms tick time that b1 was last pressed
-- b1_last_released: the ms tick time that b1 was last released
-- b1_pressed: True if b1 is currently pressed down, otherwise False
-- b1_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
-- b1_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
-- b2_last_pressed: the ms tick time that b2 was last pressed
-- b2_last_released: the ms tick time that b2 was last released
-- b2_pressed: True if b2 is currently pressed down, otherwise False
-- b2_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
-- b2_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
-- din_last_rise: the ms tick time that din last received a rising signal
-- din_last_fall: the ms tick time that din last received a falling signal
-- din_high: True if din is currently high, otherwise False
-- din_rising: True if din transitioned to the high state during the last update() call, otherwise False
-- din_falling: True if b1 transitioned to the low state during the last update() call, otherwise False</p>
+* b1_last_pressed: the ms tick time that b1 was last pressed
+* b1_last_released: the ms tick time that b1 was last released
+* b1_pressed: True if b1 is currently pressed down, otherwise False
+* b1_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
+* b1_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
+* b2_last_pressed: the ms tick time that b2 was last pressed
+* b2_last_released: the ms tick time that b2 was last released
+* b2_pressed: True if b2 is currently pressed down, otherwise False
+* b2_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
+* b2_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
+* din_last_rise: the ms tick time that din last received a rising signal
+* din_last_fall: the ms tick time that din last received a falling signal
+* din_high: True if din is currently high, otherwise False
+* din_rising: True if din transitioned to the high state during the last update() call, otherwise False
+* din_falling: True if b1 transitioned to the low state during the last update() call, otherwise False</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on_din_rising</strong> – Callback function to invoke when din detects a rising edge</p></li>
+<li><p><strong>on_din_falling</strong> – Callback function to invoke when din detects a falling edge</p></li>
+<li><p><strong>on_b1_rising</strong> – Callback function to invoke when b1 detects a rising edge</p></li>
+<li><p><strong>on_b1_falling</strong> – Callback function to invoke when b1 detects a falling edge</p></li>
+<li><p><strong>on_b2_rising</strong> – Callback function to invoke when b2 detects a rising edge</p></li>
+<li><p><strong>on_b2_falling</strong> – Callback function to invoke when b2 detects a falling edge</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.thread.DigitalInputHelper.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.thread.DigitalInputHelper.update" title="Permalink to this definition"></a></dt>

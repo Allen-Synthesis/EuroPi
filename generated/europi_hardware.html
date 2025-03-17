@@ -439,7 +439,11 @@ calibration is important if you want to be able to output precise voltages.</p>
 <dt class="sig sig-object py" id="europi_hardware.Output.value">
 <span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.Output.value" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the output to 0V or 5V based on a binary input, 0 or 1.</p>
-<p>&#64;param value  HIGH or LOW, according to the desired state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> – HIGH or LOW, according to the desired state.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -447,7 +451,11 @@ calibration is important if you want to be able to output precise voltages.</p>
 <span class="sig-name descname"><span class="pre">voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.Output.voltage" title="Permalink to this definition"></a></dt>
 <dd><p>Set the output voltage to the provided value within the range of MIN_VOLTAGE to MAX_VOLTAGE</p>
 <p>By default this range is 0-10, but can be overridden via the configuration file</p>
-<p>&#64;param voltage  The desired volts to send to the output. If None the current voltage is returned</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>voltage</strong> – The desired volts to send to the output. If None the current voltage is returned</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -462,7 +470,11 @@ calibration is important if you want to be able to output precise voltages.</p>
 <dt class="sig sig-object py" id="europi_hardware.Thermometer.read_temperature">
 <span class="sig-name descname"><span class="pre">read_temperature</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.Thermometer.read_temperature" title="Permalink to this definition"></a></dt>
 <dd><p>Read the ADC and return the current temperature</p>
-<p>&#64;return  The current temperature in Celsius, or None if the hardware did not initialze properly</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The current temperature in Celsius, or None if the hardware did not initialze properly</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -485,9 +497,15 @@ check the SIE_STATUS register and check bit 16</p>
 <dt class="sig sig-object py" id="europi_hardware.clamp">
 <span class="sig-prename descclassname"><span class="pre">europi_hardware.</span></span><span class="sig-name descname"><span class="pre">clamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.clamp" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a value that is no lower than ‘low’ and no higher than ‘high’.</p>
-<p>&#64;param value  The value to clamp
-&#64;param low  The inclusive lower bound
-&#64;param high  The inclusive upper bound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The value to clamp</p></li>
+<li><p><strong>low</strong> – The inclusive lower bound</p></li>
+<li><p><strong>high</strong> – The inclusive upper bound</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

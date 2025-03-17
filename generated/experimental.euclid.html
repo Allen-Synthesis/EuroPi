@@ -115,14 +115,30 @@
 <span class="sig-prename descclassname"><span class="pre">experimental.euclid.</span></span><span class="sig-name descname"><span class="pre">generate_euclidean_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.euclid.generate_euclidean_pattern" title="Permalink to this definition"></a></dt>
 <dd><p>Generates an array indicating the on/off steps of Euclid(k, n)</p>
 <p>Copied from <a class="reference external" href="https://github.com/brianhouse/bjorklund">https://github.com/brianhouse/bjorklund</a> with all due gratitude</p>
-<p>&#64;param steps  The number of steps in the pattern
-&#64;param pulses The number of ON steps in the pattern (must be &lt;= steps)
-&#64;param rot    Optional rotation to offset the pattern. Must be in the range [0, steps]</p>
-<p>&#64;return An int array of length steps consisting of 1 and 0 values only</p>
-<p>&#64;exception ValueError if pulses or rot is out of range</p>
-<p>&#64;author Brian House
-&#64;year 2011
-&#64;license MIT</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>steps</strong> – The number of steps in the pattern</p></li>
+<li><p><strong>pulses</strong> – The number of ON steps in the pattern (must be &lt;= steps)</p></li>
+<li><p><strong>rot</strong> – Optional rotation to offset the pattern. Must be in the range [0, steps]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An int array of length steps consisting of 1 and 0 values only</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if pulses or rot is out of range</p>
+</dd>
+<dt class="field-even">Author</dt>
+<dd class="field-even"><p>Brian House</p>
+</dd>
+<dt class="field-odd">Year</dt>
+<dd class="field-odd"><p>2011</p>
+</dd>
+<dt class="field-even">License</dt>
+<dd class="field-even"><p>MIT</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

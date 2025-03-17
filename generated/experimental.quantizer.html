@@ -153,9 +153,19 @@ by setting scale[n] = True/False, where n is the index of the semitone to toggle
 <dt class="sig sig-object py" id="experimental.quantizer.Quantizer.quantize">
 <span class="sig-name descname"><span class="pre">quantize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analog_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.quantizer.Quantizer.quantize" title="Permalink to this definition"></a></dt>
 <dd><p>Take an analog input voltage and round it to the nearest note on our scale</p>
-<p>&#64;param analog_in  The input voltage to quantize, as a float
-&#64;param root       An integer in the range [0, 12) indicating the number of semitones up to transpose the quantized scale</p>
-<p>&#64;return A tuple of the form (voltage, note) where voltage is the raw voltage to output, and note is a value from 0-11 indicating the semitone</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>analog_in</strong> – The input voltage to quantize, as a float</p></li>
+<li><p><strong>root</strong> – An integer in the range [0, 12) indicating the number of semitones up
+to transpose the quantized scale</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of the form (voltage, note) where voltage is the raw voltage to output,
+and note is a value from 0-11 indicating the semitone</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

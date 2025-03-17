@@ -120,27 +120,47 @@ easier bit-level access.</p>
 <dd><p>Get the value of the bit at the nth position in a bytearray</p>
 <p>Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
 the first bit of <cite>[0]</cite>: <cite>[ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 … ]</cite></p>
-<p>&#64;param arr    The bytearray to operate on
-&#64;param index  The bit index to retrieve</p>
-<p>&#64;return 0 or 1, depending on the state at position &#64;index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> – The bytearray to operate on</p></li>
+<li><p><strong>index</strong> – The bit index to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>0 or 1, depending on the state at position index</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="experimental.bitarray.make_bit_array">
 <span class="sig-prename descclassname"><span class="pre">experimental.bitarray.</span></span><span class="sig-name descname"><span class="pre">make_bit_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.bitarray.make_bit_array" title="Permalink to this definition"></a></dt>
-<dd><p>Create a bit array that contains at least &#64;length bits</p>
+<dd><p>Create a bit array that contains at least length bits</p>
 <p>The resulting byte array will have a length rounded up to the
-next byte if &#64;length is not divisible by 8</p>
-<p>&#64;param length  The number of bits in the array</p>
-<p>&#64;return A bytearray containing at least &#64;length bits</p>
+next byte if length is not divisible by 8</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> – The number of bits in the array</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A bytearray containing at least &#64;length bits</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="experimental.bitarray.set_all_bits">
 <span class="sig-prename descclassname"><span class="pre">experimental.bitarray.</span></span><span class="sig-name descname"><span class="pre">set_all_bits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.bitarray.set_all_bits" title="Permalink to this definition"></a></dt>
 <dd><p>Set all bits in the array to the same value</p>
-<p>&#64;param arr    The bytearray to reset
-&#64;param value  A truthy value indicating whether all bits should be set to 0 or 1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> – The bytearray to reset</p></li>
+<li><p><strong>value</strong> – A truthy value indicating whether all bits should be set to 0 or 1</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -149,9 +169,15 @@ next byte if &#64;length is not divisible by 8</p>
 <dd><p>Set the bit at the nth position in a bytearray</p>
 <p>Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
 the first bit of <cite>[0]</cite>: <cite>[ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 … ]</cite></p>
-<p>&#64;param arr    The bytearray to operate on
-&#64;param index  The bit position within the array
-&#64;param value  A truthy value indicating whether the bit should be set to 1 or 0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> – The bytearray to operate on</p></li>
+<li><p><strong>index</strong> – The bit position within the array</p></li>
+<li><p><strong>value</strong> – A truthy value indicating whether the bit should be set to 1 or 0</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

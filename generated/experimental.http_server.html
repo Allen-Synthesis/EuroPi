@@ -145,8 +145,14 @@
 <p>The intent is that whatever program is using the HTTP server will create their own callback
 to replace this function. So all we do is raise a NotImplementedError that’s handled
 by self.check_requests() and will serve our HTTP 501 error page accordingly.</p>
-<p>&#64;param connection  The socket the client connected on
-&#64;param request  The client’s request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection</strong> – The socket the client connected on</p></li>
+<li><p><strong>request</strong> – The client’s request</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -156,7 +162,11 @@ by self.check_requests() and will serve our HTTP 501 error page accordingly.</p>
 <p>The provided function must accept the following keyword arguments:
 - request: str  The request the client sent
 - conn: socket  A socket connection to the client</p>
-<p>&#64;param func  The function to handle the request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func</strong> – The function to handle the request.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -166,47 +176,75 @@ by self.check_requests() and will serve our HTTP 501 error page accordingly.</p>
 <p>The provided function must accept the following keyword arguments:
 - request: str  The request the client sent
 - conn: socket  A socket connection to the client</p>
-<p>&#64;param func  The function to handle the request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func</strong> – The function to handle the request.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.http_server.HttpServer.send_error_page">
 <span class="sig-name descname"><span class="pre">send_error_page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.http_server.HttpServer.send_error_page" title="Permalink to this definition"></a></dt>
 <dd><p>Serve our customized HTTP error page</p>
-<p>&#64;param error  The exception that caused the error
-&#64;param connection  The socket to send the response over
-&#64;param status  The error status to respond with
-&#64;param headers  Optional additional headers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>error</strong> – The exception that caused the error</p></li>
+<li><p><strong>connection</strong> – The socket to send the response over</p></li>
+<li><p><strong>status</strong> – The error status to respond with</p></li>
+<li><p><strong>headers</strong> – Optional additional headers</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.http_server.HttpServer.send_html">
 <span class="sig-name descname"><span class="pre">send_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">html_page</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.http_server.HttpServer.send_html" title="Permalink to this definition"></a></dt>
 <dd><p>Send an HTML document to the client</p>
-<p>&#64;param connection  The socket to send the data over
-&#64;param html_page  A string containing the HTML document.
-&#64;param status  The HTTP status to send the page with
-&#64;param headers  Optional additional HTTP headers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection</strong> – The socket to send the data over</p></li>
+<li><p><strong>html_page</strong> – A string containing the HTML document.</p></li>
+<li><p><strong>status</strong> – The HTTP status to send the page with</p></li>
+<li><p><strong>headers</strong> – Optional additional HTTP headers</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.http_server.HttpServer.send_json">
 <span class="sig-name descname"><span class="pre">send_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.http_server.HttpServer.send_json" title="Permalink to this definition"></a></dt>
 <dd><p>Send a JSON object to the client</p>
-<p>&#64;param connection  The socket connection to the client
-&#64;param data  A dict to be converted to a JSON object
-&#64;param headers  Optional additional HTTP headers to include</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection</strong> – The socket connection to the client</p></li>
+<li><p><strong>data</strong> – A dict to be converted to a JSON object</p></li>
+<li><p><strong>headers</strong> – Optional additional HTTP headers to include</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.http_server.HttpServer.send_response">
 <span class="sig-name descname"><span class="pre">send_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text/html'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.http_server.HttpServer.send_response" title="Permalink to this definition"></a></dt>
 <dd><p>Send a response to the client</p>
-<p>&#64;param connection  The socket connection to the client
-&#64;param response  The response payload
-&#64;param status  The HTTP status to respond with
-&#64;param content_type  The MIME type to include in the HTTP header
-&#64;param headers  Optional dict of key/value pairs for addtional HTTP headers. Charset is ALWAYS utf-8</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection</strong> – The socket connection to the client</p></li>
+<li><p><strong>response</strong> – The response payload</p></li>
+<li><p><strong>status</strong> – The HTTP status to respond with</p></li>
+<li><p><strong>content_type</strong> – The MIME type to include in the HTTP header</p></li>
+<li><p><strong>headers</strong> – Optional dict of key/value pairs for addtional HTTP headers. Charset is ALWAYS utf-8</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

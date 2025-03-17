@@ -156,8 +156,10 @@ the ADC value</p>
 <dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.update" title="Permalink to this definition"></a></dt>
 <dd><p>Re-read the ADC and update the buffered value</p>
-<dl class="simple">
-<dt>&#64;param samples  Specifies the number of samples to average to de-noise the ADC reading</dt><dd><p>See europi_hardware.AnalogueReader for details on ADC sampling</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>samples</strong> – Specifies the number of samples to average to de-noise the ADC reading
+See europi_hardware.AnalogueReader for details on ADC sampling</p>
 </dd>
 </dl>
 </dd></dl>
@@ -178,7 +180,11 @@ building multifunction knobs.</p>
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob.change_lock_value">
 <span class="sig-name descname"><span class="pre">change_lock_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob.change_lock_value" title="Permalink to this definition"></a></dt>
 <dd><p>Change the current value to reflect a desired percentage</p>
-<p>&#64;param percent  The 0-1 value we want to re-lock the knob at</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>percent</strong> – The 0-1 value we want to re-lock the knob at</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -364,7 +370,11 @@ the bank.</p>
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank.set_current">
 <span class="sig-name descname"><span class="pre">set_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank.set_current" title="Permalink to this definition"></a></dt>
 <dd><p>Set the currently-unlocked knob to the one whose name matches the argument</p>
-<p>&#64;param name  The name of the knob to set as the current one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the knob to set as the current one</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -404,7 +414,11 @@ current position of a <cite>LockableKnob</cite>, first lock the knob, then read 
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob.change_lock_value">
 <span class="sig-name descname"><span class="pre">change_lock_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob.change_lock_value" title="Permalink to this definition"></a></dt>
 <dd><p>Change the current value to reflect a desired percentage</p>
-<p>&#64;param percent  The 0-1 value we want to re-lock the knob at</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>percent</strong> – The 0-1 value we want to re-lock the knob at</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

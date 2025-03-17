@@ -130,10 +130,10 @@ the clock.  To do so:</p>
 <li><p>Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to experimental_config, restart the Raspberry Pi Pico before proceeding.</p></li>
 <li><p>In Thonny’s Python terminal, run the following code:</p></li>
 </ol>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">&gt;&gt;&gt;</span> <span class="pre">from</span> <span class="pre">experimental.rtc</span> <span class="pre">import</span> <span class="pre">clock</span>
-<span class="pre">&gt;&gt;&gt;</span> <span class="pre">clock.source.set_datetime((2025,</span> <span class="pre">6,</span> <span class="pre">14,</span> <span class="pre">22,</span> <span class="pre">59,</span> <span class="pre">0,</span> <span class="pre">6,</span> <span class="pre">0))</span>
-<span class="pre">`</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">experimental.rtc</span> <span class="kn">import</span> <span class="n">clock</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">set_datetime</span><span class="p">((</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
 <p>This will set the clock to 14 June 2025, 22:59:00, and set the weekday to Saturday (6).
 The tuple is of the form (Year, Month, Day, Hour, Minute, Second, Weekday, Yearday). It is recommended
 to set the seconds &amp; weekday, but it is optional.</p>
@@ -158,31 +158,53 @@ returns : bool</p>
 <dt class="sig sig-object py" id="experimental.clocks.ds3231.DS3231.alarm1">
 <span class="sig-name descname"><span class="pre">alarm1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int_en</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weekday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.alarm1" title="Permalink to this definition"></a></dt>
 <dd><p>Set alarm1, can match mday, wday, hour, minute, second</p>
-<p>time    : tuple, (second,[ minute[, hour[, day]]])
-weekday : bool, select mday (False) or wday (True)
-match   : int, match const
-int_en  : bool, enable interrupt on alarm match on SQW/INT pin (disables SQW output)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> – tuple, (second,[ minute[, hour[, day]]])</p></li>
+<li><p><strong>weekday</strong> – bool, select mday (False) or wday (True)</p></li>
+<li><p><strong>match</strong> – int, match const</p></li>
+<li><p><strong>int_en</strong> – bool, enable interrupt on alarm match on SQW/INT pin (disables SQW output)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.ds3231.DS3231.alarm2">
 <span class="sig-name descname"><span class="pre">alarm2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int_en</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weekday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.alarm2" title="Permalink to this definition"></a></dt>
 <dd><p>Get/set alarm 2 (can match minute, hour, day)</p>
-<p>time    : tuple, (minute[, hour[, day]])
-weekday : bool, select mday (False) or wday (True)
-match   : int, match const
-int_en  : bool, enable interrupt on alarm match on SQW/INT pin (disables SQW output)
-Returns : bytearray(3), the alarm settings register</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> – tuple, (minute[, hour[, day]])</p></li>
+<li><p><strong>weekday</strong> – bool, select mday (False) or wday (True)</p></li>
+<li><p><strong>match</strong> – int, match const</p></li>
+<li><p><strong>int_en</strong> – bool, enable interrupt on alarm match on SQW/INT pin (disables SQW output)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bytearray(3), the alarm settings register</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.ds3231.DS3231.alarm_int">
 <span class="sig-name descname"><span class="pre">alarm_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alarm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.alarm_int" title="Permalink to this definition"></a></dt>
 <dd><p>Enable/disable interrupt for alarm1, alarm2 or both.</p>
-<p>Enabling the interrupts disables the SQW output
-enable : bool, enable/disable interrupts
-alarm : int, alarm nr (0 to set both interrupts)
-returns: the control register</p>
+<p>Enabling the interrupts disables the SQW output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enable</strong> – bool, enable/disable interrupts</p></li>
+<li><p><strong>alarm</strong> – int, alarm nr (0 to set both interrupts)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the control register</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -195,23 +217,37 @@ returns: the control register</p>
 <dt class="sig sig-object py" id="experimental.clocks.ds3231.DS3231.check_valid_datetime">
 <span class="sig-name descname"><span class="pre">check_valid_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.check_valid_datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Check if a datetime contains valid values.</p>
-<p>Raises a ValueError if any field is out of range</p>
-<p>&#64;param datetime</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if any field is out of range</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>datetime</strong> – The datetime tuple to validate</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.ds3231.DS3231.datetime">
 <span class="sig-name descname"><span class="pre">datetime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Get the current time.</p>
-<p>Returns in 24h format, converts to 24h if clock is set to 12h format
-&#64;return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+<p>Returns in 24h format, converts to 24h if clock is set to 12h format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.ds3231.DS3231.is_leap_year">
 <span class="sig-name descname"><span class="pre">is_leap_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.is_leap_year" title="Permalink to this definition"></a></dt>
 <dd><p>Determine if the datetime’s year is a leap year or not.</p>
-<p>&#64;return  True if the datetime is a leap year, otherwise False</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the datetime is a leap year, otherwise False</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -219,7 +255,11 @@ returns: the control register</p>
 <span class="sig-name descname"><span class="pre">month_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.month_length" title="Permalink to this definition"></a></dt>
 <dd><p>Get the numer of days in the month.</p>
 <p>This takes leap-years into consideration</p>
-<p>&#64;return  The number of days in the datetime’s month</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of days in the datetime’s month</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -232,7 +272,11 @@ returns: the control register</p>
 <dt class="sig sig-object py" id="experimental.clocks.ds3231.DS3231.set_datetime">
 <span class="sig-name descname"><span class="pre">set_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.set_datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Set the current time.</p>
-<p>&#64;param datetime : tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>datetime</strong> – tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -241,20 +285,28 @@ returns: the control register</p>
 <dd><p>Outputs Square Wave Signal</p>
 <p>The alarm interrupts are disabled when enabling a square wave output. Disabling SWQ out does
 not enable the alarm interrupts. Set them manually with the alarm_int() method.</p>
-<p>freq : int,
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>freq</strong> – specify the frequency:
 * None: returns current setting
 * False = disable SQW output,
 * 1 =     1 Hz,
 * 2 = 1.024 kHz,
 * 3 = 4.096 kHz,
 * 4 = 8.192 kHz</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.ds3231.DS3231.year_length">
 <span class="sig-name descname"><span class="pre">year_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ds3231.DS3231.year_length" title="Permalink to this definition"></a></dt>
 <dd><p>Determine the number of days in the datetime’s year.</p>
-<p>&#64;return  The number of days in the year, taking leap years into account</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of days in the year, taking leap years into account</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

@@ -111,10 +111,12 @@
   <section id="module-experimental.clocks.ntp">
 <span id="experimental-clocks-ntp"></span><h1>experimental.clocks.ntp<a class="headerlink" href="#module-experimental.clocks.ntp" title="Permalink to this heading"></a></h1>
 <p>Interface for using an NTP server as a realtime clock source</p>
-<p>This will only work if
-1. we’re using a wifi-supported Pico model
-2. we have a valid network configuration
-3. there’s an accessible NTP server on the network (important if we’re in AP mode)</p>
+<p>This will only work if</p>
+<ol class="arabic simple">
+<li><p>we’re using a wifi-supported Pico model</p></li>
+<li><p>we have a valid network configuration</p></li>
+<li><p>there’s an accessible NTP server on the network (important if we’re in AP mode)</p></li>
+</ol>
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.clocks.ntp.NtpClock">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.clocks.ntp.</span></span><span class="sig-name descname"><span class="pre">NtpClock</span></span><a class="headerlink" href="#experimental.clocks.ntp.NtpClock" title="Permalink to this definition"></a></dt>
@@ -124,22 +126,36 @@
 <dt class="sig sig-object py" id="experimental.clocks.ntp.NtpClock.check_valid_datetime">
 <span class="sig-name descname"><span class="pre">check_valid_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ntp.NtpClock.check_valid_datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Check if a datetime contains valid values.</p>
-<p>Raises a ValueError if any field is out of range</p>
-<p>&#64;param datetime</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if any field is out of range</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>datetime</strong> – The datetime tuple to validate</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.ntp.NtpClock.datetime">
 <span class="sig-name descname"><span class="pre">datetime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ntp.NtpClock.datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Get the latest time from our NTP source and return it</p>
-<p>&#64;return a tuple of the form tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a tuple of the form tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.ntp.NtpClock.is_leap_year">
 <span class="sig-name descname"><span class="pre">is_leap_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ntp.NtpClock.is_leap_year" title="Permalink to this definition"></a></dt>
 <dd><p>Determine if the datetime’s year is a leap year or not.</p>
-<p>&#64;return  True if the datetime is a leap year, otherwise False</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the datetime is a leap year, otherwise False</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -147,7 +163,11 @@
 <span class="sig-name descname"><span class="pre">month_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ntp.NtpClock.month_length" title="Permalink to this definition"></a></dt>
 <dd><p>Get the numer of days in the month.</p>
 <p>This takes leap-years into consideration</p>
-<p>&#64;return  The number of days in the datetime’s month</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of days in the datetime’s month</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -161,7 +181,11 @@
 <dt class="sig sig-object py" id="experimental.clocks.ntp.NtpClock.year_length">
 <span class="sig-name descname"><span class="pre">year_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.ntp.NtpClock.year_length" title="Permalink to this definition"></a></dt>
 <dd><p>Determine the number of days in the datetime’s year.</p>
-<p>&#64;return  The number of days in the year, taking leap years into account</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of days in the year, taking leap years into account</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

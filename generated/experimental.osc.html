@@ -119,8 +119,14 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.osc.</span></span><span class="sig-name descname"><span class="pre">OpenSoundPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundPacket" title="Permalink to this definition"></a></dt>
 <dd><p>A container object for the Open Sound Control packet(s) we receive.</p>
 <p>Contains the address of the message and the data</p>
-<p>&#64;property address  The address string of the packet
-&#64;property values  The values included in the packet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Property address</dt>
+<dd class="field-odd"><p>The address string of the packet</p>
+</dd>
+<dt class="field-even">Property values</dt>
+<dd class="field-even"><p>The values included in the packet</p>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="experimental.osc.OpenSoundPacket.address">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#experimental.osc.OpenSoundPacket.address" title="Permalink to this definition"></a></dt>
@@ -165,7 +171,11 @@ receive_data() in the main loop:</p>
 <p>The provided function must accept the following keyword arguments:
 - connection: socket  A socket connection to the client
 - data: str  The request the client sent</p>
-<p>&#64;param func  The function to handle the request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func</strong> – The function to handle the request.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -185,8 +195,14 @@ receive_data() in the main loop:</p>
 <dt class="sig sig-object py" id="experimental.osc.OpenSoundServer.send_data">
 <span class="sig-name descname"><span class="pre">send_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundServer.send_data" title="Permalink to this definition"></a></dt>
 <dd><p>Transmit a packet</p>
-<p>&#64;param address  The OSC address to send to
-&#64;param args  The values to encode in the packet. Allowed types are int, float, bool, str, and bytearray. Bools are converted to 0/1 integers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The OSC address to send to</p></li>
+<li><p><strong>args</strong> – The values to encode in the packet. Allowed types are int, float, bool, str, and bytearray. Bools are converted to 0/1 integers</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -197,7 +213,11 @@ receive_data() in the main loop:</p>
 <dd><p>Return the index of the next word-alined byte</p>
 <p>We assume 4-byte/32-bit words. If we’re already word-aligned,
 we increment to the next one</p>
-<p>&#64;param n  The current index in a byte array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> – The current index in a byte array</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

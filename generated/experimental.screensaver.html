@@ -121,6 +121,14 @@
 defer the screensaver/blank</p>
 <p>Set .enable_screensaver or .enable_blank to False to disable the screensaver/blanking activation completely
 (though if you do that, just use europi.oled instead of this class)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enable_screensaver</strong> – If true, the screensaver will activate when needed</p></li>
+<li><p><strong>enable_blank</strong> – If true, the screen will blank after the screensaver has been active for a while</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.screensaver.OledWithScreensaver.is_blank">
 <span class="sig-name descname"><span class="pre">is_blank</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.screensaver.OledWithScreensaver.is_blank" title="Permalink to this definition"></a></dt>
@@ -157,7 +165,11 @@ to draw the screensaver.</p>
 <p>If the current ticks_ms is an even multiple of the screensaver interval,
 or the <cite>force</cite> paramter is True, we will draw.  Otherwise this does
 nothing</p>
-<p>&#64;param force  Force the logo to be drawn, regardless of the current ticks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>force</strong> – Force the logo to be drawn, regardless of the current ticks</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

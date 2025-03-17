@@ -189,8 +189,14 @@ representing the class’s config file.  Otherwise an empty ConfigSettings objec
 <dt class="sig sig-object py" id="configuration.ConfigFile.load_from_file">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#configuration.ConfigSpec" title="configuration.ConfigSpec"><span class="pre">ConfigSpec</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigFile.load_from_file" title="Permalink to this definition"></a></dt>
 <dd><p>Load the configuration settings from an arbitrary file</p>
-<p>&#64;param path  The path to the fole to read
-&#64;param config_spec  The specification of the configuration we’re saving</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – The path to the fole to read</p></li>
+<li><p><strong>config_spec</strong> – The specification of the configuration we’re saving</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -215,8 +221,14 @@ adding a time since last save check to reduce save frequency.</p>
 <p>Unlike save_config, this method will NOT create any directories; if you
 intend to save to a directory that may not exist, make sure to create it
 first.</p>
-<p>&#64;param path  The path to the file we’re saving to
-&#64;param dict  The data to save</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – The path to the file we’re saving to</p></li>
+<li><p><strong>dict</strong> – The data to save</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -252,10 +264,16 @@ validation result, as well as an error message containing the reason for a valid
 <dt class="sig sig-object py" id="configuration.ConfigSettings.validate_key">
 <span class="sig-name descname"><span class="pre">validate_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigSettings.validate_key" title="Permalink to this definition"></a></dt>
 <dd><p>Ensures that a <cite>dict</cite> key is a valid attribute name</p>
-<p>&#64;param key  The string to check
-&#64;return     True if the key is valid. Otherwise an exception is raised</p>
-<dl class="simple">
-<dt>&#64;exception  ValueError if the key contains invalid characters; only letters, numbers, hyphens, and underscores</dt><dd><p>are permitted. They key cannot be length 0, nor can it begin with a number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – The string to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the key is valid. Otherwise an exception is raised</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if the key contains invalid characters; only letters, numbers, hyphens, and underscores
+are permitted. They key cannot be length 0, nor can it begin with a number</p>
 </dd>
 </dl>
 </dd></dl>
@@ -269,7 +287,7 @@ validation result, as well as an error message containing the reason for a valid
 script.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="configuration.ConfigSpec.default_config">
-<span class="sig-name descname"><span class="pre">default_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#configuration.ConfigSpec.default_config" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">default_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#configuration.ConfigSpec.default_config" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the default configuration for this spec.</p>
 </dd></dl>
 

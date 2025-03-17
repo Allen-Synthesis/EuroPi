@@ -114,33 +114,37 @@
 <dt class="sig sig-object py" id="tools.calibrate.Calibrate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tools.calibrate.</span></span><span class="sig-name descname"><span class="pre">Calibrate</span></span><a class="headerlink" href="#tools.calibrate.Calibrate" title="Permalink to this definition"></a></dt>
 <dd><p>A script to interactively calibrate the module</p>
-<dl class="simple">
-<dt>General flow:</dt><dd><ol class="arabic simple">
-<li><p>Sanity check (rack power, necessary file structure exists)</p></li>
-<li><dl class="simple">
-<dt>Input calibration. One of:</dt><dd><ol class="loweralpha simple">
+<p>General flow:
+#. Sanity check (rack power, necessary file structure exists)</p>
+<ol class="arabic">
+<li><p>Input calibration. One of:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>low-accuracy 10V in</p></li>
 <li><p>low-accuracy 5V in</p></li>
 <li><p>high-accuracy 0-10V in</p></li>
-</ol>
-</dd>
-</dl>
+</ul>
+</div></blockquote>
 </li>
 <li><p>Output calibration</p></li>
 <li><p>Save calibration</p></li>
 <li><p>Idle for reboot</p></li>
 </ol>
-</dd>
-</dl>
 <p>Output calibration only applies to CV1; all other outputs will
 use the same calibration values.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tools.calibrate.Calibrate.calibrate_output">
 <span class="sig-name descname"><span class="pre">calibrate_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cv_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_readings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.calibrate_output" title="Permalink to this definition"></a></dt>
 <dd><p>Send volts from CVx to AIN, adjusting the duty cycle so the output is correct.</p>
-<p>&#64;param cv_n  A value 0 &lt;= cv_n &lt; len(cvs) indicating which CV output we’re calibrating
-&#64;param calibration_values  The array of calibration values we append our results to
-&#64;param input_readings  The duty cycles of AIN corresponding to 0, 1, 2, …, 9, 10 volts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cv_n</strong> – A value 0 &lt;= cv_n &lt; len(cvs) indicating which CV output we’re calibrating</p></li>
+<li><p><strong>calibration_values</strong> – The array of calibration values we append our results to</p></li>
+<li><p><strong>input_readings</strong> – The duty cycles of AIN corresponding to 0, 1, 2, …, 9, 10 volts</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -155,11 +159,19 @@ use the same calibration values.</p>
 <dd><p>Perform a fast, coarse calibration to bring the CV output’s duty cycle somewhere close</p>
 <p>This will exit if either the calibration is within +/- the step_size OR if the measured duty
 cycle is higher than the goal (i.e. we’ve over-shot the goal)</p>
-<p>&#64;param cv  The CV output pin we’re adjusting
-&#64;param goal_duty  The AIN duty cycle we’re expecting to read
-&#64;param start_duty  The CVx duty cycle we’re applying to the output initially
-&#64;param step_size  The amount by which we adjust the duty cycle up to reach the goal</p>
-<p>&#64;return The adjusted output duty cycle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cv</strong> – The CV output pin we’re adjusting</p></li>
+<li><p><strong>goal_duty</strong> – The AIN duty cycle we’re expecting to read</p></li>
+<li><p><strong>start_duty</strong> – The CVx duty cycle we’re applying to the output initially</p></li>
+<li><p><strong>step_size</strong> – The amount by which we adjust the duty cycle up to reach the goal</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The adjusted output duty cycle</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -181,12 +193,20 @@ this function returns an empty list. Override it if you’d like configuration p
 <dd><p>Perform a slower, fine calibration to bring the CV output’s duty cycle towards the goal</p>
 <p>This exits if the measured duty cycle is within +/- 2*step_size OR if we make
 2*prev_step_size adjustments</p>
-<p>&#64;param cv  The CV output pin we’re adjusting
-&#64;param goal_duty  The AIN duty cycle we’re expecting to read
-&#64;param start_duty  The CVx duty cycle we’re applying to the output initially
-&#64;param step_size  The amount by which we adjust the duty cycle up/down to reach the goal
-&#64;param prev_step_size  The previous iteration’s step size, used to limit how many adjustments we make</p>
-<p>&#64;return The adjusted output duty cycle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cv</strong> – The CV output pin we’re adjusting</p></li>
+<li><p><strong>goal_duty</strong> – The AIN duty cycle we’re expecting to read</p></li>
+<li><p><strong>start_duty</strong> – The CVx duty cycle we’re applying to the output initially</p></li>
+<li><p><strong>step_size</strong> – The amount by which we adjust the duty cycle up/down to reach the goal</p></li>
+<li><p><strong>prev_step_size</strong> – The previous iteration’s step size, used to limit how many adjustments we make</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The adjusted output duty cycle</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -194,7 +214,11 @@ this function returns an empty list. Override it if you’d like configuration p
 <span class="sig-name descname"><span class="pre">input_calibration_high</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.input_calibration_high" title="Permalink to this definition"></a></dt>
 <dd><p>High accuracy input calibration</p>
 <p>User is prompted to connect 0, 1, 2, …, 9, 10V</p>
-<p>&#64;return  The sample readings for 0 to 10V (inclusive)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The sample readings for 0 to 10V (inclusive)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -202,7 +226,11 @@ this function returns an empty list. Override it if you’d like configuration p
 <span class="sig-name descname"><span class="pre">input_calibration_low10</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.input_calibration_low10" title="Permalink to this definition"></a></dt>
 <dd><p>Low-accuracy, 10V input calibration</p>
 <p>Prompt the user for 0 and 10V inputs only</p>
-<p>&#64;return  The sample readings for 0 and 10V</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The sample readings for 0 and 10V</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -210,7 +238,11 @@ this function returns an empty list. Override it if you’d like configuration p
 <span class="sig-name descname"><span class="pre">input_calibration_low5</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.input_calibration_low5" title="Permalink to this definition"></a></dt>
 <dd><p>Low-accuracy, 5V input calibration</p>
 <p>Prompt the user for 0 and 5V inputs only. The 5V reading is extrapolated to 10V.</p>
-<p>&#64;return  The sample readings for 0 and 10V</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The sample readings for 0 and 10V</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -245,7 +277,11 @@ dict. If no state is found, an empty dictionary will be returned.</p>
 <dt class="sig sig-object py" id="tools.calibrate.Calibrate.read_sample">
 <span class="sig-name descname"><span class="pre">read_sample</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.read_sample" title="Permalink to this definition"></a></dt>
 <dd><p>Read from the raw ain pin and return the average across several readings</p>
-<p>&#64;return  The average across several distinct readings from the pin</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The average across several distinct readings from the pin</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -294,30 +330,50 @@ adding a time since last save check to reduce save frequency.</p>
 <dt class="sig sig-object py" id="tools.calibrate.Calibrate.text_wait">
 <span class="sig-name descname"><span class="pre">text_wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.text_wait" title="Permalink to this definition"></a></dt>
 <dd><p>Display text on the screen and block for the specified duration</p>
-<p>&#64;param text  The text to display
-&#64;param duration  The duration to wait in seconds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – The text to display</p></li>
+<li><p><strong>duration</strong> – The duration to wait in seconds</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="tools.calibrate.Calibrate.wait_for_b1">
 <span class="sig-name descname"><span class="pre">wait_for_b1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.wait_for_b1" title="Permalink to this definition"></a></dt>
 <dd><p>Wait for the user to press B1, returning to the original state when they have</p>
-<p>&#64;param wait_fn  A function to execute while waiting (e.g. refresh the UI)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wait_fn</strong> – A function to execute while waiting (e.g. refresh the UI)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="tools.calibrate.Calibrate.wait_for_b2">
 <span class="sig-name descname"><span class="pre">wait_for_b2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.wait_for_b2" title="Permalink to this definition"></a></dt>
 <dd><p>Wait for the user to press B2, returning to the original state when they have</p>
-<p>&#64;param wait_fn  A function to execute while waiting (e.g. refresh the UI)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wait_fn</strong> – A function to execute while waiting (e.g. refresh the UI)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="tools.calibrate.Calibrate.wait_for_voltage">
 <span class="sig-name descname"><span class="pre">wait_for_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.calibrate.Calibrate.wait_for_voltage" title="Permalink to this definition"></a></dt>
 <dd><p>Wait for the user to connect the desired voltage to ain &amp; press b1</p>
-<p>&#64;param voltage  The voltage to instruct the user to connect. Used for display only</p>
-<p>&#64;return  The average samples read from ain (see &#64;read_sample)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>voltage</strong> – The voltage to instruct the user to connect. Used for display only</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The average samples read from ain (see read_sample)</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

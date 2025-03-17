@@ -142,7 +142,11 @@ options and fires the callback when you choose one</p>
 <dd><p>Draw the current item to the display object</p>
 <p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
 hardware</p>
-<p>&#64;param oled  A Display instance (or compatible class) to render the item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>oled</strong> – A Display instance (or compatible class) to render the item</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -169,7 +173,11 @@ hardware</p>
 <dd><p>Draw the current item to the display object</p>
 <p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
 hardware</p>
-<p>&#64;param oled  A Display instance (or compatible class) to render the item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>oled</strong> – A Display instance (or compatible class) to render the item</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -194,7 +202,11 @@ hardware</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.MenuItem.draw">
 <span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled=&lt;europi_display.DummyDisplay</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem.draw" title="Permalink to this definition"></a></dt>
 <dd><p>Draw the item to the screen</p>
-<p>&#64;param oled   A Display-compatible object we draw to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>oled</strong> – A Display-compatible object we draw to</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -221,15 +233,25 @@ that object’s values as the available selections.</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.autoselect">
 <span class="sig-name descname"><span class="pre">autoselect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.autoselect" title="Permalink to this definition"></a></dt>
 <dd><p>Called by the parent menu when the Knob/CV timer fires, automatically updating the value of this item</p>
-<p>&#64;param percent  A value 0-1 indicating the level of the knob/cv source</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>percent</strong> – A value 0-1 indicating the level of the knob/cv source</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.choose">
 <span class="sig-name descname"><span class="pre">choose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">choice</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.choose" title="Permalink to this definition"></a></dt>
 <dd><p>Set the raw value of this item’s ConfigPoint</p>
-<p>&#64;param choice  The value to assign to the ConfigPoint.</p>
-<p>&#64;exception  ValueError if the given choice is not valid for this setting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>choice</strong> – The value to assign to the ConfigPoint.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if the given choice is not valid for this setting</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -238,14 +260,22 @@ that object’s values as the available selections.</p>
 <dd><p>Draw the current item to the display object</p>
 <p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
 hardware</p>
-<p>&#64;param oled  A Display instance (or compatible class) to render the item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>oled</strong> – A Display instance (or compatible class) to render the item</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.get_option_list">
 <span class="sig-name descname"><span class="pre">get_option_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.get_option_list" title="Permalink to this definition"></a></dt>
 <dd><p>Get the list of options the user can choose from</p>
-<p>&#64;return  A list of choices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of choices</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -262,8 +292,14 @@ thing as .value</p>
 <dd><p>Regenerate this item’s available choices</p>
 <p>This is needed if we externally modify e.g. the maximum/minimum values of the underlying
 config point as a result of one option needing to be within a range determined by another.</p>
-<p>&#64;param choices  The list of new options we want to allow the user to choose from, excluding any autoselections
-&#64;param new_default  A value to assign to this setting if its existing value is out-of-range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>choices</strong> – The list of new options we want to allow the user to choose from, excluding any autoselections</p></li>
+<li><p><strong>new_default</strong> – A value to assign to this setting if its existing value is out-of-range</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -316,7 +352,11 @@ the menu item will be drawn on top of whatever is on the screen right now. (In s
 desired result, but when in doubt, call oled.fill(0) first).</p>
 <p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
 hardware</p>
-<p>&#64;param oled  The display object to draw to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>oled</strong> – The display object to draw to</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -329,7 +369,11 @@ hardware</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.load_defaults">
 <span class="sig-name descname"><span class="pre">load_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.load_defaults" title="Permalink to this definition"></a></dt>
 <dd><p>Load the initial settings from the file</p>
-<p>&#64;param settings_file  The path to a JSON file where the user’s settings are saved</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>settings_file</strong> – The path to a JSON file where the user’s settings are saved</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -355,14 +399,22 @@ hardware</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.register_autoselect_cv">
 <span class="sig-name descname"><span class="pre">register_autoselect_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#experimental.settings_menu.SettingMenuItem" title="experimental.settings_menu.SettingMenuItem"><span class="pre">SettingMenuItem</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.register_autoselect_cv" title="Permalink to this definition"></a></dt>
 <dd><p>Connects a menu item to this menu’s CV input</p>
-<p>&#64;param menu_item  The item that wants to subscribe to the CV input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>menu_item</strong> – The item that wants to subscribe to the CV input</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.register_autoselect_knob">
 <span class="sig-name descname"><span class="pre">register_autoselect_knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#experimental.settings_menu.SettingMenuItem" title="experimental.settings_menu.SettingMenuItem"><span class="pre">SettingMenuItem</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.register_autoselect_knob" title="Permalink to this definition"></a></dt>
 <dd><p>Connects a menu item to this menu’s knob input</p>
-<p>&#64;param menu_item  The item that wants to subscribe to the knob input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>menu_item</strong> – The item that wants to subscribe to the knob input</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -391,14 +443,22 @@ to change the active item</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.unregister_autoselect_cv">
 <span class="sig-name descname"><span class="pre">unregister_autoselect_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#experimental.settings_menu.SettingMenuItem" title="experimental.settings_menu.SettingMenuItem"><span class="pre">SettingMenuItem</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.unregister_autoselect_cv" title="Permalink to this definition"></a></dt>
 <dd><p>Disconnects a menu item to this menu’s CV input</p>
-<p>&#64;param menu_item  The item that wants to unsubscribe from the CV input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>menu_item</strong> – The item that wants to unsubscribe from the CV input</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.unregister_autoselect_knob">
 <span class="sig-name descname"><span class="pre">unregister_autoselect_knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#experimental.settings_menu.SettingMenuItem" title="experimental.settings_menu.SettingMenuItem"><span class="pre">SettingMenuItem</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.unregister_autoselect_knob" title="Permalink to this definition"></a></dt>
 <dd><p>Disconnects a menu item to this menu’s knob input</p>
-<p>&#64;param menu_item  The item that wants to unsubscribe from the knob input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>menu_item</strong> – The item that wants to unsubscribe from the knob input</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">

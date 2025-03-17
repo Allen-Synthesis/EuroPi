@@ -130,8 +130,14 @@ implement the relevant functions.</p>
 <dt class="sig sig-object py" id="experimental.clocks.clock_source.ExternalClockSource.check_valid_datetime">
 <span class="sig-name descname"><span class="pre">check_valid_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.clock_source.ExternalClockSource.check_valid_datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Check if a datetime contains valid values.</p>
-<p>Raises a ValueError if any field is out of range</p>
-<p>&#64;param datetime</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if any field is out of range</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>datetime</strong> – The datetime tuple to validate</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -139,14 +145,22 @@ implement the relevant functions.</p>
 <span class="sig-name descname"><span class="pre">datetime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.clock_source.ExternalClockSource.datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Get the current UTC time as a tuple.</p>
 <p>see: <a class="reference external" href="https://docs.micropython.org/en/latest/library/time.html#time.localtime">https://docs.micropython.org/en/latest/library/time.html#time.localtime</a></p>
-<p>&#64;return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.clock_source.ExternalClockSource.is_leap_year">
 <span class="sig-name descname"><span class="pre">is_leap_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.clock_source.ExternalClockSource.is_leap_year" title="Permalink to this definition"></a></dt>
 <dd><p>Determine if the datetime’s year is a leap year or not.</p>
-<p>&#64;return  True if the datetime is a leap year, otherwise False</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the datetime is a leap year, otherwise False</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -154,7 +168,11 @@ implement the relevant functions.</p>
 <span class="sig-name descname"><span class="pre">month_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.clock_source.ExternalClockSource.month_length" title="Permalink to this definition"></a></dt>
 <dd><p>Get the numer of days in the month.</p>
 <p>This takes leap-years into consideration</p>
-<p>&#64;return  The number of days in the datetime’s month</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of days in the datetime’s month</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -164,14 +182,22 @@ implement the relevant functions.</p>
 <p>If the clock does not support setting (e.g. it’s an NTP source we can only read from)
 your sub-class should implement this method anyway and simply pass.</p>
 <p>see: <a class="reference external" href="https://docs.micropython.org/en/latest/library/time.html#time.localtime">https://docs.micropython.org/en/latest/library/time.html#time.localtime</a></p>
-<p>&#64;param datetime  A tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>datetime</strong> – A tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.clocks.clock_source.ExternalClockSource.year_length">
 <span class="sig-name descname"><span class="pre">year_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.clock_source.ExternalClockSource.year_length" title="Permalink to this definition"></a></dt>
 <dd><p>Determine the number of days in the datetime’s year.</p>
-<p>&#64;return  The number of days in the year, taking leap years into account</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of days in the year, taking leap years into account</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
