@@ -273,9 +273,7 @@ class OpenSoundServer:
         Transmit a packet
 
         @param address  The OSC address to send to
-        @param args  The values to encode in the packet. Allowed types are
-                     int, float, bool, str, and bytearray.
-                     Bools are converted to 0/1 integers
+        @param args  The values to encode in the packet. Allowed types are int, float, bool, str, and bytearray. Bools are converted to 0/1 integers
         """
 
         def pad_length(arr):
