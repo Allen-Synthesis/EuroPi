@@ -36,12 +36,13 @@ the clock.  To do so:
 
 1. Connect the clock module to your EuroPi
 2. Connect your EuroPi to a computer via the USB port
-3. Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to
-   experimental_config, restart the Raspberry Pi Pico before proceeding.
+3. Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to experimental_config, restart the Raspberry Pi Pico before proceeding.
 4. In Thonny's Python terminal, run the following code:
 
-    >>> from experimental.rtc import clock
-    >>> clock.source.set_datetime((2025, 6, 14, 22, 59, 0, 6))
+```
+>>> from experimental.rtc import clock
+>>> clock.source.set_datetime((2025, 6, 14, 22, 59, 0, 6, 0))
+```
 
 This will set the clock to 14 June 2025, 22:59:00, and set the weekday to Saturday (6).
 The tuple is of the form (Year, Month, Day, Hour, Minute, Second, Weekday, Yearday). It is recommended

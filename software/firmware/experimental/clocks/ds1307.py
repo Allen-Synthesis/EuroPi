@@ -17,10 +17,8 @@ Interface class for the DS1307 Realtime Clock
 This class is designed to work with a DS1307 chip mounted on an I2C carrier board
 that can be connected to EuroPi's external I2C interface. The user is required to
 1) provide their own RTC module
-2) create/source an appropriate adapter to connect the GND, VCC, SDA, and SCL pins on EuroPi
-   to the RTC module
-3) Mount the RTC module securely in such a way that it won't come loose nor accidentally short out
-   any other components.
+2) create/source an appropriate adapter to connect the GND, VCC, SDA, and SCL pins on EuroPi to the RTC module
+3) Mount the RTC module securely in such a way that it won't come loose nor accidentally short out any other components.
 
 Based on work by Mike Causer released under the MIT license (c) 2018:
 https://github.com/mcauser/micropython-tinyrtc-i2c/blob/master/ds1307.py
