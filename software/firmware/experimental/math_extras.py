@@ -151,14 +151,17 @@ def solve_linear_system(m):
     Use gaussian elimination to solve a series of linear equations
 
     The provided matrix is the augmented matrix representation:
-    [
-        [k11 k12 k12 ... k1n  a1]
-        [k21 k22 k22 ... k2n  a2]
-        .
-        .
-        .
-        [kmn kmn kmn ... kmn  am]
-    ]
+
+    .. code-block::
+
+        [
+            [k11 k12 k12 ... k1n  a1]
+            [k21 k22 k22 ... k2n  a2]
+            .
+            .
+            .
+            [kmn kmn kmn ... kmn  am]
+        ]
 
     @param m  The augmented matrix representation of the series of equations. This array is mangled in the process
               of calculation

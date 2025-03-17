@@ -178,17 +178,17 @@ class Intervals:
     for more information.
 
     The abridged summary:
-        - single case-sensitive letter for the interval type
-        - a number from 1-8 indicating the size of the interval
-        - P = perfect
-        - M = major
-        - m = minor
-        - d = diminished
-        - A = augmented
-        - three exceptions:
-            - S = semitone (equivalent to m2/A1)
-            - T = Tone (equivalent to M2/d3)
-            - TT = Tritone (equivalent to d5/A4)
+    - single case-sensitive letter for the interval type
+    - a number from 1-8 indicating the size of the interval
+    - P = perfect
+    - M = major
+    - m = minor
+    - d = diminished
+    - A = augmented
+    - three exceptions:
+        - S = semitone (equivalent to m2/A1)
+        - T = Tone (equivalent to M2/d3)
+        - TT = Tritone (equivalent to d5/A4)
     """
 
     # fmt: off
