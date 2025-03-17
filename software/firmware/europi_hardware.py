@@ -388,8 +388,6 @@ class DigitalInput(DigitalReader):
     Here is another example how you can write digital input handlers to react
     to a clock source and match its trigger duration.::
 
-    .. code-block:: python
-
         @din.handler
         def gate_on():
             # Trigger outputs with a probability set by knobs.

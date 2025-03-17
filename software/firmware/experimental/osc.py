@@ -53,18 +53,30 @@ class OpenSoundPacket:
         Read the raw packet and create this container
 
         The raw data consists of the following fields:
-        1. leading '/' character
-        2. slash-separated address (e.g. foo/bar)
-        3. null terminator (0x00 byte)
-        4. ',' character
-        5. type arguments
-            a. "f" character for 32-bit float
-            b. "i" character for 32-bit signed integer
-            c. "s" character for string (null-terminated)
-            d. "b" character for blob (32-bit int -> n, followed by n bytes of data)
-            e. assorted non-standard types
-        6. null terminator(s)
-        7. payload bytes (lengths are type dependent)
+
+        #. leading '/' character
+
+        #. slash-separated address (e.g. foo/bar)
+
+        #. null terminator (0x00 byte)
+
+        #. ',' character
+
+        #. type arguments
+
+            #. "f" character for 32-bit float
+
+            #. "i" character for 32-bit signed integer
+
+            #. "s" character for string (null-terminated)
+
+            #. "b" character for blob (32-bit int -> n, followed by n bytes of data)
+
+            #. assorted non-standard types
+
+        #. null terminator(s)
+
+        #. payload bytes (lengths are type dependent)
 
         Every argument starts on an 4-aligned byte, so there are
         filler nulls to pad strings out to a multiple of 32 bits
