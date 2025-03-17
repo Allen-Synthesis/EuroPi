@@ -123,6 +123,11 @@ class AnalogueReader:
 
     This class in inherited by classes like Knob and AnalogueInput and does
     not need to be used by user scripts.
+
+    :param pin:  The pin ID the ADC is connected to
+    :param samples:  The number of ADC samples to read. More samples results in a more
+        accurate reading, but may slow down the program
+    :param deadzone:  An optional deadzone to restrict noise at the high and low ends
     """
 
     def __init__(self, pin, samples=DEFAULT_SAMPLES, deadzone=0.0):
@@ -197,6 +202,11 @@ class AnalogueInput(AnalogueReader):
     The percent function takes an optional parameter ``deadzone``. However this
     parameter is ignored and just present to be compatible with the percent
     function of the AnalogueReader and Knob classes
+
+    :param pin:  The pin ID the ADC is connected to
+    :param min_voltage:  The minimum allowed input voltage
+    :param max_voltage:  The maximum allowed input voltage
+    :param deadzone:  An optional deadzone to restrict noise at the high and low ends
     """
 
     def __init__(self, pin, min_voltage=MIN_INPUT_VOLTAGE, max_voltage=MAX_INPUT_VOLTAGE):
@@ -280,6 +290,9 @@ class Knob(AnalogueReader):
     any read_position value above 4096 (2^12) will not actually be any finer
     resolution, but will instead just go up in steps. For example using 8192
     would only return values which go up in steps of 2.
+
+    :param pin:  The pin ID the ADC is connected to
+    :param deadzone:  An optional deadzone to restrict noise at the high and low ends
     """
 
     def __init__(self, pin, deadzone=0.01):
@@ -301,6 +314,8 @@ class DigitalReader:
     This class in inherited by classes like Button and DigitalInput and does
     not need to be used by user scripts.
 
+    :param pin:  The pin ID we read from
+    :param debounce_delay:  The time in ms that we debounce the input
     """
 
     def __init__(self, pin, debounce_delay=500):
@@ -404,6 +419,9 @@ class DigitalInput(DigitalReader):
     Ideally handlers should be used to change state and allow your main loop
     to change behavior based on the altered state. See `tips <https://docs.micropython.org/en/latest/reference/isr_rules.html#tips-and-recommended-practices>`_
     from the MicroPython documentation for more details.
+
+    :param pin:  The pin ID we read from
+    :param debounce_delay:  The time in ms that we debounce the input
     """
 
     def __init__(self, pin, debounce_delay=0):
@@ -438,6 +456,8 @@ class Button(DigitalReader):
     pressed. This is also useful when checking if the digital input has been
     triggered with the ``DigitalInput.last_triggered()`` method.
 
+    :param pin:  The pin ID we read from
+    :param debounce_delay:  The time in ms that we debounce the input
     """
 
     def __init__(self, pin, debounce_delay=200):
@@ -460,6 +480,12 @@ class Output:
     So that there is no chance of not having the full range, the chosen
     resistor values actually give you a range of about 0-10.5V, which is why
     calibration is important if you want to be able to output precise voltages.
+
+    :param pin:  The GPIO pin we use as a PWM output
+    :param min_voltage: The minimum allowed output voltage
+    :param max_voltage: The maximum allowed output voltage
+    :param gate_voltage:  The voltage we use for gate signals (see ``.on()``, ``.off()``)
+    :param calibration_values:  Calibration data for this output
     """
 
     def __init__(
