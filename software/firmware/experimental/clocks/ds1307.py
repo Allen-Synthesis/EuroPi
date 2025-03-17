@@ -34,8 +34,12 @@ But at present this class is provided as-is, based wholly on Mike Causer's work 
 changes to support EuroPi's RTC interface.
 """
 
-from micropython import const
 from experimental.clocks.clock_source import ExternalClockSource
+try:
+    from micropython import const
+except ImportError:
+    def const(x):
+        return x
 
 # fmt: off
 DATETIME_REG = const(0)    # 0x00-0x06
