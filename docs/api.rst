@@ -17,7 +17,6 @@ API
    experimental.a_to_d
    experimental.bisect
    experimental.bitarray
-   experimental.custom_font
    experimental.euclid
    experimental.http_server
    experimental.knobs
