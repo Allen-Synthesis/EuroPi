@@ -29,21 +29,28 @@ class DigitalInputHelper:
     functions
 
     Calling `.update()` will populate the following fields of the DigitalInputHelper:
-    - b1_last_pressed: the ms tick time that b1 was last pressed
-    - b1_last_released: the ms tick time that b1 was last released
-    - b1_pressed: True if b1 is currently pressed down, otherwise False
-    - b1_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
-    - b1_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
-    - b2_last_pressed: the ms tick time that b2 was last pressed
-    - b2_last_released: the ms tick time that b2 was last released
-    - b2_pressed: True if b2 is currently pressed down, otherwise False
-    - b2_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
-    - b2_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
-    - din_last_rise: the ms tick time that din last received a rising signal
-    - din_last_fall: the ms tick time that din last received a falling signal
-    - din_high: True if din is currently high, otherwise False
-    - din_rising: True if din transitioned to the high state during the last update() call, otherwise False
-    - din_falling: True if b1 transitioned to the low state during the last update() call, otherwise False
+    * b1_last_pressed: the ms tick time that b1 was last pressed
+    * b1_last_released: the ms tick time that b1 was last released
+    * b1_pressed: True if b1 is currently pressed down, otherwise False
+    * b1_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
+    * b1_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
+    * b2_last_pressed: the ms tick time that b2 was last pressed
+    * b2_last_released: the ms tick time that b2 was last released
+    * b2_pressed: True if b2 is currently pressed down, otherwise False
+    * b2_rising: True if b1 transitioned to the pressed state during the last update() call, otherwise False
+    * b2_falling: True if b1 transitioned to the released state during the last update() call, otherwise False
+    * din_last_rise: the ms tick time that din last received a rising signal
+    * din_last_fall: the ms tick time that din last received a falling signal
+    * din_high: True if din is currently high, otherwise False
+    * din_rising: True if din transitioned to the high state during the last update() call, otherwise False
+    * din_falling: True if b1 transitioned to the low state during the last update() call, otherwise False
+
+    :param on_din_rising:   Callback function to invoke when din detects a rising edge
+    :param on_din_falling:  Callback function to invoke when din detects a falling edge
+    :param on_b1_rising:    Callback function to invoke when b1 detects a rising edge
+    :param on_b1_falling:   Callback function to invoke when b1 detects a falling edge
+    :param on_b2_rising:    Callback function to invoke when b2 detects a rising edge
+    :param on_b2_falling:   Callback function to invoke when b2 detects a falling edge
     """
 
     def __init__(
@@ -55,15 +62,6 @@ class DigitalInputHelper:
         on_b2_rising=lambda: None,
         on_b2_falling=lambda: None,
     ):
-        """Constructor
-
-        @param on_din_rising   Callback function to invoke when din detects a rising edge
-        @param on_din_falling  Callback function to invoke when din detects a falling edge
-        @param on_b1_rising    Callback function to invoke when b1 detects a rising edge
-        @param on_b1_falling   Callback function to invoke when b1 detects a falling edge
-        @param on_b2_rising    Callback function to invoke when b2 detects a rising edge
-        @param on_b2_falling   Callback function to invoke when b2 detects a falling edge
-        """
         # Connect the callback functions
         self.on_din_rising = on_din_rising
         self.on_din_falling = on_din_falling

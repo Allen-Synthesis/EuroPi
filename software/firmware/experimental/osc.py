@@ -33,7 +33,7 @@ def align_next_word(n):
     We assume 4-byte/32-bit words. If we're already word-aligned,
     we increment to the next one
 
-    @param n  The current index in a byte array
+    :param n:  The current index in a byte array
     """
     return n + (4 - (n % 4)) % 4
 
@@ -44,8 +44,8 @@ class OpenSoundPacket:
 
     Contains the address of the message and the data
 
-    @property address  The address string of the packet
-    @property values  The values included in the packet
+    :property address:  The address string of the packet
+    :property values:  The values included in the packet
     """
 
     def __init__(self, data: bytes):
@@ -53,23 +53,23 @@ class OpenSoundPacket:
         Read the raw packet and create this container
 
         The raw data consists of the following fields:
-            1. leading '/' character
-            2. slash-separated address (e.g. foo/bar)
-            3. null terminator (0x00 byte)
-            4. ',' character
-            5. type arguments
-                a. "f" character for 32-bit float
-                b. "i" character for 32-bit signed integer
-                c. "s" character for string (null-terminated)
-                d. "b" character for blob (32-bit int -> n, followed by n bytes of data)
-                e. assorted non-standard types
-            6. null terminator(s)
-            7. payload bytes (lengths are type dependent)
+        1. leading '/' character
+        2. slash-separated address (e.g. foo/bar)
+        3. null terminator (0x00 byte)
+        4. ',' character
+        5. type arguments
+            a. "f" character for 32-bit float
+            b. "i" character for 32-bit signed integer
+            c. "s" character for string (null-terminated)
+            d. "b" character for blob (32-bit int -> n, followed by n bytes of data)
+            e. assorted non-standard types
+        6. null terminator(s)
+        7. payload bytes (lengths are type dependent)
 
         Every argument starts on an 4-aligned byte, so there are
         filler nulls to pad strings out to a multiple of 32 bits
 
-        @param data  The raw byte data read from the UDP socket
+        :param data:  The raw byte data read from the UDP socket
         """
         address_end = data.index(b"\0", 1)
         self._address = data[0:address_end].decode("utf-8")
@@ -206,7 +206,9 @@ class OpenSoundServer:
 
         TouchOSC uses port 9000 by default, so use that here for convenience
 
-        @param port  The UDP port we accept messages on.
+        :param recv_port:  The UDP port we accept messages on.
+        :param send_port:  The UDP port we send outgoing messages on.
+        :param send_addr:  The IP address of the host we send outgoing messages to
         """
         log_info(f"Listening for OSC packets on port {recv_port}", "osc")
         addr = socket.getaddrinfo("0.0.0.0", recv_port)[0][-1]
@@ -239,7 +241,7 @@ class OpenSoundServer:
         - connection: socket  A socket connection to the client
         - data: str  The request the client sent
 
-        @param func  The function to handle the request.
+        :param func:  The function to handle the request.
         """
 
         def wrapper(*args, **kwargs):
@@ -272,8 +274,8 @@ class OpenSoundServer:
         """
         Transmit a packet
 
-        @param address  The OSC address to send to
-        @param args  The values to encode in the packet. Allowed types are int, float, bool, str, and bytearray. Bools are converted to 0/1 integers
+        :param address:  The OSC address to send to
+        :param args:  The values to encode in the packet. Allowed types are int, float, bool, str, and bytearray. Bools are converted to 0/1 integers
         """
 
         def pad_length(arr):

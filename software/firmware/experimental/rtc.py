@@ -99,8 +99,8 @@ class Timezone:
         """
         Create a time zone we can add to a datetime to get local time
 
-        @param hours  The number of hours ahead/behind we need to adjust [-24 to +24]
-        @param minutes  The number of minutes ahead/behind we need to adjust [-59 to +59]
+        :param hours:  The number of hours ahead/behind we need to adjust [-24 to +24]
+        :param minutes:  The number of minutes ahead/behind we need to adjust [-59 to +59]
         """
         if (hours < 0 and minutes > 0) or (hours > 0 and minutes < 0):
             raise ValueError("Timezone offset must be in a consistent direction")
@@ -130,14 +130,14 @@ class DateTime:
         """
         Create a DateTime representing a specific moment
 
-        @param year  The current year (e.g. 2025)
-        @param month  The current month (e.g. Month.JANUARY)
-        @param day  The current day within the month (e.g. 17)
-        @param hour  The current hour on a 24-hour clock (0-23)
-        @param minute  The current minute within the hour (0-59)
-        @param second  The current second within the minute (0-59, optional)
-        @param weekday  The current day of the week (e.g. Weekday.MONDAY, optional)
-        @param yearday  The current day of the year (1-365, 1-366 if leap year, optional)
+        :param year:  The current year (e.g. 2025)
+        :param month:  The current month (e.g. Month.JANUARY)
+        :param day:  The current day within the month (e.g. 17)
+        :param hour:  The current hour on a 24-hour clock (0-23)
+        :param minute:  The current minute within the hour (0-59)
+        :param second:  The current second within the minute (0-59, optional)
+        :param weekday:  The current day of the week (e.g. Weekday.MONDAY, optional)
+        :param yearday:  The current day of the year (1-365, 1-366 if leap year, optional)
         """
         self.year = year
         self.month = month
@@ -165,7 +165,7 @@ class DateTime:
         """
         Add a timezone offset to the current time, returning the result
 
-        @param tz  The timezone we're adding to this Datetime
+        :param tz:  The timezone we're adding to this Datetime
         """
         t = DateTime(
             self.year, self.month, self.day, self.hour, self.minute, self.second, self.weekday
@@ -349,7 +349,7 @@ class RealtimeClock:
         """
         Create a new realtime clock.
 
-        @param source  An ExternalClockSource implementation we read the time from
+        :param source:  An ExternalClockSource implementation we read the time from
         """
         self.source = source
 
@@ -357,7 +357,7 @@ class RealtimeClock:
         """
         Get the current UTC time.
 
-        @return A DateTime object representing the current UTC time
+        :return: A DateTime object representing the current UTC time
         """
 
         # get the raw tuple from the clock, append Nones so we have all 7 fields
@@ -384,7 +384,7 @@ class RealtimeClock:
 
         See experimental_config for instructions on how to configure the local timezone
 
-        @return a DateTime object representing the current local time
+        :return: a DateTime object representing the current local time
         """
         return self.utcnow() + local_timezone
 

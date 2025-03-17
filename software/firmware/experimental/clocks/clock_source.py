@@ -73,7 +73,7 @@ class ExternalClockSource:
 
         see: https://docs.micropython.org/en/latest/library/time.html#time.localtime
 
-        @return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
+        :return: a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         raise NotImplementedError()
 
@@ -86,7 +86,7 @@ class ExternalClockSource:
 
         see: https://docs.micropython.org/en/latest/library/time.html#time.localtime
 
-        @param datetime  A tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
+        :param datetime:  A tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         raise NotImplementedError()
 
@@ -94,7 +94,7 @@ class ExternalClockSource:
         """
         Determine if the datetime's year is a leap year or not.
 
-        @return  True if the datetime is a leap year, otherwise False
+        :return:  True if the datetime is a leap year, otherwise False
         """
         # a year is a leap year if it is divisible by 4
         # but NOT a multple of 100, unless it's also a multiple of 400
@@ -105,7 +105,7 @@ class ExternalClockSource:
         """
         Determine the number of days in the datetime's year.
 
-        @return  The number of days in the year, taking leap years into account
+        :return:  The number of days in the year, taking leap years into account
         """
         if self.is_leap_year(datetime):
             return 366
@@ -117,7 +117,7 @@ class ExternalClockSource:
 
         This takes leap-years into consideration
 
-        @return  The number of days in the datetime's month
+        :return:  The number of days in the datetime's month
         """
         if datetime[self.MONTH] == 2 and self.is_leap_year(datetime):
             return 29
@@ -127,9 +127,9 @@ class ExternalClockSource:
         """
         Check if a datetime contains valid values.
 
-        Raises a ValueError if any field is out of range
+        :raises ValueError: if any field is out of range
 
-        @param datetime
+        :param datetime:  The datetime tuple to validate
         """
         # fmt: off
         n_days = self.month_length(datetime)

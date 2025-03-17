@@ -66,9 +66,9 @@ class MenuItem:
         """
         Create a new abstract menu item
 
-        @param parent  A MenuItem representing this item's parent, if this item is the bottom-level of a multi-level menu
-        @param children  A list of MenuItems representing this item's children, if this is the top-level of a multi-level menu
-        @param is_visible  Is this menu item visible by default?
+        :param parent:  A MenuItem representing this item's parent, if this item is the bottom-level of a multi-level menu
+        :param children:  A list of MenuItems representing this item's children, if this is the top-level of a multi-level menu
+        :param is_visible:  Is this menu item visible by default?
         """
         self.menu = None
         self.parent = parent
@@ -89,7 +89,7 @@ class MenuItem:
         """
         Draw the item to the screen
 
-        @param oled   A Display-compatible object we draw to
+        :param oled:   A Display-compatible object we draw to
         """
         self.ui_dirty = False
 
@@ -138,15 +138,15 @@ class ChoiceMenuItem(MenuItem):
         """
         Create a new choice menu item
 
-        @param parent  If the menu has multiple levels, what is this item's parent control?
-        @param children  If this menu has multiple levels, whar are this item's child controls?
-        @param title  The title to display at the top of the display when this control is active
-        @param prefix  A prefix to display before the title when this control is active
-        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing
+        :param parent:  If the menu has multiple levels, what is this item's parent control?
+        :param children:  If this menu has multiple levels, whar are this item's child controls?
+        :param title:  The title to display at the top of the display when this control is active
+        :param prefix:  A prefix to display before the title when this control is active
+        :param graphics:  A dict of values mapped to FrameBuffer or bytearray objects, representing
             12x12 MONO_HLSB graphics to display along with the keyed values
-        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
+        :param labels:  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
                        options
-        @param is_visible  Is this menu item visible by default?
+        :param is_visible:  Is this menu item visible by default?
         """
         super().__init__(
             children=children,
@@ -172,7 +172,7 @@ class ChoiceMenuItem(MenuItem):
         You MUST call the display's .show() function after calling this in order to send the buffer to the display
         hardware
 
-        @param oled  A Display instance (or compatible class) to render the item
+        :param oled:  A Display instance (or compatible class) to render the item
         """
         super().draw(oled)
 
@@ -279,24 +279,24 @@ class SettingMenuItem(ChoiceMenuItem):
 
         If the item has a callback function defined, it will be invoked once during initialization
 
-        @param config_point  The configration option this menu item controls
-        @param parent  If the menu has multiple levels, what is this item's parent control?
-        @param children  If this menu has multiple levels, whar are this item's child controls?
-        @param title  The title to display at the top of the display when this control is active
-        @param prefix  A prefix to display before the title when this control is active
-        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing
+        :param config_point:  The configration option this menu item controls
+        :param parent:  If the menu has multiple levels, what is this item's parent control?
+        :param children:  If this menu has multiple levels, whar are this item's child controls?
+        :param title:  The title to display at the top of the display when this control is active
+        :param prefix:  A prefix to display before the title when this control is active
+        :param graphics:  A dict of values mapped to FrameBuffer or bytearray objects, representing
             12x12 MONO_HLSB graphics to display along with the keyed values
-        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint options
-        @param callback  A function to invoke when this item's value changes. Must accept
+        :param labels:  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint options
+        :param callback:  A function to invoke when this item's value changes. Must accept
             (new_value, old_value, config_point, arg=None) as parameters
-        @param callback_arg  An optional additional argument to pass to the callback function
-        @param float_resolution  The resolution of floating-point config points
+        :param callback_arg:  An optional additional argument to pass to the callback function
+        :param float_resolution:  The resolution of floating-point config points
             (ignored if config_point is not a FloatConfigPoint)
-        @param value_map  An optional dict to map the underlying simple ConfigPoint values
+        :param value_map:  An optional dict to map the underlying simple ConfigPoint values
             to more complex objects e.g. map the string "CMaj" to a Quantizer object
-        @param is_visible  Is this menu item visible by default?
-        @param autoselect_knob  If True, this item gets "Knob" as an additional choice, allowing ad-hoc selection via the knob
-        @param autoselect_cv  If True, this item gets "AIN" as an additional choice, allowing ad-hoc selection via the CV input
+        :param is_visible:  Is this menu item visible by default?
+        :param autoselect_knob:  If True, this item gets "Knob" as an additional choice, allowing ad-hoc selection via the knob
+        :param autoselect_cv:  If True, this item gets "AIN" as an additional choice, allowing ad-hoc selection via the CV input
         """
         if title is None:
             title = config_point.name
@@ -375,8 +375,8 @@ class SettingMenuItem(ChoiceMenuItem):
         This is needed if we externally modify e.g. the maximum/minimum values of the underlying
         config point as a result of one option needing to be within a range determined by another.
 
-        @param choices  The list of new options we want to allow the user to choose from, excluding any autoselections
-        @param new_default  A value to assign to this setting if its existing value is out-of-range
+        :param choices:  The list of new options we want to allow the user to choose from, excluding any autoselections
+        :param new_default:  A value to assign to this setting if its existing value is out-of-range
         """
         if choices is None:
             choices = self.get_option_list()
@@ -417,7 +417,7 @@ class SettingMenuItem(ChoiceMenuItem):
         """
         Get the list of options the user can choose from
 
-        @return  A list of choices
+        :return:  A list of choices
         """
         t = type(self.src_config)
         if t is FloatConfigPoint:
@@ -452,7 +452,7 @@ class SettingMenuItem(ChoiceMenuItem):
         """
         Called by the parent menu when the Knob/CV timer fires, automatically updating the value of this item
 
-        @param percent  A value 0-1 indicating the level of the knob/cv source
+        :param percent:  A value 0-1 indicating the level of the knob/cv source
         """
         last_choice = len(self.config_point.choices) - self.NUM_AUTOINPUT_CHOICES
         index = int(
@@ -472,9 +472,9 @@ class SettingMenuItem(ChoiceMenuItem):
         """
         Set the raw value of this item's ConfigPoint
 
-        @param choice  The value to assign to the ConfigPoint.
+        :param choice:  The value to assign to the ConfigPoint.
 
-        @exception  ValueError if the given choice is not valid for this setting
+        :raises ValueError: if the given choice is not valid for this setting
         """
         # choose whatever string we're given
         if type(self.src_config) is StringConfigPoint:
@@ -582,17 +582,17 @@ class ActionMenuItem(ChoiceMenuItem):
 
         If the item has a callback function defined, it will be invoked once during initialization
 
-        @param actions  The list of choices the user can pick from. e.g. ["Cancel", "Ok"]
-        @param callback  The function to call when the user invokes the action. The selected item from choices is passed as the first parameter
-        @param callback_arg  The second parameter passed to the callback
-        @param parent  If the menu has multiple levels, what is this item's parent control?
-        @param children  If this menu has multiple levels, whar are this item's child controls?
-        @param title  The title to display at the top of the display when this control is active
-        @param prefix  A prefix to display before the title when this control is active
-        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing
+        :param actions:  The list of choices the user can pick from. e.g. ["Cancel", "Ok"]
+        :param callback:  The function to call when the user invokes the action. The selected item from choices is passed as the first parameter
+        :param callback_arg:  The second parameter passed to the callback
+        :param parent:  If the menu has multiple levels, what is this item's parent control?
+        :param children:  If this menu has multiple levels, whar are this item's child controls?
+        :param title:  The title to display at the top of the display when this control is active
+        :param prefix:  A prefix to display before the title when this control is active
+        :param graphics:  A dict of values mapped to FrameBuffer or bytearray objects, representing
             12x12 MONO_HLSB graphics to display along with the keyed values
-        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint options
-        @param is_visible  Is this menu item visible by default?
+        :param labels:  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint options
+        :param is_visible:  Is this menu item visible by default?
         """
         super().__init__(
             parent=parent,
@@ -657,14 +657,14 @@ class SettingsMenu:
         to avoid any lengthy operations inside these callbacks, as they may prevent other interrupts from being
         handled properly.
 
-        @param menu_items  A list of MenuItem objects representing the top-level of the menu
-        @param navigation_button  The button the user presses to interact with the menu
-        @param navigation_knob  The knob the user turns to scroll through the menu. This may be an
+        :param menu_items:  A list of MenuItem objects representing the top-level of the menu
+        :param navigation_button:  The button the user presses to interact with the menu
+        :param navigation_knob:  The knob the user turns to scroll through the menu. This may be an
             experimental.knobs.KnobBank with 3 menu levels called "main_menu", "submenu" and "choice", or a raw knob like europi.k2
-        @param short_press_cb  An optional callback function to invoke when the user interacts with a short-press of the button
-        @param long_press_cb  An optional callback function to invoke when the user interacts with a long-press of the button
-        @param autoselect_knob  A knob that the user can turn to select items without needing to menu-dive
-        @param autoselect_cv  An analogue input the user can use to select items with CV
+        :param short_press_cb:  An optional callback function to invoke when the user interacts with a short-press of the button
+        :param long_press_cb:  An optional callback function to invoke when the user interacts with a long-press of the button
+        :param autoselect_knob:  A knob that the user can turn to select items without needing to menu-dive
+        :param autoselect_cv:  An analogue input the user can use to select items with CV
         """
         self._knob = navigation_knob
         self.button = navigation_button
@@ -732,7 +732,7 @@ class SettingsMenu:
         """
         Load the initial settings from the file
 
-        @param settings_file  The path to a JSON file where the user's settings are saved
+        :param settings_file:  The path to a JSON file where the user's settings are saved
         """
         failed_key_counts = {}
 
@@ -846,7 +846,7 @@ class SettingsMenu:
         You MUST call the display's .show() function after calling this in order to send the buffer to the display
         hardware
 
-        @param oled  The display object to draw to
+        :param oled:  The display object to draw to
         """
         if not self.active_item.is_editable:
             self.active_item = self.knob.choice(self.visible_items)
@@ -857,7 +857,7 @@ class SettingsMenu:
         """
         Connects a menu item to this menu's CV input
 
-        @param menu_item  The item that wants to subscribe to the CV input
+        :param menu_item:  The item that wants to subscribe to the CV input
         """
         if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
             self.autoselect_timer.init(freq=10, mode=Timer.PERIODIC, callback=self.do_autoselect)
@@ -867,7 +867,7 @@ class SettingsMenu:
         """
         Connects a menu item to this menu's knob input
 
-        @param menu_item  The item that wants to subscribe to the knob input
+        :param menu_item:  The item that wants to subscribe to the knob input
         """
         if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
             self.autoselect_timer.init(freq=10, mode=Timer.PERIODIC, callback=self.do_autoselect)
@@ -877,7 +877,7 @@ class SettingsMenu:
         """
         Disconnects a menu item to this menu's CV input
 
-        @param menu_item  The item that wants to unsubscribe from the CV input
+        :param menu_item:  The item that wants to unsubscribe from the CV input
         """
         self.autoselect_cv_items.remove(menu_item)
         if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:
@@ -887,7 +887,7 @@ class SettingsMenu:
         """
         Disconnects a menu item to this menu's knob input
 
-        @param menu_item  The item that wants to unsubscribe from the knob input
+        :param menu_item:  The item that wants to unsubscribe from the knob input
         """
         self.autoselect_knob_items.remove(menu_item)
         if len(self.autoselect_cv_items) == 0 and len(self.autoselect_knob_items) == 0:

@@ -68,8 +68,8 @@ class BootloaderMenu(EuroPiScript):
     def __init__(self, scripts):
         """Create the bootloader menu
 
-        @param scripts  Dictionary where the keys are the display names of the classes to include in the menu and the
-                        values are the fully-qualified names of the EuroPiScript classes that we launch
+        :param scripts:  Dictionary where the keys are the display names of the classes to include in the menu and the
+            values are the fully-qualified names of the EuroPiScript classes that we launch
         """
         self.scripts = scripts
         self.run_request = None
@@ -99,9 +99,9 @@ class BootloaderMenu(EuroPiScript):
     def show_error(cls, title, message, duration=1):
         """Show a brief error message on-screen saying we can't launch the requested script
 
-        @param title    The title of the error
-        @param message  The body of the error message
-        @param duration The number of seconds the message should show. If negative the message is shown forever
+        :param title:    The title of the error
+        :param message:  The body of the error message
+        :param duration: The number of seconds the message should show. If negative the message is shown forever
         """
         oled.centre_text(f"--{title}--\n{message}")
 
@@ -127,7 +127,7 @@ class BootloaderMenu(EuroPiScript):
 
         If the class is not a valid EuroPiScript an error message is shown and selection continues
 
-        @return The type corresponding to self.run_request as set by the self.launch callback
+        :return: The type corresponding to self.run_request as set by the self.launch callback
         """
         self.menu = Menu(
             items=list(sorted(self.scripts.keys())),

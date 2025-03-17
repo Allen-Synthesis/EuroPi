@@ -21,14 +21,14 @@ easier bit-level access.
 
 
 def make_bit_array(length):
-    """Create a bit array that contains at least @length bits
+    """Create a bit array that contains at least length bits
 
     The resulting byte array will have a length rounded up to the
-    next byte if @length is not divisible by 8
+    next byte if length is not divisible by 8
 
-    @param length  The number of bits in the array
+    :param length:  The number of bits in the array
 
-    @return A bytearray containing at least @length bits
+    :return: A bytearray containing at least @length bits
     """
     # Use bitwise operations instead of integer division and modulo operations to keep things fast
     if length & 0x07:
@@ -44,10 +44,10 @@ def get_bit(arr, index):
     Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
     the first bit of `[0]`: `[ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]`
 
-    @param arr    The bytearray to operate on
-    @param index  The bit index to retrieve
+    :param arr:    The bytearray to operate on
+    :param index:  The bit index to retrieve
 
-    @return 0 or 1, depending on the state at position @index
+    :return: 0 or 1, depending on the state at position index
     """
     # Use bitwise operations instead of integer division and modulo operations to keep things fast
     byte = arr[index >> 3]
@@ -62,9 +62,9 @@ def set_bit(arr, index, value):
     Bytes are stored most significant bit first, so the 8th bit of [1] comes immediately after
     the first bit of `[0]`: `[ B0b7 B0b6 B0b5 B0b4 B0b3 B0b2 B0b1 B0b0 B1b7 B1b6 ... ]`
 
-    @param arr    The bytearray to operate on
-    @param index  The bit position within the array
-    @param value  A truthy value indicating whether the bit should be set to 1 or 0
+    :param arr:    The bytearray to operate on
+    :param index:  The bit position within the array
+    :param value:  A truthy value indicating whether the bit should be set to 1 or 0
     """
     # Use bitwise operations instead of integer division and modulo operations to keep things fast
     byte = arr[index >> 3]
@@ -79,8 +79,8 @@ def set_bit(arr, index, value):
 def set_all_bits(arr, value=0):
     """Set all bits in the array to the same value
 
-    @param arr    The bytearray to reset
-    @param value  A truthy value indicating whether all bits should be set to 0 or 1
+    :param arr:    The bytearray to reset
+    :param value:  A truthy value indicating whether all bits should be set to 0 or 1
     """
     for i in range(len(arr)):
         if value:

@@ -63,7 +63,7 @@ class Display(SSD1306_I2C):
     def rotate(self, rotate):
         """Flip the screen from its default orientation
 
-        @param rotate  True or False, indicating whether we want to flip the screen from its default orientation
+        :param rotate:  True or False, indicating whether we want to flip the screen from its default orientation
         """
         # From a hardware perspective, the default screen orientation of the display _is_ rotated
         # But logically we treat this as right-way-up.
@@ -77,9 +77,9 @@ class Display(SSD1306_I2C):
     def centre_text(self, text, clear_first=True, auto_show=True):
         """Display one or more lines of text centred both horizontally and vertically.
 
-        @param text  The text to display
-        @param clear_first  If true, the screen buffer is cleared before rendering the text
-        @param auto_show  If true, oled.show() is called after rendering the text. If false, you must call oled.show() yourself
+        :param text:  The text to display
+        :param clear_first:  If true, the screen buffer is cleared before rendering the text
+        :param auto_show:  If true, oled.show() is called after rendering the text. If false, you must call oled.show() yourself
         """
         if clear_first:
             self.fill(0)

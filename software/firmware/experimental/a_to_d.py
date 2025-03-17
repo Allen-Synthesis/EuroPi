@@ -30,12 +30,11 @@ class AnalogReaderDigitalWrapper:
     ):
         """Constructor
 
-        @param ain  The AnalogReader we're wrapping
-        @param debounce  The number of consecutive high/low signals needed to flip the digital state
-        @param high_low_cutoff  The threshold at which the analog signal is considered high
-
-        @param cb_rising  A function to call on the rising edge of the signal
-        @param cb_falling  A function to call on the falling edge of the signal
+        :param ain:  The AnalogReader we're wrapping
+        :param debounce:  The number of consecutive high/low signals needed to flip the digital state
+        :param high_low_cutoff:  The threshold at which the analog signal is considered high
+        :param cb_rising:  A function to call on the rising edge of the signal
+        :param cb_falling:  A function to call on the falling edge of the signal
         """
         self.ain = ain
         self.debounce = debounce
