@@ -129,7 +129,7 @@ class DisabledKnob(LockableKnob):
 
 
 class KnobBank:
-    """A ``KnobBank`` is a group of named 'virtual' :class"``LockableKnobs`` that share the same
+    """A ``KnobBank`` is a group of named 'virtual' :class:``LockableKnobs`` that share the same
     physical knob. Only one of these knobs is active (unlocked) at a time. This allows for a single
     knob to be used to control many parameters.
 
