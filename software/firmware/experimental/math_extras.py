@@ -26,6 +26,7 @@ def prod(l):
     Equivalent the Python3's math.prod
 
     @param l  An iterable collection of numbers
+
     @return  The product of all items in the list, or 0 if the list is empty
     """
     if len(l) == 0:
@@ -44,6 +45,7 @@ def median(l):
     averaging the middle two values. This is faster, but mathematically incorrect.
 
     @param l  An iterable collection of numbers
+
     @return  The median value from the list, or 0 if the list is empty
     """
     if len(l) == 0:
@@ -58,6 +60,7 @@ def mean(l):
     Calculate the arithmetic mean value from an array
 
     @param l  An iterable collection of numbers
+
     @return  The arithmetic mean of the list, or 0 of the list is empty
     """
     if len(l) == 0:
@@ -70,6 +73,7 @@ def geometric_mean(l):
     Calculate the geometric mean value of an array
 
     @param l  An iterable collection of numbers
+
     @return  The geometric mean of the list, or 0 of the list is empty
     """
     if len(l) == 0:
@@ -82,6 +86,7 @@ def harmonic_mean(l):
     Calculate the harmonic mean value of an array
 
     @param l  An iterable collection of numbers
+
     @return  The harmonic mean of the list, or 0 of the list is empty
     """
     if len(l) == 0:
@@ -100,6 +105,7 @@ def mode(l):
     the median of the tied items is returned
 
     @param l  An iterable collection of numbers
+
     @return  The mode of the list, or 0 if the list is empty
     """
     if len(l) == 0:
@@ -165,6 +171,7 @@ def solve_linear_system(m):
 
     @param m  The augmented matrix representation of the series of equations. This array is mangled in the process
               of calculation
+
     @return   A matrix of the coefficients of the equation
     """
     n_eqs = len(m)
