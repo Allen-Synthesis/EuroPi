@@ -34,8 +34,8 @@ API
    experimental.clocks.ds3231
    experimental.clocks.ntp
    experimental.clocks.null_clock
-   experimental.tools.about
-   experimental.tools.calibrate
-   experimental.tools.conf_edit
-   experimental.tools.diagnostic
-   experimental.tools.experimental_conf_edit
+   tools.about
+   tools.calibrate
+   tools.conf_edit
+   tools.diagnostic
+   tools.experimental_conf_edit
