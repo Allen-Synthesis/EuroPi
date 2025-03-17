@@ -9,9 +9,8 @@ API
    europi_display
    europi_hardware
    europi_log
-   euripi_script
-   configuration
    europi_script
+   configuration
    file_utils
    ui
    experimental
