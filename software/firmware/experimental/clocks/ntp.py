@@ -32,12 +32,6 @@ class NtpError(Exception):
         super().__init__(message)
 
 
-try:
-    import ntptime
-except ImportError as err:
-    raise NtpError(f"Failed to load NTP dependency: {err}")
-
-
 class NtpClock(ExternalClockSource):
     """
     Realtime clock source that uses an external NTP server
@@ -48,6 +42,12 @@ class NtpClock(ExternalClockSource):
     def __init__(self):
         super().__init__()
         cfg = load_experimental_config()
+
+        try:
+            import ntptime
+        except ImportError as err:
+            raise NtpError(f"Failed to load NTP dependency: {err}")
+
         try:
             # set the clock to UTC from the default NTP source
             ntptime.settime()
