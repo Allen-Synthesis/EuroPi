@@ -275,7 +275,7 @@ class ConfigSpec:
     def __iter__(self):
         return iter(self.points.values())
 
-    def default_config(self) -> dict:
+    def default_config(self) -> dict[str, object]:
         """Returns the default configuration for this spec."""
         return {point.name: point.default for point in self.points.values()}
 
@@ -302,8 +302,8 @@ class ConfigFile:
         """
         Load the configuration settings from an arbitrary file
 
-        @param path  The path to the fole to read
-        @param config_spec  The specification of the configuration we're saving
+        :param path:  The path to the fole to read
+        :param config_spec:  The specification of the configuration we're saving
         """
         if len(config_spec):
             saved_config = load_json_file(path)
@@ -327,8 +327,8 @@ class ConfigFile:
         intend to save to a directory that may not exist, make sure to create it
         first.
 
-        @param path  The path to the file we're saving to
-        @param dict  The data to save
+        :param path:  The path to the file we're saving to
+        :param dict:  The data to save
         """
         with open(path, "w") as file:
             # put newlines between items to make the resulting file easier to read
@@ -378,7 +378,7 @@ class ConfigSettings:
     def __init__(self, d):
         """Constructor
 
-        @param d  The raw dict loaded from the configuration file
+        :param d:  The raw dict loaded from the configuration file
         """
         self.__dict__ = {}  # required for getattr & setattr
         self.__keys__ = set()
@@ -391,11 +391,12 @@ class ConfigSettings:
     def validate_key(self, key):
         """Ensures that a `dict` key is a valid attribute name
 
-        @param key  The string to check
-        @return     True if the key is valid. Otherwise an exception is raised
+        :param key:  The string to check
 
-        @exception  ValueError if the key contains invalid characters; only letters, numbers, hyphens, and underscores
-                    are permitted. They key cannot be length 0, nor can it begin with a number
+        :return:     True if the key is valid. Otherwise an exception is raised
+
+        :raises ValueError: if the key contains invalid characters; only letters, numbers, hyphens, and underscores
+            are permitted. They key cannot be length 0, nor can it begin with a number
         """
         key = key.strip()
         for ch in key:
@@ -420,9 +421,9 @@ class ConfigSettings:
     def __eq__(self, that):
         """Allows comparing the config object directly to either another config object or a dict
 
-        @param that  The object we're comparing to, either a dict or another ConfigSettings object
+        :param that:  The object we're comparing to, either a dict or another ConfigSettings object
 
-        @return True if the two objects are equivalent, otherwise False
+        :return True: if the two objects are equivalent, otherwise False
         """
         if type(that) is dict:
             try:

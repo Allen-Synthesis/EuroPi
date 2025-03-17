@@ -60,7 +60,7 @@ class Screensaver:
         or the `force` paramter is True, we will draw.  Otherwise this does
         nothing
 
-        @param force  Force the logo to be drawn, regardless of the current ticks
+        :param force:  Force the logo to be drawn, regardless of the current ticks
         """
         LOGO_UPDATE_INTERVAL = 2000
 
@@ -90,14 +90,12 @@ class OledWithScreensaver:
 
     Set .enable_screensaver or .enable_blank to False to disable the screensaver/blanking activation completely
     (though if you do that, just use europi.oled instead of this class)
+
+    :param enable_screensaver:  If true, the screensaver will activate when needed
+    :param enable_blank:        If true, the screen will blank after the screensaver has been active for a while
     """
 
     def __init__(self, enable_screensaver=True, enable_blank=True):
-        """Constructor
-
-        @param enable_screensaver  If true, the screensaver will activate when needed
-        @param enable_blank        If true, the screen will blank after the screensaver has been active for a while
-        """
         self.screensaver = Screensaver()
         self.enable_screensaver = enable_screensaver
         self.enable_blank = enable_blank

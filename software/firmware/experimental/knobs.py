@@ -100,7 +100,7 @@ class LockableKnob(Knob):
     def change_lock_value(self, percent=0.0):
         """Change the current value to reflect a desired percentage
 
-        @param percent  The 0-1 value we want to re-lock the knob at
+        :param percent:  The 0-1 value we want to re-lock the knob at
         """
         self.value = int(MAX_UINT16 * (1.0 - percent))
 
@@ -215,7 +215,7 @@ class KnobBank:
     def set_current(self, name):
         """Set the currently-unlocked knob to the one whose name matches the argument
 
-        @param name  The name of the knob to set as the current one
+        :param name:  The name of the knob to set as the current one
         """
         try:
             index = self.names.index(name)
@@ -229,7 +229,7 @@ class KnobBank:
     def __getitem__(self, name):
         """Get the LockableKnob in this bank with the given name
 
-        @param name  The name of the knob to return, or None if the name isn't found
+        :param name:  The name of the knob to return, or None if the name isn't found
         """
         try:
             index = self.names.index(name)
@@ -369,18 +369,13 @@ class BufferedKnob(Knob):
     def __init__(self, knob):
         """Create a buffered wrapper for the given analogue input
 
-        The parameter @knob can be any Knob instance, including:
+        The parameter knob can be any Knob instance, including:
         - europi_hardware.k1
         - europi_hardware.k2
 
         Until the .update() method is called, this class will return a value of 0.
 
-        @param knob The analogue input to wrap e.g.:
-                    ```python
-                    from europi_hardware import *
-                    from experimental.knobs import *
-                    k1_buffered = BufferedKnob(k1)
-                    ```
+        :param knob: The analogue input to wrap e.g. ``europi_hardware.k1``
         """
         super().__init__(knob.pin_id)
         self.value = 0
@@ -390,15 +385,15 @@ class BufferedKnob(Knob):
 
         Instead of sampling we simply return the most recent sample value
 
-        @param samples  Ignored, but needed by the _sample_adc API used by AnalogueReader
+        :param samples:  Ignored, but needed by the _sample_adc API used by AnalogueReader
         """
         return self.value
 
     def update(self, samples=None):
         """Re-read the ADC and update the buffered value
 
-        @param samples  Specifies the number of samples to average to de-noise the ADC reading
-                        See europi_hardware.AnalogueReader for details on ADC sampling
+        :param samples:  Specifies the number of samples to average to de-noise the ADC reading
+            See europi_hardware.AnalogueReader for details on ADC sampling
         """
         self.value = super()._sample_adc(samples)
 
@@ -414,9 +409,9 @@ class MedianAnalogInput:
     def __init__(self, analog_in, samples=100, window_size=5):
         """Create the wrapper
 
-        @param analog_in    The input we're wrapping (e.g. k1, k2, ain)
-        @param samples      The number of samples to use when reading from analog_in
-        @param window_size  The number of samples used for calculating the median
+        :param analog_in:    The input we're wrapping (e.g. k1, k2, ain)
+        :param samples:      The number of samples to use when reading from analog_in
+        :param window_size:  The number of samples used for calculating the median
         """
         self.analog_in = analog_in
         self.n_samples = samples

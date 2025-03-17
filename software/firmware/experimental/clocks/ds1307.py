@@ -71,7 +71,7 @@ class DS1307(ExternalClockSource):
         """
         Get the current time.
 
-        @return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
+        :return: a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         buf = self.i2c.readfrom_mem(self.addr, DATETIME_REG, 7)
         # fmt: off
@@ -91,7 +91,7 @@ class DS1307(ExternalClockSource):
         """
         Set the current time.
 
-        @param datetime : tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
+        :param datetime: tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         self.check_valid_datetime(datetime)
 

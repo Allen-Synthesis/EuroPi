@@ -43,7 +43,7 @@ class CalibrationValues:
     def __init__(self, mode):
         """Create the calibration values, specifying the mode we're operating in
 
-        @param mode  The calibration mode, one of MODE_LOW_10, MODE_LOW_5, or MODE_HIGH
+        :param mode:  The calibration mode, one of MODE_LOW_10, MODE_LOW_5, or MODE_HIGH
         """
         self.mode = mode
 
@@ -67,14 +67,14 @@ class Calibrate(EuroPiScript):
     A script to interactively calibrate the module
 
     General flow:
-        1. Sanity check (rack power, necessary file structure exists)
-        2. Input calibration. One of:
-            a. low-accuracy 10V in
-            b. low-accuracy 5V in
-            c. high-accuracy 0-10V in
-        3. Output calibration
-        4. Save calibration
-        5. Idle for reboot
+    1. Sanity check (rack power, necessary file structure exists)
+    2. Input calibration. One of:
+        a. low-accuracy 10V in
+        b. low-accuracy 5V in
+        c. high-accuracy 0-10V in
+    3. Output calibration
+    4. Save calibration
+    5. Idle for reboot
 
     Output calibration only applies to CV1; all other outputs will
     use the same calibration values.
@@ -120,8 +120,8 @@ class Calibrate(EuroPiScript):
         """
         Display text on the screen and block for the specified duration
 
-        @param text  The text to display
-        @param duration  The duration to wait in seconds
+        :param text:  The text to display
+        :param duration:  The duration to wait in seconds
         """
         oled.centre_text(text)
         sleep(duration)
@@ -130,7 +130,7 @@ class Calibrate(EuroPiScript):
         """
         Read from the raw ain pin and return the average across several readings
 
-        @return  The average across several distinct readings from the pin
+        :return:  The average across several distinct readings from the pin
         """
         N_READINGS = 512
         readings = []
@@ -146,9 +146,9 @@ class Calibrate(EuroPiScript):
         """
         Wait for the user to connect the desired voltage to ain & press b1
 
-        @param voltage  The voltage to instruct the user to connect. Used for display only
+        :param voltage:  The voltage to instruct the user to connect. Used for display only
 
-        @return  The average samples read from ain (see @read_sample)
+        :return:  The average samples read from ain (see read_sample)
         """
         if voltage == 0:
             oled.centre_text("Unplug all\n\nDone: Button 1")
@@ -163,7 +163,7 @@ class Calibrate(EuroPiScript):
         """
         Wait for the user to press B1, returning to the original state when they have
 
-        @param wait_fn  A function to execute while waiting (e.g. refresh the UI)
+        :param wait_fn:  A function to execute while waiting (e.g. refresh the UI)
         """
         if wait_fn is None:
             wait_fn = lambda: sleep(0.01)
@@ -178,7 +178,7 @@ class Calibrate(EuroPiScript):
         """
         Wait for the user to press B2, returning to the original state when they have
 
-        @param wait_fn  A function to execute while waiting (e.g. refresh the UI)
+        :param wait_fn:  A function to execute while waiting (e.g. refresh the UI)
         """
         if wait_fn is None:
             wait_fn = lambda: sleep(0.01)
@@ -207,7 +207,7 @@ class Calibrate(EuroPiScript):
 
         Prompt the user for 0 and 10V inputs only
 
-        @return  The sample readings for 0 and 10V
+        :return:  The sample readings for 0 and 10V
         """
         self.state = self.STATE_START_LOW_10
         readings = [
@@ -222,7 +222,7 @@ class Calibrate(EuroPiScript):
 
         Prompt the user for 0 and 5V inputs only. The 5V reading is extrapolated to 10V.
 
-        @return  The sample readings for 0 and 10V
+        :return:  The sample readings for 0 and 10V
         """
         self.state = self.STATE_START_LOW_5
         readings = [
@@ -242,7 +242,7 @@ class Calibrate(EuroPiScript):
 
         User is prompted to connect 0, 1, 2, ..., 9, 10V
 
-        @return  The sample readings for 0 to 10V (inclusive)
+        :return:  The sample readings for 0 to 10V (inclusive)
         """
         self.state = self.STATE_START_HIGH
         readings = []
@@ -254,9 +254,9 @@ class Calibrate(EuroPiScript):
         """
         Send volts from CVx to AIN, adjusting the duty cycle so the output is correct.
 
-        @param cv_n  A value 0 <= cv_n < len(cvs) indicating which CV output we're calibrating
-        @param calibration_values  The array of calibration values we append our results to
-        @param input_readings  The duty cycles of AIN corresponding to 0, 1, 2, ..., 9, 10 volts
+        :param cv_n:  A value 0 <= cv_n < len(cvs) indicating which CV output we're calibrating
+        :param calibration_values:  The array of calibration values we append our results to
+        :param input_readings:  The duty cycles of AIN corresponding to 0, 1, 2, ..., 9, 10 volts
         """
         oled.centre_text(f"Plug CV{cv_n+1} into\nanalogue in\nDone: Button 1")
         self.wait_for_b1()
@@ -301,12 +301,12 @@ class Calibrate(EuroPiScript):
         This will exit if either the calibration is within +/- the step_size OR if the measured duty
         cycle is higher than the goal (i.e. we've over-shot the goal)
 
-        @param cv  The CV output pin we're adjusting
-        @param goal_duty  The AIN duty cycle we're expecting to read
-        @param start_duty  The CVx duty cycle we're applying to the output initially
-        @param step_size  The amount by which we adjust the duty cycle up to reach the goal
+        :param cv:  The CV output pin we're adjusting
+        :param goal_duty:  The AIN duty cycle we're expecting to read
+        :param start_duty:  The CVx duty cycle we're applying to the output initially
+        :param step_size:  The amount by which we adjust the duty cycle up to reach the goal
 
-        @return The adjusted output duty cycle
+        :return: The adjusted output duty cycle
         """
         read_duty = self.read_sample()
         duty = start_duty
@@ -324,13 +324,13 @@ class Calibrate(EuroPiScript):
         This exits if the measured duty cycle is within +/- 2*step_size OR if we make
         2*prev_step_size adjustments
 
-        @param cv  The CV output pin we're adjusting
-        @param goal_duty  The AIN duty cycle we're expecting to read
-        @param start_duty  The CVx duty cycle we're applying to the output initially
-        @param step_size  The amount by which we adjust the duty cycle up/down to reach the goal
-        @param prev_step_size  The previous iteration's step size, used to limit how many adjustments we make
+        :param cv:  The CV output pin we're adjusting
+        :param goal_duty:  The AIN duty cycle we're expecting to read
+        :param start_duty:  The CVx duty cycle we're applying to the output initially
+        :param step_size:  The amount by which we adjust the duty cycle up/down to reach the goal
+        :param prev_step_size:  The previous iteration's step size, used to limit how many adjustments we make
 
-        @return The adjusted output duty cycle
+        :return: The adjusted output duty cycle
         """
         MAX_COUNT = 2 * prev_step_size
         count = 0

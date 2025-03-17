@@ -168,7 +168,8 @@ class HttpServer:
 
         After creating the HTTP server, you should assign a handler function to process requests:
 
-        ```python
+        .. code-block::python
+
             srv = HttpServer(8080)
             @srv.request_handler
             def handle_http_request(connection=None, request=None):
@@ -183,34 +184,33 @@ class HttpServer:
                     HttpStatus.OK,
                     MimeTypes.HTML,
                 )
-        ```
+
         Response can be an HTTP page, plain text, or JSON/CSV/YAML/XML formatted data. See
         MimeTypes for supported types. The response should always be a string; if sending
         a dict as JSON data you'll need to stringify it before passing it to send_response.
 
         You may send your own error codes as desired:
-        ```python
+
+        .. code-block:: python
             def handle_http_request(connection=None, request=None):
                 srv.send_error_page(
                     Exception("We're out of coffee!")
                     connection,
                     HttpStatus.TEAPOT,  # send error 418 "I'm a teapot"
                 )
-        ```
 
         Inside the program's main loop you should call srv.check_connections() to process any
         incoming requests:
 
-        ```python
+        .. code-block:: python
             def main(self):
                 # ...
                 while True:
                     # ...
                     srv.check_requests()
                     # ...
-        ```
 
-        @param port  The port to listen on
+        :param port:  The port to listen on
         """
         self.port = port
         self.get_callback = self.default_request_handler
@@ -232,8 +232,8 @@ class HttpServer:
         to replace this function. So all we do is raise a NotImplementedError that's handled
         by self.check_requests() and will serve our HTTP 501 error page accordingly.
 
-        @param connection  The socket the client connected on
-        @param request  The client's request
+        :param connection:  The socket the client connected on
+        :param request:  The client's request
         """
         raise NotImplementedError("No request handler set")
 
@@ -306,7 +306,7 @@ class HttpServer:
         - request: str  The request the client sent
         - conn: socket  A socket connection to the client
 
-        @param func  The function to handle the request.
+        :param func:  The function to handle the request.
         """
 
         def wrapper(*args, **kwargs):
@@ -323,7 +323,7 @@ class HttpServer:
         - request: str  The request the client sent
         - conn: socket  A socket connection to the client
 
-        @param func  The function to handle the request.
+        :param func:  The function to handle the request.
         """
 
         def wrapper(*args, **kwargs):
@@ -342,10 +342,10 @@ class HttpServer:
         """
         Serve our customized HTTP error page
 
-        @param error  The exception that caused the error
-        @param connection  The socket to send the response over
-        @param status  The error status to respond with
-        @param headers  Optional additional headers
+        :param error:  The exception that caused the error
+        :param connection:  The socket to send the response over
+        :param status:  The error status to respond with
+        :param headers:  Optional additional headers
         """
         self.send_html(
             connection,
@@ -362,9 +362,9 @@ class HttpServer:
         """
         Send a JSON object to the client
 
-        @param connection  The socket connection to the client
-        @param data  A dict to be converted to a JSON object
-        @param headers  Optional additional HTTP headers to include
+        :param connection:  The socket connection to the client
+        :param data:  A dict to be converted to a JSON object
+        :param headers:  Optional additional HTTP headers to include
         """
         self.send_response(
             connection,
@@ -378,10 +378,10 @@ class HttpServer:
         """
         Send an HTML document to the client
 
-        @param connection  The socket to send the data over
-        @param html_page  A string containing the HTML document.
-        @param status  The HTTP status to send the page with
-        @param headers  Optional additional HTTP headers
+        :param connection:  The socket to send the data over
+        :param html_page:  A string containing the HTML document.
+        :param status:  The HTTP status to send the page with
+        :param headers:  Optional additional HTTP headers
         """
         self.send_response(
             connection, html_page, content_type=MimeTypes.HTML, status=status, headers=headers
@@ -398,11 +398,11 @@ class HttpServer:
         """
         Send a response to the client
 
-        @param connection  The socket connection to the client
-        @param response  The response payload
-        @param status  The HTTP status to respond with
-        @param content_type  The MIME type to include in the HTTP header
-        @param headers  Optional dict of key/value pairs for addtional HTTP headers. Charset is ALWAYS utf-8
+        :param connection:  The socket connection to the client
+        :param response:  The response payload
+        :param status:  The HTTP status to respond with
+        :param content_type:  The MIME type to include in the HTTP header
+        :param headers:  Optional dict of key/value pairs for addtional HTTP headers. Charset is ALWAYS utf-8
         """
         header = f"HTTP/1.0 {status} {HttpStatus.StatusText[status]}\r\nContent-type: {content_type}\r\ncharset=utf-8"
 

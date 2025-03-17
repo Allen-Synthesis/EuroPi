@@ -111,9 +111,9 @@ def clamp(value: int | float, low: int | float, high: int | float):
     """
     Returns a value that is no lower than 'low' and no higher than 'high'.
 
-    @param value  The value to clamp
-    @param low  The inclusive lower bound
-    @param high  The inclusive upper bound
+    :param value:  The value to clamp
+    :param low:  The inclusive lower bound
+    :param high:  The inclusive upper bound
     """
     return max(min(value, high), low)
 
@@ -388,6 +388,8 @@ class DigitalInput(DigitalReader):
     Here is another example how you can write digital input handlers to react
     to a clock source and match its trigger duration.::
 
+    .. code-block:: python
+
         @din.handler
         def gate_on():
             # Trigger outputs with a probability set by knobs.
@@ -494,7 +496,7 @@ class Output:
 
         By default this range is 0-10, but can be overridden via the configuration file
 
-        @param voltage  The desired volts to send to the output. If None the current voltage is returned
+        :param voltage:  The desired volts to send to the output. If None the current voltage is returned
         """
         if voltage is None:
             return self._duty / MAX_UINT16 * self.MAX_VOLTAGE
@@ -525,7 +527,7 @@ class Output:
         """
         Sets the output to 0V or 5V based on a binary input, 0 or 1.
 
-        @param value  HIGH or LOW, according to the desired state.
+        :param value:  HIGH or LOW, according to the desired state.
         """
         if value:  # silently allow booleans too!
             self.on()
@@ -558,7 +560,7 @@ class Thermometer:
         """
         Read the ADC and return the current temperature
 
-        @return  The current temperature in Celsius, or None if the hardware did not initialze properly
+        :return:  The current temperature in Celsius, or None if the hardware did not initialze properly
         """
         if self.pin:
             # See the Pico's datasheet for the details of this calculation

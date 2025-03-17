@@ -22,17 +22,17 @@ def generate_euclidean_pattern(steps, pulses, rot=0):
 
     Copied from https://github.com/brianhouse/bjorklund with all due gratitude
 
-    @param steps  The number of steps in the pattern
-    @param pulses The number of ON steps in the pattern (must be <= steps)
-    @param rot    Optional rotation to offset the pattern. Must be in the range [0, steps]
+    :param steps:  The number of steps in the pattern
+    :param pulses: The number of ON steps in the pattern (must be <= steps)
+    :param rot:    Optional rotation to offset the pattern. Must be in the range [0, steps]
 
-    @return An int array of length steps consisting of 1 and 0 values only
+    :return: An int array of length steps consisting of 1 and 0 values only
 
-    @exception ValueError if pulses or rot is out of range
+    :raises ValueError: if pulses or rot is out of range
 
-    @author Brian House
-    @year 2011
-    @license MIT
+    :author: Brian House
+    :year: 2011
+    :license: MIT
     """
     steps = int(steps)
     pulses = int(pulses)

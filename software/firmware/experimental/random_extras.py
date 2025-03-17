@@ -31,11 +31,11 @@ def normal(mean=0.0, stdev=1.0):
     Uses the Marsaglia-Tsang algorithm, which isn't a perfectly normal
     distribution, but is likely close enough for EuroPi applications
 
-    @param mean   The desired mean for the distribution
-    @param stdev  The standard deviation of the distribution
+    :param mean:   The desired mean for the distribution
+    :param stdev:  The standard deviation of the distribution
 
-    @return A floating-point number chosen from a normal distribution with the
-            given mean and standard deviation
+    :return: A floating-point number chosen from a normal distribution with the
+        given mean and standard deviation
     """
     x = 0.0
     y = 0.0
@@ -56,7 +56,7 @@ def shuffle(l):
     """
     Re-order the elements of a list in-situ
 
-    @param l  The list to shuffle
+    :param l:  The list to shuffle
     """
     for i in range(len(l)):
         n = random.randint(i, len(l) - 1)

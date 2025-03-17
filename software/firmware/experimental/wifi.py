@@ -42,7 +42,8 @@ class WifiConnection:
     """
     Class to manage the wifi connection
 
-    Raises a WifiError if the model doesn't support wifi
+    :raises WifiError: if the model doesn't support wifi, if we fail to import the
+        necessary libraries, or if the network fails to connect
     """
 
     def __init__(self):
@@ -92,7 +93,7 @@ class WifiConnection:
         """
         Connect to an external wireless router as a client
 
-        @param cfg  The ExperimentalConfig object
+        :param cfg:  The ExperimentalConfig object
         """
         import network
 
@@ -164,7 +165,7 @@ class WifiConnection:
 
         We can optionally set the IP address and netmask in this mode
 
-        @param cfg  The ExperimentalConfig object
+        :param cfg:  The ExperimentalConfig object
         """
         import network
 

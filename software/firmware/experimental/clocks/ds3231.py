@@ -37,10 +37,11 @@ the clock.  To do so:
 3. Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to experimental_config, restart the Raspberry Pi Pico before proceeding.
 4. In Thonny's Python terminal, run the following code:
 
-```
->>> from experimental.rtc import clock
->>> clock.source.set_datetime((2025, 6, 14, 22, 59, 0, 6, 0))
-```
+.. code-block::
+
+    >>> from experimental.rtc import clock
+    >>> clock.source.set_datetime((2025, 6, 14, 22, 59, 0, 6, 0))
+
 
 This will set the clock to 14 June 2025, 22:59:00, and set the weekday to Saturday (6).
 The tuple is of the form (Year, Month, Day, Hour, Minute, Second, Weekday, Yearday). It is recommended
@@ -125,7 +126,8 @@ class DS3231(ExternalClockSource):
         Get the current time.
 
         Returns in 24h format, converts to 24h if clock is set to 12h format
-        @return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
+
+        :return: a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         self.i2c.readfrom_mem_into(self.addr, DATETIME_REG, self._timebuf)
         # 0x00 - Seconds    BCD
@@ -171,7 +173,7 @@ class DS3231(ExternalClockSource):
         """
         Set the current time.
 
-        @param datetime : tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
+        :param datetime: tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         self.check_valid_datetime(datetime)
 
@@ -201,13 +203,13 @@ class DS3231(ExternalClockSource):
         The alarm interrupts are disabled when enabling a square wave output. Disabling SWQ out does
         not enable the alarm interrupts. Set them manually with the alarm_int() method.
 
-        freq : int,
-        * None: returns current setting
-        * False = disable SQW output,
-        * 1 =     1 Hz,
-        * 2 = 1.024 kHz,
-        * 3 = 4.096 kHz,
-        * 4 = 8.192 kHz
+        :param freq: specify the frequency:
+            * None: returns current setting
+            * False = disable SQW output,
+            * 1 =     1 Hz,
+            * 2 = 1.024 kHz,
+            * 3 = 4.096 kHz,
+            * 4 = 8.192 kHz
         """
         # fmt: off
         if freq is None:
@@ -228,10 +230,10 @@ class DS3231(ExternalClockSource):
     def alarm1(self, time=None, match=AL1_MATCH_DHMS, int_en=True, weekday=False):
         """Set alarm1, can match mday, wday, hour, minute, second
 
-        time    : tuple, (second,[ minute[, hour[, day]]])
-        weekday : bool, select mday (False) or wday (True)
-        match   : int, match const
-        int_en  : bool, enable interrupt on alarm match on SQW/INT pin (disables SQW output)"""
+        :param time: tuple, (second,[ minute[, hour[, day]]])
+        :param weekday: bool, select mday (False) or wday (True)
+        :param match: int, match const
+        :param int_en: bool, enable interrupt on alarm match on SQW/INT pin (disables SQW output)"""
         if time is None:
             # TODO Return readable string
             self.i2c.readfrom_mem_into(self.addr, ALARM1_REG, self._al1_buf)
@@ -267,11 +269,11 @@ class DS3231(ExternalClockSource):
     def alarm2(self, time=None, match=AL2_MATCH_DHM, int_en=True, weekday=False):
         """Get/set alarm 2 (can match minute, hour, day)
 
-        time    : tuple, (minute[, hour[, day]])
-        weekday : bool, select mday (False) or wday (True)
-        match   : int, match const
-        int_en  : bool, enable interrupt on alarm match on SQW/INT pin (disables SQW output)
-        Returns : bytearray(3), the alarm settings register"""
+        :param time: tuple, (minute[, hour[, day]])
+        :param weekday: bool, select mday (False) or wday (True)
+        :param match: int, match const
+        :param int_en: bool, enable interrupt on alarm match on SQW/INT pin (disables SQW output)
+        :return: bytearray(3), the alarm settings register"""
         if time is None:
             # TODO Return readable string
             self.i2c.readfrom_mem_into(self.addr, ALARM2_REG, self._al2buf)
@@ -305,9 +307,10 @@ class DS3231(ExternalClockSource):
         """Enable/disable interrupt for alarm1, alarm2 or both.
 
         Enabling the interrupts disables the SQW output
-        enable : bool, enable/disable interrupts
-        alarm : int, alarm nr (0 to set both interrupts)
-        returns: the control register"""
+
+        :param enable: bool, enable/disable interrupts
+        :param alarm: int, alarm nr (0 to set both interrupts)
+        :return: the control register"""
         # fmt: off
         if alarm in (0, 1):
             self.i2c.readfrom_mem_into(self.addr, CONTROL_REG, self._buf)

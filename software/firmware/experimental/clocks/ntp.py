@@ -66,6 +66,6 @@ class NtpClock(ExternalClockSource):
         """
         Get the latest time from our NTP source and return it
 
-        @return a tuple of the form tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
+        :return: a tuple of the form tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)
         """
         return utime.gmtime()

@@ -18,13 +18,13 @@ import json
 from europi_log import *
 
 
-def load_file(filename, mode: str = "r"):
+def load_file(filename, mode: str = "r") -> object:
     """Load a file and return its contents
 
-    @param filename  The name of the file to load
-    @param mode      The mode to open the file in. Should be "r" for text files or "rb" for binary files
+    :param filename:  The name of the file to load
+    :param mode:      The mode to open the file in. Should be "r" for text files or "rb" for binary files
 
-    @return  The file's contents, either as a string or bytes, depending on mode.
+    :return:  The file's contents, either as a string or bytes, depending on mode.
     """
     try:
         with open(filename, mode) as file:
@@ -40,10 +40,10 @@ def load_file(filename, mode: str = "r"):
 def load_json_file(filename, mode="r") -> dict:
     """Load a file and return its contents
 
-    @param filename  The name of the file to load
-    @param mode      The mode to open the file in. Should be "r" except in very unique circumstances
+    :param filename  The name of the file to load
+    :param mode      The mode to open the file in. Should be "r" except in very unique circumstances
 
-    @return  The file's contents as a dict
+    :return  The file's contents as a dict
     """
     try:
         with open(filename, mode) as file:

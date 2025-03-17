@@ -30,8 +30,8 @@ def country(code=None):
     """
     Get/set the country code.
 
-    @param code  The ISO-compatible 2-character country code
-    @return The ISO-compatible 2-character country code, or XX if unset
+    :param code:  The ISO-compatible 2-character country code
+    :return: The ISO-compatible 2-character country code, or XX if unset
     """
     if code:
         return code
@@ -43,8 +43,8 @@ def hostname(name=None):
     """
     Get/set the hostname.
 
-    @param name  The new hostname to assign
-    @return This device's hostname
+    :param name:  The new hostname to assign
+    :return: This device's hostname
     """
     if name:
         return name
@@ -56,8 +56,8 @@ def ipconfig(**kwargs):
     """
     Get/set global IP paramters.
 
-    @param kwargs  Keyword arguments to assign: dns, prefer
-    @return The value of the parameter
+    :param kwargs:  Keyword arguments to assign: dns, prefer
+    :return: The value of the parameter
     """
     return None
 
