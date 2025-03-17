@@ -92,7 +92,7 @@
 
 ### 2022-02-01
 
-- added {meth}`europi.DigitalReader.handler_falling()` To define a callback function to call when a falling edge is detected
+- added `europi.DigitalReader.handler_falling()` To define a callback function to call when a falling edge is detected
 
 ### 2021-10-15 - 2022-02-02
 
