@@ -18,6 +18,11 @@ from version import __version__
 
 
 class About(EuroPiScript):
+    """
+    A simple EuroPiScript to display the EuroPi version
+
+    Also displays the CPU frequency mode and Pico model
+    """
     def __init__(self):
         super().__init__()
 

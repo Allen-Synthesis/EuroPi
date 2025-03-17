@@ -211,6 +211,8 @@ class HttpServer:
 
         :param connection:  The socket the client connected on
         :param request:  The client's request
+
+        :raises NotImplementedError: This results in an HTTP 501 error response
         """
         raise NotImplementedError("No request handler set")
 

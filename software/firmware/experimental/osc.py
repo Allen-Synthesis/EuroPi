@@ -23,8 +23,6 @@ from europi_log import *
 import socket
 import struct
 
-import europi
-
 
 def align_next_word(n):
     """

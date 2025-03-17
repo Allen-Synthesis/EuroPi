@@ -79,12 +79,18 @@ class MenuItem:
             raise Exception("Cannot specify parent and children in the same menu item")
 
     def short_press(self):
-        """Handler for when the user short-presses the button"""
+        """
+        Handler for when the user short-presses the button
+
+        This does nothing by default, but can be overridden by child classes
+        """
         pass
 
     def draw(self, oled=europi.oled):
         """
         Draw the item to the screen
+
+        You must call the screen's ``.show()`` method after calling this
 
         :param oled:   A Display-compatible object we draw to
         """
@@ -93,6 +99,8 @@ class MenuItem:
     def add_child(self, item):
         """
         Add a new child item to this item
+
+        :param item:  The menu item to add as a new child
         """
         if self.children is None:
             self.children = []
@@ -502,6 +510,13 @@ class SettingMenuItem(ChoiceMenuItem):
             self.callback_fn(choice, old_value, self.config_point, self.callback_arg)
 
     def draw(self, oled=europi.oled):
+        """
+        Render this item to the screen
+
+        You must call the screen's ``.show()`` method after calling this
+
+        :param oled: The screen we're drawing to
+        """
         super().draw(oled)
 
         # show the real value in parentheses
@@ -702,6 +717,7 @@ class SettingsMenu:
 
     @property
     def knob(self):
+        """Get the navigation knob that controls this menu"""
         if type(self._knob) is KnobBank:
             return self._knob.current
         else:
@@ -746,6 +762,8 @@ class SettingsMenu:
     def save(self, settings_file):
         """
         Save the current settings to the specified file
+
+        :param settings_file: The path to the JSON file to generate
         """
         data = {}
         for item in self.menu_items_by_name.values():
@@ -883,6 +901,8 @@ class SettingsMenu:
         Callback function for the autoselection timer
 
         Reads from ain and/or the autoselect knob and applies that choice to all subscribed menu items
+
+        :param timer: The timer instance that fired this callback
         """
         if len(self.autoselect_cv_items) > 0:
             ain_percent = self.autoselect_cv.percent()

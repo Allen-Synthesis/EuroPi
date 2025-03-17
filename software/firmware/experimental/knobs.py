@@ -364,19 +364,11 @@ class BufferedKnob(Knob):
 
     This allows multiple uses of .percent(), .choice(...), etc... without forcing a re-read of
     the ADC value
+
+    :param knob: The analogue input to wrap e.g. ``europi_hardware.k1``
     """
 
     def __init__(self, knob):
-        """Create a buffered wrapper for the given analogue input
-
-        The parameter knob can be any Knob instance, including:
-        - europi_hardware.k1
-        - europi_hardware.k2
-
-        Until the .update() method is called, this class will return a value of 0.
-
-        :param knob: The analogue input to wrap e.g. ``europi_hardware.k1``
-        """
         super().__init__(knob.pin_id)
         self.value = 0
 
@@ -404,15 +396,13 @@ class MedianAnalogInput:
     This class uses a window of the n latest samples from the underlying input and uses the median of
     those samples. Larger window sizes will produce a more stable output, but at the cost of slowing
     down reaction time to changes.
+
+    :param analog_in:    The input we're wrapping (e.g. k1, k2, ain)
+    :param samples:      The number of samples to use when reading from analog_in
+    :param window_size:  The number of samples used for calculating the median
     """
 
     def __init__(self, analog_in, samples=100, window_size=5):
-        """Create the wrapper
-
-        :param analog_in:    The input we're wrapping (e.g. k1, k2, ain)
-        :param samples:      The number of samples to use when reading from analog_in
-        :param window_size:  The number of samples used for calculating the median
-        """
         self.analog_in = analog_in
         self.n_samples = samples
         self.window_size = window_size

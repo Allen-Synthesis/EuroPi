@@ -11,17 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-A global configuration-editor menu
-
-Used to edit the global EuroPiConfig settings -- use at your own peril!
-"""
-
 from europi import *
 from europi_script import EuroPiScript
 
 from configuration import ConfigFile
 
+from tools.conf_edit import k2_bank, SectionHeader
 from experimental.experimental_config import *
 from experimental.knobs import KnobBank
 from experimental.settings_menu import *
@@ -29,29 +24,12 @@ from experimental.settings_menu import *
 from framebuf import FrameBuffer, MONO_HLSB
 
 
-## Lockable knob bank for K2 to make menu navigation a little easier
-#
-#  Note that this does mean _sometimes_ you'll need to sweep the knob all the way left/right
-#  to unlock it
-k2_bank = (
-    KnobBank.builder(k2)
-    .with_unlocked_knob("main_menu")
-    .with_locked_knob("submenu", initial_percentage_value=0)
-    .with_locked_knob("choice", initial_percentage_value=0)
-    .build()
-)
-
-
-class SectionHeader(MenuItem):
-    def __init__(self, title, children):
-        super().__init__(children=children)
-        self.title = title
-
-    def draw(self, oled):
-        oled.centre_text(f"{self.title}\n\nHold B2 to edit")
-
-
 class ExperimentalConfigurationEditor(EuroPiScript):
+    """
+    A global configuration-editor menu
+
+    Used to edit the global EuroPiConfig settings -- use at your own peril!
+    """
     def __init__(self):
         super().__init__()
 
