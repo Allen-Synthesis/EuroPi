@@ -1,0 +1,6 @@
+﻿experimental.clocks.ds1307
+==========================
+
+.. automodule:: experimental.clocks.ds1307
+    :members:
+    :inherited-members:

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ui &mdash; EuroPi  documentation</title>
+  <title>experimental.clocks.null_clock &mdash; EuroPi  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="experimental" href="experimental.html" />
-    <link rel="prev" title="file_utils" href="file_utils.html" /> 
+    <link rel="next" title="tools.about" href="tools.about.html" />
+    <link rel="prev" title="experimental.clocks.ntp" href="experimental.clocks.ntp.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,7 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
@@ -71,7 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds1307.html">experimental.clocks.ds1307</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds3231.html">experimental.clocks.ds3231</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ntp.html">experimental.clocks.ntp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.null_clock.html">experimental.clocks.null_clock</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">experimental.clocks.null_clock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.about.html">tools.about</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.calibrate.html">tools.calibrate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.conf_edit.html">tools.conf_edit</a></li>
@@ -98,9 +98,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../api.html">API</a> &raquo;</li>
-      <li>ui</li>
+      <li>experimental.clocks.null_clock</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/ui.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/experimental.clocks.null_clock.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -108,34 +108,63 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-ui">
-<span id="ui"></span><h1>ui<a class="headerlink" href="#module-ui" title="Permalink to this heading"></a></h1>
-<p>This module provides reusable UI components.</p>
+  <section id="module-experimental.clocks.null_clock">
+<span id="experimental-clocks-null-clock"></span><h1>experimental.clocks.null_clock<a class="headerlink" href="#module-experimental.clocks.null_clock" title="Permalink to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="ui.Menu">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.</span></span><span class="sig-name descname"><span class="pre">Menu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_knob=&lt;europi_hardware.Knob</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choice_buttons=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.Menu" title="Permalink to this definition"></a></dt>
-<dd><p>A class representing a menu displayable on the EuroPi screen. The user can select a menu item using the
-configured knob and select it with the configured button(s).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>items</strong> – a list of the menu items</p></li>
-<li><p><strong>select_func</strong> – the function to call when a menu item is chosen. The function will be called with single argument, the selected item.</p></li>
-<li><p><strong>select_knob</strong> – the knob used to select the menu item, defaults to k1</p></li>
-<li><p><strong>choice_buttons</strong> – a List of Buttons that can be pressed to choose the selected item. Defaults to b1</p></li>
-</ul>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="experimental.clocks.null_clock.NullClock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.clocks.null_clock.</span></span><span class="sig-name descname"><span class="pre">NullClock</span></span><a class="headerlink" href="#experimental.clocks.null_clock.NullClock" title="Permalink to this definition"></a></dt>
+<dd><p>A placeholder replacement for a realtime clock.</p>
+<p>This class sets the base time to 1 January, 1970, 00:00:00.0 and adds the current value of
+ticks_ms() to that time. This allows the RTC to tick up, but won’t actually be indicitave of the real time.</p>
+<p>Because ticks_ms() rolls over ever 2**30 ms, the datetime returned by this clock will also roll over
+at the same interval. BUT, 2**30 ms ~= 298 hours, so unless your EuroPi is powered-on 12 days continuously
+this won’t ever cause problems.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="ui.Menu.draw_menu">
-<span class="sig-name descname"><span class="pre">draw_menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.Menu.draw_menu" title="Permalink to this definition"></a></dt>
-<dd><p>This function should be called by your script’s main loop in order to display and refresh the menu.</p>
+<dt class="sig sig-object py" id="experimental.clocks.null_clock.NullClock.check_valid_datetime">
+<span class="sig-name descname"><span class="pre">check_valid_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.null_clock.NullClock.check_valid_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a datetime contains valid values.</p>
+<p>Raises a ValueError if any field is out of range</p>
+<p>&#64;param datetime</p>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="ui.Menu.selected">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">selected</span></span><a class="headerlink" href="#ui.Menu.selected" title="Permalink to this definition"></a></dt>
-<dd><p>The currently selected menu item.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.clocks.null_clock.NullClock.datetime">
+<span class="sig-name descname"><span class="pre">datetime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.null_clock.NullClock.datetime" title="Permalink to this definition"></a></dt>
+<dd><p>Get the current UTC time as a tuple.</p>
+<p>see: <a class="reference external" href="https://docs.micropython.org/en/latest/library/time.html#time.localtime">https://docs.micropython.org/en/latest/library/time.html#time.localtime</a></p>
+<p>&#64;return a tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.clocks.null_clock.NullClock.is_leap_year">
+<span class="sig-name descname"><span class="pre">is_leap_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.null_clock.NullClock.is_leap_year" title="Permalink to this definition"></a></dt>
+<dd><p>Determine if the datetime’s year is a leap year or not.</p>
+<p>&#64;return  True if the datetime is a leap year, otherwise False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.clocks.null_clock.NullClock.month_length">
+<span class="sig-name descname"><span class="pre">month_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.null_clock.NullClock.month_length" title="Permalink to this definition"></a></dt>
+<dd><p>Get the numer of days in the month.</p>
+<p>This takes leap-years into consideration</p>
+<p>&#64;return  The number of days in the datetime’s month</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.clocks.null_clock.NullClock.set_datetime">
+<span class="sig-name descname"><span class="pre">set_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.null_clock.NullClock.set_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>Set the clock’s current UTC time.</p>
+<p>If the clock does not support setting (e.g. it’s an NTP source we can only read from)
+your sub-class should implement this method anyway and simply pass.</p>
+<p>see: <a class="reference external" href="https://docs.micropython.org/en/latest/library/time.html#time.localtime">https://docs.micropython.org/en/latest/library/time.html#time.localtime</a></p>
+<p>&#64;param datetime  A tuple of the form (0-year, 1-month, 2-day, 3-hour, 4-minutes, 5-seconds, 6-weekday, 7-yearday)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.clocks.null_clock.NullClock.year_length">
+<span class="sig-name descname"><span class="pre">year_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.clocks.null_clock.NullClock.year_length" title="Permalink to this definition"></a></dt>
+<dd><p>Determine the number of days in the datetime’s year.</p>
+<p>&#64;return  The number of days in the year, taking leap years into account</p>
 </dd></dl>
 
 </dd></dl>
@@ -146,8 +175,8 @@ configured knob and select it with the configured button(s).</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="file_utils.html" class="btn btn-neutral float-left" title="file_utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="experimental.html" class="btn btn-neutral float-right" title="experimental" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="experimental.clocks.ntp.html" class="btn btn-neutral float-left" title="experimental.clocks.ntp" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tools.about.html" class="btn btn-neutral float-right" title="tools.about" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

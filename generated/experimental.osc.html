@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>experimental.osc &mdash; EuroPi  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="experimental.quantizer" href="experimental.quantizer.html" />
+    <link rel="prev" title="experimental.math_extras" href="experimental.math_extras.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> EuroPi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_config.html">europi_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_display.html">europi_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_hardware.html">europi_hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_log.html">europi_log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bitarray.html">experimental.bitarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.euclid.html">experimental.euclid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.http_server.html">experimental.http_server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.knobs.html">experimental.knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.math_extras.html">experimental.math_extras</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">experimental.osc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.settings_menu.html">experimental.settings_menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.thread.html">experimental.thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.wifi.html">experimental.wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.clock_source.html">experimental.clocks.clock_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds1307.html">experimental.clocks.ds1307</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds3231.html">experimental.clocks.ds3231</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ntp.html">experimental.clocks.ntp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.null_clock.html">experimental.clocks.null_clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.about.html">tools.about</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.calibrate.html">tools.calibrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.conf_edit.html">tools.conf_edit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.diagnostic.html">tools.diagnostic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.experimental_conf_edit.html">tools.experimental_conf_edit</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EuroPi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../api.html">API</a> &raquo;</li>
+      <li>experimental.osc</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/experimental.osc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-experimental.osc">
+<span id="experimental-osc"></span><h1>experimental.osc<a class="headerlink" href="#module-experimental.osc" title="Permalink to this heading"></a></h1>
+<p>Open Sound Control over UDP implementation.</p>
+<p>See
+- <a class="reference external" href="https://opensoundcontrol.stanford.edu/">https://opensoundcontrol.stanford.edu/</a>
+- <a class="reference external" href="https://hexler.net/touchosc/manual/introduction">https://hexler.net/touchosc/manual/introduction</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.osc.OpenSoundPacket">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.osc.</span></span><span class="sig-name descname"><span class="pre">OpenSoundPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundPacket" title="Permalink to this definition"></a></dt>
+<dd><p>A container object for the Open Sound Control packet(s) we receive.</p>
+<p>Contains the address of the message and the data</p>
+<p>&#64;property address  The address string of the packet
+&#64;property values  The values included in the packet</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="experimental.osc.OpenSoundPacket.address">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#experimental.osc.OpenSoundPacket.address" title="Permalink to this definition"></a></dt>
+<dd><p>This packet’s address</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="experimental.osc.OpenSoundPacket.values">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytearray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#experimental.osc.OpenSoundPacket.values" title="Permalink to this definition"></a></dt>
+<dd><p>The array of values included in this packet</p>
+<p>We support OSC 1.0 + a subset of 1.1 types</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.osc.OpenSoundServer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.osc.</span></span><span class="sig-name descname"><span class="pre">OpenSoundServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recv_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send_addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'192.168.4.100'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundServer" title="Permalink to this definition"></a></dt>
+<dd><p>The OSC server.</p>
+<p>This object owns the socket and is responsible for sending &amp; receiving
+messages</p>
+<p>To use, instantiate the server and assign a callback. Then call
+receive_data() in the main loop:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">europi</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">srv</span> <span class="o">=</span> <span class="n">OpenSoundServer</span><span class="p">(</span><span class="mi">9000</span><span class="p">)</span>
+
+    <span class="nd">@srv</span><span class="o">.</span><span class="n">data_handler</span>
+    <span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># process the data, send anything back over the connection if needed</span>
+        <span class="o">...</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">srv</span><span class="o">.</span><span class="n">receive_data</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.osc.OpenSoundServer.data_handler">
+<span class="sig-name descname"><span class="pre">data_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundServer.data_handler" title="Permalink to this definition"></a></dt>
+<dd><p>Decorator for the function to UDP packet reception</p>
+<p>The provided function must accept the following keyword arguments:
+- connection: socket  A socket connection to the client
+- data: str  The request the client sent</p>
+<p>&#64;param func  The function to handle the request.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.osc.OpenSoundServer.default_callback">
+<span class="sig-name descname"><span class="pre">default_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#experimental.osc.OpenSoundPacket" title="experimental.osc.OpenSoundPacket"><span class="pre">OpenSoundPacket</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundServer.default_callback" title="Permalink to this definition"></a></dt>
+<dd><p>Default callback function when we receive data</p>
+<p>Does nothing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.osc.OpenSoundServer.receive_data">
+<span class="sig-name descname"><span class="pre">receive_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundServer.receive_data" title="Permalink to this definition"></a></dt>
+<dd><p>Check if we have any new data to process, invoke data_handler as needed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.osc.OpenSoundServer.send_data">
+<span class="sig-name descname"><span class="pre">send_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundServer.send_data" title="Permalink to this definition"></a></dt>
+<dd><p>Transmit a packet</p>
+<p>&#64;param address  The OSC address to send to
+&#64;param args  The values to encode in the packet. Allowed types are int, float, bool, str, and bytearray. Bools are converted to 0/1 integers</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.osc.align_next_word">
+<span class="sig-prename descclassname"><span class="pre">experimental.osc.</span></span><span class="sig-name descname"><span class="pre">align_next_word</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.align_next_word" title="Permalink to this definition"></a></dt>
+<dd><p>Return the index of the next word-alined byte</p>
+<p>We assume 4-byte/32-bit words. If we’re already word-aligned,
+we increment to the next one</p>
+<p>&#64;param n  The current index in a byte array</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="experimental.math_extras.html" class="btn btn-neutral float-left" title="experimental.math_extras" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experimental.quantizer.html" class="btn btn-neutral float-right" title="experimental.quantizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rory Allen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

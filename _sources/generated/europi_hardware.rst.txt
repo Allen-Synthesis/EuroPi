@@ -1,0 +1,6 @@
+﻿europi_hardware
+===============
+
+.. automodule:: europi_hardware
+    :members:
+    :inherited-members:

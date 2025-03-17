@@ -1,0 +1,6 @@
+﻿file_utils
+==========
+
+.. automodule:: file_utils
+    :members:
+    :inherited-members:

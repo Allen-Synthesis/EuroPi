@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ui &mdash; EuroPi  documentation</title>
+  <title>experimental.quantizer &mdash; EuroPi  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="experimental" href="experimental.html" />
-    <link rel="prev" title="file_utils" href="file_utils.html" /> 
+    <link rel="next" title="experimental.random_extras" href="experimental.random_extras.html" />
+    <link rel="prev" title="experimental.osc" href="experimental.osc.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,7 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
@@ -60,7 +60,7 @@
 <li class="toctree-l2"><a class="reference internal" href="experimental.knobs.html">experimental.knobs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.math_extras.html">experimental.math_extras</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.osc.html">experimental.osc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">experimental.quantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
@@ -98,9 +98,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../api.html">API</a> &raquo;</li>
-      <li>ui</li>
+      <li>experimental.quantizer</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/ui.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/experimental.quantizer.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -108,34 +108,54 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-ui">
-<span id="ui"></span><h1>ui<a class="headerlink" href="#module-ui" title="Permalink to this heading"></a></h1>
-<p>This module provides reusable UI components.</p>
+  <section id="module-experimental.quantizer">
+<span id="experimental-quantizer"></span><h1>experimental.quantizer<a class="headerlink" href="#module-experimental.quantizer" title="Permalink to this heading"></a></h1>
+<p>Shared classes for quantization support</p>
+<p>&#64;author Chris Iverach-Brereton &lt;<a class="reference external" href="mailto:ve4cib&#37;&#52;&#48;gmail&#46;com">ve4cib<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;
+&#64;year   2023</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="ui.Menu">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.</span></span><span class="sig-name descname"><span class="pre">Menu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_knob=&lt;europi_hardware.Knob</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choice_buttons=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.Menu" title="Permalink to this definition"></a></dt>
-<dd><p>A class representing a menu displayable on the EuroPi screen. The user can select a menu item using the
-configured knob and select it with the configured button(s).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>items</strong> – a list of the menu items</p></li>
-<li><p><strong>select_func</strong> – the function to call when a menu item is chosen. The function will be called with single argument, the selected item.</p></li>
-<li><p><strong>select_knob</strong> – the knob used to select the menu item, defaults to k1</p></li>
-<li><p><strong>choice_buttons</strong> – a List of Buttons that can be pressed to choose the selected item. Defaults to b1</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui.Menu.draw_menu">
-<span class="sig-name descname"><span class="pre">draw_menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.Menu.draw_menu" title="Permalink to this definition"></a></dt>
-<dd><p>This function should be called by your script’s main loop in order to display and refresh the menu.</p>
+<dt class="sig sig-object py" id="experimental.quantizer.CommonScales">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.quantizer.</span></span><span class="sig-name descname"><span class="pre">CommonScales</span></span><a class="headerlink" href="#experimental.quantizer.CommonScales" title="Permalink to this definition"></a></dt>
+<dd><p>A collection of common scales that can be used in other scripts to support quantization</p>
+<p>The Major135[6|7] and Minor135[6|7] scales are inspired by the Doepfer A-156 quantizer</p>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="ui.Menu.selected">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">selected</span></span><a class="headerlink" href="#ui.Menu.selected" title="Permalink to this definition"></a></dt>
-<dd><p>The currently selected menu item.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.quantizer.Intervals">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.quantizer.</span></span><span class="sig-name descname"><span class="pre">Intervals</span></span><a class="headerlink" href="#experimental.quantizer.Intervals" title="Permalink to this definition"></a></dt>
+<dd><p>A collection of musical intervals as indices for the Quantizer __get_item__ and __set_item__ methods</p>
+<p>For example, if you have a Quantizer and want to enable the Perfect4th you can simply use</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">q</span> <span class="o">=</span> <span class="n">Quantizer</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">q</span><span class="p">[</span><span class="n">Intervals</span><span class="o">.</span><span class="n">P4</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>This class uses the short notation for intervals.  See <a class="reference external" href="https://en.wikipedia.org/wiki/Interval_(music">https://en.wikipedia.org/wiki/Interval_(music</a>)
+for more information.</p>
+<p>The abridged summary:
+* single case-sensitive letter for the interval type
+* a number from 1-8 indicating the size of the interval
+* P = perfect
+* M = major
+* m = minor
+* d = diminished
+* A = augmented
+* three exceptions: S = semitone (equivalent to m2/A1), T = Tone (equivalent to M2/d3), TT = Tritone (equivalent to d5/A4)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.quantizer.Quantizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.quantizer.</span></span><span class="sig-name descname"><span class="pre">Quantizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.quantizer.Quantizer" title="Permalink to this definition"></a></dt>
+<dd><p>Represents a set of semitones we can quantize input voltages to</p>
+<p>By default this represents a chromatic scale, with all notes enabled.  Notes can be changed
+by setting scale[n] = True/False, where n is the index of the semitone to toggle</p>
+<p>Implements __get_item__ and __set_item__ so you can use Quantizer like an array to set notes on/off</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.quantizer.Quantizer.quantize">
+<span class="sig-name descname"><span class="pre">quantize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analog_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.quantizer.Quantizer.quantize" title="Permalink to this definition"></a></dt>
+<dd><p>Take an analog input voltage and round it to the nearest note on our scale</p>
+<p>&#64;param analog_in  The input voltage to quantize, as a float
+&#64;param root       An integer in the range [0, 12) indicating the number of semitones up to transpose the quantized scale</p>
+<p>&#64;return A tuple of the form (voltage, note) where voltage is the raw voltage to output, and note is a value from 0-11 indicating the semitone</p>
 </dd></dl>
 
 </dd></dl>
@@ -146,8 +166,8 @@ configured knob and select it with the configured button(s).</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="file_utils.html" class="btn btn-neutral float-left" title="file_utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="experimental.html" class="btn btn-neutral float-right" title="experimental" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="experimental.osc.html" class="btn btn-neutral float-left" title="experimental.osc" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experimental.random_extras.html" class="btn btn-neutral float-right" title="experimental.random_extras" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

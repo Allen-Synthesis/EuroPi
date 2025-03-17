@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="europi_script" href="europi_script.html" />
-    <link rel="prev" title="europi" href="europi.html" /> 
+    <link rel="next" title="file_utils" href="file_utils.html" />
+    <link rel="prev" title="europi_script" href="europi_script.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,11 +43,40 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_config.html">europi_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_display.html">europi_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_hardware.html">europi_hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_log.html">europi_log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bitarray.html">experimental.bitarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.euclid.html">experimental.euclid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.http_server.html">experimental.http_server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.knobs.html">experimental.knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.math_extras.html">experimental.math_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.osc.html">experimental.osc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.settings_menu.html">experimental.settings_menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.thread.html">experimental.thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.wifi.html">experimental.wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.clock_source.html">experimental.clocks.clock_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds1307.html">experimental.clocks.ds1307</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds3231.html">experimental.clocks.ds3231</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ntp.html">experimental.clocks.ntp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.null_clock.html">experimental.clocks.null_clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.about.html">tools.about</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.calibrate.html">tools.calibrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.conf_edit.html">tools.conf_edit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.diagnostic.html">tools.diagnostic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.experimental_conf_edit.html">tools.experimental_conf_edit</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
@@ -111,7 +140,7 @@ validation result, as well as an error message containing the reason for a valid
 
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.ChoiceConfigPoint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ChoiceConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ChoiceConfigPoint" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ChoiceConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ChoiceConfigPoint" title="Permalink to this definition"></a></dt>
 <dd><p>A <cite>ConfigPoint</cite> that requires selection from a limited number of choices. The default value
 must exist in the given choices.</p>
 <dl class="field-list simple">
@@ -235,12 +264,12 @@ validation result, as well as an error message containing the reason for a valid
 
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.ConfigSpec">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ConfigSpec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#configuration.ConfigPoint" title="configuration.ConfigPoint"><span class="pre">ConfigPoint</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigSpec" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">ConfigSpec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#configuration.ConfigPoint" title="configuration.ConfigPoint"><span class="pre">configuration.ConfigPoint</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigSpec" title="Permalink to this definition"></a></dt>
 <dd><p>A container for <cite>ConfigPoints</cite> representing the set of configuration options for a specific
 script.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="configuration.ConfigSpec.default_config">
-<span class="sig-name descname"><span class="pre">default_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#configuration.ConfigSpec.default_config" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">default_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#configuration.ConfigSpec.default_config" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the default configuration for this spec.</p>
 </dd></dl>
 
@@ -297,6 +326,29 @@ must lie within the specified range</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="configuration.IntegerConfigPoint.validate">
 <span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.Validation" title="configuration.Validation"><span class="pre">Validation</span></a></span></span><a class="headerlink" href="#configuration.IntegerConfigPoint.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validates the given value with this ConfigPoint. Returns a <cite>Validation</cite> containing the
+validation result, as well as an error message containing the reason for a validation failure.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="configuration.StringConfigPoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">StringConfigPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.StringConfigPoint" title="Permalink to this definition"></a></dt>
+<dd><p>A <cite>ConfigPoint</cite> that allows the input of arbitrary strings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
+<li><p><strong>type</strong> – The name of this ConfigPoint’s type</p></li>
+<li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="configuration.StringConfigPoint.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.Validation" title="configuration.Validation"><span class="pre">Validation</span></a></span></span><a class="headerlink" href="#configuration.StringConfigPoint.validate" title="Permalink to this definition"></a></dt>
 <dd><p>Validates the given value with this ConfigPoint. Returns a <cite>Validation</cite> containing the
 validation result, as well as an error message containing the reason for a validation failure.</p>
 </dd></dl>
@@ -364,7 +416,7 @@ validation result, as well as an error message containing the reason for a valid
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuration.choice">
-<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.ChoiceConfigPoint" title="configuration.ChoiceConfigPoint"><span class="pre">ChoiceConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.choice" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.ChoiceConfigPoint" title="configuration.ChoiceConfigPoint"><span class="pre">ChoiceConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.choice" title="Permalink to this definition"></a></dt>
 <dd><p>A helper function to simplify the creation of ChoiceConfigPoints. Requires selection from a
 limited number of choices. The default value must exist in the given choices.</p>
 <dl class="field-list simple">
@@ -415,14 +467,30 @@ range of integers. The default value must exist in the given range.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="configuration.string">
+<span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#configuration.StringConfigPoint" title="configuration.StringConfigPoint"><span class="pre">StringConfigPoint</span></a></span></span><a class="headerlink" href="#configuration.string" title="Permalink to this definition"></a></dt>
+<dd><p>A helper function to simplify the creation of StringConfigPoints. Allows the input of
+any arbitrary string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of this <cite>ConfigPoint</cite>, will be used by scripts to lookup the configured value.</p></li>
+<li><p><strong>default</strong> – The default value</p></li>
+<li><p><strong>danger</strong> – If true, mark this option as dangerous to modify in the config editor</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="europi.html" class="btn btn-neutral float-left" title="europi" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="europi_script.html" class="btn btn-neutral float-right" title="europi_script" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="europi_script.html" class="btn btn-neutral float-left" title="europi_script" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="file_utils.html" class="btn btn-neutral float-right" title="file_utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

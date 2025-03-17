@@ -1,0 +1,6 @@
+﻿tools.diagnostic
+================
+
+.. automodule:: tools.diagnostic
+    :members:
+    :inherited-members:

@@ -1,0 +1,6 @@
+﻿experimental.bisect
+===================
+
+.. automodule:: experimental.bisect
+    :members:
+    :inherited-members:

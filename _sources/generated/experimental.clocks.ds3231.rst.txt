@@ -1,0 +1,6 @@
+﻿experimental.clocks.ds3231
+==========================
+
+.. automodule:: experimental.clocks.ds3231
+    :members:
+    :inherited-members:

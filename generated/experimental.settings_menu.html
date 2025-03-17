@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>experimental.settings_menu &mdash; EuroPi  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="experimental.thread" href="experimental.thread.html" />
+    <link rel="prev" title="experimental.screensaver" href="experimental.screensaver.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> EuroPi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_config.html">europi_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_display.html">europi_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_hardware.html">europi_hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_log.html">europi_log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bitarray.html">experimental.bitarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.euclid.html">experimental.euclid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.http_server.html">experimental.http_server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.knobs.html">experimental.knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.math_extras.html">experimental.math_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.osc.html">experimental.osc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">experimental.settings_menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.thread.html">experimental.thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.wifi.html">experimental.wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.clock_source.html">experimental.clocks.clock_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds1307.html">experimental.clocks.ds1307</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds3231.html">experimental.clocks.ds3231</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ntp.html">experimental.clocks.ntp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.null_clock.html">experimental.clocks.null_clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.about.html">tools.about</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.calibrate.html">tools.calibrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.conf_edit.html">tools.conf_edit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.diagnostic.html">tools.diagnostic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.experimental_conf_edit.html">tools.experimental_conf_edit</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EuroPi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../api.html">API</a> &raquo;</li>
+      <li>experimental.settings_menu</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/experimental.settings_menu.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-experimental.settings_menu">
+<span id="experimental-settings-menu"></span><h1>experimental.settings_menu<a class="headerlink" href="#module-experimental.settings_menu" title="Permalink to this heading"></a></h1>
+<p>Contains objects used for interactive settings menus</p>
+<p>Menu interaction is done using a knob and a button (K2 and B2 by default):
+- rotate the knob to select the menu item
+- short-press to enter edit mode
+- rotate knob to select an option
+- short-press button to apply the new option
+- long-press button to change between the 2 menu levels (if possible)</p>
+<p>For examples of how to create and use the SettingsMenu, please refer to
+- contrib/settings_menu_example.py</p>
+<p>Additional, more complex, examples can be found in:
+- contrib/euclid.py
+- contrib/pams.py (this is a very complex example)
+- contrib/sequential_switch.py
+- tools/conf_edit.py</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.settings_menu.ActionMenuItem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.settings_menu.</span></span><span class="sig-name descname"><span class="pre">ActionMenuItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">actions:</span> <span class="pre">list[object],</span> <span class="pre">callback=&lt;function</span> <span class="pre">ActionMenuItem.&lt;lambda&gt;&gt;,</span> <span class="pre">callback_arg:</span> <span class="pre">~typing.Optional[object]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">parent:</span> <span class="pre">~typing.Optional[~experimental.settings_menu.MenuItem]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">children:</span> <span class="pre">~typing.Optional[list[experimental.settings_menu.MenuItem]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">title:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">prefix:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">graphics:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">labels:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">is_visible:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ActionMenuItem" title="Permalink to this definition"></a></dt>
+<dd><p>A menu item that just invokes a callback function when selected.</p>
+<p>This class is similar to the SettingMenuItem, but doesn’t wrap a ConfigPoint; it just has
+options and fires the callback when you choose one</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.ActionMenuItem.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ActionMenuItem.add_child" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new child item to this item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.ActionMenuItem.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled=&lt;europi_display.DummyDisplay</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ActionMenuItem.draw" title="Permalink to this definition"></a></dt>
+<dd><p>Draw the current item to the display object</p>
+<p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
+hardware</p>
+<p>&#64;param oled  A Display instance (or compatible class) to render the item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.ActionMenuItem.short_press">
+<span class="sig-name descname"><span class="pre">short_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ActionMenuItem.short_press" title="Permalink to this definition"></a></dt>
+<dd><p>Toggle is_editable on a short press</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.settings_menu.ChoiceMenuItem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.settings_menu.</span></span><span class="sig-name descname"><span class="pre">ChoiceMenuItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#experimental.settings_menu.MenuItem" title="experimental.settings_menu.MenuItem"><span class="pre">MenuItem</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#experimental.settings_menu.MenuItem" title="experimental.settings_menu.MenuItem"><span class="pre">experimental.settings_menu.MenuItem</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_visible</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ChoiceMenuItem" title="Permalink to this definition"></a></dt>
+<dd><p>A generic menu item for displaying a choice of options to the user</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.ChoiceMenuItem.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ChoiceMenuItem.add_child" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new child item to this item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.ChoiceMenuItem.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled=&lt;europi_display.DummyDisplay</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ChoiceMenuItem.draw" title="Permalink to this definition"></a></dt>
+<dd><p>Draw the current item to the display object</p>
+<p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
+hardware</p>
+<p>&#64;param oled  A Display instance (or compatible class) to render the item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.ChoiceMenuItem.short_press">
+<span class="sig-name descname"><span class="pre">short_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ChoiceMenuItem.short_press" title="Permalink to this definition"></a></dt>
+<dd><p>Toggle is_editable on a short press</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.settings_menu.MenuItem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.settings_menu.</span></span><span class="sig-name descname"><span class="pre">MenuItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_visible</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem" title="Permalink to this definition"></a></dt>
+<dd><p>Generic class for anything we can display in the menu</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.MenuItem.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem.add_child" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new child item to this item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.MenuItem.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled=&lt;europi_display.DummyDisplay</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem.draw" title="Permalink to this definition"></a></dt>
+<dd><p>Draw the item to the screen</p>
+<p>&#64;param oled   A Display-compatible object we draw to</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.MenuItem.short_press">
+<span class="sig-name descname"><span class="pre">short_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem.short_press" title="Permalink to this definition"></a></dt>
+<dd><p>Handler for when the user short-presses the button</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.settings_menu.</span></span><span class="sig-name descname"><span class="pre">SettingMenuItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_point:</span> <span class="pre">~typing.Optional[~configuration.ConfigPoint]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">~typing.Optional[~experimental.settings_menu.MenuItem]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children:</span> <span class="pre">~typing.Optional[list[experimental.settings_menu.MenuItem]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphics:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback=&lt;function</span> <span class="pre">SettingMenuItem.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_arg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float_resolution=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_map:</span> <span class="pre">~typing.Optional[dict]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_visible:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoselect_knob:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoselect_cv:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem" title="Permalink to this definition"></a></dt>
+<dd><p>A single menu item that presents a setting the user can manipulate</p>
+<p>The menu item is a wrapper around a ConfigPoint, and uses
+that object’s values as the available selections.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.add_child" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new child item to this item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.autoselect">
+<span class="sig-name descname"><span class="pre">autoselect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.autoselect" title="Permalink to this definition"></a></dt>
+<dd><p>Called by the parent menu when the Knob/CV timer fires, automatically updating the value of this item</p>
+<p>&#64;param percent  A value 0-1 indicating the level of the knob/cv source</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.choose">
+<span class="sig-name descname"><span class="pre">choose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">choice</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.choose" title="Permalink to this definition"></a></dt>
+<dd><p>Set the raw value of this item’s ConfigPoint</p>
+<p>&#64;param choice  The value to assign to the ConfigPoint.</p>
+<p>&#64;exception  ValueError if the given choice is not valid for this setting</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled=&lt;europi_display.DummyDisplay</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.draw" title="Permalink to this definition"></a></dt>
+<dd><p>Draw the current item to the display object</p>
+<p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
+hardware</p>
+<p>&#64;param oled  A Display instance (or compatible class) to render the item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.get_option_list">
+<span class="sig-name descname"><span class="pre">get_option_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.get_option_list" title="Permalink to this definition"></a></dt>
+<dd><p>Get the list of options the user can choose from</p>
+<p>&#64;return  A list of choices</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.mapped_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mapped_value</span></span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.mapped_value" title="Permalink to this definition"></a></dt>
+<dd><p>Get the value of this item mapped by the value_map</p>
+<p>If value_map was not set by the constructor, this property returns the same
+thing as .value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.modify_choices">
+<span class="sig-name descname"><span class="pre">modify_choices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.modify_choices" title="Permalink to this definition"></a></dt>
+<dd><p>Regenerate this item’s available choices</p>
+<p>This is needed if we externally modify e.g. the maximum/minimum values of the underlying
+config point as a result of one option needing to be within a range determined by another.</p>
+<p>&#64;param choices  The list of new options we want to allow the user to choose from, excluding any autoselections
+&#64;param new_default  A value to assign to this setting if its existing value is out-of-range</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.reset_to_default">
+<span class="sig-name descname"><span class="pre">reset_to_default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.reset_to_default" title="Permalink to this definition"></a></dt>
+<dd><p>Reset this item to its default value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.short_press">
+<span class="sig-name descname"><span class="pre">short_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.short_press" title="Permalink to this definition"></a></dt>
+<dd><p>Handle a short button press</p>
+<p>This enters edit mode, or applies the selection and
+exits edit mode</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.value" title="Permalink to this definition"></a></dt>
+<dd><p>Get the raw value of this item’s ConfigPoint</p>
+<p>You should use .mapped_value if you have assigned a value_map to the constructor</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.value_choice">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value_choice</span></span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.value_choice" title="Permalink to this definition"></a></dt>
+<dd><p>The value the user has chosen from the menu</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.settings_menu.</span></span><span class="sig-name descname"><span class="pre">SettingsMenu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_items:</span> <span class="pre">~typing.Optional[list]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">navigation_button:</span> <span class="pre">~europi_hardware.Button</span> <span class="pre">=</span> <span class="pre">&lt;europi_hardware.Button</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">navigation_knob:</span> <span class="pre">~europi_hardware.Knob</span> <span class="pre">=</span> <span class="pre">&lt;europi_hardware.Knob</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">short_press_cb=&lt;function</span> <span class="pre">SettingsMenu.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_press_cb=&lt;function</span> <span class="pre">SettingsMenu.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoselect_knob:</span> <span class="pre">~europi_hardware.Knob</span> <span class="pre">=</span> <span class="pre">&lt;europi_hardware.Knob</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoselect_cv:</span> <span class="pre">~europi_hardware.AnalogueInput</span> <span class="pre">=</span> <span class="pre">&lt;europi_hardware.AnalogueInput</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu" title="Permalink to this definition"></a></dt>
+<dd><p>A menu-based GUI for any EuroPi script.</p>
+<p>This class is assumed to be the main interaction method for the program.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.do_autoselect">
+<span class="sig-name descname"><span class="pre">do_autoselect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.do_autoselect" title="Permalink to this definition"></a></dt>
+<dd><p>Callback function for the autoselection timer</p>
+<p>Reads from ain and/or the autoselect knob and applies that choice to all subscribed menu items</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled=&lt;europi_display.DummyDisplay</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.draw" title="Permalink to this definition"></a></dt>
+<dd><p>Draw the menu to the given display</p>
+<p>You should call the display’s .fill(0) function before calling this in order to clear the screen. Otherwise
+the menu item will be drawn on top of whatever is on the screen right now. (In some cases this may be the
+desired result, but when in doubt, call oled.fill(0) first).</p>
+<p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
+hardware</p>
+<p>&#64;param oled  The display object to draw to</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.get_config_points">
+<span class="sig-name descname"><span class="pre">get_config_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.get_config_points" title="Permalink to this definition"></a></dt>
+<dd><p>Get the config points for the menu so we can load/save them as needed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.load_defaults">
+<span class="sig-name descname"><span class="pre">load_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.load_defaults" title="Permalink to this definition"></a></dt>
+<dd><p>Load the initial settings from the file</p>
+<p>&#64;param settings_file  The path to a JSON file where the user’s settings are saved</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.long_press">
+<span class="sig-name descname"><span class="pre">long_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.long_press" title="Permalink to this definition"></a></dt>
+<dd><p>Handle a long button press</p>
+<p>This changes between the two menu levels (if possible)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.on_button_press">
+<span class="sig-name descname"><span class="pre">on_button_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.on_button_press" title="Permalink to this definition"></a></dt>
+<dd><p>Handler for the rising edge of the button signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.on_button_release">
+<span class="sig-name descname"><span class="pre">on_button_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.on_button_release" title="Permalink to this definition"></a></dt>
+<dd><p>Handler for the falling edge of the button signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.register_autoselect_cv">
+<span class="sig-name descname"><span class="pre">register_autoselect_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#experimental.settings_menu.SettingMenuItem" title="experimental.settings_menu.SettingMenuItem"><span class="pre">SettingMenuItem</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.register_autoselect_cv" title="Permalink to this definition"></a></dt>
+<dd><p>Connects a menu item to this menu’s CV input</p>
+<p>&#64;param menu_item  The item that wants to subscribe to the CV input</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.register_autoselect_knob">
+<span class="sig-name descname"><span class="pre">register_autoselect_knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#experimental.settings_menu.SettingMenuItem" title="experimental.settings_menu.SettingMenuItem"><span class="pre">SettingMenuItem</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.register_autoselect_knob" title="Permalink to this definition"></a></dt>
+<dd><p>Connects a menu item to this menu’s knob input</p>
+<p>&#64;param menu_item  The item that wants to subscribe to the knob input</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.save" title="Permalink to this definition"></a></dt>
+<dd><p>Save the current settings to the specified file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.short_press">
+<span class="sig-name descname"><span class="pre">short_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.short_press" title="Permalink to this definition"></a></dt>
+<dd><p>Handle a short button press</p>
+<p>This enters edit mode, or applies the selection and
+exits edit mode</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.ui_dirty">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ui_dirty</span></span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.ui_dirty" title="Permalink to this definition"></a></dt>
+<dd><p>Is the UI currently dirty and needs re-drawing?</p>
+<p>This will be true if the user has pressed the button or rotated the knob sufficiently
+to change the active item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.unregister_autoselect_cv">
+<span class="sig-name descname"><span class="pre">unregister_autoselect_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#experimental.settings_menu.SettingMenuItem" title="experimental.settings_menu.SettingMenuItem"><span class="pre">SettingMenuItem</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.unregister_autoselect_cv" title="Permalink to this definition"></a></dt>
+<dd><p>Disconnects a menu item to this menu’s CV input</p>
+<p>&#64;param menu_item  The item that wants to unsubscribe from the CV input</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.unregister_autoselect_knob">
+<span class="sig-name descname"><span class="pre">unregister_autoselect_knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#experimental.settings_menu.SettingMenuItem" title="experimental.settings_menu.SettingMenuItem"><span class="pre">SettingMenuItem</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.unregister_autoselect_knob" title="Permalink to this definition"></a></dt>
+<dd><p>Disconnects a menu item to this menu’s knob input</p>
+<p>&#64;param menu_item  The item that wants to unsubscribe from the knob input</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.visible_items">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">visible_items</span></span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.visible_items" title="Permalink to this definition"></a></dt>
+<dd><p>Get the set of visible menu items for the current state of the menu</p>
+<p>Menu items can be shown/hidden by setting their is_visible property. Normally this should be done in
+a value-change callback of a menu item to show/hide dependent other items.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="experimental.screensaver.html" class="btn btn-neutral float-left" title="experimental.screensaver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experimental.thread.html" class="btn btn-neutral float-right" title="experimental.thread" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rory Allen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

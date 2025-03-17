@@ -20,7 +20,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="configuration" href="configuration.html" />
+    <link rel="next" title="europi_config" href="europi_config.html" />
     <link rel="prev" title="API" href="../api.html" /> 
 </head>
 
@@ -43,11 +43,40 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">europi</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_config.html">europi_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_display.html">europi_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_hardware.html">europi_hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_log.html">europi_log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bitarray.html">experimental.bitarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.euclid.html">experimental.euclid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.http_server.html">experimental.http_server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.knobs.html">experimental.knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.math_extras.html">experimental.math_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.osc.html">experimental.osc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.settings_menu.html">experimental.settings_menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.thread.html">experimental.thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.wifi.html">experimental.wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.clock_source.html">experimental.clocks.clock_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds1307.html">experimental.clocks.ds1307</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds3231.html">experimental.clocks.ds3231</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ntp.html">experimental.clocks.ntp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.null_clock.html">experimental.clocks.null_clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.about.html">tools.about</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.calibrate.html">tools.calibrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.conf_edit.html">tools.conf_edit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.diagnostic.html">tools.diagnostic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.experimental_conf_edit.html">tools.experimental_conf_edit</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
@@ -90,380 +119,10 @@ to set up your module.</p>
 </pre></div>
 </div>
 <p>Will set the CV output 3 to a voltage of 4.5V.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.AnalogueInput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">AnalogueInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput" title="Permalink to this definition"></a></dt>
-<dd><p>A class for handling the reading of analogue control voltage.</p>
-<p>The analogue input allows you to ‘read’ CV from anywhere between 0 and 12V.</p>
-<p>It is protected for the entire Eurorack range, so don’t worry about
-plugging in a bipolar source, it will simply be clipped to 0-12V.</p>
-<p>The functions all take an optional parameter of <code class="docutils literal notranslate"><span class="pre">samples</span></code>, which will
-oversample the ADC and then take an average, which will take more time per
-reading, but will give you a statistically more accurate result. The
-default is 32, provides a balance of performance vs accuracy, but if you
-want to process at the maximum speed you can use as little as 1, and the
-processor won’t bog down until you get way up into the thousands if you
-wan’t incredibly accurate (but quite slow) readings.</p>
-<p>The percent function takes an optional parameter <code class="docutils literal notranslate"><span class="pre">deadzone</span></code>. However this
-parameter is ignored and just present to be compatible with the percent
-function of the AnalogueReader and Knob classes</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueInput.choice">
-<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.choice" title="Permalink to this definition"></a></dt>
-<dd><p>Return a value from a list chosen by the current voltage value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueInput.percent">
-<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.percent" title="Permalink to this definition"></a></dt>
-<dd><p>Current voltage as a relative percentage of the component’s range.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueInput.range">
-<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.range" title="Permalink to this definition"></a></dt>
-<dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueInput.set_deadzone">
-<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.set_deadzone" title="Permalink to this definition"></a></dt>
-<dd><p>Override the default deadzone with the given value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueInput.set_samples">
-<span class="sig-name descname"><span class="pre">set_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueInput.set_samples" title="Permalink to this definition"></a></dt>
-<dd><p>Override the default number of sample reads with the given value.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.AnalogueReader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">AnalogueReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader" title="Permalink to this definition"></a></dt>
-<dd><p>A base class for common analogue read methods.</p>
-<p>This class in inherited by classes like Knob and AnalogueInput and does
-not need to be used by user scripts.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueReader.choice">
-<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.choice" title="Permalink to this definition"></a></dt>
-<dd><p>Return a value from a list chosen by the current voltage value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueReader.percent">
-<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.percent" title="Permalink to this definition"></a></dt>
-<dd><p>Return the percentage of the component’s current relative range.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueReader.range">
-<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.range" title="Permalink to this definition"></a></dt>
-<dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueReader.set_deadzone">
-<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.set_deadzone" title="Permalink to this definition"></a></dt>
-<dd><p>Override the default deadzone with the given value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.AnalogueReader.set_samples">
-<span class="sig-name descname"><span class="pre">set_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.AnalogueReader.set_samples" title="Permalink to this definition"></a></dt>
-<dd><p>Override the default number of sample reads with the given value.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.Button">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debounce_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Button" title="Permalink to this definition"></a></dt>
-<dd><p>A class for handling push button behavior.</p>
-<p>Button instances have a method <code class="docutils literal notranslate"><span class="pre">last_pressed()</span></code>
-(similar to <code class="docutils literal notranslate"><span class="pre">DigitalInput.last_triggered()</span></code>) which can be used by your
-script to help perform some action or behavior relative to when the button
-was last pressed (or input trigger received). For example, if you want to
-call a function to display a message that a button was pressed, you could
-add the following code to your main script loop:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inside the main loop...</span>
-<span class="k">if</span> <span class="n">b1</span><span class="o">.</span><span class="n">last_pressed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ticks_diff</span><span class="p">(</span><span class="n">ticks_ms</span><span class="p">(),</span> <span class="n">b1</span><span class="o">.</span><span class="n">last_pressed</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">2000</span><span class="p">:</span>
-    <span class="c1"># Call this during the 2000 ms duration after button press.</span>
-    <span class="n">display_button_pressed</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Note, if a button has not yet been pressed, the <code class="docutils literal notranslate"><span class="pre">last_pressed()</span></code> default
-return value is 0, so you may want to add the check <cite>if b1.last_pressed() &gt; 0</cite>
-before you check the elapsed duration to ensure the button has been
-pressed. This is also useful when checking if the digital input has been
-triggered with the <code class="docutils literal notranslate"><span class="pre">DigitalInput.last_triggered()</span></code> method.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Button.handler">
-<span class="sig-name descname"><span class="pre">handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Button.handler" title="Permalink to this definition"></a></dt>
-<dd><p>Define the callback function to call when rising edge detected.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Button.handler_falling">
-<span class="sig-name descname"><span class="pre">handler_falling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Button.handler_falling" title="Permalink to this definition"></a></dt>
-<dd><p>Define the callback function to call when falling edge detected.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Button.last_pressed">
-<span class="sig-name descname"><span class="pre">last_pressed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Button.last_pressed" title="Permalink to this definition"></a></dt>
-<dd><p>Return the ticks_ms of the last button press</p>
-<p>If the button has not yet been pressed, the default return value is 0.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Button.value">
-<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Button.value" title="Permalink to this definition"></a></dt>
-<dd><p>The current binary value, HIGH (1) or LOW (0).</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.DigitalInput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">DigitalInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debounce_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalInput" title="Permalink to this definition"></a></dt>
-<dd><p>A class for handling reading of the digital input.</p>
-<p>The Digital Input jack can detect a HIGH signal when recieving voltage &gt;
-0.8v and will be LOW when below.</p>
-<p>To use the handler method, you simply define whatever you want to happen
-when a button or the digital input is triggered, and then use
-<code class="docutils literal notranslate"><span class="pre">x.handler(new_function)</span></code>. Do not include the brackets for the function,
-and replace the ‘x’ in the example with the name of your input, either
-<code class="docutils literal notranslate"><span class="pre">b1</span></code>, <code class="docutils literal notranslate"><span class="pre">b2</span></code>, or <code class="docutils literal notranslate"><span class="pre">din</span></code>.</p>
-<p>Here is another example how you can write digital input handlers to react
-to a clock source and match its trigger duration.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@din</span><span class="o">.</span><span class="n">handler</span>
-<span class="k">def</span> <span class="nf">gate_on</span><span class="p">():</span>
-    <span class="c1"># Trigger outputs with a probability set by knobs.</span>
-    <span class="n">cv1</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">k1</span><span class="o">.</span><span class="n">percent</span><span class="p">())</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">k2</span><span class="o">.</span><span class="n">percent</span><span class="p">())</span>
-
-<span class="nd">@din</span><span class="o">.</span><span class="n">handler_falling</span>
-<span class="k">def</span> <span class="nf">gate_off</span><span class="p">():</span>
-    <span class="c1"># Turn off all triggers on falling clock trigger to match clock.</span>
-    <span class="n">cv1</span><span class="o">.</span><span class="n">off</span><span class="p">()</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">off</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>When writing a handler, try to keep the code as minimal as possible.
-Ideally handlers should be used to change state and allow your main loop
-to change behavior based on the altered state. See <a class="reference external" href="https://docs.micropython.org/en/latest/reference/isr_rules.html#tips-and-recommended-practices">tips</a>
-from the MicroPython documentation for more details.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.DigitalInput.handler">
-<span class="sig-name descname"><span class="pre">handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalInput.handler" title="Permalink to this definition"></a></dt>
-<dd><p>Define the callback function to call when rising edge detected.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.DigitalInput.handler_falling">
-<span class="sig-name descname"><span class="pre">handler_falling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalInput.handler_falling" title="Permalink to this definition"></a></dt>
-<dd><p>Define the callback function to call when falling edge detected.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.DigitalInput.last_triggered">
-<span class="sig-name descname"><span class="pre">last_triggered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalInput.last_triggered" title="Permalink to this definition"></a></dt>
-<dd><p>Return the ticks_ms of the last trigger.</p>
-<p>If the button has not yet been pressed, the default return value is 0.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.DigitalInput.value">
-<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalInput.value" title="Permalink to this definition"></a></dt>
-<dd><p>The current binary value, HIGH (1) or LOW (0).</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.DigitalReader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">DigitalReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debounce_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalReader" title="Permalink to this definition"></a></dt>
-<dd><p>A base class for common digital inputs methods.</p>
-<p>This class in inherited by classes like Button and DigitalInput and does
-not need to be used by user scripts.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.DigitalReader.handler">
-<span class="sig-name descname"><span class="pre">handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalReader.handler" title="Permalink to this definition"></a></dt>
-<dd><p>Define the callback function to call when rising edge detected.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.DigitalReader.handler_falling">
-<span class="sig-name descname"><span class="pre">handler_falling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalReader.handler_falling" title="Permalink to this definition"></a></dt>
-<dd><p>Define the callback function to call when falling edge detected.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.DigitalReader.value">
-<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.DigitalReader.value" title="Permalink to this definition"></a></dt>
-<dd><p>The current binary value, HIGH (1) or LOW (0).</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.Knob">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Knob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob" title="Permalink to this definition"></a></dt>
-<dd><p>A class for handling the reading of knob voltage and position.</p>
-<p>Read_position has a default value of 100, meaning if you simply use
-<code class="docutils literal notranslate"><span class="pre">kx.read_position()</span></code> you will return a whole number percent style value
-from 0-100.</p>
-<p>There is also the optional parameter of <code class="docutils literal notranslate"><span class="pre">samples</span></code> (which must come after the
-normal parameter), the same as the analogue input uses (the knob positions
-are ‘read’ via an analogue to digital converter). It has a default value
-of 256, but you can use higher or lower depending on if you value speed or
-accuracy more. If you really want to avoid ‘noise’ which would present as
-a flickering value despite the knob being still, then I’d suggest using
-higher samples (and probably a smaller number to divide the position by).
-The default <code class="docutils literal notranslate"><span class="pre">samples</span></code> value can also be set using the <code class="docutils literal notranslate"><span class="pre">set_samples()</span></code>
-method, which will then be used on all analogue read calls for that
-component.</p>
-<p>An optional <code class="docutils literal notranslate"><span class="pre">deadzone</span></code> parameter can be used to place deadzones at both
-positions (all the way left and right) of the knob to make sure the full range
-is available on all builds. The default value is 0.01 (resulting in 1% of the
-travel used as deadzone on each side). There is usually no need to change this.</p>
-<p>Additionally, the <code class="docutils literal notranslate"><span class="pre">choice()</span></code> method can be used to select a value from a
-list of values based on the knob’s position:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">clock_division</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">k1</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>When the knob is all the way to the left, the return value will be <code class="docutils literal notranslate"><span class="pre">1</span></code>,
-at 12 o’clock it will return the mid point value of <code class="docutils literal notranslate"><span class="pre">5</span></code> and when fully
-clockwise, the last list item of <code class="docutils literal notranslate"><span class="pre">32</span></code> will be returned.</p>
-<p>The ADCs used to read the knob position are only 12 bit, which means that
-any read_position value above 4096 (2^12) will not actually be any finer
-resolution, but will instead just go up in steps. For example using 8192
-would only return values which go up in steps of 2.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Knob.choice">
-<span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.choice" title="Permalink to this definition"></a></dt>
-<dd><p>Return a value from a list chosen by the current voltage value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Knob.percent">
-<span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.percent" title="Permalink to this definition"></a></dt>
-<dd><p>Return the knob’s position as relative percentage.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Knob.range">
-<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.range" title="Permalink to this definition"></a></dt>
-<dd><p>Return a value (upper bound excluded) chosen by the current voltage value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Knob.read_position">
-<span class="sig-name descname"><span class="pre">read_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.read_position" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the position as a value between zero and provided integer.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Knob.set_deadzone">
-<span class="sig-name descname"><span class="pre">set_deadzone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadzone</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.set_deadzone" title="Permalink to this definition"></a></dt>
-<dd><p>Override the default deadzone with the given value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Knob.set_samples">
-<span class="sig-name descname"><span class="pre">set_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Knob.set_samples" title="Permalink to this definition"></a></dt>
-<dd><p>Override the default number of sample reads with the given value.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.Output">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">6300,</span> <span class="pre">12575,</span> <span class="pre">19150,</span> <span class="pre">25375,</span> <span class="pre">31625,</span> <span class="pre">38150,</span> <span class="pre">44225,</span> <span class="pre">50525,</span> <span class="pre">56950,</span> <span class="pre">63475]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output" title="Permalink to this definition"></a></dt>
-<dd><p>A class for sending digital or analogue voltage to an output jack.</p>
-<p>The outputs are capable of providing 0-10V, which can be achieved using
-the <code class="docutils literal notranslate"><span class="pre">cvx.voltage()</span></code> method.</p>
-<p>So that there is no chance of not having the full range, the chosen
-resistor values actually give you a range of about 0-10.5V, which is why
-calibration is important if you want to be able to output precise voltages.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Output.off">
-<span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output.off" title="Permalink to this definition"></a></dt>
-<dd><p>Set the voltage LOW at 0 volts.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Output.on">
-<span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output.on" title="Permalink to this definition"></a></dt>
-<dd><p>Set the voltage HIGH according to the gate voltage</p>
-<p>By default this is 5V, but can be overridden via the configuration file</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Output.toggle">
-<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output.toggle" title="Permalink to this definition"></a></dt>
-<dd><p>Invert the Output’s current state.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Output.value">
-<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output.value" title="Permalink to this definition"></a></dt>
-<dd><p>Sets the output to 0V or 5V based on a binary input, 0 or 1.</p>
-<p>&#64;param value  HIGH or LOW, according to the desired state.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Output.voltage">
-<span class="sig-name descname"><span class="pre">voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.Output.voltage" title="Permalink to this definition"></a></dt>
-<dd><p>Set the output voltage to the provided value within the range of MIN_VOLTAGE to MAX_VOLTAGE</p>
-<p>By default this range is 0-10, but can be overridden via the configuration file</p>
-<p>&#64;param voltage  The desired volts to send to the output. If None the current voltage is returned</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.Thermometer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">Thermometer</span></span><a class="headerlink" href="#europi.Thermometer" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper for the temperature sensor connected to Pin 4</p>
-<p>Reports the module’s current temperature in Celsius.</p>
-<p>If the module’s temperature sensor is not working correctly, the temperature will always be reported as None</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.Thermometer.read_temperature">
-<span class="sig-name descname"><span class="pre">read_temperature</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.Thermometer.read_temperature" title="Permalink to this definition"></a></dt>
-<dd><p>Read the ADC and return the current temperature</p>
-<p>&#64;return  The current temperature in Celsius, or None if the hardware did not initialze properly</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="europi.UsbConnection">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">UsbConnection</span></span><a class="headerlink" href="#europi.UsbConnection" title="Permalink to this definition"></a></dt>
-<dd><p>Checks the USB terminal is connected or not</p>
-<p>On the original Pico we can check Pin 24, but on the Pico 2 this does not work. In that case
-check the SIE_STATUS register and check bit 16</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="europi.UsbConnection.value">
-<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.UsbConnection.value" title="Permalink to this definition"></a></dt>
-<dd><p>Return 0 or 1, indicating if the USB connection is disconnected or connected</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="europi.bootsplash">
 <span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">bootsplash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi.bootsplash" title="Permalink to this definition"></a></dt>
 <dd><p>Display the EuroPi version when booting.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="europi.clamp">
-<span class="sig-prename descclassname"><span class="pre">europi.</span></span><span class="sig-name descname"><span class="pre">clamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi.clamp" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a value that is no lower than ‘low’ and no higher than ‘high’.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -486,7 +145,7 @@ contrib scripts that a function seems useful.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../api.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="configuration.html" class="btn btn-neutral float-right" title="configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="europi_config.html" class="btn btn-neutral float-right" title="europi_config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

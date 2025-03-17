@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Change Log" href="../changelog.html" />
-    <link rel="prev" title="experimental" href="experimental.html" /> 
+    <link rel="next" title="experimental.math_extras" href="experimental.math_extras.html" />
+    <link rel="prev" title="experimental.http_server" href="experimental.http_server.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,11 +43,40 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_config.html">europi_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_display.html">europi_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_hardware.html">europi_hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_log.html">europi_log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bitarray.html">experimental.bitarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.euclid.html">experimental.euclid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.http_server.html">experimental.http_server</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">experimental.knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.math_extras.html">experimental.math_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.osc.html">experimental.osc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.settings_menu.html">experimental.settings_menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.thread.html">experimental.thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.wifi.html">experimental.wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.clock_source.html">experimental.clocks.clock_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds1307.html">experimental.clocks.ds1307</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds3231.html">experimental.clocks.ds3231</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ntp.html">experimental.clocks.ntp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.null_clock.html">experimental.clocks.null_clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.about.html">tools.about</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.calibrate.html">tools.calibrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.conf_edit.html">tools.conf_edit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.diagnostic.html">tools.diagnostic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.experimental_conf_edit.html">tools.experimental_conf_edit</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
@@ -128,7 +157,7 @@ the ADC value</p>
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.update" title="Permalink to this definition"></a></dt>
 <dd><p>Re-read the ADC and update the buffered value</p>
 <dl class="simple">
-<dt>&#64;param samples  Specifies the number of samples to average to de-noise the ADC reading</dt><dd><p>See europi.AnalogueReader for details on ADC sampling</p>
+<dt>&#64;param samples  Specifies the number of samples to average to de-noise the ADC reading</dt><dd><p>See europi_hardware.AnalogueReader for details on ADC sampling</p>
 </dd>
 </dl>
 </dd></dl>
@@ -137,7 +166,7 @@ the ADC value</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.DisabledKnob">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">DisabledKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">DisabledKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi_hardware.html#europi_hardware.Knob" title="europi_hardware.Knob"><span class="pre">Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.DisabledKnob" title="Permalink to this definition"></a></dt>
 <dd><p>A <a class="reference internal" href="#experimental.knobs.LockableKnob" title="experimental.knobs.LockableKnob"><code class="xref py py-class docutils literal notranslate"><span class="pre">LockableKnob</span></code></a> that cannot be unlocked and whose value is unimportant. Useful when
 building multifunction knobs.</p>
 <dl class="field-list simple">
@@ -205,8 +234,8 @@ building multifunction knobs.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">KnobBank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">virtual_knobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_selection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank" title="Permalink to this definition"></a></dt>
-<dd><p>A <code class="docutils literal notranslate"><span class="pre">KnobBank</span></code> is a group of named ‘virtual’ :class”<code class="docutils literal notranslate"><span class="pre">LockableKnobs</span></code> that share the same
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">KnobBank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi_hardware.html#europi_hardware.Knob" title="europi_hardware.Knob"><span class="pre">Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">virtual_knobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_selection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank" title="Permalink to this definition"></a></dt>
+<dd><p>A <code class="docutils literal notranslate"><span class="pre">KnobBank</span></code> is a group of named ‘virtual’ :class:<code class="docutils literal notranslate"><span class="pre">LockableKnobs</span></code> that share the same
 physical knob. Only one of these knobs is active (unlocked) at a time. This allows for a single
 knob to be used to control many parameters.</p>
 <p>It is recommended that <code class="docutils literal notranslate"><span class="pre">KnobBanks</span></code> be created using the :class:<code class="docutils literal notranslate"><span class="pre">Builder</span></code>, as in:</p>
@@ -262,7 +291,7 @@ the knob state in a main loop. The workaround is to set a flag in the button han
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank.Builder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank.Builder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi_hardware.html#europi_hardware.Knob" title="europi_hardware.Knob"><span class="pre">Knob</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.KnobBank.Builder" title="Permalink to this definition"></a></dt>
 <dd><p>A convenient interface for creating a <a class="reference internal" href="#experimental.knobs.KnobBank" title="experimental.knobs.KnobBank"><code class="xref py py-class docutils literal notranslate"><span class="pre">KnobBank</span></code></a> with consistent initial state.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.KnobBank.Builder.build">
@@ -283,7 +312,7 @@ be changed.</p>
 <dd><p>Add a <a class="reference internal" href="#experimental.knobs.LockableKnob" title="experimental.knobs.LockableKnob"><code class="xref py py-class docutils literal notranslate"><span class="pre">LockableKnob</span></code></a> to the bank whose initial state is locked.</p>
 <p><cite>threshold_from_choice_count</cite> is a convenience parameter to be used in the case where
 this knob will be used to select from a relatively few number of choices, via the
-<a class="reference internal" href="europi.html#europi.Knob.choice" title="europi.Knob.choice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choice()</span></code></a> method. Pass the number of choices to this parameter and
+<a class="reference internal" href="europi_hardware.html#europi_hardware.Knob.choice" title="europi_hardware.Knob.choice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choice()</span></code></a> method. Pass the number of choices to this parameter and
 an appropriate threshold value will be calculated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -303,7 +332,7 @@ an appropriate threshold value will be calculated.</p>
 will be active. Only one unlocked knob may be added to the bank.</p>
 <p><cite>threshold_from_choice_count</cite> is a convenience parameter to be used in the case where
 this knob will be used to select from a relatively few number of choices, via the
-<a class="reference internal" href="europi.html#europi.Knob.choice" title="europi.Knob.choice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choice()</span></code></a> method. Pass the number of choices to this parameter and
+<a class="reference internal" href="europi_hardware.html#europi_hardware.Knob.choice" title="europi_hardware.Knob.choice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choice()</span></code></a> method. Pass the number of choices to this parameter and
 an appropriate threshold value will be calculated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -342,7 +371,7 @@ the bank.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.knobs.LockableKnob">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">LockableKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi.html#europi.Knob" title="europi.Knob"><span class="pre">Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_percentage_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_uint16_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.knobs.</span></span><span class="sig-name descname"><span class="pre">LockableKnob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="europi_hardware.html#europi_hardware.Knob" title="europi_hardware.Knob"><span class="pre">Knob</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_percentage_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_uint16_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percentage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.LockableKnob" title="Permalink to this definition"></a></dt>
 <dd><p>A Knob whose state can be locked on the current value. Once locked, reading the knob’s
 position will always return the locked value. When unlocking the knob, the value still doesn’t
 change until the position of the knob moves to within <code class="docutils literal notranslate"><span class="pre">threshold</span></code> percent of the value. This
@@ -365,7 +394,7 @@ current position of a <cite>LockableKnob</cite>, first lock the knob, then read 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>knob</strong> – The knob to wrap.</p></li>
-<li><p><strong>initial_uint16_value</strong> – The UINT16 (0-<cite>europi.MAXINT16</cite>) value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.</p></li>
+<li><p><strong>initial_uint16_value</strong> – The UINT16 (0-<cite>europi_hardware.MAXINT16</cite>) value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.</p></li>
 <li><p><strong>initial_percentage_value</strong> – The percentage (as a decimal 0-1) value to lock the knob at. If a value is provided the new knob is locked, otherwise it is unlocked.</p></li>
 <li><p><strong>threshold</strong> – a decimal between 0 and 1 representing how close the knob must be to the locked value in order to unlock. The percentage is in terms of the knobs full range. Defaults to 5% (0.05)</p></li>
 </ul>
@@ -454,8 +483,8 @@ down reaction time to changes.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="experimental.html" class="btn btn-neutral float-left" title="experimental" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../changelog.html" class="btn btn-neutral float-right" title="Change Log" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="experimental.http_server.html" class="btn btn-neutral float-left" title="experimental.http_server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experimental.math_extras.html" class="btn btn-neutral float-right" title="experimental.math_extras" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

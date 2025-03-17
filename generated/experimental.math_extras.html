@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>experimental.math_extras &mdash; EuroPi  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="experimental.osc" href="experimental.osc.html" />
+    <link rel="prev" title="experimental.knobs" href="experimental.knobs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> EuroPi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_config.html">europi_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_display.html">europi_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_hardware.html">europi_hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_log.html">europi_log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bitarray.html">experimental.bitarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.euclid.html">experimental.euclid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.http_server.html">experimental.http_server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.knobs.html">experimental.knobs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">experimental.math_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.osc.html">experimental.osc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.settings_menu.html">experimental.settings_menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.thread.html">experimental.thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.wifi.html">experimental.wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.clock_source.html">experimental.clocks.clock_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds1307.html">experimental.clocks.ds1307</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds3231.html">experimental.clocks.ds3231</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ntp.html">experimental.clocks.ntp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.null_clock.html">experimental.clocks.null_clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.about.html">tools.about</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.calibrate.html">tools.calibrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.conf_edit.html">tools.conf_edit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.diagnostic.html">tools.diagnostic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.experimental_conf_edit.html">tools.experimental_conf_edit</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EuroPi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../api.html">API</a> &raquo;</li>
+      <li>experimental.math_extras</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/experimental.math_extras.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-experimental.math_extras">
+<span id="experimental-math-extras"></span><h1>experimental.math_extras<a class="headerlink" href="#module-experimental.math_extras" title="Permalink to this heading"></a></h1>
+<p>Assorted mathematical and statistical functions that can be re-used across scripts</p>
+<p>Intended to augment Python’s standard math library with additional useful functions</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.math_extras.geometric_mean">
+<span class="sig-prename descclassname"><span class="pre">experimental.math_extras.</span></span><span class="sig-name descname"><span class="pre">geometric_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.math_extras.geometric_mean" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the geometric mean value of an array</p>
+<p>&#64;param l  An iterable collection of numbers</p>
+<p>&#64;return  The geometric mean of the list, or 0 of the list is empty</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.math_extras.harmonic_mean">
+<span class="sig-prename descclassname"><span class="pre">experimental.math_extras.</span></span><span class="sig-name descname"><span class="pre">harmonic_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.math_extras.harmonic_mean" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the harmonic mean value of an array</p>
+<p>&#64;param l  An iterable collection of numbers</p>
+<p>&#64;return  The harmonic mean of the list, or 0 of the list is empty</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.math_extras.mean">
+<span class="sig-prename descclassname"><span class="pre">experimental.math_extras.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.math_extras.mean" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the arithmetic mean value from an array</p>
+<p>&#64;param l  An iterable collection of numbers</p>
+<p>&#64;return  The arithmetic mean of the list, or 0 of the list is empty</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.math_extras.median">
+<span class="sig-prename descclassname"><span class="pre">experimental.math_extras.</span></span><span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.math_extras.median" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the median value from an array</p>
+<p>This is a cheater median, as we always choose the lower value if the length is even instead of
+averaging the middle two values. This is faster, but mathematically incorrect.</p>
+<p>&#64;param l  An iterable collection of numbers</p>
+<p>&#64;return  The median value from the list, or 0 if the list is empty</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.math_extras.mode">
+<span class="sig-prename descclassname"><span class="pre">experimental.math_extras.</span></span><span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.math_extras.mode" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the mode of an array</p>
+<p>The mode is the most-occurring item; if multiple items are tied,
+the median of the tied items is returned</p>
+<p>&#64;param l  An iterable collection of numbers</p>
+<p>&#64;return  The mode of the list, or 0 if the list is empty</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.math_extras.prod">
+<span class="sig-prename descclassname"><span class="pre">experimental.math_extras.</span></span><span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.math_extras.prod" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the product of all items in a list</p>
+<p>Equivalent the Python3’s math.prod</p>
+<p>&#64;param l  An iterable collection of numbers</p>
+<p>&#64;return  The product of all items in the list, or 0 if the list is empty</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.math_extras.rescale">
+<span class="sig-prename descclassname"><span class="pre">experimental.math_extras.</span></span><span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.math_extras.rescale" title="Permalink to this definition"></a></dt>
+<dd><p>Convert x in [old_min, old_max] -&gt; y in [new_min, new_max] using linear interpolation</p>
+<p>&#64;param x  The value to convert
+&#64;param old_min  The old (inclusive) minimum
+&#64;param old_max  The old (inclusive) maximum
+&#64;param new_min  The new (inclusive) minimum
+&#64;param new_max  The new (inclusive) maximum
+&#64;param clip     If true, we clip values within the [min, max] range; otherwise we extrapolate based on the ranges</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experimental.math_extras.solve_linear_system">
+<span class="sig-prename descclassname"><span class="pre">experimental.math_extras.</span></span><span class="sig-name descname"><span class="pre">solve_linear_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.math_extras.solve_linear_system" title="Permalink to this definition"></a></dt>
+<dd><p>Use gaussian elimination to solve a series of linear equations</p>
+<p>The provided matrix is the augmented matrix representation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">[</span><span class="n">k11</span> <span class="n">k12</span> <span class="n">k12</span> <span class="o">...</span> <span class="n">k1n</span>  <span class="n">a1</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">k21</span> <span class="n">k22</span> <span class="n">k22</span> <span class="o">...</span> <span class="n">k2n</span>  <span class="n">a2</span><span class="p">]</span>
+    <span class="o">.</span>
+    <span class="o">.</span>
+    <span class="o">.</span>
+    <span class="p">[</span><span class="n">kmn</span> <span class="n">kmn</span> <span class="n">kmn</span> <span class="o">...</span> <span class="n">kmn</span>  <span class="n">am</span><span class="p">]</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>&#64;param m  The augmented matrix representation of the series of equations. This array is mangled in the process</dt><dd><p>of calculation</p>
+</dd>
+</dl>
+<p>&#64;return   A matrix of the coefficients of the equation</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="experimental.knobs.html" class="btn btn-neutral float-left" title="experimental.knobs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experimental.osc.html" class="btn btn-neutral float-right" title="experimental.osc" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rory Allen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

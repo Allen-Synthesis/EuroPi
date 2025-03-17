@@ -1,0 +1,6 @@
+﻿experimental.bitarray
+=====================
+
+.. automodule:: experimental.bitarray
+    :members:
+    :inherited-members:

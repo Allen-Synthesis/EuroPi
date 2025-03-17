@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ui &mdash; EuroPi  documentation</title>
+  <title>experimental.screensaver &mdash; EuroPi  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="experimental" href="experimental.html" />
-    <link rel="prev" title="file_utils" href="file_utils.html" /> 
+    <link rel="next" title="experimental.settings_menu" href="experimental.settings_menu.html" />
+    <link rel="prev" title="experimental.rtc" href="experimental.rtc.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,7 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
@@ -63,7 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">experimental.screensaver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.settings_menu.html">experimental.settings_menu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.thread.html">experimental.thread</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.wifi.html">experimental.wifi</a></li>
@@ -98,9 +98,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../api.html">API</a> &raquo;</li>
-      <li>ui</li>
+      <li>experimental.screensaver</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/ui.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/experimental.screensaver.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -108,34 +108,62 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-ui">
-<span id="ui"></span><h1>ui<a class="headerlink" href="#module-ui" title="Permalink to this heading"></a></h1>
-<p>This module provides reusable UI components.</p>
+  <section id="module-experimental.screensaver">
+<span id="experimental-screensaver"></span><h1>experimental.screensaver<a class="headerlink" href="#module-experimental.screensaver" title="Permalink to this heading"></a></h1>
+<p>A simple screensaver implementation for EuroPi</p>
+<p>&#64;author Chris Iverach-Brereton &lt;<a class="reference external" href="mailto:ve4cib&#37;&#52;&#48;gmail&#46;com">ve4cib<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;
+&#64;year   2023</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="ui.Menu">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.</span></span><span class="sig-name descname"><span class="pre">Menu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_knob=&lt;europi_hardware.Knob</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choice_buttons=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.Menu" title="Permalink to this definition"></a></dt>
-<dd><p>A class representing a menu displayable on the EuroPi screen. The user can select a menu item using the
-configured knob and select it with the configured button(s).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>items</strong> – a list of the menu items</p></li>
-<li><p><strong>select_func</strong> – the function to call when a menu item is chosen. The function will be called with single argument, the selected item.</p></li>
-<li><p><strong>select_knob</strong> – the knob used to select the menu item, defaults to k1</p></li>
-<li><p><strong>choice_buttons</strong> – a List of Buttons that can be pressed to choose the selected item. Defaults to b1</p></li>
-</ul>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="experimental.screensaver.OledWithScreensaver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.screensaver.</span></span><span class="sig-name descname"><span class="pre">OledWithScreensaver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable_screensaver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_blank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.screensaver.OledWithScreensaver" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper for europi.oled that provides automatic screensaver &amp; blank if enabled</p>
+<p>The notify_user_interaction() method should be called in the ISR for any events that should interrupt or
+defer the screensaver/blank</p>
+<p>Set .enable_screensaver or .enable_blank to False to disable the screensaver/blanking activation completely
+(though if you do that, just use europi.oled instead of this class)</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="ui.Menu.draw_menu">
-<span class="sig-name descname"><span class="pre">draw_menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.Menu.draw_menu" title="Permalink to this definition"></a></dt>
-<dd><p>This function should be called by your script’s main loop in order to display and refresh the menu.</p>
+<dt class="sig sig-object py" id="experimental.screensaver.OledWithScreensaver.is_blank">
+<span class="sig-name descname"><span class="pre">is_blank</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.screensaver.OledWithScreensaver.is_blank" title="Permalink to this definition"></a></dt>
+<dd><p>Is the screen blanked due to inactivity?</p>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="ui.Menu.selected">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">selected</span></span><a class="headerlink" href="#ui.Menu.selected" title="Permalink to this definition"></a></dt>
-<dd><p>The currently selected menu item.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.screensaver.OledWithScreensaver.is_screenaver">
+<span class="sig-name descname"><span class="pre">is_screenaver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.screensaver.OledWithScreensaver.is_screenaver" title="Permalink to this definition"></a></dt>
+<dd><p>Is the screensaver currently showing?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.screensaver.OledWithScreensaver.notify_user_interaction">
+<span class="sig-name descname"><span class="pre">notify_user_interaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.screensaver.OledWithScreensaver.notify_user_interaction" title="Permalink to this definition"></a></dt>
+<dd><p>Notifies the screensaver subsystem that the user has physically interacted with the module
+and that the screensaver should defer/shutdown as appropriate</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="experimental.screensaver.Screensaver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.screensaver.</span></span><span class="sig-name descname"><span class="pre">Screensaver</span></span><a class="headerlink" href="#experimental.screensaver.Screensaver" title="Permalink to this definition"></a></dt>
+<dd><p>A screensaver for the EuroPi</p>
+<p>This class’ draw() function should be called from inside the application’s main loop
+to draw the screensaver.</p>
+<p>At regular intervals the EuroPi logo will be drawn to a random location on the screen.</p>
+<p>Alternatively draw_blank() will simply clear the screen</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.screensaver.Screensaver.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.screensaver.Screensaver.draw" title="Permalink to this definition"></a></dt>
+<dd><p>Draw the logo to a random position on the screen</p>
+<p>If the current ticks_ms is an even multiple of the screensaver interval,
+or the <cite>force</cite> paramter is True, we will draw.  Otherwise this does
+nothing</p>
+<p>&#64;param force  Force the logo to be drawn, regardless of the current ticks</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.screensaver.Screensaver.draw_blank">
+<span class="sig-name descname"><span class="pre">draw_blank</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.screensaver.Screensaver.draw_blank" title="Permalink to this definition"></a></dt>
+<dd><p>Blank the screen completely</p>
 </dd></dl>
 
 </dd></dl>
@@ -146,8 +174,8 @@ configured knob and select it with the configured button(s).</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="file_utils.html" class="btn btn-neutral float-left" title="file_utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="experimental.html" class="btn btn-neutral float-right" title="experimental" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="experimental.rtc.html" class="btn btn-neutral float-left" title="experimental.rtc" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experimental.settings_menu.html" class="btn btn-neutral float-right" title="experimental.settings_menu" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tools.conf_edit &mdash; EuroPi  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="tools.diagnostic" href="tools.diagnostic.html" />
+    <link rel="prev" title="tools.calibrate" href="tools.calibrate.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> EuroPi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="europi.html">europi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_config.html">europi_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_display.html">europi_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_hardware.html">europi_hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_log.html">europi_log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="europi_script.html">europi_script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_utils.html">file_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html">ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html">experimental</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.a_to_d.html">experimental.a_to_d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bisect.html">experimental.bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.bitarray.html">experimental.bitarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.euclid.html">experimental.euclid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.http_server.html">experimental.http_server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.knobs.html">experimental.knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.math_extras.html">experimental.math_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.osc.html">experimental.osc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.quantizer.html">experimental.quantizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.random_extras.html">experimental.random_extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.rtc.html">experimental.rtc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.screensaver.html">experimental.screensaver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.settings_menu.html">experimental.settings_menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.thread.html">experimental.thread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.wifi.html">experimental.wifi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.clock_source.html">experimental.clocks.clock_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds1307.html">experimental.clocks.ds1307</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ds3231.html">experimental.clocks.ds3231</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.ntp.html">experimental.clocks.ntp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.clocks.null_clock.html">experimental.clocks.null_clock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.about.html">tools.about</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.calibrate.html">tools.calibrate</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">tools.conf_edit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.diagnostic.html">tools.diagnostic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.experimental_conf_edit.html">tools.experimental_conf_edit</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EuroPi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../api.html">API</a> &raquo;</li>
+      <li>tools.conf_edit</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/tools.conf_edit.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-tools.conf_edit">
+<span id="tools-conf-edit"></span><h1>tools.conf_edit<a class="headerlink" href="#module-tools.conf_edit" title="Permalink to this heading"></a></h1>
+<p>A global configuration-editor menu</p>
+<p>Used to edit the global EuroPiConfig settings – use at your own peril!</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tools.conf_edit.</span></span><span class="sig-name descname"><span class="pre">ConfigurationEditor</span></span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.config_points">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="configuration.html#configuration.ConfigPoint" title="configuration.ConfigPoint"><span class="pre">ConfigPoint</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.config_points" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of ConfigPoints describing this script’s configuration options. By default
+this function returns an empty list. Override it if you’d like configuration points.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.display_name">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.display_name" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the string used to identify this script in the Menu. Defaults to the class name. Override it if you
+would like to use a different name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">display_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello World&quot;</span>
+</pre></div>
+</div>
+<p>Note that the screen is only 16 characters wide. Anything longer will be cut off.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.last_saved">
+<span class="sig-name descname"><span class="pre">last_saved</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.last_saved" title="Permalink to this definition"></a></dt>
+<dd><p>Return the ticks in milliseconds since last save.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.load_state_bytes">
+<span class="sig-name descname"><span class="pre">load_state_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.load_state_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Check disk for saved state, if it exists, return the raw state value as bytes.</p>
+<p>Check for a previously saved state. If it exists, return state as a
+byte string. If no state is found, an empty string will be returned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.load_state_json">
+<span class="sig-name descname"><span class="pre">load_state_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.load_state_json" title="Permalink to this definition"></a></dt>
+<dd><p>Load previously saved state as a dict.</p>
+<p>Check for a previously saved state. If it exists, return state as a
+dict. If no state is found, an empty dictionary will be returned.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.main" title="Permalink to this definition"></a></dt>
+<dd><p>Override this method with your script’s main loop method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.remove_state">
+<span class="sig-name descname"><span class="pre">remove_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.remove_state" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the state file for this script.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.save_state">
+<span class="sig-name descname"><span class="pre">save_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.save_state" title="Permalink to this definition"></a></dt>
+<dd><p>Encode state and call the appropriate persistence save method.</p>
+<p>Override this class with the script specific encoding of state into
+the persistence format that best matches its use case. Then call the
+appropriate save method, such as <cite>save_state_json(state)</cite>. See the
+class documentation for a full example.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.save_state_bytes">
+<span class="sig-name descname"><span class="pre">save_state_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.save_state_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Take state in persistence format as bytes and write to disk.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be mindful of how often <cite>save_state_bytes()</cite> is called because
+writing to disk too often can slow down the performance of your
+script. Only call save state when state has changed and consider
+adding a time since last save check to reduce save frequency.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.ConfigurationEditor.save_state_json">
+<span class="sig-name descname"><span class="pre">save_state_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.ConfigurationEditor.save_state_json" title="Permalink to this definition"></a></dt>
+<dd><p>Take state as a dict and save as a json string.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be mindful of how often <cite>save_state_json()</cite> is called because
+writing to disk too often can slow down the performance of your
+script. Only call save state when state has changed and consider
+adding a time since last save check to reduce save frequency.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tools.conf_edit.SectionHeader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tools.conf_edit.</span></span><span class="sig-name descname"><span class="pre">SectionHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.SectionHeader" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.SectionHeader.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.SectionHeader.add_child" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new child item to this item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.SectionHeader.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.SectionHeader.draw" title="Permalink to this definition"></a></dt>
+<dd><p>Draw the item to the screen</p>
+<p>&#64;param oled   A Display-compatible object we draw to</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tools.conf_edit.SectionHeader.short_press">
+<span class="sig-name descname"><span class="pre">short_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.conf_edit.SectionHeader.short_press" title="Permalink to this definition"></a></dt>
+<dd><p>Handler for when the user short-presses the button</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tools.calibrate.html" class="btn btn-neutral float-left" title="tools.calibrate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tools.diagnostic.html" class="btn btn-neutral float-right" title="tools.diagnostic" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rory Allen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
