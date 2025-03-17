@@ -124,21 +124,20 @@ class Timezone:
 
 
 class DateTime:
-    """Represents a date and time"""
+    """
+    Represents a date and time
+
+    :param year:  The current year (e.g. 2025)
+    :param month:  The current month (e.g. Month.JANUARY)
+    :param day:  The current day within the month (e.g. 17)
+    :param hour:  The current hour on a 24-hour clock (0-23)
+    :param minute:  The current minute within the hour (0-59)
+    :param second:  The current second within the minute (0-59, optional)
+    :param weekday:  The current day of the week (e.g. Weekday.MONDAY, optional)
+    :param yearday:  The current day of the year (1-365, 1-366 if leap year, optional)
+    """
 
     def __init__(self, year, month, day, hour, minute, second=None, weekday=None, yearday=None):
-        """
-        Create a DateTime representing a specific moment
-
-        :param year:  The current year (e.g. 2025)
-        :param month:  The current month (e.g. Month.JANUARY)
-        :param day:  The current day within the month (e.g. 17)
-        :param hour:  The current hour on a 24-hour clock (0-23)
-        :param minute:  The current minute within the hour (0-59)
-        :param second:  The current second within the minute (0-59, optional)
-        :param weekday:  The current day of the week (e.g. Weekday.MONDAY, optional)
-        :param yearday:  The current day of the year (1-365, 1-366 if leap year, optional)
-        """
         self.year = year
         self.month = month
         self.day = day
@@ -343,14 +342,11 @@ class RealtimeClock:
 
     This class wraps around an external clock source, e.g. an I2C-compatible RTC
     module or a network connection to an NTP server
+
+    :param source:  An ExternalClockSource implementation we read the time from
     """
 
     def __init__(self, source):
-        """
-        Create a new realtime clock.
-
-        :param source:  An ExternalClockSource implementation we read the time from
-        """
         self.source = source
 
     def utcnow(self):
