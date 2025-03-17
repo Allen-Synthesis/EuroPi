@@ -45,10 +45,10 @@ class Quantizer:
     def __init__(self, notes=None, name=""):
         """Constructor; can specify what notes are enabled/disabled
 
-        @param notes  A boolean array of length SEMITONES_PER_OCTAVE indicating what semitones are enabled (True)
-                      or disabled (False).  Defaults to a chromatic scale (all notes enabled) if None is passed.
-                      The values of notes are copied into a new array to prevent possible issues with multiple
-                      Quantizer instances sharing the same set of notes.
+        By default all notes are enabled (chromatic scale). The provided array is
+        deep-copied into this object
+
+        @param notes  A boolean array of length SEMITONES_PER_OCTAVE indicating what semitones are enabled (True) or disabled (False)
 
         @raises ValueError if len(notes) is not equal to SEMITONES_PER_OCTAVE
         """
@@ -83,12 +83,9 @@ class Quantizer:
         """Take an analog input voltage and round it to the nearest note on our scale
 
         @param analog_in  The input voltage to quantize, as a float
-        @param root       An integer in the range [0, 12) indicating the number of semitones up to transpose
-                          the quantized scale
+        @param root       An integer in the range [0, 12) indicating the number of semitones up to transpose the quantized scale
 
-        @return A tuple of the form (voltage, note) where voltage is
-                the raw voltage to output, and note is a value from
-                0-11 indicating the semitone
+        @return A tuple of the form (voltage, note) where voltage is the raw voltage to output, and note is a value from 0-11 indicating the semitone
         """
         # Make sure we've got at least 1 note in the scale enabled, otherwise we might have infinite loop problems
         # If we have nothing to quantize to, just output zero for both outputs
@@ -171,24 +168,23 @@ class Intervals:
 
     For example, if you have a Quantizer and want to enable the Perfect4th you can simply use
 
-    q = Quantizer(...)
-    q[Intervals.P4] = True
+    .. code-block:: python
+
+        q = Quantizer(...)
+        q[Intervals.P4] = True
 
     This class uses the short notation for intervals.  See https://en.wikipedia.org/wiki/Interval_(music)
     for more information.
 
     The abridged summary:
-        - single case-sensitive letter for the interval type
-        - a number from 1-8 indicating the size of the interval
-        - P = perfect
-        - M = major
-        - m = minor
-        - d = diminished
-        - A = augmented
-        - three exceptions:
-            - S = semitone (equivalent to m2/A1)
-            - T = Tone (equivalent to M2/d3)
-            - TT = Tritone (equivalent to d5/A4)
+    * single case-sensitive letter for the interval type
+    * a number from 1-8 indicating the size of the interval
+    * P = perfect
+    * M = major
+    * m = minor
+    * d = diminished
+    * A = augmented
+    * three exceptions: S = semitone (equivalent to m2/A1), T = Tone (equivalent to M2/d3), TT = Tritone (equivalent to d5/A4)
     """
 
     # fmt: off

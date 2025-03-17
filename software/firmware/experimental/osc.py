@@ -183,20 +183,21 @@ class OpenSoundServer:
     To use, instantiate the server and assign a callback. Then call
     receive_data() in the main loop:
 
-    ```python
-    import europi
+    .. code-block:: python
 
-    def main():
-        srv = OpenSoundServer(9000)
+        import europi
 
-        @srv.data_handler
-        def process_data(connection=None, data=None):
-            # process the data, send anything back over the connection if needed
-            ...
+        def main():
+            srv = OpenSoundServer(9000)
 
-        while True:
-            srv.receive_data()
-    ```
+            @srv.data_handler
+            def process_data(connection=None, data=None):
+                # process the data, send anything back over the connection if needed
+                ...
+
+            while True:
+                srv.receive_data()
+
     """
 
     def __init__(self, recv_port=9000, send_port=9001, send_addr="192.168.4.100"):
@@ -272,9 +273,7 @@ class OpenSoundServer:
         Transmit a packet
 
         @param address  The OSC address to send to
-        @param args  The values to encode in the packet. Allowed types are
-                     int, float, bool, str, and bytearray.
-                     Bools are converted to 0/1 integers
+        @param args  The values to encode in the packet. Allowed types are int, float, bool, str, and bytearray. Bools are converted to 0/1 integers
         """
 
         def pad_length(arr):

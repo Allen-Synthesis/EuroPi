@@ -19,8 +19,7 @@ Menu interaction is done using a knob and a button (K2 and B2 by default):
 - short-press to enter edit mode
 - rotate knob to select an option
 - short-press button to apply the new option
-- long-press button to change between the 2 menu levels (if
-  possible)
+- long-press button to change between the 2 menu levels (if possible)
 
 For examples of how to create and use the SettingsMenu, please refer to
 - contrib/settings_menu_example.py
@@ -67,10 +66,8 @@ class MenuItem:
         """
         Create a new abstract menu item
 
-        @param parent  A MenuItem representing this item's parent, if this item is the bottom-level of a
-                       multi-level menu
-        @param children  A list of MenuItems representing this item's children, if this is the top-level of a
-                         multi-level menu
+        @param parent  A MenuItem representing this item's parent, if this item is the bottom-level of a multi-level menu
+        @param children  A list of MenuItems representing this item's children, if this is the top-level of a multi-level menu
         @param is_visible  Is this menu item visible by default?
         """
         self.menu = None
@@ -145,8 +142,8 @@ class ChoiceMenuItem(MenuItem):
         @param children  If this menu has multiple levels, whar are this item's child controls?
         @param title  The title to display at the top of the display when this control is active
         @param prefix  A prefix to display before the title when this control is active
-        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing 12x12 MONO_HLSB
-                         graphics to display along with the keyed values
+        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing
+            12x12 MONO_HLSB graphics to display along with the keyed values
         @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
                        options
         @param is_visible  Is this menu item visible by default?
@@ -287,22 +284,19 @@ class SettingMenuItem(ChoiceMenuItem):
         @param children  If this menu has multiple levels, whar are this item's child controls?
         @param title  The title to display at the top of the display when this control is active
         @param prefix  A prefix to display before the title when this control is active
-        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing 12x12 MONO_HLSB
-                         graphics to display along with the keyed values
-        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
-                       options
+        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing
+            12x12 MONO_HLSB graphics to display along with the keyed values
+        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint options
         @param callback  A function to invoke when this item's value changes. Must accept
-                         (new_value, old_value, config_point, arg=None) as parameters
+            (new_value, old_value, config_point, arg=None) as parameters
         @param callback_arg  An optional additional argument to pass to the callback function
-        @param float_resolution  The resolution of floating-point config points (ignored if config_point is not
-                                 a FloatConfigPoint)
-        @param value_map  An optional dict to map the underlying simple ConfigPoint values to more complex objects
-                          e.g. map the string "CMaj" to a Quantizer object
+        @param float_resolution  The resolution of floating-point config points
+            (ignored if config_point is not a FloatConfigPoint)
+        @param value_map  An optional dict to map the underlying simple ConfigPoint values
+            to more complex objects e.g. map the string "CMaj" to a Quantizer object
         @param is_visible  Is this menu item visible by default?
-        @param autoselect_knob  If True, this item gets "Knob" as an additional choice, allowing ad-hoc selection
-                                via the knob
-        @param autoselect_cv  If True, this item gets "AIN" as an additional choice, allowing ad-hoc selection
-                              via the CV input
+        @param autoselect_knob  If True, this item gets "Knob" as an additional choice, allowing ad-hoc selection via the knob
+        @param autoselect_cv  If True, this item gets "AIN" as an additional choice, allowing ad-hoc selection via the CV input
         """
         if title is None:
             title = config_point.name
@@ -589,17 +583,15 @@ class ActionMenuItem(ChoiceMenuItem):
         If the item has a callback function defined, it will be invoked once during initialization
 
         @param actions  The list of choices the user can pick from. e.g. ["Cancel", "Ok"]
-        @param callback  The function to call when the user invokes the action. The selected item from choices
-                         is passed as the first parameter
+        @param callback  The function to call when the user invokes the action. The selected item from choices is passed as the first parameter
         @param callback_arg  The second parameter passed to the callback
         @param parent  If the menu has multiple levels, what is this item's parent control?
         @param children  If this menu has multiple levels, whar are this item's child controls?
         @param title  The title to display at the top of the display when this control is active
         @param prefix  A prefix to display before the title when this control is active
-        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing 12x12 MONO_HLSB
-                         graphics to display along with the keyed values
-        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
-                       options
+        @param graphics  A dict of values mapped to FrameBuffer or bytearray objects, representing
+            12x12 MONO_HLSB graphics to display along with the keyed values
+        @param labels  A dict of values mapped to strings, representing human-readible versions of the ConfigPoint options
         @param is_visible  Is this menu item visible by default?
         """
         super().__init__(
@@ -668,12 +660,9 @@ class SettingsMenu:
         @param menu_items  A list of MenuItem objects representing the top-level of the menu
         @param navigation_button  The button the user presses to interact with the menu
         @param navigation_knob  The knob the user turns to scroll through the menu. This may be an
-                                experimental.knobs.KnobBank with 3 menu levels called "main_menu",
-                                "submenu" and "choice", or a raw knob like europi.k2
-        @param short_press_cb  An optional callback function to invoke when the user interacts with a short-press of
-                               the button
-        @param long_press_cb  An optional callback function to invoke when the user interacts with a long-press of
-                              the button
+            experimental.knobs.KnobBank with 3 menu levels called "main_menu", "submenu" and "choice", or a raw knob like europi.k2
+        @param short_press_cb  An optional callback function to invoke when the user interacts with a short-press of the button
+        @param long_press_cb  An optional callback function to invoke when the user interacts with a long-press of the button
         @param autoselect_knob  A knob that the user can turn to select items without needing to menu-dive
         @param autoselect_cv  An analogue input the user can use to select items with CV
         """

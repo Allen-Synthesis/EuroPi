@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from experimental.clocks.clock_source import ExternalClockSource
-from utime import ticks_ms, ticks_diff
+from utime import ticks_ms
 
 
 class NullClock(ExternalClockSource):

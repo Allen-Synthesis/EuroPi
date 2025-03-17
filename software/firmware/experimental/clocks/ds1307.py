@@ -17,10 +17,8 @@ Interface class for the DS1307 Realtime Clock
 This class is designed to work with a DS1307 chip mounted on an I2C carrier board
 that can be connected to EuroPi's external I2C interface. The user is required to
 1) provide their own RTC module
-2) create/source an appropriate adapter to connect the GND, VCC, SDA, and SCL pins on EuroPi
-   to the RTC module
-3) Mount the RTC module securely in such a way that it won't come loose nor accidentally short out
-   any other components.
+2) create/source an appropriate adapter to connect the GND, VCC, SDA, and SCL pins on EuroPi to the RTC module
+3) Mount the RTC module securely in such a way that it won't come loose nor accidentally short out any other components.
 
 Based on work by Mike Causer released under the MIT license (c) 2018:
 https://github.com/mcauser/micropython-tinyrtc-i2c/blob/master/ds1307.py
@@ -34,8 +32,15 @@ But at present this class is provided as-is, based wholly on Mike Causer's work 
 changes to support EuroPi's RTC interface.
 """
 
-from micropython import const
 from experimental.clocks.clock_source import ExternalClockSource
+
+try:
+    from micropython import const
+except ImportError:
+
+    def const(x):
+        return x
+
 
 # fmt: off
 DATETIME_REG = const(0)    # 0x00-0x06
@@ -123,8 +128,12 @@ class DS1307(ExternalClockSource):
         self.i2c.writeto_mem(self.addr, DATETIME_REG, bytearray([reg]))
 
     def square_wave(self, sqw=0, out=0):
-        """Output square wave on pin SQ at 1Hz, 4.096kHz, 8.192kHz or 32.768kHz,
-        or disable the oscillator and output logic level high/low."""
+        """
+        Output square wave on pin SQ
+
+        Available frequencues: 1Hz, 4.096kHz, 8.192kHz or 32.768kHz,
+        or disable the oscillator and output logic level high/low.
+        """
         rs0 = 1 if sqw == 4 or sqw == 32 else 0
         rs1 = 1 if sqw == 8 or sqw == 32 else 0
         out = 1 if out > 0 else 0

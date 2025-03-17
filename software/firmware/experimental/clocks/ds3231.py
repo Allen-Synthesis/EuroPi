@@ -17,10 +17,8 @@ Interface class for the DS3231 Realtime Clock
 This class is designed to work with a DS3231 chip mounted on an I2C carrier board
 that can be connected to EuroPi's external I2C interface. The user is required to
 1) provide their own RTC module
-2) create/source an appropriate adapter to connect the GND, VCC, SDA, and SCL pins on EuroPi
-   to the RTC module
-3) Mount the RTC module securely in such a way that it won't come loose nor accidentally short out
-   any other components.
+2) create/source an appropriate adapter to connect the GND, VCC, SDA, and SCL pins on EuroPi to the RTC module
+3) Mount the RTC module securely in such a way that it won't come loose nor accidentally short out any other components.
 
 Compatible RTC modules can be purchased relatively cheaply online. e.g.:
 - https://www.amazon.ca/DS3231-Precision-AT24C32-Arduino-Raspberry/dp/B07V68443F (not an afficliate link)
@@ -36,12 +34,13 @@ the clock.  To do so:
 
 1. Connect the clock module to your EuroPi
 2. Connect your EuroPi to a computer via the USB port
-3. Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to
-   experimental_config, restart the Raspberry Pi Pico before proceeding.
+3. Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to experimental_config, restart the Raspberry Pi Pico before proceeding.
 4. In Thonny's Python terminal, run the following code:
 
-    >>> from experimental.rtc import clock
-    >>> clock.source.set_datetime((2025, 6, 14, 22, 59, 0, 6))
+```
+>>> from experimental.rtc import clock
+>>> clock.source.set_datetime((2025, 6, 14, 22, 59, 0, 6, 0))
+```
 
 This will set the clock to 14 June 2025, 22:59:00, and set the weekday to Saturday (6).
 The tuple is of the form (Year, Month, Day, Hour, Minute, Second, Weekday, Yearday). It is recommended
@@ -54,7 +53,14 @@ some scripts that assume the clock is set to UTC may behave incorrectly.
 from europi_log import *
 
 from experimental.clocks.clock_source import ExternalClockSource
-from micropython import const
+
+try:
+    from micropython import const
+except ImportError:
+
+    def const(x):
+        return x
+
 
 # fmt: off
 DATETIME_REG    = const(0)   # 7 bytes
@@ -189,17 +195,20 @@ class DS3231(ExternalClockSource):
         # fmt: on
 
     def square_wave(self, freq=None):
-        """Outputs Square Wave Signal
+        """
+        Outputs Square Wave Signal
 
         The alarm interrupts are disabled when enabling a square wave output. Disabling SWQ out does
         not enable the alarm interrupts. Set them manually with the alarm_int() method.
+
         freq : int,
-            Not given: returns current setting
-            False = disable SQW output,
-            1 =     1 Hz,
-            2 = 1.024 kHz,
-            3 = 4.096 kHz,
-            4 = 8.192 kHz"""
+        * None: returns current setting
+        * False = disable SQW output,
+        * 1 =     1 Hz,
+        * 2 = 1.024 kHz,
+        * 3 = 4.096 kHz,
+        * 4 = 8.192 kHz
+        """
         # fmt: off
         if freq is None:
             return self.i2c.readfrom_mem(self.addr, CONTROL_REG, 1)[0]
