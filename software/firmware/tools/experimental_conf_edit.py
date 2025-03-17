@@ -30,6 +30,7 @@ class ExperimentalConfigurationEditor(EuroPiScript):
 
     Used to edit the global EuroPiConfig settings -- use at your own peril!
     """
+
     def __init__(self):
         super().__init__()
 

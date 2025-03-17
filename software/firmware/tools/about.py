@@ -23,6 +23,7 @@ class About(EuroPiScript):
 
     Also displays the CPU frequency mode and Pico model
     """
+
     def __init__(self):
         super().__init__()
 

@@ -23,6 +23,7 @@ Copied from https://github.com/brianhouse/bjorklund with all due gratitude
 Originally written by Brian House (c) 2011. Released under the MIT license
 """
 
+
 def generate_euclidean_pattern(steps, pulses, rot=0):
     """Generates an array indicating the on/off steps of Euclid(k, n)
 

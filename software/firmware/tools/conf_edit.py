@@ -44,6 +44,7 @@ class SectionHeader(MenuItem):
     :param title:  The title of this section
     :param children:  A list of SettingMenuItem instances contained in this section
     """
+
     def __init__(self, title, children):
         super().__init__(children=children)
         self.title = title
@@ -58,6 +59,7 @@ class ConfigurationEditor(EuroPiScript):
 
     Used to edit the global EuroPiConfig settings -- use at your own peril!
     """
+
     def __init__(self):
         super().__init__()
 
