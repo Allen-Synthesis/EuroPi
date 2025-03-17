@@ -40,10 +40,10 @@ def load_file(filename, mode: str = "r") -> object:
 def load_json_file(filename, mode="r") -> dict:
     """Load a file and return its contents
 
-    :param filename  The name of the file to load
-    :param mode      The mode to open the file in. Should be "r" except in very unique circumstances
+    :param filename:  The name of the file to load
+    :param mode:      The mode to open the file in. Should be "r" except in very unique circumstances
 
-    :return  The file's contents as a dict
+    :return:  The file's contents as a dict
     """
     try:
         with open(filename, mode) as file:
@@ -60,6 +60,11 @@ def load_json_file(filename, mode="r") -> dict:
 
 
 def delete_file(filename):
+    """
+    Delete a file from the disk if it exists
+
+    :param filename:  The file to delete
+    """
     try:
         os.remove(filename)
     except OSError:
