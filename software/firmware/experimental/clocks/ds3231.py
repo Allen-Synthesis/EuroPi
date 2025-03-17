@@ -192,17 +192,20 @@ class DS3231(ExternalClockSource):
         # fmt: on
 
     def square_wave(self, freq=None):
-        """Outputs Square Wave Signal
+        """
+        Outputs Square Wave Signal
 
         The alarm interrupts are disabled when enabling a square wave output. Disabling SWQ out does
         not enable the alarm interrupts. Set them manually with the alarm_int() method.
+
         freq : int,
-            Not given: returns current setting
-            False = disable SQW output,
-            1 =     1 Hz,
-            2 = 1.024 kHz,
-            3 = 4.096 kHz,
-            4 = 8.192 kHz"""
+        * None: returns current setting
+        * False = disable SQW output,
+        * 1 =     1 Hz,
+        * 2 = 1.024 kHz,
+        * 3 = 4.096 kHz,
+        * 4 = 8.192 kHz
+        """
         # fmt: off
         if freq is None:
             return self.i2c.readfrom_mem(self.addr, CONTROL_REG, 1)[0]

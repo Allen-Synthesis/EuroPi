@@ -125,8 +125,12 @@ class DS1307(ExternalClockSource):
         self.i2c.writeto_mem(self.addr, DATETIME_REG, bytearray([reg]))
 
     def square_wave(self, sqw=0, out=0):
-        """Output square wave on pin SQ at 1Hz, 4.096kHz, 8.192kHz or 32.768kHz,
-        or disable the oscillator and output logic level high/low."""
+        """
+        Output square wave on pin SQ
+
+        Available frequencues: 1Hz, 4.096kHz, 8.192kHz or 32.768kHz,
+        or disable the oscillator and output logic level high/low.
+        """
         rs0 = 1 if sqw == 4 or sqw == 32 else 0
         rs1 = 1 if sqw == 8 or sqw == 32 else 0
         out = 1 if out > 0 else 0
