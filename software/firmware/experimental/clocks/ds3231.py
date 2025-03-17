@@ -32,10 +32,10 @@ https://github.com/mcauser/micropython-tinyrtc-i2c/blob/master/ds1307.py
 If you have a brand-new DS3231, or have recently replaced your module's battery, you may need to manually update
 the clock.  To do so:
 
-1. Connect the clock module to your EuroPi
-2. Connect your EuroPi to a computer via the USB port
-3. Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to experimental_config, restart the Raspberry Pi Pico before proceeding.
-4. In Thonny's Python terminal, run the following code:
+#. Connect the clock module to your EuroPi
+#. Connect your EuroPi to a computer via the USB port
+#. Open Thonny and make sure experimental_config is configured to use the DS3231. If you make any changes to experimental_config, restart the Raspberry Pi Pico before proceeding.
+#. In Thonny's Python terminal, run the following code:
 
 .. code-block::
 

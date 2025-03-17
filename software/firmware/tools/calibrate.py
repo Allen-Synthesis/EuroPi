@@ -67,14 +67,21 @@ class Calibrate(EuroPiScript):
     A script to interactively calibrate the module
 
     General flow:
-    1. Sanity check (rack power, necessary file structure exists)
-    2. Input calibration. One of:
-        a. low-accuracy 10V in
-        b. low-accuracy 5V in
-        c. high-accuracy 0-10V in
-    3. Output calibration
-    4. Save calibration
-    5. Idle for reboot
+    #. Sanity check (rack power, necessary file structure exists)
+
+    #. Input calibration. One of:
+
+        * low-accuracy 10V in
+
+        * low-accuracy 5V in
+
+        * high-accuracy 0-10V in
+
+    #. Output calibration
+
+    #. Save calibration
+
+    #. Idle for reboot
 
     Output calibration only applies to CV1; all other outputs will
     use the same calibration values.
