@@ -233,3 +233,8 @@ As with all hardware, the EuroPi has certain limitations. Some are more obvious 
 ### In Depth Limitations
 - Clock pulses shorter than approximately 0.01s (10ms) will not be reliably detected (this depends on clock speed too)
 - Reading any analogue source, either the analogue input or knobs, will result in a slight delay of the script (this can be reduced by using fewer samples, at the cost of accuracy)
+
+## API Documentation
+
+Auto-generated API documentation for Europi's core firmware and the user-created `experimental` libraries
+can be found [here](https://allen-synthesis.github.io/EuroPi/).
