@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from collections import OrderedDict
-from europi import Knob, MAX_UINT16
+from europi_hardware import Knob, MAX_UINT16
 
 from experimental.math_extras import median
 
