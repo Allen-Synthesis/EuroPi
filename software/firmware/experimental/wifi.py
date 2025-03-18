@@ -14,10 +14,9 @@
 """
 Enables managing the wireless connection on the Pico W and Pico 2 W
 
-Wifi credentials are saved via experimental_config
+Wifi credentials are saved in ``config/ExperimentalConfig.json``
 
-See https://docs.micropython.org/en/latest/library/network.WLAN.html for details on
-wifi implementation
+See https://docs.micropython.org/en/latest/library/network.WLAN.html for details on wifi implementation
 """
 from europi_config import (
     load_europi_config,
@@ -45,7 +44,7 @@ class WifiConnection:
     This class is initalized automatically by the ``europi`` module, and should not be
     needed directly from any user code.
 
-    To access/inspect the wireless connection, use the ``europi.wireless_connection`
+    To access/inspect the wireless connection, use the ``europi.wireless_connection``
     instance:
 
     .. code-block:: python
