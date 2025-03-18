@@ -42,6 +42,29 @@ class WifiConnection:
     """
     Class to manage the wifi connection
 
+    This class is initalized automatically by the ``europi`` module, and should not be
+    needed directly from any user code.
+
+    To access/inspect the wireless connection, use the ``europi.wireless_connection`
+    instance:
+
+    .. code-block:: python
+
+        import europi
+
+        if europi.wifi_connection is not None:
+            print(europi.wifi_connection.ip_addr)
+
+    ``europi.wifi_connection`` will be ``None`` if:
+    * the Pico model doesn't support WiFi
+    * the WiFi configuration is invalid and/or raised a ``WifiError``
+
+    The constructor will automatically do the following:
+    #. Start the wireless hardware
+    #. Create the access point or connect to the designated SSID (depending on mode)
+    #. Configure WebREPL's default configuration (if necessary)
+    #. Start WebREPL (if necessary)
+
     :raises WifiError: if the model doesn't support wifi, if we fail to import the
         necessary libraries, or if the network fails to connect
     """
@@ -242,8 +265,11 @@ class WifiConnection:
         Create the additional configuration files needed for WebREPL.
 
         Creates the following files (if they do not exist already):
-        - /boot.py (empty)
-        - /webrepl_cfg.py (contains default WebREPL password)
+        * /boot.py (empty)
+        * /webrepl_cfg.py (contains default WebREPL password)
+
+        This is done automatically by the constructor; user code should not need to
+        call this method
         """
 
         def exists(path):
@@ -266,6 +292,11 @@ class WifiConnection:
                 webrepl_cfg_py.write('PASS = "EuroPi"\n')
 
     def start_webrepl(self):
+        """
+        Start the WebREPL server
+
+        This is called automatically by the constructor; user code should not need to call this
+        """
         import webrepl
 
         webrepl.start()

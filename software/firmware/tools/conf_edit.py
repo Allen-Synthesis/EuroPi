@@ -11,11 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-A global configuration-editor menu
-
-Used to edit the global EuroPiConfig settings -- use at your own peril!
-"""
 
 from europi import *
 from europi_config import EuroPiConfig
@@ -43,6 +38,13 @@ k2_bank = (
 
 
 class SectionHeader(MenuItem):
+    """
+    A section header to contain one or more config point editors
+
+    :param title:  The title of this section
+    :param children:  A list of SettingMenuItem instances contained in this section
+    """
+
     def __init__(self, title, children):
         super().__init__(children=children)
         self.title = title
@@ -52,6 +54,12 @@ class SectionHeader(MenuItem):
 
 
 class ConfigurationEditor(EuroPiScript):
+    """
+    A global configuration-editor menu
+
+    Used to edit the global EuroPiConfig settings -- use at your own peril!
+    """
+
     def __init__(self):
         super().__init__()
 

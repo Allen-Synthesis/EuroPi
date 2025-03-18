@@ -46,6 +46,11 @@ class ExperimentalConfig:
 
     @classmethod
     def config_points(cls):
+        """
+        Get the array of configuration points for EuroPi's experimental libraries
+
+        :param cls: Our own class
+        """
         # fmt: off
         return [
             # Quantizer settings
@@ -144,6 +149,12 @@ class ExperimentalConfig:
 
 
 def load_experimental_config():
+    """
+    Load the config points from /config/ExperimentalConfig.json
+
+    If that file does not exist, or if it has missing keys, the default
+    values are used to fill in any holes.
+    """
     return ConfigFile.load_config(
         ExperimentalConfig, ConfigSpec(ExperimentalConfig.config_points())
     )

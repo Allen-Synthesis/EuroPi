@@ -23,8 +23,6 @@ from europi_log import *
 import socket
 import struct
 
-import europi
-
 
 def align_next_word(n):
     """
@@ -46,14 +44,9 @@ class OpenSoundPacket:
 
     :property address:  The address string of the packet
     :property values:  The values included in the packet
-    """
 
-    def __init__(self, data: bytes):
-        """
-        Read the raw packet and create this container
-
-        The raw data consists of the following fields:
-
+    :param data:  The raw byte data read from the UDP socket. The byte data consists
+        of the following data:
         #. leading '/' character
 
         #. slash-separated address (e.g. foo/bar)
@@ -80,9 +73,9 @@ class OpenSoundPacket:
 
         Every argument starts on an 4-aligned byte, so there are
         filler nulls to pad strings out to a multiple of 32 bits
+    """
 
-        :param data:  The raw byte data read from the UDP socket
-        """
+    def __init__(self, data: bytes):
         address_end = data.index(b"\0", 1)
         self._address = data[0:address_end].decode("utf-8")
         if self._address.endswith("/"):
@@ -210,18 +203,13 @@ class OpenSoundServer:
             while True:
                 srv.receive_data()
 
+    :param recv_port:  The UDP port we accept messages on. TouchOSC uses port 9000 by default,
+        so we use that here for convenience
+    :param send_port:  The UDP port we send outgoing messages on.
+    :param send_addr:  The IP address of the host we send outgoing messages to
     """
 
     def __init__(self, recv_port=9000, send_port=9001, send_addr="192.168.4.100"):
-        """
-        Create the OSC server
-
-        TouchOSC uses port 9000 by default, so use that here for convenience
-
-        :param recv_port:  The UDP port we accept messages on.
-        :param send_port:  The UDP port we send outgoing messages on.
-        :param send_addr:  The IP address of the host we send outgoing messages to
-        """
         log_info(f"Listening for OSC packets on port {recv_port}", "osc")
         addr = socket.getaddrinfo("0.0.0.0", recv_port)[0][-1]
         self.recv_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

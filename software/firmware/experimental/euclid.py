@@ -15,12 +15,17 @@
 # FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
+"""
+Euclidean pattern generating library
+
+Copied from https://github.com/brianhouse/bjorklund with all due gratitude
+
+Originally written by Brian House (c) 2011. Released under the MIT license
+"""
 
 
 def generate_euclidean_pattern(steps, pulses, rot=0):
     """Generates an array indicating the on/off steps of Euclid(k, n)
-
-    Copied from https://github.com/brianhouse/bjorklund with all due gratitude
 
     :param steps:  The number of steps in the pattern
     :param pulses: The number of ON steps in the pattern (must be <= steps)
@@ -29,10 +34,6 @@ def generate_euclidean_pattern(steps, pulses, rot=0):
     :return: An int array of length steps consisting of 1 and 0 values only
 
     :raises ValueError: if pulses or rot is out of range
-
-    :author: Brian House
-    :year: 2011
-    :license: MIT
     """
     steps = int(steps)
     pulses = int(pulses)

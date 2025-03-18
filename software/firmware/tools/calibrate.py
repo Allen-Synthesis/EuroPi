@@ -28,6 +28,8 @@ class CalibrationValues:
 
     In either mode, output_calibration_values is a length 11 array with the raw samples taken at 0-10V, in 1V
     increments.
+
+    :param mode:  The calibration mode, one of MODE_LOW_10, MODE_LOW_5, or MODE_HIGH
     """
 
     MODE_UNKNOWN = "unk"
@@ -41,10 +43,6 @@ class CalibrationValues:
     output_calibration_values = []
 
     def __init__(self, mode):
-        """Create the calibration values, specifying the mode we're operating in
-
-        :param mode:  The calibration mode, one of MODE_LOW_10, MODE_LOW_5, or MODE_HIGH
-        """
         self.mode = mode
 
     def save(self):
@@ -117,6 +115,9 @@ class Calibrate(EuroPiScript):
     # this is used for debugging.
     # It _is_ necessary for button press detection
     state = 0
+
+    def __init__(self):
+        super().__init__()
 
     @classmethod
     def display_name(cls):

@@ -373,13 +373,13 @@ class ConfigFile:
 
 
 class ConfigSettings:
-    """Collects the configuration settings into an object with attributes instead of a dict with keys"""
+    """
+    Collects the configuration settings into an object with attributes instead of a dict with keys
+
+    :param d:  The raw dict loaded from the configuration file
+    """
 
     def __init__(self, d):
-        """Constructor
-
-        :param d:  The raw dict loaded from the configuration file
-        """
         self.__dict__ = {}  # required for getattr & setattr
         self.__keys__ = set()
 
