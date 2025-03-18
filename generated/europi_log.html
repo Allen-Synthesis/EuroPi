@@ -118,6 +118,88 @@
 - debug – developer-oriented debugging information</p>
 <p>Each log item has a level and a tag associated with it. The tag should be
 unique to each module to make tracing the source of warnings easier</p>
+<p>Log messages are written to the console and saved to /europi_log.txt. Importing
+the <code class="docutils literal notranslate"><span class="pre">europi</span></code> module will reset the log file.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="europi_log.init_log">
+<span class="sig-prename descclassname"><span class="pre">europi_log.</span></span><span class="sig-name descname"><span class="pre">init_log</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi_log.init_log" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the log file.</p>
+<p>This is done automatically by europi.py when it is imported</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="europi_log.log_debug">
+<span class="sig-prename descclassname"><span class="pre">europi_log.</span></span><span class="sig-name descname"><span class="pre">log_debug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_log.log_debug" title="Permalink to this definition"></a></dt>
+<dd><p>Log a debugging message.</p>
+<p>Debug messages are for developers and can contain very low-level, code-related
+information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – The message to log</p></li>
+<li><p><strong>tag</strong> – An optional tag to use as a prefix (e.g. the module name)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="europi_log.log_error">
+<span class="sig-prename descclassname"><span class="pre">europi_log.</span></span><span class="sig-name descname"><span class="pre">log_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_log.log_error" title="Permalink to this definition"></a></dt>
+<dd><p>Log an error message.</p>
+<p>Errors are critical and may indicate a crash, missing hardware, or other
+unrecoverable errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – The message to log</p></li>
+<li><p><strong>tag</strong> – An optional tag to use as a prefix (e.g. the module name)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="europi_log.log_info">
+<span class="sig-prename descclassname"><span class="pre">europi_log.</span></span><span class="sig-name descname"><span class="pre">log_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_log.log_info" title="Permalink to this definition"></a></dt>
+<dd><p>Log a simple information message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – The message to log</p></li>
+<li><p><strong>tag</strong> – An optional tag to use as a prefix (e.g. the module name)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="europi_log.log_warning">
+<span class="sig-prename descclassname"><span class="pre">europi_log.</span></span><span class="sig-name descname"><span class="pre">log_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_log.log_warning" title="Permalink to this definition"></a></dt>
+<dd><p>Log a warning message.</p>
+<p>Warnings indicate an abnormal state, but are recoverable or can be worked-around.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – The message to log</p></li>
+<li><p><strong>tag</strong> – An optional tag to use as a prefix (e.g. the module name)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="europi_log.write_log_entry">
+<span class="sig-prename descclassname"><span class="pre">europi_log.</span></span><span class="sig-name descname"><span class="pre">write_log_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_log.write_log_entry" title="Permalink to this definition"></a></dt>
+<dd><p>Write line to the log.</p>
+<p>When logged, the message is written to the console and saved to /europi_log.txt</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>log_entry</strong> – The line of text to write to the log</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

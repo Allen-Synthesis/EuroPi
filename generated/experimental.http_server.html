@@ -114,7 +114,16 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.http_server.HttpServer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.http_server.</span></span><span class="sig-name descname"><span class="pre">HttpServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.http_server.HttpServer" title="Permalink to this definition"></a></dt>
-<dd><p>The main server instance</p>
+<dd><p>A basic HTTP server for EuroPi.</p>
+<p>This class will open a socket on the specified port, allowing for clients to connect to us.
+Only HTTP is supported, not HTTPS. Basic GET/POST requests should work, but websockets
+and anything fancy likely won’t.</p>
+<p>Port 80 is officially reserved for HTTP traffic, and can be used by default. Port 8080
+is also commonly used for HTTP traffic.</p>
+<p>If you’re operating in WiFi Client mode you may be subject to the whims of whatever
+port filter/firewall your IT administrator has implemented, so some ports may not work/
+may not be available.</p>
+<p>Operating in WiFi AP mode should allow the use of any port you want.</p>
 <p>You should define a callback to handle incoming GET and/or POST requests, e.g.:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">server</span> <span class="o">=</span> <span class="n">HttpServer</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
 
@@ -129,6 +138,33 @@
     <span class="n">server</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Responses can be an HTTP page, plain text, or JSON/CSV/YAML/XML formatted data. See
+MimeTypes for supported types. The response should always be a string; if sending
+a dict as JSON data you’ll need to stringify it before passing it to send_response.</p>
+<p>You may send your own error codes as desired:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_http_request</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">srv</span><span class="o">.</span><span class="n">send_error_page</span><span class="p">(</span>
+        <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;We&#39;re out of coffee!&quot;</span><span class="p">)</span>
+        <span class="n">connection</span><span class="p">,</span>
+        <span class="n">HttpStatus</span><span class="o">.</span><span class="n">TEAPOT</span><span class="p">,</span>  <span class="c1"># send error 418 &quot;I&#39;m a teapot&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Inside the program’s main loop you should call srv.check_connections() to process any
+incoming requests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># ...</span>
+        <span class="n">srv</span><span class="o">.</span><span class="n">check_requests</span><span class="p">()</span>
+        <span class="c1"># ...</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>port</strong> – The port to listen on</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.http_server.HttpServer.check_requests">
 <span class="sig-name descname"><span class="pre">check_requests</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.http_server.HttpServer.check_requests" title="Permalink to this definition"></a></dt>
@@ -151,6 +187,9 @@ by self.check_requests() and will serve our HTTP 501 error page accordingly.</p>
 <li><p><strong>connection</strong> – The socket the client connected on</p></li>
 <li><p><strong>request</strong> – The client’s request</p></li>
 </ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – This results in an HTTP 501 error response</p>
 </dd>
 </dl>
 </dd></dl>

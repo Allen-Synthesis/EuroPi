@@ -116,6 +116,11 @@
 <dd><p>A wrapper for a Knob instance whose value remains fixed until .update(…) is called</p>
 <p>This allows multiple uses of .percent(), .choice(…), etc… without forcing a re-read of
 the ADC value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>knob</strong> – The analogue input to wrap e.g. <code class="docutils literal notranslate"><span class="pre">europi_hardware.k1</span></code></p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.BufferedKnob.choice">
 <span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.BufferedKnob.choice" title="Permalink to this definition"></a></dt>
@@ -482,6 +487,15 @@ before the knob unlocks, the unlock is aborted.</p>
 <p>This class uses a window of the n latest samples from the underlying input and uses the median of
 those samples. Larger window sizes will produce a more stable output, but at the cost of slowing
 down reaction time to changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>analog_in</strong> – The input we’re wrapping (e.g. k1, k2, ain)</p></li>
+<li><p><strong>samples</strong> – The number of samples to use when reading from analog_in</p></li>
+<li><p><strong>window_size</strong> – The number of samples used for calculating the median</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.knobs.MedianAnalogInput.percent">
 <span class="sig-name descname"><span class="pre">percent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.knobs.MedianAnalogInput.percent" title="Permalink to this definition"></a></dt>

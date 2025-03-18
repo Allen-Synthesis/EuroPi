@@ -111,13 +111,30 @@
   <section id="module-experimental.wifi">
 <span id="experimental-wifi"></span><h1>experimental.wifi<a class="headerlink" href="#module-experimental.wifi" title="Permalink to this heading"></a></h1>
 <p>Enables managing the wireless connection on the Pico W and Pico 2 W</p>
-<p>Wifi credentials are saved via experimental_config</p>
-<p>See <a class="reference external" href="https://docs.micropython.org/en/latest/library/network.WLAN.html">https://docs.micropython.org/en/latest/library/network.WLAN.html</a> for details on
-wifi implementation</p>
+<p>Wifi credentials are saved in <code class="docutils literal notranslate"><span class="pre">config/ExperimentalConfig.json</span></code></p>
+<p>See <a class="reference external" href="https://docs.micropython.org/en/latest/library/network.WLAN.html">https://docs.micropython.org/en/latest/library/network.WLAN.html</a> for details on wifi implementation</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.wifi.WifiConnection">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.wifi.</span></span><span class="sig-name descname"><span class="pre">WifiConnection</span></span><a class="headerlink" href="#experimental.wifi.WifiConnection" title="Permalink to this definition"></a></dt>
 <dd><p>Class to manage the wifi connection</p>
+<p>This class is initalized automatically by the <code class="docutils literal notranslate"><span class="pre">europi</span></code> module, and should not be
+needed directly from any user code.</p>
+<p>To access/inspect the wireless connection, use the <code class="docutils literal notranslate"><span class="pre">europi.wireless_connection</span></code>
+instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">europi</span>
+
+<span class="k">if</span> <span class="n">europi</span><span class="o">.</span><span class="n">wifi_connection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">europi</span><span class="o">.</span><span class="n">wifi_connection</span><span class="o">.</span><span class="n">ip_addr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">europi.wifi_connection</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> if:
+* the Pico model doesn’t support WiFi
+* the WiFi configuration is invalid and/or raised a <code class="docutils literal notranslate"><span class="pre">WifiError</span></code></p>
+<p>The constructor will automatically do the following:
+#. Start the wireless hardware
+#. Create the access point or connect to the designated SSID (depending on mode)
+#. Configure WebREPL’s default configuration (if necessary)
+#. Start WebREPL (if necessary)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#experimental.wifi.WifiError" title="experimental.wifi.WifiError"><strong>WifiError</strong></a> – if the model doesn’t support wifi, if we fail to import the
@@ -190,14 +207,23 @@ necessary libraries, or if the network fails to connect</p>
 <span class="sig-name descname"><span class="pre">setup_webrepl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.wifi.WifiConnection.setup_webrepl" title="Permalink to this definition"></a></dt>
 <dd><p>Create the additional configuration files needed for WebREPL.</p>
 <p>Creates the following files (if they do not exist already):
-- /boot.py (empty)
-- /webrepl_cfg.py (contains default WebREPL password)</p>
+* /boot.py (empty)
+* /webrepl_cfg.py (contains default WebREPL password)</p>
+<p>This is done automatically by the constructor; user code should not need to
+call this method</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="experimental.wifi.WifiConnection.ssid">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ssid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#experimental.wifi.WifiConnection.ssid" title="Permalink to this definition"></a></dt>
 <dd><p>Get the SSID of our wireless network</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experimental.wifi.WifiConnection.start_webrepl">
+<span class="sig-name descname"><span class="pre">start_webrepl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.wifi.WifiConnection.start_webrepl" title="Permalink to this definition"></a></dt>
+<dd><p>Start the WebREPL server</p>
+<p>This is called automatically by the constructor; user code should not need to call this</p>
 </dd></dl>
 
 </dd></dl>

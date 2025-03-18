@@ -120,6 +120,20 @@ that can be used externally.</p>
 <dt class="sig sig-object py" id="experimental.rtc.DateTime">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.rtc.</span></span><span class="sig-name descname"><span class="pre">DateTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weekday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yearday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.rtc.DateTime" title="Permalink to this definition"></a></dt>
 <dd><p>Represents a date and time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>year</strong> – The current year (e.g. 2025)</p></li>
+<li><p><strong>month</strong> – The current month (e.g. Month.JANUARY)</p></li>
+<li><p><strong>day</strong> – The current day within the month (e.g. 17)</p></li>
+<li><p><strong>hour</strong> – The current hour on a 24-hour clock (0-23)</p></li>
+<li><p><strong>minute</strong> – The current minute within the hour (0-59)</p></li>
+<li><p><strong>second</strong> – The current second within the minute (0-59, optional)</p></li>
+<li><p><strong>weekday</strong> – The current day of the week (e.g. Weekday.MONDAY, optional)</p></li>
+<li><p><strong>yearday</strong> – The current day of the year (1-365, 1-366 if leap year, optional)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
@@ -134,6 +148,11 @@ that can be used externally.</p>
 <dd><p>A continually-running clock that provides the day &amp; date.</p>
 <p>This class wraps around an external clock source, e.g. an I2C-compatible RTC
 module or a network connection to an NTP server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source</strong> – An ExternalClockSource implementation we read the time from</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.rtc.RealtimeClock.localnow">
 <span class="sig-name descname"><span class="pre">localnow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.rtc.RealtimeClock.localnow" title="Permalink to this definition"></a></dt>

@@ -126,6 +126,32 @@
 <dt class="field-even">Property values</dt>
 <dd class="field-even"><p>The values included in the packet</p>
 </dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – <p>The raw byte data read from the UDP socket. The byte data consists
+of the following data:
+#. leading ‘/’ character</p>
+<ol class="arabic">
+<li><p>slash-separated address (e.g. foo/bar)</p></li>
+<li><p>null terminator (0x00 byte)</p></li>
+<li><p>’,’ character</p></li>
+<li><p>type arguments</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>”f” character for 32-bit float</p></li>
+<li><p>”i” character for 32-bit signed integer</p></li>
+<li><p>”s” character for string (null-terminated)</p></li>
+<li><p>”b” character for blob (32-bit int -&gt; n, followed by n bytes of data)</p></li>
+<li><p>assorted non-standard types</p></li>
+</ol>
+</div></blockquote>
+</li>
+<li><p>null terminator(s)</p></li>
+<li><p>payload bytes (lengths are type dependent)</p></li>
+</ol>
+<p>Every argument starts on an 4-aligned byte, so there are
+filler nulls to pad strings out to a multiple of 32 bits</p>
+</p>
+</dd>
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="experimental.osc.OpenSoundPacket.address">
@@ -164,6 +190,16 @@ receive_data() in the main loop:</p>
         <span class="n">srv</span><span class="o">.</span><span class="n">receive_data</span><span class="p">()</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recv_port</strong> – The UDP port we accept messages on. TouchOSC uses port 9000 by default,
+so we use that here for convenience</p></li>
+<li><p><strong>send_port</strong> – The UDP port we send outgoing messages on.</p></li>
+<li><p><strong>send_addr</strong> – The IP address of the host we send outgoing messages to</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.osc.OpenSoundServer.data_handler">
 <span class="sig-name descname"><span class="pre">data_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.osc.OpenSoundServer.data_handler" title="Permalink to this definition"></a></dt>

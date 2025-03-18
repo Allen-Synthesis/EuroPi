@@ -110,12 +110,12 @@
              
   <section id="module-tools.experimental_conf_edit">
 <span id="tools-experimental-conf-edit"></span><h1>tools.experimental_conf_edit<a class="headerlink" href="#module-tools.experimental_conf_edit" title="Permalink to this heading"></a></h1>
-<p>A global configuration-editor menu</p>
-<p>Used to edit the global EuroPiConfig settings – use at your own peril!</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tools.experimental_conf_edit.ExperimentalConfigurationEditor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tools.experimental_conf_edit.</span></span><span class="sig-name descname"><span class="pre">ExperimentalConfigurationEditor</span></span><a class="headerlink" href="#tools.experimental_conf_edit.ExperimentalConfigurationEditor" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
+<dd><p>A global configuration-editor menu</p>
+<p>Used to edit the global EuroPiConfig settings – use at your own peril!</p>
+<dl class="py method">
 <dt class="sig sig-object py" id="tools.experimental_conf_edit.ExperimentalConfigurationEditor.config_points">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="configuration.html#configuration.ConfigPoint" title="configuration.ConfigPoint"><span class="pre">ConfigPoint</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#tools.experimental_conf_edit.ExperimentalConfigurationEditor.config_points" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a list of ConfigPoints describing this script’s configuration options. By default
@@ -203,34 +203,6 @@ writing to disk too often can slow down the performance of your
 script. Only call save state when state has changed and consider
 adding a time since last save check to reduce save frequency.</p>
 </div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="tools.experimental_conf_edit.SectionHeader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tools.experimental_conf_edit.</span></span><span class="sig-name descname"><span class="pre">SectionHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.experimental_conf_edit.SectionHeader" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="tools.experimental_conf_edit.SectionHeader.add_child">
-<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.experimental_conf_edit.SectionHeader.add_child" title="Permalink to this definition"></a></dt>
-<dd><p>Add a new child item to this item</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="tools.experimental_conf_edit.SectionHeader.draw">
-<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tools.experimental_conf_edit.SectionHeader.draw" title="Permalink to this definition"></a></dt>
-<dd><p>Draw the item to the screen</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>oled</strong> – A Display-compatible object we draw to</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="tools.experimental_conf_edit.SectionHeader.short_press">
-<span class="sig-name descname"><span class="pre">short_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tools.experimental_conf_edit.SectionHeader.short_press" title="Permalink to this definition"></a></dt>
-<dd><p>Handler for when the user short-presses the button</p>
 </dd></dl>
 
 </dd></dl>

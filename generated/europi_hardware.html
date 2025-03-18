@@ -134,6 +134,16 @@ wan’t incredibly accurate (but quite slow) readings.</p>
 <p>The percent function takes an optional parameter <code class="docutils literal notranslate"><span class="pre">deadzone</span></code>. However this
 parameter is ignored and just present to be compatible with the percent
 function of the AnalogueReader and Knob classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> – The pin ID the ADC is connected to</p></li>
+<li><p><strong>min_voltage</strong> – The minimum allowed input voltage</p></li>
+<li><p><strong>max_voltage</strong> – The maximum allowed input voltage</p></li>
+<li><p><strong>deadzone</strong> – An optional deadzone to restrict noise at the high and low ends</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_hardware.AnalogueInput.choice">
 <span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.AnalogueInput.choice" title="Permalink to this definition"></a></dt>
@@ -172,6 +182,16 @@ function of the AnalogueReader and Knob classes</p>
 <dd><p>A base class for common analogue read methods.</p>
 <p>This class in inherited by classes like Knob and AnalogueInput and does
 not need to be used by user scripts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> – The pin ID the ADC is connected to</p></li>
+<li><p><strong>samples</strong> – The number of ADC samples to read. More samples results in a more
+accurate reading, but may slow down the program</p></li>
+<li><p><strong>deadzone</strong> – An optional deadzone to restrict noise at the high and low ends</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_hardware.AnalogueReader.choice">
 <span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.AnalogueReader.choice" title="Permalink to this definition"></a></dt>
@@ -225,6 +245,14 @@ return value is 0, so you may want to add the check <cite>if b1.last_pressed() &
 before you check the elapsed duration to ensure the button has been
 pressed. This is also useful when checking if the digital input has been
 triggered with the <code class="docutils literal notranslate"><span class="pre">DigitalInput.last_triggered()</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> – The pin ID we read from</p></li>
+<li><p><strong>debounce_delay</strong> – The time in ms that we debounce the input</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_hardware.Button.handler">
 <span class="sig-name descname"><span class="pre">handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.Button.handler" title="Permalink to this definition"></a></dt>
@@ -282,6 +310,14 @@ to a clock source and match its trigger duration.:</p>
 Ideally handlers should be used to change state and allow your main loop
 to change behavior based on the altered state. See <a class="reference external" href="https://docs.micropython.org/en/latest/reference/isr_rules.html#tips-and-recommended-practices">tips</a>
 from the MicroPython documentation for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> – The pin ID we read from</p></li>
+<li><p><strong>debounce_delay</strong> – The time in ms that we debounce the input</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_hardware.DigitalInput.handler">
 <span class="sig-name descname"><span class="pre">handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.DigitalInput.handler" title="Permalink to this definition"></a></dt>
@@ -315,6 +351,14 @@ from the MicroPython documentation for more details.</p>
 <dd><p>A base class for common digital inputs methods.</p>
 <p>This class in inherited by classes like Button and DigitalInput and does
 not need to be used by user scripts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> – The pin ID we read from</p></li>
+<li><p><strong>debounce_delay</strong> – The time in ms that we debounce the input</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_hardware.DigitalReader.handler">
 <span class="sig-name descname"><span class="pre">handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.DigitalReader.handler" title="Permalink to this definition"></a></dt>
@@ -369,6 +413,14 @@ clockwise, the last list item of <code class="docutils literal notranslate"><spa
 any read_position value above 4096 (2^12) will not actually be any finer
 resolution, but will instead just go up in steps. For example using 8192
 would only return values which go up in steps of 2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> – The pin ID the ADC is connected to</p></li>
+<li><p><strong>deadzone</strong> – An optional deadzone to restrict noise at the high and low ends</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_hardware.Knob.choice">
 <span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadzone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.Knob.choice" title="Permalink to this definition"></a></dt>
@@ -416,6 +468,17 @@ the <code class="docutils literal notranslate"><span class="pre">cvx.voltage()</
 <p>So that there is no chance of not having the full range, the chosen
 resistor values actually give you a range of about 0-10.5V, which is why
 calibration is important if you want to be able to output precise voltages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> – The GPIO pin we use as a PWM output</p></li>
+<li><p><strong>min_voltage</strong> – The minimum allowed output voltage</p></li>
+<li><p><strong>max_voltage</strong> – The maximum allowed output voltage</p></li>
+<li><p><strong>gate_voltage</strong> – The voltage we use for gate signals (see <code class="docutils literal notranslate"><span class="pre">.on()</span></code>, <code class="docutils literal notranslate"><span class="pre">.off()</span></code>)</p></li>
+<li><p><strong>calibration_values</strong> – Calibration data for this output</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="europi_hardware.Output.off">
 <span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#europi_hardware.Output.off" title="Permalink to this definition"></a></dt>

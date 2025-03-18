@@ -110,6 +110,7 @@
              
   <section id="module-experimental.a_to_d">
 <span id="experimental-a-to-d"></span><h1>experimental.a_to_d<a class="headerlink" href="#module-experimental.a_to_d" title="Permalink to this heading"></a></h1>
+<p>Utilities for converting analogue signals to digital inputs</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="experimental.a_to_d.AnalogReaderDigitalWrapper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.a_to_d.</span></span><span class="sig-name descname"><span class="pre">AnalogReaderDigitalWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debounce=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_low_cutoff=0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb_rising=&lt;function</span> <span class="pre">AnalogReaderDigitalWrapper.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb_falling=&lt;function</span> <span class="pre">AnalogReaderDigitalWrapper.&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.a_to_d.AnalogReaderDigitalWrapper" title="Permalink to this definition"></a></dt>
@@ -117,6 +118,17 @@
 <p>The EuroPiScript class using the AnalogReaderDigitalWrapper must call <cite>.update()</cite> to read the current state of
 the analogue input and trigger any rising/falling edge callbacks.</p>
 <p>The value returned by <cite>.value()</cite> is accurate to the last time <cite>.update()</cite> was called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ain</strong> – The AnalogReader we’re wrapping</p></li>
+<li><p><strong>debounce</strong> – The number of consecutive high/low signals needed to flip the digital state</p></li>
+<li><p><strong>high_low_cutoff</strong> – The threshold at which the analog signal is considered high</p></li>
+<li><p><strong>cb_rising</strong> – A function to call on the rising edge of the signal</p></li>
+<li><p><strong>cb_falling</strong> – A function to call on the falling edge of the signal</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.a_to_d.AnalogReaderDigitalWrapper.handler">
 <span class="sig-name descname"><span class="pre">handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.a_to_d.AnalogReaderDigitalWrapper.handler" title="Permalink to this definition"></a></dt>

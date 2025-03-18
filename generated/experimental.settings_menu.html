@@ -130,10 +130,32 @@
 <dd><p>A menu item that just invokes a callback function when selected.</p>
 <p>This class is similar to the SettingMenuItem, but doesn’t wrap a ConfigPoint; it just has
 options and fires the callback when you choose one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actions</strong> – The list of choices the user can pick from. e.g. [“Cancel”, “Ok”]</p></li>
+<li><p><strong>callback</strong> – The function to call when the user invokes the action. The selected item from choices is passed as the first parameter</p></li>
+<li><p><strong>callback_arg</strong> – The second parameter passed to the callback</p></li>
+<li><p><strong>parent</strong> – If the menu has multiple levels, what is this item’s parent control?</p></li>
+<li><p><strong>children</strong> – If this menu has multiple levels, whar are this item’s child controls?</p></li>
+<li><p><strong>title</strong> – The title to display at the top of the display when this control is active</p></li>
+<li><p><strong>prefix</strong> – A prefix to display before the title when this control is active</p></li>
+<li><p><strong>graphics</strong> – A dict of values mapped to FrameBuffer or bytearray objects, representing
+12x12 MONO_HLSB graphics to display along with the keyed values</p></li>
+<li><p><strong>labels</strong> – A dict of values mapped to strings, representing human-readible versions of the ConfigPoint options</p></li>
+<li><p><strong>is_visible</strong> – Is this menu item visible by default?</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.ActionMenuItem.add_child">
 <span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ActionMenuItem.add_child" title="Permalink to this definition"></a></dt>
 <dd><p>Add a new child item to this item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item</strong> – The menu item to add as a new child</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -161,10 +183,30 @@ hardware</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.ChoiceMenuItem">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.settings_menu.</span></span><span class="sig-name descname"><span class="pre">ChoiceMenuItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#experimental.settings_menu.MenuItem" title="experimental.settings_menu.MenuItem"><span class="pre">MenuItem</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#experimental.settings_menu.MenuItem" title="experimental.settings_menu.MenuItem"><span class="pre">experimental.settings_menu.MenuItem</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_visible</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ChoiceMenuItem" title="Permalink to this definition"></a></dt>
 <dd><p>A generic menu item for displaying a choice of options to the user</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – If the menu has multiple levels, what is this item’s parent control?</p></li>
+<li><p><strong>children</strong> – If this menu has multiple levels, whar are this item’s child controls?</p></li>
+<li><p><strong>title</strong> – The title to display at the top of the display when this control is active</p></li>
+<li><p><strong>prefix</strong> – A prefix to display before the title when this control is active</p></li>
+<li><p><strong>graphics</strong> – A dict of values mapped to FrameBuffer or bytearray objects, representing
+12x12 MONO_HLSB graphics to display along with the keyed values</p></li>
+<li><p><strong>labels</strong> – A dict of values mapped to strings, representing human-readible versions of the ConfigPoint
+options</p></li>
+<li><p><strong>is_visible</strong> – Is this menu item visible by default?</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.ChoiceMenuItem.add_child">
 <span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.ChoiceMenuItem.add_child" title="Permalink to this definition"></a></dt>
 <dd><p>Add a new child item to this item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item</strong> – The menu item to add as a new child</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -192,16 +234,31 @@ hardware</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.MenuItem">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.settings_menu.</span></span><span class="sig-name descname"><span class="pre">MenuItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_visible</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem" title="Permalink to this definition"></a></dt>
 <dd><p>Generic class for anything we can display in the menu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – A MenuItem representing this item’s parent, if this item is the bottom-level of a multi-level menu</p></li>
+<li><p><strong>children</strong> – A list of MenuItems representing this item’s children, if this is the top-level of a multi-level menu</p></li>
+<li><p><strong>is_visible</strong> – Is this menu item visible by default?</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.MenuItem.add_child">
 <span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem.add_child" title="Permalink to this definition"></a></dt>
 <dd><p>Add a new child item to this item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item</strong> – The menu item to add as a new child</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.MenuItem.draw">
 <span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled=&lt;europi_display.DummyDisplay</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem.draw" title="Permalink to this definition"></a></dt>
 <dd><p>Draw the item to the screen</p>
+<p>You must call the screen’s <code class="docutils literal notranslate"><span class="pre">.show()</span></code> method after calling this</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>oled</strong> – A Display-compatible object we draw to</p>
@@ -213,6 +270,7 @@ hardware</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.MenuItem.short_press">
 <span class="sig-name descname"><span class="pre">short_press</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.MenuItem.short_press" title="Permalink to this definition"></a></dt>
 <dd><p>Handler for when the user short-presses the button</p>
+<p>This does nothing by default, but can be overridden by child classes</p>
 </dd></dl>
 
 </dd></dl>
@@ -223,10 +281,40 @@ hardware</p>
 <dd><p>A single menu item that presents a setting the user can manipulate</p>
 <p>The menu item is a wrapper around a ConfigPoint, and uses
 that object’s values as the available selections.</p>
+<p>If the item has a callback function defined, it will be invoked once during initialization</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_point</strong> – The configration option this menu item controls</p></li>
+<li><p><strong>parent</strong> – If the menu has multiple levels, what is this item’s parent control?</p></li>
+<li><p><strong>children</strong> – If this menu has multiple levels, whar are this item’s child controls?</p></li>
+<li><p><strong>title</strong> – The title to display at the top of the display when this control is active</p></li>
+<li><p><strong>prefix</strong> – A prefix to display before the title when this control is active</p></li>
+<li><p><strong>graphics</strong> – A dict of values mapped to FrameBuffer or bytearray objects, representing
+12x12 MONO_HLSB graphics to display along with the keyed values</p></li>
+<li><p><strong>labels</strong> – A dict of values mapped to strings, representing human-readible versions of the ConfigPoint options</p></li>
+<li><p><strong>callback</strong> – A function to invoke when this item’s value changes. Must accept
+(new_value, old_value, config_point, arg=None) as parameters</p></li>
+<li><p><strong>callback_arg</strong> – An optional additional argument to pass to the callback function</p></li>
+<li><p><strong>float_resolution</strong> – The resolution of floating-point config points
+(ignored if config_point is not a FloatConfigPoint)</p></li>
+<li><p><strong>value_map</strong> – An optional dict to map the underlying simple ConfigPoint values
+to more complex objects e.g. map the string “CMaj” to a Quantizer object</p></li>
+<li><p><strong>is_visible</strong> – Is this menu item visible by default?</p></li>
+<li><p><strong>autoselect_knob</strong> – If True, this item gets “Knob” as an additional choice, allowing ad-hoc selection via the knob</p></li>
+<li><p><strong>autoselect_cv</strong> – If True, this item gets “AIN” as an additional choice, allowing ad-hoc selection via the CV input</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.add_child">
 <span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.add_child" title="Permalink to this definition"></a></dt>
 <dd><p>Add a new child item to this item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item</strong> – The menu item to add as a new child</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -257,12 +345,11 @@ that object’s values as the available selections.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingMenuItem.draw">
 <span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oled=&lt;europi_display.DummyDisplay</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingMenuItem.draw" title="Permalink to this definition"></a></dt>
-<dd><p>Draw the current item to the display object</p>
-<p>You MUST call the display’s .show() function after calling this in order to send the buffer to the display
-hardware</p>
+<dd><p>Render this item to the screen</p>
+<p>You must call the screen’s <code class="docutils literal notranslate"><span class="pre">.show()</span></code> method after calling this</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>oled</strong> – A Display instance (or compatible class) to render the item</p>
+<dd class="field-odd"><p><strong>oled</strong> – The screen we’re drawing to</p>
 </dd>
 </dl>
 </dd></dl>
@@ -336,11 +423,33 @@ exits edit mode</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experimental.settings_menu.</span></span><span class="sig-name descname"><span class="pre">SettingsMenu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">menu_items:</span> <span class="pre">~typing.Optional[list]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">navigation_button:</span> <span class="pre">~europi_hardware.Button</span> <span class="pre">=</span> <span class="pre">&lt;europi_hardware.Button</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">navigation_knob:</span> <span class="pre">~europi_hardware.Knob</span> <span class="pre">=</span> <span class="pre">&lt;europi_hardware.Knob</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">short_press_cb=&lt;function</span> <span class="pre">SettingsMenu.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_press_cb=&lt;function</span> <span class="pre">SettingsMenu.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoselect_knob:</span> <span class="pre">~europi_hardware.Knob</span> <span class="pre">=</span> <span class="pre">&lt;europi_hardware.Knob</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoselect_cv:</span> <span class="pre">~europi_hardware.AnalogueInput</span> <span class="pre">=</span> <span class="pre">&lt;europi_hardware.AnalogueInput</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu" title="Permalink to this definition"></a></dt>
 <dd><p>A menu-based GUI for any EuroPi script.</p>
 <p>This class is assumed to be the main interaction method for the program.</p>
+<p>Long/short press callbacks are invoked inside the handler for the falling edge of the button. It is recommended
+to avoid any lengthy operations inside these callbacks, as they may prevent other interrupts from being
+handled properly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>menu_items</strong> – A list of MenuItem objects representing the top-level of the menu</p></li>
+<li><p><strong>navigation_button</strong> – The button the user presses to interact with the menu</p></li>
+<li><p><strong>navigation_knob</strong> – The knob the user turns to scroll through the menu. This may be an
+experimental.knobs.KnobBank with 3 menu levels called “main_menu”, “submenu” and “choice”, or a raw knob like europi.k2</p></li>
+<li><p><strong>short_press_cb</strong> – An optional callback function to invoke when the user interacts with a short-press of the button</p></li>
+<li><p><strong>long_press_cb</strong> – An optional callback function to invoke when the user interacts with a long-press of the button</p></li>
+<li><p><strong>autoselect_knob</strong> – A knob that the user can turn to select items without needing to menu-dive</p></li>
+<li><p><strong>autoselect_cv</strong> – An analogue input the user can use to select items with CV</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.do_autoselect">
 <span class="sig-name descname"><span class="pre">do_autoselect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.do_autoselect" title="Permalink to this definition"></a></dt>
 <dd><p>Callback function for the autoselection timer</p>
 <p>Reads from ain and/or the autoselect knob and applies that choice to all subscribed menu items</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timer</strong> – The timer instance that fired this callback</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -363,6 +472,12 @@ hardware</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.get_config_points">
 <span class="sig-name descname"><span class="pre">get_config_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.get_config_points" title="Permalink to this definition"></a></dt>
 <dd><p>Get the config points for the menu so we can load/save them as needed</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.knob">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">knob</span></span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.knob" title="Permalink to this definition"></a></dt>
+<dd><p>Get the navigation knob that controls this menu</p>
 </dd></dl>
 
 <dl class="py method">
@@ -421,6 +536,11 @@ hardware</p>
 <dt class="sig sig-object py" id="experimental.settings_menu.SettingsMenu.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.settings_menu.SettingsMenu.save" title="Permalink to this definition"></a></dt>
 <dd><p>Save the current settings to the specified file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>settings_file</strong> – The path to the JSON file to generate</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

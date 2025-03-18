@@ -120,9 +120,17 @@ noted in-line with <cite># EDIT</cite></p>
 <p>The return value i is such that all e in a[:i] have e &lt;= x, and all e in
 a[i:] have e &gt; x.  So if x already appears in the list, a.insert(i, x) will
 insert just after the rightmost x already there.</p>
-<p>Optional args lo (default 0) and hi (default len(a)) bound the
-slice of a to be searched.</p>
-<p>A custom key function can be supplied to customize the sort order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – The sorted array we’re inserting into</p></li>
+<li><p><strong>x</strong> – The value we’re inserting into the array</p></li>
+<li><p><strong>lo</strong> – the lower bound of the array slice to consider</p></li>
+<li><p><strong>hi</strong> – the upper bound of the array slice to consider</p></li>
+<li><p><strong>key</strong> – an optional key function for sorting the data</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -132,9 +140,17 @@ slice of a to be searched.</p>
 <p>The return value i is such that all e in a[:i] have e &lt; x, and all e in
 a[i:] have e &gt;= x.  So if x already appears in the list, a.insert(i, x) will
 insert just before the leftmost x already there.</p>
-<p>Optional args lo (default 0) and hi (default len(a)) bound the
-slice of a to be searched.</p>
-<p>A custom key function can be supplied to customize the sort order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – The sorted array we’re inserting into</p></li>
+<li><p><strong>x</strong> – The value we’re inserting into the array</p></li>
+<li><p><strong>lo</strong> – the lower bound of the array slice to consider</p></li>
+<li><p><strong>hi</strong> – the upper bound of the array slice to consider</p></li>
+<li><p><strong>key</strong> – an optional key function for sorting the data</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -144,9 +160,17 @@ slice of a to be searched.</p>
 <p>The return value i is such that all e in a[:i] have e &lt;= x, and all e in
 a[i:] have e &gt; x.  So if x already appears in the list, a.insert(i, x) will
 insert just after the rightmost x already there.</p>
-<p>Optional args lo (default 0) and hi (default len(a)) bound the
-slice of a to be searched.</p>
-<p>A custom key function can be supplied to customize the sort order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – The sorted array we’re inserting into</p></li>
+<li><p><strong>x</strong> – The value we’re inserting into the array</p></li>
+<li><p><strong>lo</strong> – the lower bound of the array slice to consider</p></li>
+<li><p><strong>hi</strong> – the upper bound of the array slice to consider</p></li>
+<li><p><strong>key</strong> – an optional key function for sorting the data</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -154,9 +178,17 @@ slice of a to be searched.</p>
 <span class="sig-prename descclassname"><span class="pre">experimental.bisect.</span></span><span class="sig-name descname"><span class="pre">insort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.bisect.insort" title="Permalink to this definition"></a></dt>
 <dd><p>Insert item x in list a, and keep it sorted assuming a is sorted.</p>
 <p>If x is already in a, insert it to the right of the rightmost x.</p>
-<p>Optional args lo (default 0) and hi (default len(a)) bound the
-slice of a to be searched.</p>
-<p>A custom key function can be supplied to customize the sort order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – The array we’re inserting into</p></li>
+<li><p><strong>x</strong> – The value we’re inserting into the array</p></li>
+<li><p><strong>lo</strong> – the lower bound of the array slice to consider</p></li>
+<li><p><strong>hi</strong> – the upper bound of the array slice to consider</p></li>
+<li><p><strong>key</strong> – an optional key function for sorting the data</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -164,9 +196,17 @@ slice of a to be searched.</p>
 <span class="sig-prename descclassname"><span class="pre">experimental.bisect.</span></span><span class="sig-name descname"><span class="pre">insort_left</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.bisect.insort_left" title="Permalink to this definition"></a></dt>
 <dd><p>Insert item x in list a, and keep it sorted assuming a is sorted.</p>
 <p>If x is already in a, insert it to the left of the leftmost x.</p>
-<p>Optional args lo (default 0) and hi (default len(a)) bound the
-slice of a to be searched.</p>
-<p>A custom key function can be supplied to customize the sort order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – The sorted array we’re inserting into</p></li>
+<li><p><strong>x</strong> – The value we’re inserting into the array</p></li>
+<li><p><strong>lo</strong> – the lower bound of the array slice to consider</p></li>
+<li><p><strong>hi</strong> – the upper bound of the array slice to consider</p></li>
+<li><p><strong>key</strong> – an optional key function for sorting the data</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -174,9 +214,17 @@ slice of a to be searched.</p>
 <span class="sig-prename descclassname"><span class="pre">experimental.bisect.</span></span><span class="sig-name descname"><span class="pre">insort_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.bisect.insort_right" title="Permalink to this definition"></a></dt>
 <dd><p>Insert item x in list a, and keep it sorted assuming a is sorted.</p>
 <p>If x is already in a, insert it to the right of the rightmost x.</p>
-<p>Optional args lo (default 0) and hi (default len(a)) bound the
-slice of a to be searched.</p>
-<p>A custom key function can be supplied to customize the sort order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – The array we’re inserting into</p></li>
+<li><p><strong>x</strong> – The value we’re inserting into the array</p></li>
+<li><p><strong>lo</strong> – the lower bound of the array slice to consider</p></li>
+<li><p><strong>hi</strong> – the upper bound of the array slice to consider</p></li>
+<li><p><strong>key</strong> – an optional key function for sorting the data</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

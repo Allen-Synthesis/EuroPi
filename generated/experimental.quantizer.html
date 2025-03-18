@@ -149,6 +149,20 @@ for more information.</p>
 <p>By default this represents a chromatic scale, with all notes enabled.  Notes can be changed
 by setting scale[n] = True/False, where n is the index of the semitone to toggle</p>
 <p>Implements __get_item__ and __set_item__ so you can use Quantizer like an array to set notes on/off</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>notes</strong> – A boolean array of length SEMITONES_PER_OCTAVE indicating what semitones
+are enabled (True) or disabled (False). If None, all notes are enabled. If not-none,
+the provided array is copied into this instance.</p></li>
+<li><p><strong>name</strong> – The human-readable name for this scale. The name can be displayed on the
+module’s screen by some scripts.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if len(notes) is not equal to SEMITONES_PER_OCTAVE</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="experimental.quantizer.Quantizer.quantize">
 <span class="sig-name descname"><span class="pre">quantize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analog_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#experimental.quantizer.Quantizer.quantize" title="Permalink to this definition"></a></dt>
