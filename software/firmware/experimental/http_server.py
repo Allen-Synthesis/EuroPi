@@ -115,6 +115,7 @@ class HttpServer:
     You may send your own error codes as desired:
 
     .. code-block:: python
+    
         def handle_http_request(connection=None, request=None):
             srv.send_error_page(
                 Exception("We're out of coffee!")
@@ -126,6 +127,7 @@ class HttpServer:
     incoming requests:
 
     .. code-block:: python
+    
         def main(self):
             # ...
             while True:
