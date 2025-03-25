@@ -28,3 +28,6 @@ venv
 dist/
 *.egg-info/
 config
+
+# EuroPi builds
+software/uf2_build/*.uf2
