@@ -13,7 +13,9 @@ cp -r europi/software/contrib/*.py /micropython/ports/rp2/modules/contrib
 echo "Compiling micropython and firmware modules..."
 cd /micropython/ports/rp2
 
-BOARDS="RPI_PICO RPI_PICO2 RPI_PICO_W RPI_PICO2_W"
+# Pico W must be last; we need to remove some code to make it fit
+# TODO: add RPI_PICO2_W once it's supported
+BOARDS="RPI_PICO RPI_PICO2 RPI_PICO_W"
 
 for b in $BOARDS; do
     echo "make BOARD=$b"

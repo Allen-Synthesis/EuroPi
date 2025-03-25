@@ -411,6 +411,13 @@ This script can be copied and altered as a starting point for your own scripts t
 <i>Author: [mjaskula](https://github.com/mjaskula)</i>
 <br><i>Labels: example</i>
 
+### Custom Fonts \[ [script](/software/contrib/custom_font_demo.py) \]
+
+An example demonstrating the use of custom fonts.
+
+<i>Author: [François Georgy](https://github.com/francoisgeorgy)</i>
+<br><i>Labels: example</i>
+
 ### Knob Playground \[ [script](/software/contrib/knob_playground.py) \]
 
 An example showing the use of knob banks and lockable knobs.
