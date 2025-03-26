@@ -5,6 +5,8 @@ ENV TERM=xterm DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y \
     cmake git-core gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential wget python3
 
+WORKDIR /
+
 RUN git clone -b v1.24.1 --depth=1 --recursive https://github.com/micropython/micropython.git
 
 WORKDIR micropython

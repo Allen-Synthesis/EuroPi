@@ -83,6 +83,7 @@ EUROPI_SCRIPTS = OrderedDict([
 
     # Examples & proof-of-concept scripts that aren't generally useful
     # but someone might want to enable to test out
+    #["Custom Fonts",      "contrib.custom_font_demo.CustomFontDemo"],
     #["HelloWorld",        "contrib.hello_world.HelloWorld"],
     #["KnobPlayground",    "contrib.knob_playground.KnobPlayground"],
     #["Menu Example",      "contrib.settings_menu_example.SettingsMenuExample"],
