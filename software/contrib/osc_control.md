@@ -48,6 +48,37 @@ Create `/config/OscControl.json` to set the namespace:
 }
 ```
 
+If the namespace does not start with `/`, a `/` will automatically be added.  If the namespace
+is left empty, it will default to `/`.
+
+## Changint the topics
+
+The input & output topics described above are defaults. To rename the topics (e.g. to facilitate
+easier interaction with other devices) the topics can be customized by specifying the topics for
+each output: `/config/OscControl.json`:
+
+```json
+{
+    "CV1_TOPIC": "cv1",
+    "CV2_TOPIC": "cv2",
+    "CV3_TOPIC": "cv3",
+    "CV4_TOPIC": "cv4",
+    "CV5_TOPIC": "cv5",
+    "CV6_TOPIC": "cv6",
+    "CVS_TOPIC": "cvs",
+
+    "AIN_TOPIC": "ain",
+    "DIN_TOPIC": "din",
+    "K1_TOPIC": "k1",
+    "K2_TOPIC": "k2",
+    "B1_TOPIC": "b1",
+    "B2_TOPIC": "b2",
+}
+```
+
+If the topics begin with a `/`character, they are treated as absolute topic names. If they do not
+start with `/` they will be included in the `NAMESPACE` defined above.
+
 ## Changing the port
 
 TouchOSC uses UDP port 9000 by default, so that's what EuroPi looks for. To override

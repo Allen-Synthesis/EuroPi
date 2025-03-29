@@ -36,36 +36,63 @@ class OscControl(EuroPiScript):
     def __init__(self):
         super().__init__()
 
+        self.sanitize_osc_config()
+
         self.server = OpenSoundServer(
             recv_port=self.config.RECV_PORT,
             send_port=self.config.SEND_PORT,
             send_addr=self.config.SEND_ADDR,
         )
+
+        self.ui_dirty = False
+
+        @self.server.data_handler
+        def on_data_recv(connection=None, data=None):
+            if data.address == self.cv1_topic:
+                self.set_cv(cv1, data)
+            elif data.address == self.cv2_topic:
+                self.set_cv(cv2, data)
+            elif data.address == self.cv3_topic:
+                self.set_cv(cv3, data)
+            elif data.address == self.cv4_topic:
+                self.set_cv(cv4, data)
+            elif data.address == self.cv5_topic:
+                self.set_cv(cv5, data)
+            elif data.address == self.cv6_topic:
+                self.set_cv(cv6, data)
+            elif data.address == self.cvs_topic:
+                # set all CVs at once
+                self.set_cvs(data)
+
+    def sanitize_osc_config(self):
         self.namespace = self.config.NAMESPACE
         if not self.namespace.startswith("/"):
             self.namespace = f"/{self.namespace}"
         if not self.namespace.endswith("/"):
             self.namespace = f"{self.namespace}/"
 
-        self.ui_dirty = False
+        def sanitize_topic(param_name):
+            topic = ""
+            if self.config[param_name].startswith("/"):
+                topic = self.config[param_name]
+            else:
+                topic = f"{self.namespace}{self.config[param_name]}"
+            topic = topic.rstrip("/")
+            return topic
 
-        @self.server.data_handler
-        def on_data_recv(connection=None, data=None):
-            if data.address == f"{self.namespace}cv1":
-                self.set_cv(cv1, data)
-            elif data.address == f"{self.namespace}cv2":
-                self.set_cv(cv2, data)
-            elif data.address == f"{self.namespace}cv3":
-                self.set_cv(cv3, data)
-            elif data.address == f"{self.namespace}cv4":
-                self.set_cv(cv4, data)
-            elif data.address == f"{self.namespace}cv5":
-                self.set_cv(cv5, data)
-            elif data.address == f"{self.namespace}cv6":
-                self.set_cv(cv6, data)
-            elif data.address == f"{self.namespace}cvs":
-                # set all CVs at once
-                self.set_cvs(data)
+        self.cv1_topic = sanitize_topic("CV1_TOPIC")
+        self.cv2_topic = sanitize_topic("CV2_TOPIC")
+        self.cv3_topic = sanitize_topic("CV3_TOPIC")
+        self.cv4_topic = sanitize_topic("CV4_TOPIC")
+        self.cv5_topic = sanitize_topic("CV5_TOPIC")
+        self.cv6_topic = sanitize_topic("CV6_TOPIC")
+        self.cvs_topic = sanitize_topic("CVS_TOPIC")
+        self.ain_topic = sanitize_topic("AIN_TOPIC")
+        self.din_topic = sanitize_topic("DIN_TOPIC")
+        self.k1_topic = sanitize_topic("K1_TOPIC")
+        self.k2_topic = sanitize_topic("K2_TOPIC")
+        self.b1_topic = sanitize_topic("B1_TOPIC")
+        self.b2_topic = sanitize_topic("B2_TOPIC")
 
     def set_cv(self, cv_out, data):
         """
@@ -106,7 +133,23 @@ class OscControl(EuroPiScript):
     @classmethod
     def config_points(cls):
         return [
+            # OSC namespace & topics
             configuration.string("NAMESPACE", default="/europi/"),
+            configuration.string("CV1_TOPIC", default="cv1"),
+            configuration.string("CV2_TOPIC", default="cv2"),
+            configuration.string("CV3_TOPIC", default="cv3"),
+            configuration.string("CV4_TOPIC", default="cv4"),
+            configuration.string("CV5_TOPIC", default="cv5"),
+            configuration.string("CV6_TOPIC", default="cv6"),
+            configuration.string("CVS_TOPIC", default="cvs"),
+            configuration.string("AIN_TOPIC", default="ain"),
+            configuration.string("DIN_TOPIC", default="din"),
+            configuration.string("K1_TOPIC", default="k1"),
+            configuration.string("K2_TOPIC", default="k2"),
+            configuration.string("B1_TOPIC", default="b1"),
+            configuration.string("B2_TOPIC", default="b2"),
+
+            # Network settings
             configuration.integer("RECV_PORT", default=9000, minimum=0, maximum=65535),
             configuration.integer("SEND_PORT", default=9001, minimum=0, maximum=65535),
             configuration.string("SEND_ADDR", default="192.168.4.100"),
@@ -115,27 +158,27 @@ class OscControl(EuroPiScript):
     def on_status_tick(self, timer):
         # send the states of all of our inputs
         self.server.send_data(
-            f"{self.namespace}k1",
+            self.k1_topic,
             k1.percent(),
         )
         self.server.send_data(
-            f"{self.namespace}k2",
+            self.k2_topic,
             k2.percent(),
         )
         self.server.send_data(
-            f"{self.namespace}ain",
+            self.ain_topic,
             ain.percent(),
         )
         self.server.send_data(
-            f"{self.namespace}b1",
+            self.b1_topic,
             b1.value() != 0,
         )
         self.server.send_data(
-            f"{self.namespace}b2",
+            self.b2_topic,
             b2.value() != 0,
         )
         self.server.send_data(
-            f"{self.namespace}din",
+            self.din_topic,
             din.value() != 0,
         )
 
