@@ -277,7 +277,6 @@ class BouncingPixels(EuroPiScript):
             KnobBank.builder(k1)
             .with_locked_knob('speed', initial_percentage_value=saved_state.get('speed', 0.5))
             .with_locked_knob('ball_count', initial_percentage_value=saved_state.get('ball_count', 0.0))
-            # .with_locked_knob('gravity_magnitude', initial_percentage_value=0.0)
             .build()
         )
         
@@ -285,7 +284,6 @@ class BouncingPixels(EuroPiScript):
             KnobBank.builder(k2)
             .with_locked_knob('aspect_ratio', initial_percentage_value=saved_state.get('aspect_ratio', 1.0))
             .with_locked_knob('impulse_speed', initial_percentage_value=saved_state.get('impulse_speed', 0.5))
-            # .with_locked_knob('gravity_direction', initial_percentage_value=0.0)
             .build()
         )
 
@@ -414,8 +412,6 @@ class BouncingPixels(EuroPiScript):
         self.b1_pressed = None
     
     def b2_rising(self):
-        # self.k1_bank.set_current('gravity_magnitude')
-        # self.k2_bank.set_current('gravity_direction')
         self.k1_bank.set_current('ball_count')
         self.k2_bank.set_current('impulse_speed')
         self.b2_pressed = ticks_ms()
@@ -461,16 +457,7 @@ class BouncingPixels(EuroPiScript):
         
     # Event handlers to apply knob and analogue input values
     def apply_speed(self):
-        # Time factor is calibrated so that an input of 0 stops time, an input of 0.5 runs at 1x speed,
-        # and an input of 1.0 gives the configured max speed.
-        # https://math.stackexchange.com/questions/3311614/find-the-exponential-curve-through-three-data-points
         input_sum = self.speed_input + self.speed_ain_term
-        # self.time_factor = (
-            # (
-                # e ** (2 * log(self.config.timescale_max - 1) * input_sum
-                      # ) / (self.config.timescale_max - 2)
-            # ) -1 / (self.config.timescale_max - 2)
-        # )
         self.time_factor = exponential_interpolation(self.config.timescale_min, self.config.timescale_max, input_sum)
         
     def apply_aspect_ratio(self):
@@ -602,7 +589,6 @@ class BouncingPixels(EuroPiScript):
     def render_thread(self):
         """Render at limited frequency.
         """
-        prev_cycle = None
         render_period = 1000.0 / self.config.render_frequency
         while True:
             cycle_start = ticks_ms()
