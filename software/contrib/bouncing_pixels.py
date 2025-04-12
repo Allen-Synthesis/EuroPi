@@ -342,10 +342,6 @@ class BouncingPixels(EuroPiScript):
         
         for ball in self.balls:
             ball.on_collide += self.report_collision
-            
-    @classmethod
-    def display_name(cls):
-        return "Bouncing Pixels"
     
     @classmethod
     def config_points(cls):
