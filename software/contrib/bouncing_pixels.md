@@ -167,8 +167,8 @@ controller.
 ## Known issues & limitations
 
 * Gate lengths are not entirely precise. They're guaranteed to be at least the
-  set length, but they may exceed it slightly on account of running on software
-  timers.
+  set length, but they may exceed it slightly on account of running on 
+  tick-based timers.
 * Corners aren't actually corners, they're just the top and bottom most
   parts of the side edges. This means that if a pixel is traveling parallel and
   close to the top or bottom edge, it's possible that it bounces away from the
@@ -196,3 +196,4 @@ you can do:
 * Implement visual feedback on the locked knob inputs. This would especially
   benefit the knob, as there's no way of getting feedback as to whether a value
   has changed without also causing an impulse.
+* Rewrite the gates to rely on the `Timer` class to increase accuracy.
