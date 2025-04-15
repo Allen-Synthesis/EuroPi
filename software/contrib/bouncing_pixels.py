@@ -30,11 +30,11 @@ try:
 
 except ImportError:
     # Device import paths
-    from europi import *
-    from europi_script import EuroPiScript
-    from experimental.math_extras import rescale
-    from experimental.knobs import KnobBank
-    import configuration
+    from europi import * # type: ignore
+    from europi_script import EuroPiScript # type: ignore
+    from experimental.math_extras import rescale # type: ignore
+    from experimental.knobs import KnobBank # type: ignore
+    import configuration # type: ignore
 
 from _thread import start_new_thread
 from cmath import phase, polar, rect
