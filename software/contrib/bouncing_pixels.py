@@ -160,12 +160,12 @@ class Ball:
         oled.pixel(x, y, 1)
 
     def translate_x(self, old_width: float, new_width: float):
-        """Translate the pixel's x so that it's the same relative distance from the edges with new_width as it was with old_width."""
+        """Translate the ball's x so that it's the same relative distance from the edges with new_width as it was with old_width."""
         new_x = new_width * self.pos.real / old_width
         self.pos = complex(new_x, self.pos.imag)
 
     def reset(self):
-        """Reset the pixel, randomising its position, velocity, bounciness, acceleration, and marking it as active."""
+        """Reset the ball, randomising its position, velocity, bounciness, acceleration, and marking it as active."""
         self.pos = complex(uniform(0, self.arena.width), uniform(0, self.arena.height))
         self.velocity = rect(
             uniform(self.config.start_speed_min, self.config.start_speed_max), uniform(0, tau)
@@ -176,7 +176,7 @@ class Ball:
 
     @if_active
     def impulse(self):
-        """Apply an impulse of speed in a random direction to the pixel."""
+        """Apply an impulse of speed in a random direction to the ball."""
         self.velocity += rect(
             uniform(
                 self.config.impulse_speed_variation_min, self.config.impulse_speed_variation_max
@@ -186,7 +186,7 @@ class Ball:
         )
 
     def deactivate(self):
-        """Set the pixel to inactive, meaning it won't be processed by functions that are wrapped by @if_active."""
+        """Set the ball to inactive, meaning it won't be processed by functions that are wrapped by @if_active."""
         self.active = False
 
     def noop(self):
