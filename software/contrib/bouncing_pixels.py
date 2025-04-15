@@ -41,7 +41,7 @@ from cmath import phase, polar, rect
 from machine import Timer
 from math import degrees, e, inf, log, pi, radians
 from random import uniform
-from time import sleep_ms, ticks_ms, ticks_diff
+from time import ticks_ms, ticks_diff
 
 tau = pi * 2
 
