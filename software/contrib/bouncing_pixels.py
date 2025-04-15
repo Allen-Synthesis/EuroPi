@@ -38,6 +38,7 @@ except ImportError:
 
 from _thread import start_new_thread
 from cmath import phase, polar, rect
+from machine import Timer
 from math import degrees, e, inf, log, pi, radians
 from random import uniform
 from time import sleep_ms, ticks_ms, ticks_diff
@@ -548,8 +549,9 @@ class BouncingPixels(EuroPiScript):
         if not any_active:
             self.reset()
         
-    def render(self):
-        """Render the simulation. This is the only function that should call any drawing commands.
+    def render(self, _timer):
+        """Timer callback for rendering.
+        This is the only function that should call any drawing commands.
         """
         oled.fill(0)
         self.arena.draw_boundary()
@@ -594,14 +596,11 @@ class BouncingPixels(EuroPiScript):
     def render_thread(self):
         """Render at limited frequency.
         """
-        render_period = 1000.0 / self.config.render_frequency
-        while True:
-            cycle_start = ticks_ms()
-            self.render()
-            cycle_finish = ticks_ms()
-            time_taken = ticks_diff(cycle_finish, cycle_start)
-            wait = int(max(0.0, render_period - time_taken))
-            sleep_ms(wait)
+        Timer(
+            mode=Timer.PERIODIC,
+            freq=self.config.render_frequency,
+            callback=self.render,
+        )
 
 
 if __name__ == '__main__':
