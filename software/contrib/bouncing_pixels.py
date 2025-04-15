@@ -294,9 +294,7 @@ class BouncingPixels(EuroPiScript):
         self.k2_bank = (
             KnobBank.builder(k2)
             .with_unlocked_knob("impulse_speed")
-            .with_locked_knob(
-                "width", initial_percentage_value=saved_state.get("width", 1.0)
-            )
+            .with_locked_knob("width", initial_percentage_value=saved_state.get("width", 1.0))
             .build()
         )
 
@@ -404,13 +402,13 @@ class BouncingPixels(EuroPiScript):
             ),
             configuration.floatingPoint(
                 "arena_width_min",
-                minimum=ARENA_HEIGHT * 2.0 / oled.height, 
+                minimum=ARENA_HEIGHT * 2.0 / oled.height,
                 maximum=ARENA_HEIGHT * oled.width / oled.height,
                 default=ARENA_HEIGHT * 2.0 / oled.height,
             ),
             configuration.floatingPoint(
                 "arena_width_max",
-                minimum=ARENA_HEIGHT * 2.0 / oled.height, 
+                minimum=ARENA_HEIGHT * 2.0 / oled.height,
                 maximum=ARENA_HEIGHT * oled.width / oled.height,
                 default=ARENA_HEIGHT * oled.width / oled.height,
             ),
@@ -445,9 +443,7 @@ class BouncingPixels(EuroPiScript):
             configuration.floatingPoint(
                 "over_speed_threshold", minimum=0.0, maximum=inf, default=1.0e6
             ),
-            configuration.floatingPoint(
-                "impulse_speed_min", minimum=0.0, maximum=inf, default=0.0
-            ),
+            configuration.floatingPoint("impulse_speed_min", minimum=0.0, maximum=inf, default=0.0),
             configuration.floatingPoint(
                 "impulse_speed_max", minimum=0.0, maximum=inf, default=1.0e5
             ),
