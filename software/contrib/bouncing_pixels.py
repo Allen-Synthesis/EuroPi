@@ -127,7 +127,6 @@ class Ball:
     def __init__(self, arena, config):
         self.config = config
         self.bounce_angle_deviation_max = radians(config.bounce_angle_deviation_max)
-        self.impulse_speed_multiplier = 1.0
         self.arena = arena
 
         self.on_over_speed = Event(getattr(self, config.over_speed_behaviour))
@@ -447,10 +446,10 @@ class BouncingPixels(EuroPiScript):
                 "over_speed_threshold", minimum=0.0, maximum=inf, default=1.0e6
             ),
             configuration.floatingPoint(
-                "impulse_speed_min", minimum=0.0, maximum=inf, default=10.0
+                "impulse_speed_min", minimum=0.0, maximum=inf, default=0.0
             ),
             configuration.floatingPoint(
-                "impulse_speed_max", minimum=0.0, maximum=inf, default=1000.0
+                "impulse_speed_max", minimum=0.0, maximum=inf, default=1.0e5
             ),
             configuration.floatingPoint(
                 "impulse_speed_variation_min", minimum=0.0, maximum=inf, default=0.5
