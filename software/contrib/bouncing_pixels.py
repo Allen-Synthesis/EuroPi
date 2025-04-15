@@ -73,6 +73,7 @@ class Event:
         self.handlers.extend(handlers)
 
     def __iadd__(self, handler):
+        """Register an event handling function."""
         self.handlers.append(handler)
         return self
 
@@ -90,13 +91,13 @@ class Arena:
         self.config = config
         self.on_width_changed = Event()
 
-        # Height is constant
+        # Height is constant, unlike width.
         self.height = ARENA_HEIGHT  # Simulated size
         self.display_height = oled.height  # Displayed arena height
         self.draw_y_min = 0  # First y coordinate for the displayed arena
-        self.draw_y_max = (
+        self.draw_y_max = (  # Last y coordinate for the displayed arena
             self.draw_y_min + self.display_height
-        )  # Last y coordinate for the displayed arena
+        )
 
         # Width is variable, but we initialise its variables here to ensure it can be referenced.
         self.width = oled.width * self.height / oled.height
@@ -155,9 +156,7 @@ class Ball:
     def draw(self):
         arena = self.arena
         x = int(rescale(self.pos.real, 0, arena.width, arena.draw_x_min, arena.draw_x_max))
-
         y = int(rescale(self.pos.imag, 0, arena.height, arena.draw_y_min, arena.draw_y_max))
-
         oled.pixel(x, y, 1)
 
     def translate_x(self, old_width: float, new_width: float):
@@ -247,7 +246,7 @@ class Ball:
         # Update velocity based on changes to speed and direction stemming from collisions
         self.velocity = rect(speed, direction)
 
-        # Travelled more than one width or height in one tick.
+        # Travelled more than one width or height in one tick, or speed is above threshold.
         # TODO: we should be able to account for multiple collisions in one tick and not need this check
         if abs(collide_x) > 1 or abs(collide_y) > 1 or speed > self.config.over_speed_threshold:
             self.on_over_speed.emit()
