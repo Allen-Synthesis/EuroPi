@@ -46,6 +46,7 @@ from time import ticks_ms, ticks_diff
 tau = pi * 2
 
 ARENA_HEIGHT = 480
+UNITS_PER_PIXEL = ARENA_HEIGHT / oled.height
 
 COLLISION_ID_UP = 0
 COLLISION_ID_LEFT = 1
@@ -100,16 +101,16 @@ class Arena:
         )
 
         # Width is variable, but we initialise its variables here to ensure it can be referenced.
-        self.width = oled.width * self.height / oled.height
+        self.width = config.arena_width_max
         self.display_width = oled.width
         self.draw_x_min = 0
         self.draw_x_max = oled.width
 
-    def update_width(self, aspect_ratio):
-        """Set the arena's width according to given aspect ratio."""
+    def set_width(self, width):
+        """Set the arena's width."""
         prev_width = self.width
-        self.width = int(self.height * aspect_ratio)
-        self.display_width = int(self.display_height * aspect_ratio)
+        self.width = clamp(width, self.config.arena_width_min, self.config.arena_width_max)
+        self.display_width = int(self.width / UNITS_PER_PIXEL)
         self.draw_x_min = int(oled.width / 2 - self.display_width / 2)
         self.draw_x_max = self.draw_x_min + self.display_width
         self.on_width_changed.emit(prev_width, self.width)
@@ -295,7 +296,7 @@ class BouncingPixels(EuroPiScript):
             KnobBank.builder(k2)
             .with_unlocked_knob("impulse_speed")
             .with_locked_knob(
-                "aspect_ratio", initial_percentage_value=saved_state.get("aspect_ratio", 1.0)
+                "width", initial_percentage_value=saved_state.get("width", 1.0)
             )
             .build()
         )
@@ -309,7 +310,7 @@ class BouncingPixels(EuroPiScript):
         # Trackers of inputs
         # -1 as a starting value means they always get updated on first poll.
         self.speed_input = -1.0
-        self.aspect_ratio_input = -1.0
+        self.width_input = -1.0
         self.ball_count_input = -1.0
         self.impulse_speed_input = -1.0
         self.ain_input = -1.0
@@ -317,13 +318,13 @@ class BouncingPixels(EuroPiScript):
         # We store analogue input values in these. Although we only change change one as determined by
         # config.ain_function, we do need to reference them all when their respective knobs change.
         self.speed_ain_term = 0.0
-        self.aspect_ratio_ain_term = 0.0
+        self.width_ain_term = 0.0
         self.ball_count_ain_term = 0.0
         self.impulse_speed_ain_term = 0.0
 
         # Initialise input events
         self.on_speed_input = Event(self.mark_state_unsaved, self.apply_speed)
-        self.on_aspect_ratio_input = Event(self.mark_state_unsaved, self.apply_aspect_ratio)
+        self.on_width_input = Event(self.mark_state_unsaved, self.apply_width)
         self.on_ball_count_input = Event(self.mark_state_unsaved, self.apply_ball_count)
         self.on_impulse_speed_input = Event(self.mark_state_unsaved, self.apply_impulse_speed)
         self.on_ain_input = Event(
@@ -362,18 +363,6 @@ class BouncingPixels(EuroPiScript):
     def config_points(cls):
         return [
             configuration.floatingPoint(
-                "aspect_ratio_min",
-                minimum=2.0 / oled.height,
-                maximum=oled.width / oled.height,
-                default=4.0 / oled.height,
-            ),
-            configuration.floatingPoint(
-                "aspect_ratio_max",
-                minimum=2.0 / oled.height,
-                maximum=oled.width / oled.height,
-                default=oled.width / oled.height,
-            ),
-            configuration.floatingPoint(
                 "poll_frequency", minimum=5.0, maximum=120.0, default=20.0, danger=True
             ),
             configuration.floatingPoint(
@@ -393,7 +382,7 @@ class BouncingPixels(EuroPiScript):
             configuration.choice("din_function", choices=["impulse", "reset"], default="impulse"),
             configuration.choice(
                 "ain_function",
-                choices=["speed", "aspect_ratio", "ball_count", "impulse_speed"],
+                choices=["speed", "impulse_speed", "ball_count", "width"],
                 default="speed",
             ),
             configuration.floatingPoint(
@@ -413,6 +402,18 @@ class BouncingPixels(EuroPiScript):
             ),
             configuration.floatingPoint(
                 "gate_hold_length_corner", minimum=1.0, maximum=10_000.0, default=100.0
+            ),
+            configuration.floatingPoint(
+                "arena_width_min",
+                minimum=ARENA_HEIGHT * 2.0 / oled.height, 
+                maximum=ARENA_HEIGHT * oled.width / oled.height,
+                default=ARENA_HEIGHT * 2.0 / oled.height,
+            ),
+            configuration.floatingPoint(
+                "arena_width_max",
+                minimum=ARENA_HEIGHT * 2.0 / oled.height, 
+                maximum=ARENA_HEIGHT * oled.width / oled.height,
+                default=ARENA_HEIGHT * oled.width / oled.height,
             ),
             configuration.integer("ball_count_min", minimum=1, maximum=inf, default=1),
             configuration.integer("ball_count_max", minimum=1, maximum=inf, default=100),
@@ -462,7 +463,7 @@ class BouncingPixels(EuroPiScript):
     # Button handlers
     def b1_rising(self):
         self.k1_bank.set_current("ball_count")
-        self.k2_bank.set_current("aspect_ratio")
+        self.k2_bank.set_current("width")
         self.b1_pressed = ticks_ms()
 
     def b1_falling(self):
@@ -477,7 +478,7 @@ class BouncingPixels(EuroPiScript):
 
     def b2_rising(self):
         self.k1_bank.set_current("ball_count")
-        self.k2_bank.set_current("aspect_ratio")
+        self.k2_bank.set_current("width")
         self.b2_pressed = ticks_ms()
 
     def b2_falling(self):
@@ -499,7 +500,7 @@ class BouncingPixels(EuroPiScript):
         self.save_state_json(
             {
                 "speed": self.speed_input,
-                "aspect_ratio": self.aspect_ratio_input,
+                "width": self.width_input,
                 "ball_count": self.ball_count_input,
                 "impulse_speed": self.impulse_speed_input,
             }
@@ -510,8 +511,8 @@ class BouncingPixels(EuroPiScript):
     def update_speed_ain_term(self):
         self.speed_ain_term = ain.percent()
 
-    def update_aspect_ratio_ain_term(self):
-        self.aspect_ratio_ain_term = ain.percent()
+    def update_width_ain_term(self):
+        self.width_ain_term = ain.percent()
 
     def update_ball_count_ain_term(self):
         self.ball_count_ain_term = ain.percent()
@@ -526,12 +527,12 @@ class BouncingPixels(EuroPiScript):
             self.config.timescale_min, self.config.timescale_max, input_sum
         )
 
-    def apply_aspect_ratio(self):
-        input_sum = self.aspect_ratio_input + self.aspect_ratio_ain_term
-        aspect_ratio = rescale(
-            input_sum, 0.0, 1.0, self.config.aspect_ratio_min, self.config.aspect_ratio_max
+    def apply_width(self):
+        input_sum = self.width_input + self.width_ain_term
+        width = rescale(
+            input_sum, 0.0, 1.0, self.config.arena_width_min, self.config.arena_width_max
         )
-        self.arena.update_width(aspect_ratio)
+        self.arena.set_width(width)
 
     def apply_ball_count(self):
         input_sum = self.ball_count_input + self.ball_count_ain_term
@@ -570,13 +571,13 @@ class BouncingPixels(EuroPiScript):
     def poll(self):
         """Poll for input and emit corresponding events when changes are detected"""
         new_speed_input = self.k1_bank.speed.percent()
-        new_aspect_ratio_input = self.k2_bank.aspect_ratio.percent()
+        new_width_input = self.k2_bank.width.percent()
         new_ball_count_input = self.k1_bank.ball_count.percent()
         new_impulse_speed_input = self.k2_bank.impulse_speed.percent()
         new_ain_input = ain.percent()
 
         # The difference between the new and registered input must exceed the threshold in order to trigger a change.
-        # This reduces jitter, which can in particular be visible in the aspect ratio.
+        # This reduces jitter, but decreases accuracy.
         if abs(new_speed_input - self.speed_input) > self.config.knob_change_threshold:
             self.speed_input = new_speed_input
             self.on_speed_input.emit()
@@ -594,9 +595,9 @@ class BouncingPixels(EuroPiScript):
             self.ball_count_input = new_ball_count_input
             self.on_ball_count_input.emit()
 
-        if new_aspect_ratio_input != self.aspect_ratio_input:
-            self.aspect_ratio_input = new_aspect_ratio_input
-            self.on_aspect_ratio_input.emit()
+        if new_width_input != self.width_input:
+            self.width_input = new_width_input
+            self.on_width_input.emit()
 
         if new_ain_input != self.ain_input:
             self.ain_input = new_ain_input
