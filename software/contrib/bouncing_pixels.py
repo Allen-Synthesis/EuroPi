@@ -414,8 +414,8 @@ class BouncingPixels(EuroPiScript):
                 maximum=ARENA_HEIGHT * oled.width / oled.height,
                 default=ARENA_HEIGHT * oled.width / oled.height,
             ),
-            configuration.integer("ball_count_min", minimum=1, maximum=inf, default=1),
-            configuration.integer("ball_count_max", minimum=1, maximum=inf, default=100),
+            configuration.integer("ball_count_min", minimum=1, maximum=100, default=1),
+            configuration.integer("ball_count_max", minimum=1, maximum=100, default=100),
             configuration.floatingPoint(
                 "corner_collision_margin",
                 minimum=0.0,

@@ -145,8 +145,8 @@ controller.
 | `gate_hold_length_corner`     | Floating point number | 1 - 10,000                                             | 100           | How long the gate for corner collisions is held open, expressed in milliseconds. |
 | `arena_width_min`             | Floating point number | 30 - 1,920                                             | 30            | The smallest width the playing field can have. Fifteen units equal one pixel. |
 | `arena_width_max`             | Floating point number | 30 - 1,920                                             | 1920          | The largest width the playing field can have. Fifteen units equal one pixel. |
-| `ball_count_min`              | Integer number        | >= 1                                                   | 1             | The number of balls in play when the `ball_count` parameter is set to minimum. |
-| `ball_count_max`              | Integer number        | >= 1                                                   | 100           | The number of balls in play when the `ball_count` parameter is set to maximum. |
+| `ball_count_min`              | Integer number        | 1 - 100                                                | 1             | The number of balls in play when the `ball_count` parameter is set to minimum. |
+| `ball_count_max`              | Integer number        | 1 - 100                                                | 100           | The number of balls in play when the `ball_count` parameter is set to maximum. |
 | `corner_collision_margin`     | Floating point number | 0 - 240                                                | 15            | How large a portion of the side edges are considered corners. Fifteen units equal one pixel on the display. |
 | `start_speed_min`             | Floating point number | >= 0                                                   | 10            | The minimum speed a pixel may get upon reset, expressed as units per second. |
 | `start_speed_max`             | Floating point number | >= 0                                                   | 100           | The maximum speed a pixel may get upon reset, expressed as units per second. |
@@ -180,6 +180,10 @@ controller.
 * Collision handling cannot handle a pixel going fast enough to bounce with two
   opposing walls in one tick. If a pixel goes fast enough to do this, it
   triggers the over speed behaviour (i.e. by default, they will reset).
+* This script consumes a relatively large amount of memory. Max ball counts over
+  100 risk crashing the script. Ball counts over 20 consume enough memory to
+  cause connection issues with Thonny. If you need to debug the script, you will
+  probably want to lower the max ball count.
 
 ## Further development
 
