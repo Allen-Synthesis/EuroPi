@@ -20,12 +20,21 @@ A gate is triggered each time a wall is hit. See `bouncing_pixels.md` for more i
 @year    2025
 """
 
-from europi import *
-from europi_script import EuroPiScript
+try:
+    # Local development
+    from software.firmware.europi import *
+    from software.firmware.europi_script import EuroPiScript
+    from software.firmware.experimental.math_extras import rescale
+    from software.firmware.experimental.knobs import KnobBank
+    from software.firmware import configuration
 
-from experimental.math_extras import rescale
-from experimental.knobs import KnobBank
-import configuration
+except ImportError:
+    # Device import paths
+    from europi import *
+    from europi_script import EuroPiScript
+    from experimental.math_extras import rescale
+    from experimental.knobs import KnobBank
+    import configuration
 
 from _thread import start_new_thread
 from cmath import phase, polar, rect
