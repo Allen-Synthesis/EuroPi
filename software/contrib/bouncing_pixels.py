@@ -284,15 +284,15 @@ class BouncingPixels(EuroPiScript):
         self.state_saved = False
         self.k1_bank = (
             KnobBank.builder(k1)
-            .with_locked_knob('speed', initial_percentage_value=saved_state.get('speed', 0.5))
+            .with_unlocked_knob('speed')
             .with_locked_knob('ball_count', initial_percentage_value=saved_state.get('ball_count', 0.0))
             .build()
         )
         
         self.k2_bank = (
             KnobBank.builder(k2)
+            .with_unlocked_knob('impulse_speed')
             .with_locked_knob('aspect_ratio', initial_percentage_value=saved_state.get('aspect_ratio', 1.0))
-            .with_locked_knob('impulse_speed', initial_percentage_value=saved_state.get('impulse_speed', 0.5))
             .build()
         )
 
@@ -403,12 +403,12 @@ class BouncingPixels(EuroPiScript):
     # Button handlers
     def b1_rising(self):
         self.k1_bank.set_current('ball_count')
-        self.k2_bank.set_current('impulse_speed')
+        self.k2_bank.set_current('aspect_ratio')
         self.b1_pressed = ticks_ms()
     
     def b1_falling(self):
         self.k1_bank.set_current('speed')
-        self.k2_bank.set_current('aspect_ratio')
+        self.k2_bank.set_current('impulse_speed')
         
         delta = ticks_diff(ticks_ms(), self.b1_pressed)
         if delta <= self.config.long_press_length:
@@ -418,12 +418,12 @@ class BouncingPixels(EuroPiScript):
     
     def b2_rising(self):
         self.k1_bank.set_current('ball_count')
-        self.k2_bank.set_current('impulse_speed')
+        self.k2_bank.set_current('aspect_ratio')
         self.b2_pressed = ticks_ms()
     
     def b2_falling(self):
         self.k1_bank.set_current('speed')
-        self.k2_bank.set_current('aspect_ratio')
+        self.k2_bank.set_current('impulse_speed')
         
         delta = ticks_diff(ticks_ms(), self.b2_pressed)
         if delta <= self.config.long_press_length:
@@ -516,19 +516,19 @@ class BouncingPixels(EuroPiScript):
             self.speed_input = new_speed_input
             self.on_speed_input.emit()
             
-        if abs(new_aspect_ratio_input - self.aspect_ratio_input) > self.config.knob_change_threshold:
-            self.aspect_ratio_input = new_aspect_ratio_input
-            self.on_aspect_ratio_input.emit()
+        if abs(new_impulse_speed_input - self.impulse_speed_input) > self.config.knob_change_threshold:
+            self.impulse_speed_input = new_impulse_speed_input
+            self.on_impulse_speed_input.emit()
             
         # Since the rest of the parameters require a button to be held, they will not jitter once the button is released
         # and no threshold check should be needed.
         if new_ball_count_input != self.ball_count_input:            
             self.ball_count_input = new_ball_count_input
             self.on_ball_count_input.emit()
-            
-        if new_impulse_speed_input != self.impulse_speed_input:
-            self.impulse_speed_input = new_impulse_speed_input
-            self.on_impulse_speed_input.emit()
+
+        if new_aspect_ratio_input != self.aspect_ratio_input:
+            self.aspect_ratio_input = new_aspect_ratio_input
+            self.on_aspect_ratio_input.emit()
             
         if new_ain_input != self.ain_input:
             self.ain_input = new_ain_input
