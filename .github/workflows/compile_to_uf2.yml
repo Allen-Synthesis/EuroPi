@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: micropython/micropython
-          ref: v1.22.2
+          ref: v1.25.0
           path: micropython
 
       - name: install os deps
@@ -67,10 +67,9 @@ jobs:
         working-directory: micropython/ports/rp2
         run: make BOARD=RPI_PICO_W
 
-      # Not supported yet
-      # - name: compile micropython and firmware modules for RPI_PICO2_W
-      #   working-directory: micropython/ports/rp2
-      #   run: make BOARD=RPI_PICO2_W
+      - name: compile micropython and firmware modules for RPI_PICO2_W
+        working-directory: micropython/ports/rp2
+        run: make BOARD=RPI_PICO2_W
 
       - name: create release asset version
         id: release-asset-version
@@ -87,9 +86,8 @@ jobs:
       - name: rename firmware file for RPI_PICO_W with version info
         run: cp micropython/ports/rp2/build-RPI_PICO_W/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}-RPI_PICO_W.uf2
 
-      # Not supported yet
-      # - name: rename firmware file for RPI_PICO2_W with version info
-      #   run: cp micropython/ports/rp2/build-RPI_PICO2_W/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}-RPI_PICO2_W.uf2
+      - name: rename firmware file for RPI_PICO2_W with version info
+        run: cp micropython/ports/rp2/build-RPI_PICO2_W/firmware.uf2 europi-v${{ steps.release-asset-version.outputs.VERSION }}-RPI_PICO2_W.uf2
 
       - name: create github release
         uses: "marvinpinto/action-automatic-releases@v1.2.1"
