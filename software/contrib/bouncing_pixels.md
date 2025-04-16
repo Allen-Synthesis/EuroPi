@@ -128,7 +128,7 @@ controller.
 
 | Key                           | Type                  | Possible values                                        | Default value | Description |
 |-------------------------------|-----------------------|--------------------------------------------------------|---------------|-------------|
-| `POLL_FREQUENCY`              | Floating point number | 5 - 120                                                | 20            | How frequently the application polls for new inputs, expressed as times per second.<br><br>⚠️ **Changing this value is not recommended.** |
+| `POLL_FREQUENCY`              | Floating point number | >= 5                                                   | 30            | How frequently the application polls for new inputs, expressed as times per second.<br><br>⚠️ **Changing this value is not recommended.** |
 | `SAVE_PERIOD`                 | Floating point number | >= 0                                                   | 5000          | How frequently the application state is saved at most, expressed as seconds between saves.<br><br>⚠️ **Changing this value is not recommended.** |
 | `RENDER_FREQUENCY`            | Floating point number | >= 1                                                   | 30            | How frequently the display display is updated at most, expressed as times per second.<br><br>⚠️ **Changing this value is not recommended.** |
 | `LONG_PRESS_LENGTH`           | Floating point number | >= 0                                                   | 500           | How many milliseconds a button must be pressed for it to be considered a long press. |

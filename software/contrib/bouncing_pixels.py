@@ -360,7 +360,7 @@ class BouncingPixels(EuroPiScript):
     def config_points(cls):
         return [
             configuration.floatingPoint(
-                "POLL_FREQUENCY", minimum=5.0, maximum=120.0, default=20.0, danger=True
+                "POLL_FREQUENCY", minimum=5.0, maximum=inf, default=30.0, danger=True
             ),
             configuration.floatingPoint(
                 "SAVE_PERIOD", minimum=0.0, maximum=inf, default=5000.0, danger=True
