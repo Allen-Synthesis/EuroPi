@@ -89,38 +89,38 @@ controller.
 
 ```json
 {
-    "long_press_length": 500.0,
-    "timescale_min": 0.0,
-    "timescale_max": 100.0,
-    "knob_change_threshold": 0.01,
-    "din_function": "impulse",
-    "ain_function": "speed",
-    "gate_hold_length_top": 25.0,
-    "gate_hold_length_left": 25.0,
-    "gate_hold_length_right": 25.0,
-    "gate_hold_length_bottom": 25.0,
-    "gate_hold_length_any": 10.0,
-    "gate_hold_length_corner": 100.0,
-    "arena_width_min": 30.0,
-    "arena_width_max": 1920.0,
-    "ball_count_max": 100,
-    "ball_count_min": 1,
-    "corner_collision_margin": 15.0,
-    "start_speed_min": 10.0,
-    "start_speed_max": 100.0,
-    "accel_min": -5.0,
-    "accel_max": 5.0,
-    "bounciness_min": 0.8,
-    "bounciness_max": 1.2,
-    "bounce_angle_deviation_max": 15.0,
-    "under_speed_behaviour": "reset",
-    "over_speed_behaviour": "reset",
-    "under_speed_threshold": 5.0,
-    "over_speed_threshold": 1000000,
-    "impulse_speed_min": 0,
-    "impulse_speed_max": 100000,
-    "impulse_speed_variation_min": 0.5,
-    "impulse_speed_variation_max": 2.0,
+    "LONG_PRESS_LENGTH": 500.0,
+    "TIMESCALE_MIN": 0.0,
+    "TIMESCALE_MAX": 100.0,
+    "KNOB_CHANGE_THRESHOLD": 0.01,
+    "DIN_FUNCTION": "impulse",
+    "AIN_FUNCTION": "speed",
+    "GATE_HOLD_LENGTH_TOP": 25.0,
+    "GATE_HOLD_LENGTH_LEFT": 25.0,
+    "GATE_HOLD_LENGTH_RIGHT": 25.0,
+    "GATE_HOLD_LENGTH_BOTTOM": 25.0,
+    "GATE_HOLD_LENGTH_ANY": 10.0,
+    "GATE_HOLD_LENGTH_CORNER": 100.0,
+    "ARENA_WIDTH_MIN": 30.0,
+    "ARENA_WIDTH_MAX": 1920.0,
+    "BALL_COUNT_MAX": 100,
+    "BALL_COUNT_MIN": 1,
+    "CORNER_COLLISION_MARGIN": 15.0,
+    "START_SPEED_MIN": 10.0,
+    "START_SPEED_MAX": 100.0,
+    "ACCEL_MIN": -5.0,
+    "ACCEL_MAX": 5.0,
+    "BOUNCINESS_MIN": 0.8,
+    "BOUNCINESS_MAX": 1.2,
+    "BOUNCE_ANGLE_DEVIATION_MAX": 15.0,
+    "UNDER_SPEED_BEHAVIOUR": "reset",
+    "OVER_SPEED_BEHAVIOUR": "reset",
+    "UNDER_SPEED_THRESHOLD": 5.0,
+    "OVER_SPEED_THRESHOLD": 1000000,
+    "IMPULSE_SPEED_MIN": 0,
+    "IMPULSE_SPEED_MAX": 100000,
+    "IMPULSE_SPEED_VARIATION_MIN": 0.5,
+    "IMPULSE_SPEED_VARIATION_MAX": 2.0,
 }
 ```
 
@@ -128,41 +128,41 @@ controller.
 
 | Key                           | Type                  | Possible values                                        | Default value | Description |
 |-------------------------------|-----------------------|--------------------------------------------------------|---------------|-------------|
-| `poll_frequency`              | Floating point number | 5 - 120                                                | 20            | How frequently the application polls for new inputs, expressed as times per second.<br><br>⚠️ **Changing this value is not recommended.** |
-| `save_period`                 | Floating point number | >= 0                                                   | 5000          | How frequently the application state is saved at most, expressed as seconds between saves.<br><br>⚠️ **Changing this value is not recommended.** |
-| `render_frequency`            | Floating point number | >= 1                                                   | 30            | How frequently the display display is updated at most, expressed as times per second.<br><br>⚠️ **Changing this value is not recommended.** |
-| `long_press_length`           | Floating point number | >= 0                                                   | 500           | How many milliseconds a button must be pressed for it to be considered a long press. |
-| `timescale_min`               | Floating point number | any                                                    | 0             | The speed at which the simulation runs when the speed parameter is set to minimum. |
-| `timescale_max`               | Floating point number | any                                                    | 100           | The speed at which the simulation runs when the speed parameter is set to maximum. |
-| `knob_change_threshold`       | Floating point number | 0.0 - 0.1                                              | 0.01          | How much a knob must change for its value to update. A higher value reduces jitter, but decreases sensitivity. |
-| `din_function`                | Choice                | One of `impulse`, `reset`                              | `impulse`     | The function to trigger when the digital input is raised. |
-| `ain_function`                | Choice                | One of `speed`, `impulse_speed`, `ball_count`, `width` | `speed`       | The parameter that the analogue input modulates. |
-| `gate_hold_length_top`        | Floating point number | 1 - 10,000                                             | 25            | How long the gate for top edge collisions is held open, expressed in milliseconds. |
-| `gate_hold_length_left`       | Floating point number | 1 - 10,000                                             | 25            | How long the gate for left edge collisions is held open, expressed in milliseconds. |
-| `gate_hold_length_right`      | Floating point number | 1 - 10,000                                             | 25            | How long the gate for right edge collisions is held open, expressed in milliseconds. |
-| `gate_hold_length_bottom`     | Floating point number | 1 - 10,000                                             | 25            | How long the gate for bottom edge collisions is held open, expressed in milliseconds. |
-| `gate_hold_length_any`        | Floating point number | 1 - 10,000                                             | 10            | How long the gate for any edge collisions is held open, expressed in milliseconds. |
-| `gate_hold_length_corner`     | Floating point number | 1 - 10,000                                             | 100           | How long the gate for corner collisions is held open, expressed in milliseconds. |
-| `arena_width_min`             | Floating point number | 30 - 1,920                                             | 30            | The smallest width the playing field can have. Fifteen units equal one pixel. |
-| `arena_width_max`             | Floating point number | 30 - 1,920                                             | 1920          | The largest width the playing field can have. Fifteen units equal one pixel. |
-| `ball_count_min`              | Integer number        | 1 - 100                                                | 1             | The number of balls in play when the `ball_count` parameter is set to minimum. |
-| `ball_count_max`              | Integer number        | 1 - 100                                                | 100           | The number of balls in play when the `ball_count` parameter is set to maximum. |
-| `corner_collision_margin`     | Floating point number | 0 - 240                                                | 15            | How large a portion of the side edges are considered corners. Fifteen units equal one pixel on the display. |
-| `start_speed_min`             | Floating point number | >= 0                                                   | 10            | The minimum speed a pixel may get upon reset, expressed as units per second. |
-| `start_speed_max`             | Floating point number | >= 0                                                   | 100           | The maximum speed a pixel may get upon reset, expressed as units per second. |
-| `accel_min`                   | Floating point number | any                                                    | -5.0          | The minimum acceleration a pixel may get upon reset, expressed as units per second squared. |
-| `accel_max`                   | Floating point number | any                                                    | 5.0           | The maximum acceleration a pixel may get upon reset, expressed as units per second squared. |
-| `bounciness_min`              | Floating point number | >= 0.0001                                              | 0.8           | The minimum bounce speed multiplier a pixel may get upon reset. |
-| `bounciness_max`              | Floating point number | >= 0.0001                                              | 1.2           | The maximum bounce speed multiplier a pixel may get upon reset. |
-| `bounce_angle_deviation_max`  | Floating point number | 0 - 180                                                | 15            | The maximum angle a pixel might deviate from its calculated direction upon bouncing, expressed in degrees. |
-| `under_speed_behaviour`       | Choice                | One of `impulse`, `reset`, `deactivate`, `noop`        | `reset`       | What a pixel should do when its speed goes below the under speed threshold. |
-| `over_speed_behaviour`        | Choice                | One of `reset`, `deactivate`                           | `reset`       | What a pixel should do when its speed goes above the over speed threshold. |
-| `under_speed_threshold`       | Floating point number | >= 0                                                   | 5.0           | The speed threshold under which a pixel activates its under speed behaviour. |
-| `over_speed_threshold`        | Floating point number | >= 0                                                   | 1,000,000     | The speed threshold over which a pixel activates its over speed threshold. |
-| `impulse_speed_min`           | Floating point number | >= 0                                                   | 0             | The speed added to pixels by an impulse when the `impulse` parameter is at minimum. |
-| `impulse_speed_max`           | Floating point number | >= 0                                                   | 100,000       | The speed added to pixels by an impulse when the `impulse` parameter is at maximum. |
-| `impulse_speed_variation_min` | Floating point number | >= 0                                                   | 0.5           | The smallest possible random multiplier for impulse speed. |
-| `impulse_speed_variation_max` | Floating point number | >= 0                                                   | 2.0           | The largest possible random multiplier for impulse speed. |
+| `POLL_FREQUENCY`              | Floating point number | 5 - 120                                                | 20            | How frequently the application polls for new inputs, expressed as times per second.<br><br>⚠️ **Changing this value is not recommended.** |
+| `SAVE_PERIOD`                 | Floating point number | >= 0                                                   | 5000          | How frequently the application state is saved at most, expressed as seconds between saves.<br><br>⚠️ **Changing this value is not recommended.** |
+| `RENDER_FREQUENCY`            | Floating point number | >= 1                                                   | 30            | How frequently the display display is updated at most, expressed as times per second.<br><br>⚠️ **Changing this value is not recommended.** |
+| `LONG_PRESS_LENGTH`           | Floating point number | >= 0                                                   | 500           | How many milliseconds a button must be pressed for it to be considered a long press. |
+| `TIMESCALE_MIN`               | Floating point number | any                                                    | 0             | The speed at which the simulation runs when the speed parameter is set to minimum. |
+| `TIMESCALE_MAX`               | Floating point number | any                                                    | 100           | The speed at which the simulation runs when the speed parameter is set to maximum. |
+| `KNOB_CHANGE_THRESHOLD`       | Floating point number | 0.0 - 0.1                                              | 0.01          | How much a knob must change for its value to update. A higher value reduces jitter, but decreases sensitivity. |
+| `DIN_FUNCTION`                | Choice                | One of `impulse`, `reset`                              | `impulse`     | The function to trigger when the digital input is raised. |
+| `AIN_FUNCTION`                | Choice                | One of `speed`, `impulse_speed`, `ball_count`, `width` | `speed`       | The parameter that the analogue input modulates. |
+| `GATE_HOLD_LENGTH_TOP`        | Floating point number | 1 - 10,000                                             | 25            | How long the gate for top edge collisions is held open, expressed in milliseconds. |
+| `GATE_HOLD_LENGTH_LEFT`       | Floating point number | 1 - 10,000                                             | 25            | How long the gate for left edge collisions is held open, expressed in milliseconds. |
+| `GATE_HOLD_LENGTH_RIGHT`      | Floating point number | 1 - 10,000                                             | 25            | How long the gate for right edge collisions is held open, expressed in milliseconds. |
+| `GATE_HOLD_LENGTH_BOTTOM`     | Floating point number | 1 - 10,000                                             | 25            | How long the gate for bottom edge collisions is held open, expressed in milliseconds. |
+| `GATE_HOLD_LENGTH_ANY`        | Floating point number | 1 - 10,000                                             | 10            | How long the gate for any edge collisions is held open, expressed in milliseconds. |
+| `GATE_HOLD_LENGTH_CORNER`     | Floating point number | 1 - 10,000                                             | 100           | How long the gate for corner collisions is held open, expressed in milliseconds. |
+| `ARENA_WIDTH_MIN`             | Floating point number | 30 - 1,920                                             | 30            | The smallest width the playing field can have. Fifteen units equal one pixel. |
+| `ARENA_WIDTH_MAX`             | Floating point number | 30 - 1,920                                             | 1920          | The largest width the playing field can have. Fifteen units equal one pixel. |
+| `BALL_COUNT_MIN`              | Integer number        | 1 - 100                                                | 1             | The number of balls in play when the `ball_count` parameter is set to minimum. |
+| `BALL_COUNT_MAX`              | Integer number        | 1 - 100                                                | 100           | The number of balls in play when the `ball_count` parameter is set to maximum. |
+| `CORNER_COLLISION_MARGIN`     | Floating point number | 0 - 240                                                | 15            | How large a portion of the side edges are considered corners. Fifteen units equal one pixel on the display. |
+| `START_SPEED_MIN`             | Floating point number | >= 0                                                   | 10            | The minimum speed a pixel may get upon reset, expressed as units per second. |
+| `START_SPEED_MAX`             | Floating point number | >= 0                                                   | 100           | The maximum speed a pixel may get upon reset, expressed as units per second. |
+| `ACCEL_MIN`                   | Floating point number | any                                                    | -5.0          | The minimum acceleration a pixel may get upon reset, expressed as units per second squared. |
+| `ACCEL_MAX`                   | Floating point number | any                                                    | 5.0           | The maximum acceleration a pixel may get upon reset, expressed as units per second squared. |
+| `BOUNCINESS_MIN`              | Floating point number | >= 0.0001                                              | 0.8           | The minimum bounce speed multiplier a pixel may get upon reset. |
+| `BOUNCINESS_MAX`              | Floating point number | >= 0.0001                                              | 1.2           | The maximum bounce speed multiplier a pixel may get upon reset. |
+| `BOUNCE_ANGLE_DEVIATION_MAX`  | Floating point number | 0 - 180                                                | 15            | The maximum angle a pixel might deviate from its calculated direction upon bouncing, expressed in degrees. |
+| `UNDER_SPEED_BEHAVIOUR`       | Choice                | One of `impulse`, `reset`, `deactivate`, `noop`        | `reset`       | What a pixel should do when its speed goes below the under speed threshold. |
+| `OVER_SPEED_BEHAVIOUR`        | Choice                | One of `reset`, `deactivate`                           | `reset`       | What a pixel should do when its speed goes above the over speed threshold. |
+| `UNDER_SPEED_THRESHOLD`       | Floating point number | >= 0                                                   | 5.0           | The speed threshold under which a pixel activates its under speed behaviour. |
+| `OVER_SPEED_THRESHOLD`        | Floating point number | >= 0                                                   | 1,000,000     | The speed threshold over which a pixel activates its over speed threshold. |
+| `IMPULSE_SPEED_MIN`           | Floating point number | >= 0                                                   | 0             | The speed added to pixels by an impulse when the `impulse` parameter is at minimum. |
+| `IMPULSE_SPEED_MAX`           | Floating point number | >= 0                                                   | 100,000       | The speed added to pixels by an impulse when the `impulse` parameter is at maximum. |
+| `IMPULSE_SPEED_VARIATION_MIN` | Floating point number | >= 0                                                   | 0.5           | The smallest possible random multiplier for impulse speed. |
+| `IMPULSE_SPEED_VARIATION_MAX` | Floating point number | >= 0                                                   | 2.0           | The largest possible random multiplier for impulse speed. |
 
 ## Known issues & limitations
 

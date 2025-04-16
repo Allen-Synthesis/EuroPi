@@ -101,7 +101,7 @@ class Arena:
         )
 
         # Width is variable, but we initialise its variables here to ensure it can be referenced.
-        self.width = config.arena_width_max
+        self.width = config.ARENA_WIDTH_MAX
         self.display_width = oled.width
         self.draw_x_min = 0
         self.draw_x_max = oled.width
@@ -109,7 +109,7 @@ class Arena:
     def set_width(self, width):
         """Set the arena's width."""
         prev_width = self.width
-        self.width = clamp(width, self.config.arena_width_min, self.config.arena_width_max)
+        self.width = clamp(width, self.config.ARENA_WIDTH_MIN, self.config.ARENA_WIDTH_MAX)
         self.display_width = int(self.width / UNITS_PER_PIXEL)
         self.draw_x_min = int(oled.width / 2 - self.display_width / 2)
         self.draw_x_max = self.draw_x_min + self.display_width
@@ -126,11 +126,11 @@ class Arena:
 class Ball:
     def __init__(self, arena, config):
         self.config = config
-        self.bounce_angle_deviation_max = radians(config.bounce_angle_deviation_max)
+        self.BOUNCE_ANGLE_DEVIATION_MAX = radians(config.BOUNCE_ANGLE_DEVIATION_MAX)
         self.arena = arena
 
-        self.on_over_speed = Event(getattr(self, config.over_speed_behaviour))
-        self.on_under_speed = Event(getattr(self, config.under_speed_behaviour))
+        self.on_over_speed = Event(getattr(self, config.OVER_SPEED_BEHAVIOUR))
+        self.on_under_speed = Event(getattr(self, config.UNDER_SPEED_BEHAVIOUR))
         self.on_collide = Event()
         arena.on_width_changed += self.translate_x
 
@@ -168,10 +168,10 @@ class Ball:
         """Reset the ball, randomising its position, velocity, bounciness, acceleration, and marking it as active."""
         self.pos = complex(uniform(0, self.arena.width), uniform(0, self.arena.height))
         self.velocity = rect(
-            uniform(self.config.start_speed_min, self.config.start_speed_max), uniform(0, tau)
+            uniform(self.config.START_SPEED_MIN, self.config.START_SPEED_MAX), uniform(0, tau)
         )
-        self.bounciness = uniform(self.config.bounciness_min, self.config.bounciness_max)
-        self.acceleration = uniform(self.config.accel_min, self.config.accel_max)
+        self.bounciness = uniform(self.config.BOUNCINESS_MIN, self.config.BOUNCINESS_MAX)
+        self.acceleration = uniform(self.config.ACCEL_MIN, self.config.ACCEL_MAX)
         self.active = True
 
     @if_active
@@ -179,7 +179,7 @@ class Ball:
         """Apply an impulse of speed in a random direction to the ball."""
         self.velocity += rect(
             uniform(
-                self.config.impulse_speed_variation_min, self.config.impulse_speed_variation_max
+                self.config.IMPULSE_SPEED_VARIATION_MIN, self.config.IMPULSE_SPEED_VARIATION_MAX
             )
             * self.impulse_speed,
             uniform(0, tau),
@@ -220,8 +220,8 @@ class Ball:
             if collide_x != -1:  # Right
                 self.on_collide.emit(COLLISION_ID_RIGHT)
             if (
-                self.pos.imag < self.config.corner_collision_margin
-                or self.arena.height - self.pos.imag < self.config.corner_collision_margin
+                self.pos.imag < self.config.CORNER_COLLISION_MARGIN
+                or self.arena.height - self.pos.imag < self.config.CORNER_COLLISION_MARGIN
             ):
                 self.on_collide.emit(COLLISION_ID_CORNER)
 
@@ -229,7 +229,7 @@ class Ball:
             direction = (
                 pi
                 - direction
-                + uniform(-self.bounce_angle_deviation_max, self.bounce_angle_deviation_max)
+                + uniform(-self.BOUNCE_ANGLE_DEVIATION_MAX, self.BOUNCE_ANGLE_DEVIATION_MAX)
             )
 
         if collide_y != 0:
@@ -240,7 +240,7 @@ class Ball:
 
             speed *= self.bounciness
             direction = -direction + uniform(
-                -self.bounce_angle_deviation_max, self.bounce_angle_deviation_max
+                -self.BOUNCE_ANGLE_DEVIATION_MAX, self.BOUNCE_ANGLE_DEVIATION_MAX
             )
 
         # Update velocity based on changes to speed and direction stemming from collisions
@@ -248,11 +248,11 @@ class Ball:
 
         # Travelled more than one width or height in one tick, or speed is above threshold.
         # TODO: we should be able to account for multiple collisions in one tick and not need this check
-        if abs(collide_x) > 1 or abs(collide_y) > 1 or speed > self.config.over_speed_threshold:
+        if abs(collide_x) > 1 or abs(collide_y) > 1 or speed > self.config.OVER_SPEED_THRESHOLD:
             self.on_over_speed.emit()
 
         # Speed too low
-        if speed < self.config.under_speed_threshold:
+        if speed < self.config.UNDER_SPEED_THRESHOLD:
             self.on_under_speed.emit()
 
 
@@ -313,7 +313,7 @@ class BouncingPixels(EuroPiScript):
         self.ain_input = -1.0
 
         # We store analogue input values in these. Although we only change change one as determined by
-        # config.ain_function, we do need to reference them all when their respective knobs change.
+        # config.AIN_FUNCTION, we do need to reference them all when their respective knobs change.
         self.speed_ain_term = 0.0
         self.width_ain_term = 0.0
         self.ball_count_ain_term = 0.0
@@ -327,22 +327,22 @@ class BouncingPixels(EuroPiScript):
         self.on_ain_input = Event(
             # To avoid excess compute spent on string formatting or dict lookups in the main loop, we keep an assortment of
             # set and apply functions so that we can assign them once and for all here.
-            getattr(self, f"update_{self.config.ain_function}_ain_term"),
-            getattr(self, f"apply_{self.config.ain_function}"),
+            getattr(self, f"update_{self.config.AIN_FUNCTION}_ain_term"),
+            getattr(self, f"apply_{self.config.AIN_FUNCTION}"),
         )
 
         # Create the playing field and gate abstractions
         self.arena = Arena(self.config)
         self.balls = [
-            Ball(arena=self.arena, config=self.config) for _ in range(self.config.ball_count_max)
+            Ball(arena=self.arena, config=self.config) for _ in range(self.config.BALL_COUNT_MAX)
         ]
         hold_lengths = [
-            self.config.gate_hold_length_top,
-            self.config.gate_hold_length_left,
-            self.config.gate_hold_length_right,
-            self.config.gate_hold_length_bottom,
-            self.config.gate_hold_length_any,
-            self.config.gate_hold_length_corner,
+            self.config.GATE_HOLD_LENGTH_TOP,
+            self.config.GATE_HOLD_LENGTH_LEFT,
+            self.config.GATE_HOLD_LENGTH_RIGHT,
+            self.config.GATE_HOLD_LENGTH_BOTTOM,
+            self.config.GATE_HOLD_LENGTH_ANY,
+            self.config.GATE_HOLD_LENGTH_CORNER,
         ]
         self.gates = [Gate(cv, hold_length) for cv, hold_length in zip(cvs, hold_lengths)]
 
@@ -351,7 +351,7 @@ class BouncingPixels(EuroPiScript):
         b1.handler_falling(self.b1_falling)
         b2.handler(self.b2_rising)
         b2.handler_falling(self.b2_falling)
-        din.handler(getattr(self, self.config.din_function))
+        din.handler(getattr(self, self.config.DIN_FUNCTION))
 
         for ball in self.balls:
             ball.on_collide += self.report_collision
@@ -360,98 +360,98 @@ class BouncingPixels(EuroPiScript):
     def config_points(cls):
         return [
             configuration.floatingPoint(
-                "poll_frequency", minimum=5.0, maximum=120.0, default=20.0, danger=True
+                "POLL_FREQUENCY", minimum=5.0, maximum=120.0, default=20.0, danger=True
             ),
             configuration.floatingPoint(
-                "save_period", minimum=0.0, maximum=inf, default=5000.0, danger=True
+                "SAVE_PERIOD", minimum=0.0, maximum=inf, default=5000.0, danger=True
             ),
             configuration.floatingPoint(
-                "render_frequency", minimum=1.0, maximum=inf, default=30.0, danger=True
+                "RENDER_FREQUENCY", minimum=1.0, maximum=inf, default=30.0, danger=True
             ),
             configuration.floatingPoint(
-                "long_press_length", minimum=0.0, maximum=inf, default=500.0
+                "LONG_PRESS_LENGTH", minimum=0.0, maximum=inf, default=500.0
             ),
-            configuration.floatingPoint("timescale_min", minimum=-inf, maximum=inf, default=0.0),
-            configuration.floatingPoint("timescale_max", minimum=-inf, maximum=inf, default=100.0),
+            configuration.floatingPoint("TIMESCALE_MIN", minimum=-inf, maximum=inf, default=0.0),
+            configuration.floatingPoint("TIMESCALE_MAX", minimum=-inf, maximum=inf, default=100.0),
             configuration.floatingPoint(
-                "knob_change_threshold", minimum=0.0, maximum=0.1, default=0.01
+                "KNOB_CHANGE_THRESHOLD", minimum=0.0, maximum=0.1, default=0.01
             ),
-            configuration.choice("din_function", choices=["impulse", "reset"], default="impulse"),
+            configuration.choice("DIN_FUNCTION", choices=["impulse", "reset"], default="impulse"),
             configuration.choice(
-                "ain_function",
+                "AIN_FUNCTION",
                 choices=["speed", "impulse_speed", "ball_count", "width"],
                 default="speed",
             ),
             configuration.floatingPoint(
-                "gate_hold_length_top", minimum=1.0, maximum=10_000.0, default=25.0
+                "GATE_HOLD_LENGTH_TOP", minimum=1.0, maximum=10_000.0, default=25.0
             ),
             configuration.floatingPoint(
-                "gate_hold_length_left", minimum=1.0, maximum=10_000.0, default=25.0
+                "GATE_HOLD_LENGTH_LEFT", minimum=1.0, maximum=10_000.0, default=25.0
             ),
             configuration.floatingPoint(
-                "gate_hold_length_right", minimum=1.0, maximum=10_000.0, default=25.0
+                "GATE_HOLD_LENGTH_RIGHT", minimum=1.0, maximum=10_000.0, default=25.0
             ),
             configuration.floatingPoint(
-                "gate_hold_length_bottom", minimum=1.0, maximum=10_000.0, default=25.0
+                "GATE_HOLD_LENGTH_BOTTOM", minimum=1.0, maximum=10_000.0, default=25.0
             ),
             configuration.floatingPoint(
-                "gate_hold_length_any", minimum=1.0, maximum=10_000.0, default=10.0
+                "GATE_HOLD_LENGTH_ANY", minimum=1.0, maximum=10_000.0, default=10.0
             ),
             configuration.floatingPoint(
-                "gate_hold_length_corner", minimum=1.0, maximum=10_000.0, default=100.0
+                "GATE_HOLD_LENGTH_CORNER", minimum=1.0, maximum=10_000.0, default=100.0
             ),
             configuration.floatingPoint(
-                "arena_width_min",
+                "ARENA_WIDTH_MIN",
                 minimum=ARENA_HEIGHT * 2.0 / oled.height,
                 maximum=ARENA_HEIGHT * oled.width / oled.height,
                 default=ARENA_HEIGHT * 2.0 / oled.height,
             ),
             configuration.floatingPoint(
-                "arena_width_max",
+                "ARENA_WIDTH_MAX",
                 minimum=ARENA_HEIGHT * 2.0 / oled.height,
                 maximum=ARENA_HEIGHT * oled.width / oled.height,
                 default=ARENA_HEIGHT * oled.width / oled.height,
             ),
-            configuration.integer("ball_count_min", minimum=1, maximum=100, default=1),
-            configuration.integer("ball_count_max", minimum=1, maximum=100, default=100),
+            configuration.integer("BALL_COUNT_MIN", minimum=1, maximum=100, default=1),
+            configuration.integer("BALL_COUNT_MAX", minimum=1, maximum=100, default=100),
             configuration.floatingPoint(
-                "corner_collision_margin",
+                "CORNER_COLLISION_MARGIN",
                 minimum=0.0,
                 maximum=ARENA_HEIGHT / 2.0,
                 default=ARENA_HEIGHT / oled.height,
             ),
-            configuration.floatingPoint("start_speed_min", minimum=0.0, maximum=inf, default=10.0),
-            configuration.floatingPoint("start_speed_max", minimum=0.0, maximum=inf, default=100.0),
-            configuration.floatingPoint("accel_min", minimum=-inf, maximum=inf, default=-5.0),
-            configuration.floatingPoint("accel_max", minimum=-inf, maximum=inf, default=5.0),
-            configuration.floatingPoint("bounciness_min", minimum=0.0001, maximum=inf, default=0.8),
-            configuration.floatingPoint("bounciness_max", minimum=0.0001, maximum=inf, default=1.2),
+            configuration.floatingPoint("START_SPEED_MIN", minimum=0.0, maximum=inf, default=10.0),
+            configuration.floatingPoint("START_SPEED_MAX", minimum=0.0, maximum=inf, default=100.0),
+            configuration.floatingPoint("ACCEL_MIN", minimum=-inf, maximum=inf, default=-5.0),
+            configuration.floatingPoint("ACCEL_MAX", minimum=-inf, maximum=inf, default=5.0),
+            configuration.floatingPoint("BOUNCINESS_MIN", minimum=0.0001, maximum=inf, default=0.8),
+            configuration.floatingPoint("BOUNCINESS_MAX", minimum=0.0001, maximum=inf, default=1.2),
             configuration.floatingPoint(
-                "bounce_angle_deviation_max", minimum=0.0, maximum=180.0, default=15.0
+                "BOUNCE_ANGLE_DEVIATION_MAX", minimum=0.0, maximum=180.0, default=15.0
             ),
             configuration.choice(
-                "under_speed_behaviour",
+                "UNDER_SPEED_BEHAVIOUR",
                 choices=["impulse", "reset", "deactivate", "noop"],
                 default="reset",
             ),
             configuration.choice(
-                "over_speed_behaviour", choices=["reset", "deactivate"], default="reset"
+                "OVER_SPEED_BEHAVIOUR", choices=["reset", "deactivate"], default="reset"
             ),
             configuration.floatingPoint(
-                "under_speed_threshold", minimum=0.0, maximum=inf, default=5.0
+                "UNDER_SPEED_THRESHOLD", minimum=0.0, maximum=inf, default=5.0
             ),
             configuration.floatingPoint(
-                "over_speed_threshold", minimum=0.0, maximum=inf, default=1.0e6
+                "OVER_SPEED_THRESHOLD", minimum=0.0, maximum=inf, default=1.0e6
             ),
-            configuration.floatingPoint("impulse_speed_min", minimum=0.0, maximum=inf, default=0.0),
+            configuration.floatingPoint("IMPULSE_SPEED_MIN", minimum=0.0, maximum=inf, default=0.0),
             configuration.floatingPoint(
-                "impulse_speed_max", minimum=0.0, maximum=inf, default=1.0e5
-            ),
-            configuration.floatingPoint(
-                "impulse_speed_variation_min", minimum=0.0, maximum=inf, default=0.5
+                "IMPULSE_SPEED_MAX", minimum=0.0, maximum=inf, default=1.0e5
             ),
             configuration.floatingPoint(
-                "impulse_speed_variation_max", minimum=0.0, maximum=inf, default=2.0
+                "IMPULSE_SPEED_VARIATION_MIN", minimum=0.0, maximum=inf, default=0.5
+            ),
+            configuration.floatingPoint(
+                "IMPULSE_SPEED_VARIATION_MAX", minimum=0.0, maximum=inf, default=2.0
             ),
         ]
 
@@ -466,7 +466,7 @@ class BouncingPixels(EuroPiScript):
         self.k2_bank.set_current("impulse_speed")
 
         delta = ticks_diff(ticks_ms(), self.b1_pressed)
-        if delta <= self.config.long_press_length:
+        if delta <= self.config.LONG_PRESS_LENGTH:
             self.reset()
 
         self.b1_pressed = None
@@ -481,7 +481,7 @@ class BouncingPixels(EuroPiScript):
         self.k2_bank.set_current("impulse_speed")
 
         delta = ticks_diff(ticks_ms(), self.b2_pressed)
-        if delta <= self.config.long_press_length:
+        if delta <= self.config.LONG_PRESS_LENGTH:
             self.impulse()
 
         self.b2_pressed = None
@@ -519,13 +519,13 @@ class BouncingPixels(EuroPiScript):
     def apply_speed(self):
         input_sum = self.speed_input + self.speed_ain_term
         self.time_factor = exponential_interpolation(
-            self.config.timescale_min, self.config.timescale_max, input_sum
+            self.config.TIMESCALE_MIN, self.config.TIMESCALE_MAX, input_sum
         )
 
     def apply_width(self):
         input_sum = self.width_input + self.width_ain_term
         width = rescale(
-            input_sum, 0.0, 1.0, self.config.arena_width_min, self.config.arena_width_max
+            input_sum, 0.0, 1.0, self.config.ARENA_WIDTH_MIN, self.config.ARENA_WIDTH_MAX
         )
         self.arena.set_width(width)
 
@@ -533,7 +533,7 @@ class BouncingPixels(EuroPiScript):
         input_sum = self.ball_count_input + self.ball_count_ain_term
         self.ball_count = int(
             exponential_interpolation(
-                self.config.ball_count_min, self.config.ball_count_max, input_sum
+                self.config.BALL_COUNT_MIN, self.config.BALL_COUNT_MAX, input_sum
             )
         )
 
@@ -541,7 +541,7 @@ class BouncingPixels(EuroPiScript):
         # Impulse strength is calibrated so that an input of 0 gives 0.1 and an input of 1 gives 100.
         input_sum = self.impulse_speed_input + self.impulse_speed_ain_term
         impulse_speed = exponential_interpolation(
-            self.config.impulse_speed_min, self.config.impulse_speed_max, input_sum
+            self.config.IMPULSE_SPEED_MIN, self.config.IMPULSE_SPEED_MAX, input_sum
         )
         for ball in self.balls:
             ball.impulse_speed = impulse_speed
@@ -573,13 +573,13 @@ class BouncingPixels(EuroPiScript):
 
         # The difference between the new and registered input must exceed the threshold in order to trigger a change.
         # This reduces jitter, but decreases accuracy.
-        if abs(new_speed_input - self.speed_input) > self.config.knob_change_threshold:
+        if abs(new_speed_input - self.speed_input) > self.config.KNOB_CHANGE_THRESHOLD:
             self.speed_input = new_speed_input
             self.on_speed_input.emit()
 
         if (
             abs(new_impulse_speed_input - self.impulse_speed_input)
-            > self.config.knob_change_threshold
+            > self.config.KNOB_CHANGE_THRESHOLD
         ):
             self.impulse_speed_input = new_impulse_speed_input
             self.on_impulse_speed_input.emit()
@@ -636,7 +636,7 @@ class BouncingPixels(EuroPiScript):
         """Run the simulation, poll inputs, and save state as necessary."""
         prev_cycle = None
         last_poll = None
-        poll_period = 1000.0 / self.config.poll_frequency
+        poll_period = 1000.0 / self.config.POLL_FREQUENCY
         while True:
             cycle_start = ticks_ms()
             delta = ticks_diff(cycle_start, prev_cycle) / 1000
@@ -648,7 +648,7 @@ class BouncingPixels(EuroPiScript):
                 last_poll = cycle_start
 
             # Save at limited frequency
-            if not self.state_saved and self.last_saved() > self.config.save_period:
+            if not self.state_saved and self.last_saved() > self.config.SAVE_PERIOD:
                 self.save_state()
 
             self.tick(delta * self.time_factor)
@@ -658,7 +658,7 @@ class BouncingPixels(EuroPiScript):
         """Render at limited frequency."""
         Timer(
             mode=Timer.PERIODIC,
-            freq=self.config.render_frequency,
+            freq=self.config.RENDER_FREQUENCY,
             callback=self.render,
         )
 
