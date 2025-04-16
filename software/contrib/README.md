@@ -42,6 +42,13 @@ Mirrors a gate/trigger input, with adjustable skip probability across channels.
 <i>Author: [awonak](https://github.com/awonak)</i>
 <br><i>Labels: random, triggers</i>
 
+### Bouncing Pixels \[ [documentation](/software/contrib/bouncing_pixels.md) | [script](/software/contrib/bouncing_pixels.py) \]
+
+Pixels bounce around on the display and trigger gates when hitting the edges.
+
+<i>Author: [Jorin](https://github.com/jorins)</i>
+<br><i>Labels: gates, random, simulation, triggers</i>
+
 ### Clock Modifier \[ [documentation](/software/contrib/clock_mod.md) | [script](/software/contrib/clock_mod.md) \]
 
 A clock multiplier or divider. Each channel has an independently-controllable modifier, multiplying or dividing an external clock signal on `din`.
