@@ -41,7 +41,7 @@ from cmath import phase, polar, rect
 from machine import Timer
 from math import degrees, e, inf, log, pi, radians
 from random import uniform
-from time import ticks_ms, ticks_diff
+from time import ticks_ms, ticks_diff, sleep_ms
 
 tau = pi * 2
 
@@ -656,11 +656,14 @@ class BouncingPixels(EuroPiScript):
 
     def render_thread(self):
         """Render at limited frequency."""
-        Timer(
-            mode=Timer.PERIODIC,
-            freq=self.config.RENDER_FREQUENCY,
-            callback=self.render,
-        )
+        render_period = 1000.0 / self.config.RENDER_FREQUENCY
+        while True:
+            cycle_start = ticks_ms()
+            self.render(None)
+            cycle_finish = ticks_ms()
+            time_taken = ticks_diff(cycle_finish, cycle_start)
+            wait = int(max(0.0, render_period - time_taken))
+            sleep_ms(wait)
 
 
 if __name__ == "__main__":
