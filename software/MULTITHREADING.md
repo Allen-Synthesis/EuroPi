@@ -61,7 +61,9 @@ def main():
         time.sleep(0.5)
 ```
 
-This is a more complex example that implements the same logic as above, but wrapped in a `EuroPiScript`:
+This is a more complex example that implements the same logic as above, but wrapped in a `EuroPiScript`.
+Note that we add a second condition to the `while` loops; the `self.is_running` flag will allow the
+background thread to exit cleanly when debugging in Thonny.
 ```python
 from europi import *
 from europi_script import EuroPiScript
@@ -75,7 +77,8 @@ class BasicThreadingDemo1(EuroPiScript):
     def main_thread(self):
         """The main thread; toggles CV1 on and off at 1Hz
         """
-        while True:
+        usb_connected_at_start = europi.usb_connected.value()
+        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
             cv1.on()
             time.sleep(0.5)
             cv1.off()
@@ -85,7 +88,7 @@ class BasicThreadingDemo1(EuroPiScript):
         """The secondary thread; toggles CV2 on and off at 0.5Hz
         """
         usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start:
+        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
             cv2.on()
             time.sleep(1)
             cv2.off()
@@ -96,8 +99,14 @@ class BasicThreadingDemo1(EuroPiScript):
         oled.fill(0)
         oled.show()
 
-        second_thread = _thread.start_new_thread(self.secondary_thread, ())
-        self.main_thread()
+        self.is_running = True
+        try:
+            second_thread = _thread.start_new_thread(self.secondary_thread, ())
+            self.main_thread()
+        except KeyboardInterrupt:
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
 
 if __name__ == "__main__":
     BasicThreadingDemo1().main()
@@ -183,7 +192,8 @@ class BasicThreadingDemo2(EuroPiScript):
         cv1_on = True
         cv1.on()
 
-        while True:
+        usb_connected_at_start = europi.usb_connected.value()
+        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
             # Check the inputs
             self.digital_input_helper.update()
 
@@ -200,7 +210,7 @@ class BasicThreadingDemo2(EuroPiScript):
         """The secondary thread; toggles CV2 on and off at 0.5Hz
         """
         usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start:
+        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
             cv2.on()
             time.sleep(1)
             cv2.off()
@@ -211,8 +221,14 @@ class BasicThreadingDemo2(EuroPiScript):
         oled.fill(0)
         oled.show()
 
-        second_thread = _thread.start_new_thread(self.secondary_thread, ())
-        self.main_thread()
+        self.is_running = True
+        try:
+            second_thread = _thread.start_new_thread(self.secondary_thread, ())
+            self.main_thread()
+        except KeyboardInterrupt:
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
 
 
 if __name__ == "__main__":
@@ -247,7 +263,8 @@ class BasicThreadingDemo3(EuroPiScript):
 
         ticks = 0
         cv1_volts = 0
-        while True:
+        usb_connected_at_start = europi.usb_connected.value()
+        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
             # convert the tick counter to radians for use with sin/cos
             theta = ticks / CYCLE_TICKS * (2*math.pi)
 
@@ -275,7 +292,7 @@ class BasicThreadingDemo3(EuroPiScript):
         """Draw the wave shapes to the screen
         """
         usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start:
+        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
             # clear the screen
             oled.fill(0)
 
@@ -289,8 +306,14 @@ class BasicThreadingDemo3(EuroPiScript):
             oled.show()
 
     def main(self):
-        second_thread = _thread.start_new_thread(self.gui_thread, ())
-        self.cv_thread()
+        self.is_running = True
+        try:
+            second_thread = _thread.start_new_thread(self.gui_thread, ())
+            self.cv_thread()
+        except KeyboardInterrupt:
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
 
 
 if __name__ == "__main__":
