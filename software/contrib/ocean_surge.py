@@ -211,9 +211,12 @@ class OceanSurge(EuroPiScript):
         ssoled.show()
 
     def gui_thread(self):
+        draw_rate = 30.0
+        fps_sleep = 1.0 / draw_rate
         usb_connected_at_start = usb_connected.value()
         while usb_connected.value() == usb_connected_at_start and self.is_running:
             self.draw()
+            time.sleep(fps_sleep)
 
     def voltage_thread(self):
         sim_now = 0.0
