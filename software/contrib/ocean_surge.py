@@ -27,7 +27,11 @@ two_pi = 2 * pi
 
 ssoled = OledWithScreensaver()
 
+
+
 class OceanSurge(EuroPiScript):
+    BG_ERR = None
+
     MIN_RADIUS = 0.01
     MAX_RADIUS = 2
 
@@ -215,21 +219,50 @@ class OceanSurge(EuroPiScript):
         fps_sleep = 1.0 / draw_rate
         usb_connected_at_start = usb_connected.value()
         while usb_connected.value() == usb_connected_at_start and self.is_running:
-            self.draw()
-            time.sleep(fps_sleep)
+            try:
+                self.draw()
+                time.sleep(fps_sleep)
+            except Exception as err:
+                self.BG_ERR = err
+
+        if self.is_running:
+            self.BG_ERR = Exception('USB disconnected')
 
     def voltage_thread(self):
         sim_now = 0.0
 
-        usb_connected_at_start = usb_connected.value()
-        while usb_connected.value() == usb_connected_at_start and self.is_running:
+        prev_swell = self.k1_bank["swell_size"].percent()
+        prev_spread = self.k1_bank["spread"].percent()
+        prev_agitation = self.k2_bank["agitation"].percent()
+        prev_speed = self.k2_bank["speed"].percent()
+
+        def ui_change(old, new):
+            return f'{old:0.2f}' != f'{new:0.2f}'
+
+        while True:
+            if self.BG_ERR is not None:
+                print(f'Background error {self.BG_ERR}')
+                self.BG_ERR = None
+
             self.digital_input_state.update()
 
             # read the current knob values
+            prev_swell = self.swell_size
+            prev_spread = self.spread
+            prev_agitation = self.agitation
+            prev_speed = self.speed
             self.swell_size = self.k1_bank["swell_size"].percent()
             self.spread = self.k1_bank["spread"].percent()
             self.agitation = self.k2_bank["agitation"].percent()
             self.speed = self.k2_bank["speed"].percent()
+
+            if (
+                ui_change(prev_swell, self.swell_size)
+                or ui_change(prev_spread, self.spread)
+                or ui_change(prev_agitation, self.agitation)
+                or ui_change(prev_speed, self.speed)
+            ):
+                ssoled.notify_user_interaction()
 
             if self.cv_target == self.CV_TARGET_AGITATION:
                 self.agitation += ain.percent()
@@ -280,7 +313,8 @@ class OceanSurge(EuroPiScript):
         try:
             _thread.start_new_thread(self.gui_thread, ())
             self.voltage_thread()
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as err:
+            print(err)
             self.is_running = False
         finally:
             print("User aborted. Exiting.")
