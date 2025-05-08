@@ -237,7 +237,7 @@ class OceanSurge(EuroPiScript):
         prev_speed = self.k2_bank["speed"].percent()
 
         def ui_change(old, new):
-            return f'{old:0.2f}' != f'{new:0.2f}'
+            return abs(old - new) >= 0.01
 
         while True:
             if self.BG_ERR is not None:
