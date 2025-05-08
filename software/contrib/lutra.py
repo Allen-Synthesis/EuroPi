@@ -301,10 +301,7 @@ class Lutra(EuroPiScript):
     def wave_generation_thread(self):
         """A thread function that handles the underlying math of generating the waveforms
         """
-        # To prevent the module locking up when we connect the USB for e.g. debugging, kill this thread
-        # if the USB state changes
-        usb_connected_at_start = usb_connected.value()
-        while usb_connected.value() == usb_connected_at_start and self.is_running:
+        while True:
             # Read the digital inputs
             self.digital_input_state.update()
 

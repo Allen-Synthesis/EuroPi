@@ -77,8 +77,7 @@ class BasicThreadingDemo1(EuroPiScript):
     def main_thread(self):
         """The main thread; toggles CV1 on and off at 1Hz
         """
-        usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
+        while True:
             cv1.on()
             time.sleep(0.5)
             cv1.off()
@@ -192,8 +191,7 @@ class BasicThreadingDemo2(EuroPiScript):
         cv1_on = True
         cv1.on()
 
-        usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
+        while True:
             # Check the inputs
             self.digital_input_helper.update()
 
@@ -263,8 +261,7 @@ class BasicThreadingDemo3(EuroPiScript):
 
         ticks = 0
         cv1_volts = 0
-        usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
+        while True:
             # convert the tick counter to radians for use with sin/cos
             theta = ticks / CYCLE_TICKS * (2*math.pi)
 
@@ -323,10 +320,11 @@ if __name__ == "__main__":
 ## Cancelling Execution and Thonny
 
 If you use Thonny to debug your EuroPi programs, note that when you cancel execution with `ctrl+C` the second core
-will likely still be busy. This can cause Thonny to raise errors when trying to e.g. run another function in the
+may still be busy. This can cause Thonny to raise errors when trying to e.g. run another function in the
 Python terminal or saving files to the module.
 
-If this happens, simply Stop/Restart the backend via Thonny's Run menu.
+If this happens, simply Stop/Restart the backend via Thonny's Run menu. If this does not resolve
+the problem, power-cycle your EuroPi.
 
 
 ## References
