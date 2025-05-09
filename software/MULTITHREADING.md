@@ -25,32 +25,27 @@ import _thread
 ```
 
 Your program will always contain at least one thread, referred to as the "main thread."  To start a second thread
-you must define a function to execute and start it with `_thread.start_new_thread`:
+you must define a function to execute and start it with `_thread.start_new_thread`.
+
+### Example 1: Basic thread execution
+
+This example shows the absolute minimum needed to run two threads:
+
 ```python
 from europi import *
 import time
 import _thread
 
 def my_second_thread():
-    """The secondary thread; toggles CV2 on and off at 0.5Hz
-
-    To allow the Python shell to connect when the USB is connected, we must terminate this thread
-    when the USB state changes. Otherwise the secondary thread will continue running, blocking the shell
-    """
-    usb_connected_at_start = europi.usb_connected.value()
-    while eurpi.usb_connected.value() == usb_connected_at_start:
+    """The secondary thread; toggles CV2 on and off at 0.5Hz"""
+    while True:
         cv2.on()
         time.sleep(1)
         cv2.off()
         time.sleep(1)
 
 def main():
-    """The main thread; creates the secondary thread and then toggles CV1 at 1Hz
-
-    This thread will automatically die if the USB is connected for debugging, so we don't
-    need to check the USB state here.
-    """
-
+    """The main thread; creates the secondary thread and then toggles CV1 at 1Hz"""
     # Start the second thread
     second_thread = _thread.start_new_thread(my_second_thread, ())
 
@@ -61,7 +56,16 @@ def main():
         time.sleep(0.5)
 ```
 
-This is a more complex example that implements the same logic as above, but wrapped in a `EuroPiScript`:
+This example has a few limitations that we'll address below:
+1. It's not a `EuroPiScript`, so it can't be included in the main menu
+2. The secondary thread can keep running after we cancel execution, which can result in problems
+   using the Python terminal in Thonny for debugging.
+
+### Example 2: Basic `EuroPiScript` implementation
+
+This is a more complex example that implements the same logic as above, but wrapped in a `EuroPiScript`.
+Note that we add a second condition to the `while` loops; the `self.is_running` flag will allow the
+background thread to exit cleanly when debugging in Thonny.
 ```python
 from europi import *
 from europi_script import EuroPiScript
@@ -72,10 +76,14 @@ class BasicThreadingDemo1(EuroPiScript):
     def __init__(self):
         super().__init__()
 
+        # is main() running?
+        # this is used to make sure the threads exit when we cancel
+        # the program
+        self.is_running = False
+
     def main_thread(self):
-        """The main thread; toggles CV1 on and off at 1Hz
-        """
-        while True:
+        """The main thread; toggles CV1 on and off at 1Hz"""
+        while self.is_running:
             cv1.on()
             time.sleep(0.5)
             cv1.off()
@@ -84,8 +92,7 @@ class BasicThreadingDemo1(EuroPiScript):
     def secondary_thread(self):
         """The secondary thread; toggles CV2 on and off at 0.5Hz
         """
-        usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start:
+        while self.is_running:
             cv2.on()
             time.sleep(1)
             cv2.off()
@@ -96,17 +103,25 @@ class BasicThreadingDemo1(EuroPiScript):
         oled.fill(0)
         oled.show()
 
-        second_thread = _thread.start_new_thread(self.secondary_thread, ())
-        self.main_thread()
+        # set is_running to True BEFORE we start the threads!
+        # otherwise they'll exit right away
+        self.is_running = True
+        try:
+            second_thread = _thread.start_new_thread(self.secondary_thread, ())
+            self.main_thread()
+        except KeyboardInterrupt:
+            # When Thonny's terminal connects, or when we press ctrl+C we'll
+            # catch a KeyboardInterrupt exception, which we can use to stop
+            # both threads.
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
 
 if __name__ == "__main__":
     BasicThreadingDemo1().main()
 ```
 
-## Best Practices
-
-Because each thread runs on a different core, and the EuroPi's processor only has 2 cores, it is recommended to limit
-your program to 2 thread: the main thread, and a single additional thread started with `_thread.start_new_thread`.
+### Example 3: Handling digital inputs
 
 Interrupt Service Routines (ISRs), implemented as `handler` functions for button presses and `din` rising/falling edges
 have been known to cause threaded programs to hang.  It is therefore recommended to _avoid_ using `handler` functions
@@ -135,6 +150,7 @@ from experimental.thread import DigitalInputHelper
 class BasicThreadingDemo2(EuroPiScript):
     def __init__(self):
         super().__init__()
+        self.is_running = False
 
         self.digital_input_helper = DigitalInputHelper(
             on_b1_rising = self.on_b1_press,
@@ -183,7 +199,7 @@ class BasicThreadingDemo2(EuroPiScript):
         cv1_on = True
         cv1.on()
 
-        while True:
+        while self.is_running:
             # Check the inputs
             self.digital_input_helper.update()
 
@@ -199,8 +215,7 @@ class BasicThreadingDemo2(EuroPiScript):
     def secondary_thread(self):
         """The secondary thread; toggles CV2 on and off at 0.5Hz
         """
-        usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start:
+        while self.is_running:
             cv2.on()
             time.sleep(1)
             cv2.off()
@@ -211,13 +226,21 @@ class BasicThreadingDemo2(EuroPiScript):
         oled.fill(0)
         oled.show()
 
-        second_thread = _thread.start_new_thread(self.secondary_thread, ())
-        self.main_thread()
+        self.is_running = True
+        try:
+            second_thread = _thread.start_new_thread(self.secondary_thread, ())
+            self.main_thread()
+        except KeyboardInterrupt:
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
 
 
 if __name__ == "__main__":
     BasicThreadingDemo2().main()
 ```
+
+### Example 4: OLED rendering on the second core
 
 One of the slowest operations in the EuroPi firmware is updated the OLED. If possible moving any GUI rendering into
 a secondary thread is a good idea to optimize your program.  Note that you will likely need to use `Lock` objects
@@ -275,7 +298,7 @@ class BasicThreadingDemo3(EuroPiScript):
         """Draw the wave shapes to the screen
         """
         usb_connected_at_start = europi.usb_connected.value()
-        while eurpi.usb_connected.value() == usb_connected_at_start:
+        while eurpi.usb_connected.value() == usb_connected_at_start and self.is_running:
             # clear the screen
             oled.fill(0)
 
@@ -289,22 +312,32 @@ class BasicThreadingDemo3(EuroPiScript):
             oled.show()
 
     def main(self):
-        second_thread = _thread.start_new_thread(self.gui_thread, ())
-        self.cv_thread()
+        self.is_running = True
+        try:
+            second_thread = _thread.start_new_thread(self.gui_thread, ())
+            self.cv_thread()
+        except KeyboardInterrupt:
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
 
 
 if __name__ == "__main__":
     BasicThreadingDemo3().main()
 ```
 
-## Cancelling Execution and Thonny
+## How many threads can I use?
 
-If you use Thonny to debug your EuroPi programs, note that when you cancel execution with `ctrl+C` the second core
-will likely still be busy. This can cause Thonny to raise errors when trying to e.g. run another function in the
-Python terminal or saving files to the module.
+Because each thread runs on a different core, and the EuroPi's processor only has 2 cores, it is recommended to limit
+your program to 2 thread: the main thread, and a single additional thread started with `_thread.start_new_thread`.
 
-If this happens, simply Stop/Restart the backend via Thonny's Run menu.
+## Cancelling Execution and the Second Core
 
+Typically if you catch `KeyboardInterrupt` exceptions as described in the examples above you should
+be able to prevent the second core from becomming locked, but if your program has other errors that
+are not handled it's possible that the main thread will exit while the second thread keeps running.
+
+If this occurs, the easiest way to reset the secondary core is to simply power-cycle your module.
 
 ## References
 
