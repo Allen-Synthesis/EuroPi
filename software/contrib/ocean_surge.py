@@ -56,6 +56,7 @@ class OceanSurge(EuroPiScript):
 
     def __init__(self):
         super().__init__()
+        self.is_running = False
 
         self.wavelength = 10
 
@@ -217,8 +218,7 @@ class OceanSurge(EuroPiScript):
     def gui_thread(self):
         draw_rate = 30.0
         fps_sleep = 1.0 / draw_rate
-        usb_connected_at_start = usb_connected.value()
-        while usb_connected.value() == usb_connected_at_start and self.is_running:
+        while self.is_running:
             try:
                 self.draw()
                 time.sleep(fps_sleep)
@@ -239,7 +239,7 @@ class OceanSurge(EuroPiScript):
         def ui_change(old, new):
             return abs(old - new) >= 0.01
 
-        while True:
+        while self.is_running:
             if self.BG_ERR is not None:
                 print(f'Background error {self.BG_ERR}')
                 self.BG_ERR = None
