@@ -26,9 +26,12 @@ from bit indices to byte indices.
 from europi import *
 from europi_script import EuroPiScript
 from experimental.bitarray import *
+from experimental.thread import DigitalInputHelper
 from random import random as rnd
 
 import math
+import _thread
+
 
 # We re-use this constant a lot, so just save it for easy re-use
 LOG2 = math.log(2)
@@ -81,6 +84,9 @@ def bitwise_entropy(arr):
 
 class Conway(EuroPiScript):
     def __init__(self):
+        self.ui_dirty = True
+        self.ui_buffer_lock = _thread.allocate_lock()
+
         # For ease of blitting, store the field as a bit array
         # Each byte is 8 horizontally adjacent pixels, with the most significant bit
         # on the left
@@ -123,17 +129,23 @@ class Conway(EuroPiScript):
         # statically allocated array we use to store the sums of cells when checking for statis
         self.statis_sums = [0] * self.MAX_DELTAS
 
-        @b1.handler
+        #@b1.handler
         def on_b1():
             self.reset_requested = True
 
-        @b2.handler
+        #@b2.handler
         def on_b2():
             self.reset_requested = True
 
-        @din.handler
+        #@din.handler
         def on_din():
             self.reset_requested = True
+
+        self.digital_input_state = DigitalInputHelper(
+            on_b1_rising=on_b1,
+            on_b2_rising=on_b2,
+            on_din_rising=on_din,
+        )
 
     def get_neigbour_indices(self, index):
         """Get the indices of the 8 bits adjacent to the given index
@@ -209,7 +221,10 @@ class Conway(EuroPiScript):
     def draw(self):
         """Show the current playing field on the OLED
         """
+        self.ui_dirty = False
+        self.ui_buffer_lock.acquire()
         oled.blit(self.frame, 0, 0)
+        self.ui_buffer_lock.release()
         oled.show()
 
     def tick(self):
@@ -265,9 +280,12 @@ class Conway(EuroPiScript):
         self.next_field = self.field
         self.field = tmp
 
+        self.ui_buffer_lock.acquire()
         tmp = self.next_frame
         self.next_frame = self.frame
         self.frame = tmp
+        self.ui_dirty = True
+        self.ui_buffer_lock.release()
 
         tmp = self.next_changed_spaces
         self.next_changed_spaces = self.changed_spaces
@@ -300,17 +318,17 @@ class Conway(EuroPiScript):
 
         return False
 
-    def main(self):
-        """The main loop for the program
+    def ui_thread(self):
+        while self.is_running:
+            if self.ui_dirty:
+                self.draw()
 
-        Handles setting the CV output, drawing to the OLED, and triggering the simulation
-        """
-        turn_off_all_cvs()
-        self.reset()
-
+    def game_thread(self):
         in_stasis = False
 
-        while True:
+        while self.is_running:
+            self.digital_input_state.update()
+
             # turn off the stasis gate while we calculate the next generation
             cv6.off()
 
@@ -322,9 +340,6 @@ class Conway(EuroPiScript):
 
             # turn off the FPS gate when we're done calculating but before we draw
             cv4.off()
-
-            # show the results on the OLED
-            self.draw()
 
             # check for stasis conditions
             self.population_deltas.append(self.num_born - self.num_died)
@@ -357,6 +372,24 @@ class Conway(EuroPiScript):
             if in_stasis:
                 cv6.on()
                 self.reset_requested = True
+
+    def main(self):
+        """The main loop for the program
+
+        Handles setting the CV output, drawing to the OLED, and triggering the simulation
+        """
+        turn_off_all_cvs()
+        self.reset()
+
+        self.is_running = True
+        try:
+            _thread.start_new_thread(self.ui_thread, ())
+            self.game_thread()
+        except KeyboardInterrupt:
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
+
 
 if __name__ == "__main__":
     Conway().main()
