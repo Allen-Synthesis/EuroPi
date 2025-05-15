@@ -26,9 +26,12 @@ from bit indices to byte indices.
 from europi import *
 from europi_script import EuroPiScript
 from experimental.bitarray import *
+from experimental.thread import DigitalInputHelper
 from random import random as rnd
 
 import math
+import _thread
+
 
 # We re-use this constant a lot, so just save it for easy re-use
 LOG2 = math.log(2)
@@ -81,6 +84,9 @@ def bitwise_entropy(arr):
 
 class Conway(EuroPiScript):
     def __init__(self):
+        self.ui_dirty = True
+        self.ui_buffer_lock = _thread.allocate_lock()
+
         # For ease of blitting, store the field as a bit array
         # Each byte is 8 horizontally adjacent pixels, with the most significant bit
         # on the left
@@ -91,13 +97,16 @@ class Conway(EuroPiScript):
         self.frame = FrameBuffer(self.field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
         self.next_frame = FrameBuffer(self.next_field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
 
-        # Simple optimization; keep a list of spaces whose states changed & their neighbours
-        # This is initially empty as the field is entirely blank
-        # to save memory instead of using a List or Set object, we use a bit array with a length equal to
-        # the size of the field
+        # summed area table
+        # used to quickly count the neighbours within a region
+        self.field_sum = []
+        for _ in range(OLED_HEIGHT):
+            self.field_sum.append([])
+            for _ in range(OLED_WIDTH):
+                self.field_sum[-1].append(0)
+
+        # How many changes occurred this generation?
         self.num_changes = 0
-        self.changed_spaces = bytearray(NUM_PIXELS >> 3)
-        self.next_changed_spaces = bytearray(NUM_PIXELS >> 3)
 
         # how many cells were born this tick?
         self.num_born = 0
@@ -123,39 +132,23 @@ class Conway(EuroPiScript):
         # statically allocated array we use to store the sums of cells when checking for statis
         self.statis_sums = [0] * self.MAX_DELTAS
 
-        @b1.handler
+        #@b1.handler
         def on_b1():
             self.reset_requested = True
 
-        @b2.handler
+        #@b2.handler
         def on_b2():
             self.reset_requested = True
 
-        @din.handler
+        #@din.handler
         def on_din():
             self.reset_requested = True
 
-    def get_neigbour_indices(self, index):
-        """Get the indices of the 8 bits adjacent to the given index
-
-        If we're on the top/left/bottom/right edge, wrap arround to the opposite row/column, treating the world
-        as a torus
-
-        Unfortunately we don't have enough RAM to save this in a lookup table, so we have to recalculate it
-        every time, which slows down the simulation
-        """
-        row = index // OLED_WIDTH
-        col = index % OLED_WIDTH
-
-        def rowcol2index(r, c):
-            return (r % OLED_HEIGHT) * OLED_WIDTH + (c % OLED_WIDTH)
-
-        n = 0
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                if i != 0 or j != 0:
-                    self.neighbourhood[n] = rowcol2index(row+i, col+j)
-                    n += 1
+        self.digital_input_state = DigitalInputHelper(
+            on_b1_rising=on_b1,
+            on_b2_rising=on_b2,
+            on_din_rising=on_din,
+        )
 
     def calculate_spawn_level(self):
         """Calculate what percentage of the field should contain new cells
@@ -203,13 +196,66 @@ class Conway(EuroPiScript):
                 self.num_alive -= 1
 
         # Assume the whole field has changed
-        set_all_bits(self.changed_spaces, True)
         self.num_changes = NUM_PIXELS
+
+    def update_field_sums(self):
+        """Recalculate the summed area table
+        """
+        for i in range(OLED_HEIGHT):
+            for j in range(OLED_WIDTH):
+                if i == 0 or j == 0:
+                    a = 0
+                else:
+                    a = self.field_sum[i-1][j-1]
+
+                if i == 0:
+                    b = 0
+                else:
+                    b = self.field_sum[i-1][j]
+
+                if j == 0:
+                    c = 0
+                else:
+                    c = self.field_sum[i][j-1]
+
+                self.field_sum[i][j] = get_bit(self.field, i * OLED_WIDTH + j) + b + c - a
+
+    def sum_cells(self, start_row, start_col, end_row, end_col):
+        """Get the sum of all cells in a given sub-matrix
+
+        A B C
+        D E F
+        G H I
+
+        If we're getting the sum of [[E F] [H I]] we return
+        I - C - G + A
+        """
+        if start_row == 0 or start_col == 0:
+            a = 0
+        else:
+            a = self.field_sum[start_row - 1][start_col - 1]
+
+        if start_row == 0:
+            c = 0
+        else:
+            c = self.field_sum[start_row - 1][end_col]
+
+        if start_col == 0:
+            g = 0
+        else:
+            g = self.field_sum[end_row][start_col - 1]
+
+        i = self.field_sum[end_row][end_col]
+
+        return i - c - g + a
 
     def draw(self):
         """Show the current playing field on the OLED
         """
+        self.ui_dirty = False
+        self.ui_buffer_lock.acquire()
         oled.blit(self.frame, 0, 0)
+        self.ui_buffer_lock.release()
         oled.show()
 
     def tick(self):
@@ -228,51 +274,55 @@ class Conway(EuroPiScript):
             self.reset_requested = False
             self.reset()
 
-        for bit_index in range(NUM_PIXELS):
-            if not get_bit(self.changed_spaces, bit_index):
-                continue
+        # iterate through every cell, calculating generational changes
+        self.update_field_sums()
+        for i in range(OLED_HEIGHT):
+            top = max(0, i-1)
+            bottom = min(OLED_HEIGHT-1, i+1)
 
-            self.get_neigbour_indices(bit_index)
-            num_neighbours = sum(1 for n in self.neighbourhood if get_bit(self.field, n))
+            for j in range(OLED_WIDTH):
+                left = max(0, j-1)
+                right = min(OLED_WIDTH-1, j+1)
 
-            if get_bit(self.field, bit_index):
-                if num_neighbours == 2 or num_neighbours == 3:        # happy cell, stays alive
-                    set_bit(self.next_field, bit_index, True)
-                else:                                                 # sad cell, dies
-                    set_bit(self.next_field, bit_index, False)
-                    self.num_died += 1
-                    self.num_alive -= 1
+                bit_index = i * OLED_WIDTH + j
 
-                    self.num_changes += 1
-                    set_bit(self.next_changed_spaces, bit_index, 1)
-                    for n in self.neighbourhood:
-                        set_bit(self.next_changed_spaces, n, 1)
-            else:
-                if num_neighbours == 3:                               # baby cell is born!
-                    set_bit(self.next_field, bit_index, True)
-                    self.num_alive += 1
-                    self.num_born += 1
+                cell_present = get_bit(self.field, bit_index)
 
-                    self.num_changes += 1
-                    set_bit(self.next_changed_spaces, bit_index, 1)
-                    for n in self.neighbourhood:
-                        set_bit(self.next_changed_spaces, n, 1)
-                else:                                                 # empty space remains empty
-                    set_bit(self.next_field, bit_index, False)
+                num_neighbours = self.sum_cells(top, left, bottom, right)
+                if cell_present:
+                    num_neighbours = max(0, num_neighbours-1)
+
+                if cell_present:
+                    if num_neighbours == 2 or num_neighbours == 3:  # happy cell, stays alive
+                        set_bit(self.next_field, bit_index, True)
+                    else:                                           # sad cell, dies
+                        set_bit(self.next_field, bit_index, False)
+                        self.num_died += 1
+                        self.num_alive -= 1
+
+                        self.num_changes += 1
+                else:
+                    if num_neighbours == 3:                         # baby cell is born!
+                        set_bit(self.next_field, bit_index, True)
+                        self.num_alive += 1
+                        self.num_born += 1
+
+                        self.num_changes += 1
+                    else:                                           # empty space remains empty
+                        set_bit(self.next_field, bit_index, False)
 
         # swap field & next_field so we don't need to copy between arrays
         tmp = self.next_field
         self.next_field = self.field
         self.field = tmp
 
+        # update the buffer to render, making sure we respect the mutex
+        self.ui_buffer_lock.acquire()
         tmp = self.next_frame
         self.next_frame = self.frame
         self.frame = tmp
-
-        tmp = self.next_changed_spaces
-        self.next_changed_spaces = self.changed_spaces
-        self.changed_spaces = tmp
-        set_all_bits(self.next_changed_spaces)
+        self.ui_dirty = True
+        self.ui_buffer_lock.release()
 
     def check_for_stasis(self):
         """Check the population changes over time to see if we've reached a state of stasis
@@ -300,17 +350,17 @@ class Conway(EuroPiScript):
 
         return False
 
-    def main(self):
-        """The main loop for the program
+    def ui_thread(self):
+        while self.is_running:
+            if self.ui_dirty:
+                self.draw()
 
-        Handles setting the CV output, drawing to the OLED, and triggering the simulation
-        """
-        turn_off_all_cvs()
-        self.reset()
-
+    def game_thread(self):
         in_stasis = False
 
-        while True:
+        while self.is_running:
+            self.digital_input_state.update()
+
             # turn off the stasis gate while we calculate the next generation
             cv6.off()
 
@@ -322,9 +372,6 @@ class Conway(EuroPiScript):
 
             # turn off the FPS gate when we're done calculating but before we draw
             cv4.off()
-
-            # show the results on the OLED
-            self.draw()
 
             # check for stasis conditions
             self.population_deltas.append(self.num_born - self.num_died)
@@ -357,6 +404,24 @@ class Conway(EuroPiScript):
             if in_stasis:
                 cv6.on()
                 self.reset_requested = True
+
+    def main(self):
+        """The main loop for the program
+
+        Handles setting the CV output, drawing to the OLED, and triggering the simulation
+        """
+        turn_off_all_cvs()
+        self.reset()
+
+        self.is_running = True
+        try:
+            _thread.start_new_thread(self.ui_thread, ())
+            self.game_thread()
+        except KeyboardInterrupt:
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
+
 
 if __name__ == "__main__":
     Conway().main()
