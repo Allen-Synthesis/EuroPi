@@ -23,9 +23,9 @@ half of the input will be clipped.
 
 * *Speed* affects how fast the simulation runs. It translates to how fast the
   pixels move.
+* *Width* controls how wide the playing field is.
 * *Impulse speed* controls how much speed is added to each pixel when an impulse
   occurs.
-* *Width* controls how wide the playing field is.
 * *Ball count* controls how many pixels are in play.
 
 ### Impulses
@@ -58,9 +58,9 @@ Denoted gate hold lengths are defaults. They can be changed in the
 ## Controls
 
 * K1: simulation speed
-* K2: impulse speed
+* K2: width
 * Either button + K1: ball count
-* Either button + K2: width
+* Either button + K2: impulse speed
 * B1 short press: reset
 * B2 short press: send impulse
 * Digital input: send impulse (customisable)
