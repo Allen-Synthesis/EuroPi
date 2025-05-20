@@ -581,6 +581,7 @@ class BouncingPixels(EuroPiScript):
         new_ain_input = ain.percent()
 
         with self.state_lock:
+            self.digital_input_helper.update()
             # The difference between the new and registered input must exceed the threshold in order to trigger a change.
             # This reduces jitter, but decreases accuracy.
             if abs(new_speed_input - self.speed_input) > self.config.KNOB_CHANGE_THRESHOLD:
@@ -658,8 +659,6 @@ class BouncingPixels(EuroPiScript):
         while self.is_running:
             cycle_start = ticks_ms()
             delta = ticks_diff(cycle_start, prev_cycle) / 1000
-
-            self.digital_input_helper.update()
             
             # Poll inputs at limited frequency
             time_since_poll = ticks_diff(cycle_start, last_poll)
