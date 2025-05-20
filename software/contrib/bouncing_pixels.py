@@ -646,43 +646,54 @@ class BouncingPixels(EuroPiScript):
         try:
             proc_thread = start_new_thread(self.proc_thread, ())
             self.render_thread()
+            # render_thread = start_new_thread(self.render_thread, ())
+            # self.proc_thread()
         except KeyboardInterrupt:
             self.is_running = False
         finally:
             print("User aborted. Exiting.")
+            # machine.reset()
 
     def proc_thread(self):
         """Run the simulation, poll inputs, and save state as necessary."""
-        prev_cycle = None
-        last_poll = None
-        poll_period = 1000.0 / self.config.POLL_FREQUENCY
-        while self.is_running:
-            cycle_start = ticks_ms()
-            delta = ticks_diff(cycle_start, prev_cycle) / 1000
-            
-            # Poll inputs at limited frequency
-            time_since_poll = ticks_diff(cycle_start, last_poll)
-            if time_since_poll > poll_period:
-                self.poll()
-                last_poll = cycle_start
+        try:
+            prev_cycle = None
+            last_poll = None
+            poll_period = 1000.0 / self.config.POLL_FREQUENCY
+            usb_connected_at_start = usb_connected.value()
+            while usb_connected.value() == usb_connected_at_start and self.is_running:
+                cycle_start = ticks_ms()
+                delta = ticks_diff(cycle_start, prev_cycle) / 1000
+                
+                # Poll inputs at limited frequency
+                time_since_poll = ticks_diff(cycle_start, last_poll)
+                if time_since_poll > poll_period:
+                    self.poll()
+                    last_poll = cycle_start
 
-            # Save at limited frequency
-            if not self.state_saved and self.last_saved() > self.config.SAVE_PERIOD:
-                self.save_state()
+                # Save at limited frequency
+                if not self.state_saved and self.last_saved() > self.config.SAVE_PERIOD:
+                    self.save_state()
 
-            self.tick(delta * self.time_factor)
-            prev_cycle = cycle_start
+                self.tick(delta * self.time_factor)
+                prev_cycle = cycle_start
+        finally:
+            print("Proc thread finished")
 
     def render_thread(self):
         """Render at limited frequency."""
-        render_period = 1000.0 / self.config.RENDER_FREQUENCY
-        while self.is_running:
-            cycle_start = ticks_ms()
-            self.render()
-            cycle_finish = ticks_ms()
-            time_taken = ticks_diff(cycle_finish, cycle_start)
-            wait = int(max(0.0, render_period - time_taken))
-            sleep_ms(wait)
+        try:
+            render_period = 1000.0 / self.config.RENDER_FREQUENCY
+            usb_connected_at_start = usb_connected.value()
+            while usb_connected.value() == usb_connected_at_start and self.is_running:
+                cycle_start = ticks_ms()
+                self.render()
+                cycle_finish = ticks_ms()
+                time_taken = ticks_diff(cycle_finish, cycle_start)
+                wait = int(max(0.0, render_period - time_taken))
+                sleep_ms(wait)
+        finally:
+            print("Render thread finished")
 
 
 if __name__ == "__main__":
