@@ -40,7 +40,6 @@ except ImportError:
 
 from _thread import start_new_thread, allocate_lock
 from cmath import phase, polar, rect
-from machine import Timer
 from math import degrees, e, inf, log, pi, radians
 from random import uniform
 from time import ticks_ms, ticks_diff, sleep_ms
@@ -624,8 +623,8 @@ class BouncingPixels(EuroPiScript):
         for gate in self.gates:
             gate.tick(delta)
 
-    def render(self, _timer):
-        """Timer callback for rendering.
+    def render(self):
+        """Render the display.
         This is the only function that should call any drawing commands.
         """
         oled.fill(0)
@@ -680,7 +679,7 @@ class BouncingPixels(EuroPiScript):
         render_period = 1000.0 / self.config.RENDER_FREQUENCY
         while self.is_running:
             cycle_start = ticks_ms()
-            self.render(None)
+            self.render()
             cycle_finish = ticks_ms()
             time_taken = ticks_diff(cycle_finish, cycle_start)
             wait = int(max(0.0, render_period - time_taken))
