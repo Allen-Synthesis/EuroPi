@@ -280,6 +280,7 @@ class Gate:
 class BouncingPixels(EuroPiScript):
     def __init__(self):
         super().__init__()
+        self.is_running = False
         saved_state = self.load_state_json()
         self.state_saved = False
         self.k1_bank = (
@@ -629,15 +630,21 @@ class BouncingPixels(EuroPiScript):
         # Per chrisib's recommendation after some display-related errors,
         # the render thread specifically runs on cpu0 as this might be the
         # cpu that handles i2c communication with the display.
-        proc_thread = start_new_thread(self.proc_thread, ())
-        self.render_thread()
+        self.is_running = True
+        try:
+            proc_thread = start_new_thread(self.proc_thread, ())
+            self.render_thread()
+        except KeyboardInterrupt:
+            self.is_running = False
+        finally:
+            print("User aborted. Exiting.")
 
     def proc_thread(self):
         """Run the simulation, poll inputs, and save state as necessary."""
         prev_cycle = None
         last_poll = None
         poll_period = 1000.0 / self.config.POLL_FREQUENCY
-        while True:
+        while self.is_running:
             cycle_start = ticks_ms()
             delta = ticks_diff(cycle_start, prev_cycle) / 1000
 
@@ -657,7 +664,7 @@ class BouncingPixels(EuroPiScript):
     def render_thread(self):
         """Render at limited frequency."""
         render_period = 1000.0 / self.config.RENDER_FREQUENCY
-        while True:
+        while self.is_running:
             cycle_start = ticks_ms()
             self.render(None)
             cycle_finish = ticks_ms()
