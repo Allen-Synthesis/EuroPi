@@ -300,8 +300,8 @@ class BouncingPixels(EuroPiScript):
 
         self.k2_bank = (
             KnobBank.builder(k2)
-            .with_unlocked_knob("impulse_speed")
-            .with_locked_knob("width", initial_percentage_value=saved_state.get("width", 1.0))
+            .with_unlocked_knob("width")
+            .with_locked_knob("impulse_speed", initial_percentage_value=saved_state.get("impulse_speed", 0.5))
             .build()
         )
 
@@ -467,12 +467,12 @@ class BouncingPixels(EuroPiScript):
     # Button handlers
     def b1_rising(self):
         self.k1_bank.set_current("ball_count")
-        self.k2_bank.set_current("width")
+        self.k2_bank.set_current("impulse_speed")
         self.b1_pressed = ticks_ms()
 
     def b1_falling(self):
         self.k1_bank.set_current("speed")
-        self.k2_bank.set_current("impulse_speed")
+        self.k2_bank.set_current("width")
 
         delta = ticks_diff(ticks_ms(), self.b1_pressed)
         if delta <= self.config.LONG_PRESS_LENGTH:
@@ -482,12 +482,12 @@ class BouncingPixels(EuroPiScript):
 
     def b2_rising(self):
         self.k1_bank.set_current("ball_count")
-        self.k2_bank.set_current("width")
+        self.k2_bank.set_current("impulse_speed")
         self.b2_pressed = ticks_ms()
 
     def b2_falling(self):
         self.k1_bank.set_current("speed")
-        self.k2_bank.set_current("impulse_speed")
+        self.k2_bank.set_current("width")
 
         delta = ticks_diff(ticks_ms(), self.b2_pressed)
         if delta <= self.config.LONG_PRESS_LENGTH:
