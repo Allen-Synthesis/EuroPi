@@ -26,6 +26,7 @@ try:
     from software.firmware.europi_script import EuroPiScript
     from software.firmware.experimental.math_extras import rescale
     from software.firmware.experimental.knobs import KnobBank
+    from software.firmware.experimental.thread import DigitalInputHelper
     from software.firmware import configuration
 
 except ImportError:
@@ -34,6 +35,7 @@ except ImportError:
     from europi_script import EuroPiScript  # type: ignore
     from experimental.math_extras import rescale  # type: ignore
     from experimental.knobs import KnobBank  # type: ignore
+    from experimental.thread import DigitalInputHelper  # type: ignore
     import configuration  # type: ignore
 
 from _thread import start_new_thread
@@ -348,11 +350,13 @@ class BouncingPixels(EuroPiScript):
         self.gates = [Gate(cv, hold_length) for cv, hold_length in zip(cvs, hold_lengths)]
 
         # Register external event handlers.
-        b1.handler(self.b1_rising)
-        b1.handler_falling(self.b1_falling)
-        b2.handler(self.b2_rising)
-        b2.handler_falling(self.b2_falling)
-        din.handler(getattr(self, self.config.DIN_FUNCTION))
+        self.digital_input_helper = DigitalInputHelper(
+            on_b1_rising=self.b1_rising,
+            on_b1_falling=self.b1_falling,
+            on_b2_rising=self.b2_rising,
+            on_b2_falling=self.b2_falling,
+            on_din_rising=getattr(self, self.config.DIN_FUNCTION)
+        )
 
         for ball in self.balls:
             ball.on_collide += self.report_collision
@@ -648,6 +652,8 @@ class BouncingPixels(EuroPiScript):
             cycle_start = ticks_ms()
             delta = ticks_diff(cycle_start, prev_cycle) / 1000
 
+            self.digital_input_helper.update()
+            
             # Poll inputs at limited frequency
             time_since_poll = ticks_diff(cycle_start, last_poll)
             if time_since_poll > poll_period:
