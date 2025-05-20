@@ -38,7 +38,7 @@ except ImportError:
     from experimental.thread import DigitalInputHelper  # type: ignore
     import configuration  # type: ignore
 
-from _thread import start_new_thread
+from _thread import start_new_thread, allocate_lock
 from cmath import phase, polar, rect
 from machine import Timer
 from math import degrees, e, inf, log, pi, radians
@@ -283,6 +283,11 @@ class BouncingPixels(EuroPiScript):
     def __init__(self):
         super().__init__()
         self.is_running = False
+
+        # This lock is for both the arena and the balls.
+        # Since changing arena size changes ball positions, it is a shared lock.
+        self.state_lock = allocate_lock()
+
         saved_state = self.load_state_json()
         self.state_saved = False
         self.k1_bank = (
@@ -576,32 +581,33 @@ class BouncingPixels(EuroPiScript):
         new_impulse_speed_input = self.k2_bank.impulse_speed.percent()
         new_ain_input = ain.percent()
 
-        # The difference between the new and registered input must exceed the threshold in order to trigger a change.
-        # This reduces jitter, but decreases accuracy.
-        if abs(new_speed_input - self.speed_input) > self.config.KNOB_CHANGE_THRESHOLD:
-            self.speed_input = new_speed_input
-            self.on_speed_input.emit()
+        with self.state_lock:
+            # The difference between the new and registered input must exceed the threshold in order to trigger a change.
+            # This reduces jitter, but decreases accuracy.
+            if abs(new_speed_input - self.speed_input) > self.config.KNOB_CHANGE_THRESHOLD:
+                self.speed_input = new_speed_input
+                self.on_speed_input.emit()
 
-        if (
-            abs(new_impulse_speed_input - self.impulse_speed_input)
-            > self.config.KNOB_CHANGE_THRESHOLD
-        ):
-            self.impulse_speed_input = new_impulse_speed_input
-            self.on_impulse_speed_input.emit()
+            if (
+                abs(new_impulse_speed_input - self.impulse_speed_input)
+                > self.config.KNOB_CHANGE_THRESHOLD
+            ):
+                self.impulse_speed_input = new_impulse_speed_input
+                self.on_impulse_speed_input.emit()
 
-        # Since the rest of the parameters require a button to be held, they will not jitter once the button is released
-        # and no threshold check should be needed.
-        if new_ball_count_input != self.ball_count_input:
-            self.ball_count_input = new_ball_count_input
-            self.on_ball_count_input.emit()
+            # Since the rest of the parameters require a button to be held, they will not jitter once the button is released
+            # and no threshold check should be needed.
+            if new_ball_count_input != self.ball_count_input:
+                self.ball_count_input = new_ball_count_input
+                self.on_ball_count_input.emit()
 
-        if new_width_input != self.width_input:
-            self.width_input = new_width_input
-            self.on_width_input.emit()
+            if new_width_input != self.width_input:
+                self.width_input = new_width_input
+                self.on_width_input.emit()
 
-        if new_ain_input != self.ain_input:
-            self.ain_input = new_ain_input
-            self.on_ain_input.emit()
+            if new_ain_input != self.ain_input:
+                self.ain_input = new_ain_input
+                self.on_ain_input.emit()
 
     def tick(self, delta: float):
         """Process a tick in the simulation.
@@ -609,24 +615,26 @@ class BouncingPixels(EuroPiScript):
         naive to any time scale.
         """
         any_active = False
-        for i in range(self.ball_count):
-            self.balls[i].tick(delta)
-            any_active = any_active or self.balls[i].active
+        with self.state_lock:
+            for i in range(self.ball_count):
+                self.balls[i].tick(delta)
+                any_active = any_active or self.balls[i].active
+            if not any_active:
+                self.reset()
         for gate in self.gates:
             gate.tick(delta)
-        if not any_active:
-            self.reset()
 
     def render(self, _timer):
         """Timer callback for rendering.
         This is the only function that should call any drawing commands.
         """
         oled.fill(0)
-        self.arena.draw_boundary()
-        for i in range(self.ball_count):
-            if not self.balls[i].active:
-                continue
-            self.balls[i].draw()
+        with self.state_lock:
+            self.arena.draw_boundary()
+            for i in range(self.ball_count):
+                if not self.balls[i].active:
+                    continue
+                self.balls[i].draw()
         oled.show()
 
     def main(self):
