@@ -65,8 +65,10 @@ class Timer:
         pass
 
 
-def freq(_):
-    pass
+def freq(f=None):
+    if f is None:
+        return 150_000_000
+    return f
 
 
 class mem:

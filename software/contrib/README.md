@@ -236,6 +236,13 @@ Users have a copy of the original trigger signal, a sample and hold and a track 
 <i>Author: [seanbechhofer](https://github.com/seanbechhofer)</i>
 <br><i>Labels: gates, sample&hold, track&hold</i>
 
+### Ocean Surge \[ [documentation](/software/contrib/ocean_surge.md) | [script](/software/contrib/ocean_surge.py) \]
+
+A clone of the Addac 508 "Swell Physics". Uses a trochoidal wave to simulate ocean surge, outputting control voltages and gates depending on the relative heights of 4 buoys floating on top of the wave.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: LFO, gate, sequencer, physics</i>
+
 ### OSC Interface \[ [documentation](/software/contrib/osc_control.md) | [script](/software/contrib/osc_control.py) \]
 
 Interface program for sending & receiving Open Sound Control (OSC) packets over UDP. Compatible with TouchOSC and

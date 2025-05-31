@@ -62,6 +62,7 @@ EUROPI_SCRIPTS = OrderedDict([
     ["MasterClock",       "contrib.master_clock.MasterClock"],
     ["Morse",             "contrib.morse.Morse"],
     ["NoddyHolder",       "contrib.noddy_holder.NoddyHolder"],
+    ["Ocean Surge",       "contrib.ocean_surge.OceanSurge"],
     ["OSC Interface",     "contrib.osc_control.OscControl"],
     ["Pam's Workout",     "contrib.pams.PamsWorkout2"],
     ["Particle Phys.",    "contrib.particle_physics.ParticlePhysics"],
