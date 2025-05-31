@@ -15,7 +15,7 @@ cd /micropython/ports/rp2
 
 # Pico W must be last; we need to remove some code to make it fit
 # TODO: add RPI_PICO2_W once it's supported
-BOARDS="RPI_PICO RPI_PICO2 RPI_PICO_W"
+BOARDS="RPI_PICO RPI_PICO2 RPI_PICO_W RPI_PICO2_W"
 
 for b in $BOARDS; do
     echo "make BOARD=$b"
