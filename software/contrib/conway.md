@@ -83,7 +83,7 @@ Size 2: [-6, 6, -6, 6, -6, 6] -> 0.0, 6.0
 Size 3: [-2, -4, -6, 12]      -> 0.0, 7.071068
 Size 4: [0, 0, 0]             -> 0.0, 0.0
 ```
-we would assume we have reached stasis, as the mean and standard deviation of the size-3 buckets are less than 1.0.
+we would assume we have reached stasis, as the mean and standard deviation of the size-4 buckets are less than 1.0.
 
 ## LFO Rate Variablility
 
