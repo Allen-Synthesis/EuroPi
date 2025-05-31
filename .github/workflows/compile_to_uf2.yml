@@ -63,9 +63,17 @@ jobs:
         working-directory: micropython/ports/rp2
         run: make BOARD=RPI_PICO2
 
+      - name: compile submodules for RPI_PICO_W
+        working-directory: micropython/ports/rp2
+        run: make BOARD=RPI_PICO_W submodules
+
       - name: compile micropython and firmware modules for RPI_PICO_W
         working-directory: micropython/ports/rp2
         run: make BOARD=RPI_PICO_W
+
+      - name: compile submodules for RPI_PICO2_W
+        working-directory: micropython/ports/rp2
+        run: make BOARD=RPI_PICO2_W submodules
 
       - name: compile micropython and firmware modules for RPI_PICO2_W
         working-directory: micropython/ports/rp2
