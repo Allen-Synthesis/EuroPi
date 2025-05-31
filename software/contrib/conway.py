@@ -18,9 +18,6 @@ Outputs 1-3 are 0-10V control voltages, outputs 4-6 are 5V gates
 
 @author Chris I-B <ve4cib@gmail.com>
 @year   2023
-
-Throughout the program we frequently use `>> 3` instead of `//8` for doing integer division when converting
-from bit indices to byte indices.
 """
 
 from europi import *
@@ -84,8 +81,8 @@ class Conway(EuroPiScript):
         # For ease of blitting, store the field as a bit array
         # Each byte is 8 horizontally adjacent pixels, with the most significant bit
         # on the left
-        self.field = bytearray(NUM_PIXELS >> 3)
-        self.next_field = bytearray(NUM_PIXELS >> 3)
+        self.field = bytearray(NUM_PIXELS // 8)
+        self.next_field = bytearray(NUM_PIXELS // 8)
 
         # Keep 2 separate frame buffer instances so we don't need to recreate the FB objects when we draw
         self.frame = FrameBuffer(self.field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
