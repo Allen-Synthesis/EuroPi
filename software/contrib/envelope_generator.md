@@ -1,14 +1,10 @@
 # Envelope Generator
 
-author: Rory Allen
+A simple one channel envelope generator with exponential attack and decay, sustain option, and
+looping capability.
 
-date: 2023-04-11
+## Inputs and Outputs
 
-labels: utility
-
-A simple one channel envelope generator with exponential attack and decay, sustain option, and looping capability
-
-Inputs and Outputs:
 - **digital in:** trigger an envelope
 - **analog in:** added to knob 2 to determine fall time
 - **button 1:** change sustain mode between AR (Attack Release) and ASR (Attack Sustain Release)
