@@ -1,13 +1,13 @@
 # Pam's "EuroPi" Workout
 
-This program is an homage to ALM's Pamela's "NEW" Workout and Pamela's "PRO"
-Workout modules, designed for the EuroPi. It is intended to be used as a
-main clock generator, euclidean rhythm generator, clocked LFO, clocked
-random voltage source, etc... with optional quantization.
+This program is an homage to [ALM's Pamela's "NEW" Workout](https://busycircuits.com/alm017/)
+and [Pamela's "PRO" Workout](https://busycircuits.com/alm034/) modules, reimagined for the EuroPi.
+It is intended to be used as a main clock generator, euclidean rhythm generator, clocked LFO,
+clocked random voltage source, etc... with optional quantization.
 
-The module itself will generate the master clock signal with a configurable
-BPM (1-240 BPM supported). Each output has an independently controlled
-clock multiplier or divider, chosen from the following:
+The module itself will generate the master clock signal with a configurable BPM (1-240 BPM
+supported). Each output has an independently controlled clock multiplier or divider, chosen from
+the following:
 
 ```
 [x16, x12, x8, x6, x4, x3, x2, x1, /2, /3, /4, /6, /8, /12, /16]
