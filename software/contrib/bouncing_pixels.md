@@ -1,11 +1,5 @@
 # Bouncing Pixels
 
-author: [Jorin](https://github.com/jorins)
-
-date: 2025-04-12
-
-labels: gates, random, simulation, triggers
-
 Pixels bounce around the display and trigger gates when hitting the edges.
 Inspired by the classic bouncing DVD logo!
 
@@ -41,7 +35,7 @@ One possible over and under speed behaviour is that pixels are deactivated.
 When deactivated, a pixel will not be processed or rendered until reset. Resets
 can be manually triggered by pressing B1 or using the digital input (must be
 configured). A reset is automatically triggered when all pixels in play are
-deactivated. 
+deactivated.
 
 ## Outputs
 
@@ -167,7 +161,7 @@ controller.
 ## Known issues & limitations
 
 * Gate lengths are not entirely precise. They're guaranteed to be at least the
-  set length, but they may exceed it slightly on account of running on 
+  set length, but they may exceed it slightly on account of running on
   tick-based timers.
 * Corners aren't actually corners, they're just the top and bottom most
   parts of the side edges. This means that if a pixel is traveling parallel and
