@@ -221,7 +221,7 @@ def gray_decode(n: int) -> int:
     :param n:  The value to convert
     """
     mask = n
-    while (mask):
+    while mask != 0:
         mask = mask >> 1
         n = n ^ mask
     return n
