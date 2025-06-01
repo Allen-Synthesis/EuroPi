@@ -1,6 +1,6 @@
 # Kompari
 
-This program is a EuriPi re-imagining of [Allen Synthesis' Kompari](https://www.allensynthesis.co.uk/modules/kompari.html)
+This program is a EuroPi re-imagining of [Allen Synthesis' Kompari](https://www.allensynthesis.co.uk/modules/kompari.html)
 module.
 
 An input signal is converted to a normalized `0-1` level and compared with the two knobs' levels,
