@@ -2,8 +2,8 @@
 
 This program is a loose clone of the [ADDAC 508 "Swell Physics"](https://www.addacsystem.com/en/products/modules/addac500-series/addac508).
 The program uses a [trochoidal wave](https://en.wikipedia.org/wiki/Trochoidal_wave) to simulate
-the motion of 3 buoys floating on the ocean surface. The relative elevations of these buoys generates
-control voltage signals, while logical comparisons between them output gate signals.
+the motion of 3 buoys floating on the ocean surface. The relative elevations of these buoys
+generates control voltage signals, while logical comparisons between them output gate signals.
 
 ## Controls, Inputs, and Outputs
 
