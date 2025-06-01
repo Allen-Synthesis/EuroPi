@@ -211,7 +211,7 @@ def gray_encode(n: int) -> int:
 
     :param n:  The value to convert
     """
-    return (n & 0xff) ^ ((n & 0xff) >> 1)
+    return (n & 0xFF) ^ ((n & 0xFF) >> 1)
 
 
 def gray_decode(n: int) -> int:
