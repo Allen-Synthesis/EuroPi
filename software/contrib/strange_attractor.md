@@ -1,8 +1,4 @@
-# EuroPi Strange Attractor.
-
-author: Sean Bechhofer (github.com/seanbechhofer)
-date: 2022-03-15
-labels: gates, triggers, randomness
+# Strange Attractor.
 
 Strange Attractor is a source of chaotic modulation using systems
 of differential equations such as the Lorenz System:
@@ -17,10 +13,7 @@ attractor.
 Outputs 4, 5 and 6 are gates based on the values of *x*, *y* and *z* and
 relationships between them.
 
-Credits:
-- The Europi hardware and firmware was designed by Allen Synthesis: https://github.com/Allen-Synthesis/EuroPi
-
-# Controls
+## Controls
 
 - digital_in: Pause motion when `HIGH`
 - analog_in:
@@ -38,25 +31,23 @@ Credits:
 - output_5: triggers/gates
 - output_6: triggers/gates
 
-# Getting Started
+1. Knob 1 controls the speed. The sensitivity changes at noon, allowing for very slow or very fast
+   modulation.
+2. Knob 2 adjusts the threshold used for triggers.
+3. Short presses on buttons 1/2 reduce/increase the max output voltage of the CV outputs, from 1V
+   to 5V.
+4. Long press on button 1 changes the equation system
+5. Long press on button 2 changes the display between detail and graphical
+6. If the digital input is `HIGH`, change is paused.
 
 Outputs 1-3 provide chaotic shifting voltages.
 Outputs 4-6 provide gates/triggers.
 
 ## Basic Usage
+
 1. Switch on
 2. Connect outputs to modules
 3. Enjoy randomness
-
-## Controls
-1. Knob 1 controls the speed. The sensitivity changes at noon,
-allowing for very slow or very fast modulation.
-2. Knob 2 adjusts the threshold used for triggers.
-3. Short presses on buttons 1/2 reduce/increase the max output voltage of the CV outputs,
-from 1V to 5V.
-4. Long press on button 1 changes the equation system
-5. Long press on button 2 changes the display between detail and graphical
-6. If the digital input is `HIGH`, change is paused.
 
 ## Details
 
@@ -93,3 +84,7 @@ A long press on button 2 toggles between a numerical and graphical
 display
 
 If the digital input is set to `HIGH`, the system will pause.
+
+## Credits
+
+- The Europi hardware and firmware was designed by Allen Synthesis: https://github.com/Allen-Synthesis/EuroPi
