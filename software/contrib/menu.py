@@ -15,12 +15,11 @@
 # Reset the module state and display bootsplash screen.
 from europi import bootsplash
 
-
 bootsplash()
-
 
 from bootloader import BootloaderMenu
 from collections import OrderedDict
+import europi_config
 
 ## Scripts that are included in the menu
 #
@@ -101,6 +100,18 @@ EUROPI_SCRIPTS = OrderedDict([
     ["_Exp Cfg Editor",   "tools.experimental_conf_edit.ExperimentalConfigurationEditor"],
 ])
 # fmt: on
+
+
+# Remove scripts that require wifi if the Pico model in use doesn't
+# have a wifi module included
+cfg = europi_config.load_europi_config()
+if (
+    cfg.PICO_MODEL != europi_config.MODEL_PICO_W
+    and cfg.PICO_MODEL != europi_config.MODEL_PICO_2W
+):
+    EUROPI_SCRIPTS.pop("HTTP Interface")
+    EUROPI_SCRIPTS.pop("OSC Interface")
+
 
 if __name__ == "__main__":
     BootloaderMenu(EUROPI_SCRIPTS).main()
