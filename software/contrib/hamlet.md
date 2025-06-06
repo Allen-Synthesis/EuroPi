@@ -1,34 +1,26 @@
-# EuroPi Hamlet - Sequencing Drums and Two Voices
+# Hamlet
 
-author: Sean Bechhofer (github.com/seanbechhofer)
-
-date: 2022-04-16
-
-labels: sequencer, gates, triggers, drums, randomness
+_Sequencing Drums and Two Voices_
 
 **TB or not TB?**
 
-Hamlet is a drum and voice sequencer based on Nik Ansell's
-Consequencer, which is itself inspired by Grids from Mutable
-Instruments. It's also influenced by O_C's TB3PO. Hamlet adds two
-tracks of CV and gates to the Consequencer, sacrificing one drum track
-to do so.
+Hamlet is a drum and voice sequencer based on [Nik Ansell](https://github.com/gamecat69)'s
+[Consequencer](./consequencer.md), which is itself inspired by
+[Mutable Instruments' Grids](https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/).
+It is also influenced by O_C's TB3PO. Hamlet adds two tracks of CV and gates to the Consequencer,
+sacrificing one drum track to do so.
 
-The app provides two gates for drum patterns and a pair of channels
-giving gate/CV to drive voices. Density of notes played on the CV
-tracks can be adjusted.
+The app provides two gates for drum patterns and a pair of channels giving gate/CV to drive voices.
+Density of notes played on the CV tracks can be adjusted.
 
 Use outputs 1/2 for drum gates. Pairs 3/4 and 5/6 provide gate/CV for
 melody lines. Send a clock to the digital input to start the sequence.
 
-Demo video: https://www.youtube.com/watch?v=bEbHBpgIl4A
+## Demo video
 
-Credits:
-- The Europi hardware and firmware was designed by Allen Synthesis:
-https://github.com/Allen-Synthesis/EuroPi
-- Hamlet is based on the Consequencer by Nik Ansell (github.com/gamecat69)
+https://www.youtube.com/watch?v=bEbHBpgIl4A
 
-# Controls
+## Controls
 
 ![hamlet_controls](https://user-images.githubusercontent.com/1035997/163685864-8640d144-a394-4f25-a094-b89feb6e0942.png)
 
@@ -51,20 +43,20 @@ https://github.com/Allen-Synthesis/EuroPi
 - output_5: track 2 randomly generated stepped CV
 - output_6: track 1 randomly generated stepped CV
 
-# Getting Started
+## Getting Started
 
 The following sections provide instructions for creating a simple 2
 drum pattern with a kick and hi-hat, then using random CV patterns to
 drive voices.
 
-## Basic Usage
+### Basic Usage
 1. Connect a clock input to the Digital input
 2. Connect a Bass Drum to output 1, Hi-hat to output 2
 3. Start your clock - the pattern will output gates on outputs 1/2.
 4. Select different patterns manually using knob 2 (right-hand
 knob). The first section of the selected gate pattern for track 1 is shown visually on the screen.
 
-## Voices
+### Voices
 1. Connect output 3 to gate on voice 1
 2. Connect output 6 to pitch on voice 1, optionally via quantiser/attenuator.
 3. Connect output 4 to gate on voice 2
@@ -75,7 +67,7 @@ knob). The first section of the selected gate pattern for track 1 is shown visua
    outputs 3 and 4. Fully CCW all notes are played, as the knob is
    turned CW, notes will drop out of the sequence.
 
-## Sparsity
+### Sparsity
 
 A key feature of the two voice tracks in Hamlet is *sparsity*
 control. With this set to 0, all events in the track are present. As
@@ -103,7 +95,7 @@ values. Note also that track 1 and track 2 have *different* gate
 patterns, thus different notes will drop out giving some nice
 interplay between the voices.
 
-## Pattern Length
+### Pattern Length
 
 CV patterns are N, 2xN or 4xN steps, where N is the length of the
 current drum pattern. This can be varied through a long
@@ -113,24 +105,25 @@ respectively. Patterns of length 2xN and 4xN will be made up of two or four
 set to `15` with pattern length `4x`, there will be four notes played
 across the 64 note sequence.
 
-## Selecting analogue input modes
+### Selecting analogue input modes
 
-Hamlet can perform 3 different actions when a control voltage input is received at the analogue input.
-The current running mode is shown on the bottom right of the screen (e.g. M1, M2, M3)
+Hamlet can perform 3 different actions when a control voltage input is received at the analogue
+input. The current running mode is shown on the bottom right of the screen (e.g. M1, M2, M3)
 Cycle through the modes by long-pressing and releasing button 2. The following modes are available:
 
 - Mode 1: Randomness
 - Mode 2: Control voltage selects the gate pattern
 - Mode 3: Control voltage selects the stepped CV pattern
 
-## Controlling a pattern using CV
+### Controlling a pattern using CV
 
 1. Select analogue mode 2.
 2. Send a control voltage into the analogue input
 
-A fixed voltage will select a single pattern and varying voltage (e.g. an envelope or LFO) will smoothly cycle through patterns.
+A fixed voltage will select a single pattern and varying voltage (e.g. an envelope or LFO) will
+smoothly cycle through patterns.
 
-## Adding / Removing / Updating Gate Patterns
+### Adding / Removing / Updating Gate Patterns
 
 1. Update patterns in the code
 2. Restart the Europi module, or restart the program if using a micropython IDE/CLI
@@ -146,6 +139,13 @@ The mapping of `BD`, `HH` is as follows:
     HH.append("1111111111111111")
 ```
 
-# Known bugs / Interesting features
+## Known bugs / Interesting features
 
 Probably.
+
+## Credits:
+
+- The Europi hardware and firmware was designed by Allen Synthesis:
+https://github.com/Allen-Synthesis/EuroPi
+
+- Hamlet is based on the Consequencer by Nik Ansell (github.com/gamecat69)

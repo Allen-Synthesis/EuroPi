@@ -20,7 +20,7 @@ Generates pseudo-random gate and CV patterns based on the current date and time.
 ## Required Hardware
 
 This script _can_ be used on a normal EuroPi, but will result in highly predictable
-patterns. For best result, connect a Realtime Clock (RTC) to EuroPi's secondary I2C
+patterns. For best results, connect a Realtime Clock (RTC) to EuroPi's secondary I2C
 header pins, located on the underside of the board.
 
 See [Realtime Clock Installation](/software/realtime_clock.md) for instructions on

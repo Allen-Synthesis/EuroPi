@@ -1,23 +1,17 @@
 # Turing Machine
 
-author: Matthew Jaskula
-
-date: 2022-03-30
-
-labels: sequencer, random, triggers
-
 A script meant to recreate the [Music Thing Modular Turning Machine Random Sequencer](https://www.musicthing.co.uk/Turing-Machine/)
-as faithfully as possible on the EuroPi hardware. Plenty of information is available at that link, but the most
-important bit is this:
+as faithfully as possible on the EuroPi hardware. Plenty of information is available at that link,
+but the most important bit is this:
 
-  In the Turing Machine, looping is controlled by the big knob.
-    * At noon, the sequences are random.
-    * At 5 o'clock, it locks into a repeating sequence.
-    * At 7 o'clock, it double locks into a repeating sequence twice as long as the 'length' setting.
-    * At 3 o'clock or 9 o'clock, it slips; looping but occasionally changing notes.
+>  In the Turing Machine, looping is controlled by the big knob.
+>    * At noon, the sequences are random.
+>    * At 5 o'clock, it locks into a repeating sequence.
+>    * At 7 o'clock, it double locks into a repeating sequence twice as long as the 'length' setting.
+>    * At 3 o'clock or 9 o'clock, it slips; looping but occasionally changing notes.
 
-The left knob (k1) acts as the TM's big knob. The right knob (k2) serves dual duty as the scale and length knob. The
-mode of the knob is changed with the right button (b2).
+The left knob (`k1`) acts as the TM's big knob. The right knob (`k2`) serves dual duty as the scale
+and length knob. The mode of the knob is changed with the right button (`b2`).
 
 - **din:** clock
 - **ain:** cv control over the big knob, added to the knobs value

@@ -1,12 +1,13 @@
 # Itty Bitty
 
-A gate & CV sequencer that uses the binary representation of an 8-bit integer to determine the of/off pattern.
+A gate & CV sequencer that uses the binary representation of an 8-bit integer to determine the
+of/off pattern.
 
-The module has 2 channels, A and B.  Channel A is controlled by `K1` and outputs on `CV1-3`.  Channel B is controlled
-by `K2` and outputs on `CV4-6`.
+The module has 2 channels, A and B.  Channel A is controlled by `K1` and outputs on `CV1-3`.
+Channel B is controlled by `K2` and outputs on `CV4-6`.
 
-Inspired by an [Instagram post by Schreibmaschine](https://www.instagram.com/p/DDaZklkgzbr) describing an idea for a
-new module.
+Inspired by an [Instagram post by Schreibmaschine](https://www.instagram.com/p/DDaZklkgzbr)
+describing an idea for a new module.
 
 ## Ins & Outs
 
@@ -35,8 +36,8 @@ The numbers 0-255 can be represented in binary in 8 bits:
 - `254`: `11111110`
 - `255`: `11111111`
 
-Let `0 <= n <= 255` be the value the user selects with the knob. Every time we receive a clock signal we rotate
-the bits 1 place to the left, giving us `n'`:
+Let `0 <= n <= 255` be the value the user selects with the knob. Every time we receive a clock
+signal we rotate the bits 1 place to the left, giving us `n'`:
 ```
 ...
 00000001
@@ -53,14 +54,15 @@ the bits 1 place to the left, giving us `n'`:
 
 The "current bit` is the most-significant bit.
 
-The trigger output will emit a trigger signal if the current 1s bit is 1, and no trigger if the current bit is 0. The
-duration of the trigger is the same as the incoming clock signal (or the duration of the button press).
+The trigger output will emit a trigger signal if the current 1s bit is 1, and no trigger if the
+current bit is 0. The duration of the trigger is the same as the incoming clock signal (or the
+duration of the button press).
 
 The gate output will go high if the current bit is 1, and will go low if the current bit is 0.
 
-The CV output set to `MAX_OUTPUT_VOLTAGE * reverse(n') / 255`. The bits are reversed so as to prevent a situation
-where the CV is always high when the active bit is also high; this forcibly de-couples the gate & CV outputs,
-which can lead to more interesting interactions between them.
+The CV output set to `MAX_OUTPUT_VOLTAGE * reverse(n') / 255`. The bits are reversed so as to
+prevent a situation where the CV is always high when the active bit is also high; this forcibly
+de-couples the gate & CV outputs, which can lead to more interesting interactions between them.
 
 ### Example sequence
 
@@ -113,13 +115,13 @@ _________.         .         .         .         .         .         .
 
 This program has the following configuration options:
 
-- `USE_AIN_A`: if `true`, channel A's value is determined by `AIN` and `k1` will act as an attenuator for the
-  CV signal connected to `AIN`
-- `USE_AIN_B`: if `true`, channel B's value is determined by `AIN` and `k2` will act as an attenuator for the
-  CV signal connected to `AIN`
-- `USE_GRAY_ENCODING`: if `true`, instead of traditional binary encoding, the pattern is encoded using
-  [gray encoding](https://en.wikipedia.org/wiki/Gray_encoding). This means that consecutive sequences will
-  always differ by exactly 1 bit.
+- `USE_AIN_A`: if `true`, channel A's value is determined by `AIN` and `k1` will act as an
+  attenuator for the CV signal connected to `AIN`. Default: `false`
+- `USE_AIN_B`: if `true`, channel B's value is determined by `AIN` and `k2` will act as an
+  attenuator for the CV signal connected to `AIN`. Default: `false`
+- `USE_GRAY_ENCODING`: if `true`, instead of traditional binary encoding, the pattern is encoded
+  using [gray encoding](https://en.wikipedia.org/wiki/Gray_encoding). This means that consecutive
+  sequences will always differ by exactly 1 bit. Default: `false`
 
 | Decimal value | Traditional binary | Gray encoding |
 |---------------|--------------------|---------------|

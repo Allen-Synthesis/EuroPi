@@ -1,14 +1,8 @@
 # Bit Garden - pseudo-random deterministic repeated triggers
 
-author: Adam Wonak (github.com/awonak)
-
-date: 2024-03-21
-
-labels: triggers, random
-
 Connect a trigger or gate source to the Digital input and the each output will
 mirror that signal according to a decreasing deterministic probability pattern
-set by the seed value. Use the Analog input as a trigger to get a new random 
+set by the seed value. Use the Analog input as a trigger to get a new random
 seed. From the main page, use the left knob adjust the pattern length. The
 right knob will scroll through each output to show the current trigger pattern
 for that output. Left button will change the cv output mode from Trigger
