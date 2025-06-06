@@ -14,6 +14,10 @@
 from europi import *
 from europi_script import EuroPiScript
 
+from experimental.math_extras import gray_encode
+
+import configuration
+
 
 class BinaryCounter(EuroPiScript):
     MAX_N = (1 << NUM_CVS) - 1
@@ -37,6 +41,16 @@ class BinaryCounter(EuroPiScript):
 
         b2.handler(self.reset)
 
+    @classmethod
+    def config_points(cls):
+        return [
+            # If true, use gray encoding instead of standard binary
+            configuration.boolean(
+                "USE_GRAY_ENCODING",
+                False
+            ),
+        ]
+
     def on_gate_rise(self):
         self.gate_recvd = True
 
@@ -47,11 +61,17 @@ class BinaryCounter(EuroPiScript):
         self.n = 0
 
     def set_outputs(self):
+        if self.config.USE_GRAY_ENCODING:
+            n = gray_encode(self.n)
+        else:
+            n = self.n
+
         for i in range(NUM_CVS):
-            if (self.n >> i) & 0x01:
+            if (n >> i) & 0x01:
                 cvs[i].on()
             else:
                 cvs[i].off()
+
 
     def main(self):
         while True:

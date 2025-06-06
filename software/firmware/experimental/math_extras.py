@@ -203,3 +203,25 @@ def solve_linear_system(m):
         results[i] = results[i] / m[i][i]
 
     return results
+
+
+def gray_encode(n: int) -> int:
+    """
+    Convert a binary integer to its Gray Encoding equivalent.
+
+    :param n:  The value to convert
+    """
+    return (n & 0xFF) ^ ((n & 0xFF) >> 1)
+
+
+def gray_decode(n: int) -> int:
+    """
+    Convert a binary integer from Gray Encoding to its traditional equivalent.
+
+    :param n:  The value to convert
+    """
+    mask = n
+    while mask != 0:
+        mask = mask >> 1
+        n = n ^ mask
+    return n

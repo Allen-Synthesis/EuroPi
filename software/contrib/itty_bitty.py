@@ -18,6 +18,8 @@ Two 8-step trigger, gate & CV sequencers based on the binary representation of a
 from europi import *
 from europi_script import EuroPiScript
 
+from experimental.math_extras import gray_encode
+
 import configuration
 import time
 
@@ -88,8 +90,7 @@ class BittySequence:
         self.sequence_n = n
 
         if self.use_gray_encoding:
-            # convert the number from traditional binary to its gray encoding equivalent
-            n = (n & 0xff) ^ ((n & 0xff) >> 1)
+            n = gray_encode(n)
         else:
             n = n & 0xff
 
