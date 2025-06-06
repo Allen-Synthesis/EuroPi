@@ -9,8 +9,9 @@ This script is non-interactive and simply generates 6 fixed voltages:
 - `cv5`: 5.0V
 - `cv6`: 10.0V
 
-These can be used to apply fixed offsets for e.g. transposing a sequencer up a number of octaves, shifting a bipolar
-LFO so it is positive, sending a contant voltage to a VCA to amplify a signal, or calibrating other modules.
+These can be used to apply fixed offsets for e.g. transposing a sequencer up a number of octaves,
+shifting a bipolar LFO so it is positive, sending a contant voltage to a VCA to amplify a signal,
+or calibrating other modules.
 
 ## Changing the voltages
 

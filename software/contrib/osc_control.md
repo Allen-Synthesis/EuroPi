@@ -51,7 +51,7 @@ Create `/config/OscControl.json` to set the namespace:
 If the namespace does not start with `/`, a `/` will automatically be added.  If the namespace
 is left empty, it will default to `/`.
 
-## Changint the topics
+## Changing the topics
 
 The input & output topics described above are defaults. To rename the topics (e.g. to facilitate
 easier interaction with other devices) the topics can be customized by specifying the topics for
