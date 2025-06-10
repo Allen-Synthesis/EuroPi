@@ -110,7 +110,7 @@ class OscControl(EuroPiScript):
             cv_out.voltage(data.values[0] * europi_config.MAX_OUTPUT_VOLTAGE)
         self.ui_dirty = True
 
-    def set_cvs(data):
+    def set_cvs(self, data):
         """
         Set the level for all CVs
 
