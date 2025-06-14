@@ -129,7 +129,7 @@ Now that you have installed the europi.py and ssd1306 libraries, you are ready t
 ### Install the contrib scripts and setup the menu
 
 The easiest way to start using EuroPi is to [install the `europi_contrib` library](#optional-installing-the-europi-contrib-library).
-This will automatically create `main.py` containing the following:
+This will automatically create `lib/main.py` containing the following:
 
 ```python
 import gc
@@ -139,10 +139,10 @@ gc.collect()
 BootloaderMenu(EUROPI_SCRIPTS).main()
 ```
 
-This will automatically run a menu when EuroPi boots, allowing you to select a program from
-the list to run.  After choosing a program, EuroPi will automatically restart that program
-next time it powers-on.  To return to the menu, reset EuroPi by holding `B1` and `B2` for
-a few seconds.
+Copy this file from the `lib` directory into the root folder of the Pico using Thonny's file browser.
+This file, when copied to the root folder, will automatically run a menu when EuroPi boots, allowing you to select a program from
+the list to run.  After choosing a program, EuroPi will automatically restart that program next time it powers-on.  To return to
+the menu, reset EuroPi by holding `B1` and `B2` for a few seconds.
 
 If this is a brand new EuroPi, or you have just reinstalled the software, we recommend running
 the [`~Calibrate`](#calibrate-the-module) program first. Calibrating is optional, but if you
