@@ -18,6 +18,7 @@ from experimental.math_extras import gray_encode
 
 import configuration
 
+
 class BinaryCounter(EuroPiScript):
     MAX_N = (1 << NUM_CVS) - 1
 
