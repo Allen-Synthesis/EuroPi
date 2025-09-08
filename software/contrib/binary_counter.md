@@ -12,7 +12,7 @@ counter.
 |---------------|-------------------------------------------------------------------|
 | `din`         | Input gate signal                                                 |
 | `ain`         | CV input to control `k`                                           |
-| `b1`          | Manual gate signal                                                |
+| `b1`          | Change between discrete or continuous modes                       |
 | `b2`          | Reset `n` to zero                                                 |
 | `k1`          | Control for `k`                                                   |
 | `k2`          | Attenuator for `ain`                                              |
@@ -22,6 +22,28 @@ counter.
 | `cv4`         | 8s-bit output                                                     |
 | `cv5`         | 16s-bit output                                                    |
 | `cv6`         | Most significant bit output                                       |
+
+In `discrete` mode (default) all outputs go low when `din` goes low.
+
+In `continuous` mode the outputs stay on across consecutive values.
+
+```
+k = 1
+
+din
+   __    __    __    __    __    __    __    __    __
+__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|  |__
+  .     .     .     .     .     .     .     .     .
+cv2 (discrete).     .     .     .     .     .     .
+  .     .__   .__   .__   .__   .__   .__   .     .
+________|  |__|  |__|  |__|  |__|  |__|  |______________
+  .     .     .     .     .     .     .     .     .
+cv2 (continuous)    .     .     .     .     .     .
+  .     .___________________________________.     .
+________|     .     .     .     .     .     |___________
+n .     .     .     .     .     .     .     .     .
+0 1     2     3     4     5     6     7     8     9
+```
 
 ## Configuration
 

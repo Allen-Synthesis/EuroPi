@@ -15,6 +15,7 @@ from europi import *
 from europi_script import EuroPiScript
 
 from experimental.math_extras import gray_encode
+from experimental.screensaver import OledWithScreensaver
 
 import configuration
 
@@ -22,8 +23,16 @@ import configuration
 class BinaryCounter(EuroPiScript):
     MAX_N = (1 << NUM_CVS) - 1
 
+    MODE_DISCRETE = 0
+    MODE_CONTINUOUS = 1
+    N_MODES = 2
+
     def __init__(self):
         super().__init__()
+        self.load_state()
+        self.state_dirty = False
+
+        self.ssoled = OledWithScreensaver()
 
         self.n = 0
         self.k = int(
@@ -36,9 +45,7 @@ class BinaryCounter(EuroPiScript):
 
         din.handler(self.on_gate_rise)
         din.handler_falling(self.on_gate_fall)
-        b1.handler(self.on_gate_rise)
-        b1.handler_falling(self.on_gate_fall)
-
+        b1.handler(self.cycle_mode)
         b2.handler(self.reset)
 
     @classmethod
@@ -51,14 +58,32 @@ class BinaryCounter(EuroPiScript):
             ),
         ]
 
+    def load_state(self):
+        cfg = self.load_state_json()
+        self.mode = cfg.get("mode", self.MODE_DISCRETE)
+
+    def save_state(self):
+        cfg = {
+            "mode": self.mode
+        }
+        self.save_state_json(cfg)
+        self.state_dirty = False
+
+    def cycle_mode(self):
+        self.mode = (self.mode + 1) % self.N_MODES
+        self.state_dirty = True
+        self.ssoled.notify_user_interaction()
+
     def on_gate_rise(self):
         self.gate_recvd = True
 
     def on_gate_fall(self):
-        turn_off_all_cvs()
+        if self.mode == self.MODE_DISCRETE:
+            turn_off_all_cvs()
 
     def reset(self):
         self.n = 0
+        self.ssoled.notify_user_interaction()
 
     def set_outputs(self):
         if self.config.USE_GRAY_ENCODING:
@@ -74,19 +99,42 @@ class BinaryCounter(EuroPiScript):
 
 
     def main(self):
+        current_k1 = 0
+        current_k2 = 0
+        prev_k1 = 0
+        prev_k2 = 0
+        WIGGLE_THRESHOLD = 0.05
+
         while True:
+            current_k1 = k1.percent()
+            current_k2 = k2.percent()
+            if (
+                abs(prev_k1 - current_k1) >= WIGGLE_THRESHOLD
+                or abs(prev_k2 - current_k2) >= WIGGLE_THRESHOLD
+            ):
+                self.ssoled.notify_user_interaction()
+            prev_k1 = current_k1
+            prev_k2 = current_k2
+
             self.k = int(
                 (
-                    k1.percent() + k2.percent() * ain.percent()
+                    current_k1 + current_k2 * ain.percent()
                 ) * self.MAX_N
             )
+            # minimum of 1; k==0 will do nothing, which isn't interesting
+            if self.k == 0:
+                self.k = 1
+
+            if self.state_dirty:
+                self.save_state()
 
             if self.gate_recvd:
                 self.set_outputs()
                 self.n = (self.n + self.k) & self.MAX_N
                 self.gate_recvd = False
 
-            oled.centre_text(f"""k = {self.k}
+            self.ssoled.centre_text(f"""{'Discrete' if self.mode == self.MODE_DISCRETE else 'Continuous'}
+k = {self.k}
 {self.n:06b}""")
 
 
