@@ -30,7 +30,6 @@ import sys
 
 from version import __version__
 
-from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB
 
 from europi_config import load_europi_config, MODEL_PICO_2W, MODEL_PICO_W
@@ -39,7 +38,6 @@ from europi_hardware import *
 from europi_log import *
 
 from experimental.experimental_config import load_experimental_config
-from experimental.wifi import WifiConnection, WifiError
 
 
 if sys.implementation.name == "micropython":
@@ -127,6 +125,7 @@ else:
 # Connect to wifi, if supported
 if europi_config.PICO_MODEL == MODEL_PICO_W or europi_config.PICO_MODEL == MODEL_PICO_2W:
     try:
+        from experimental.wifi import WifiConnection, WifiError
         oled.centre_text(
             f"""WiFi connecting
 {experimental_config.WIFI_SSID}
