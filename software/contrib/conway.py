@@ -25,7 +25,16 @@ from europi_script import EuroPiScript
 from experimental.bitarray import *
 from random import random as rnd
 
+import micropython
+
 import math
+import array
+
+# @micropython.native
+# Docs: https://docs.micropython.org/en/v1.9.3/pyboard/reference/speed_python.html#the-native-code-emitter
+
+# @micropython.viper
+# Docs: https://docs.micropython.org/en/v1.9.3/pyboard/reference/speed_python.html#the-viper-code-emitter
 
 # We re-use this constant a lot, so just save it for easy re-use
 LOG2 = math.log(2)
@@ -33,7 +42,12 @@ LOG2 = math.log(2)
 # How many pixels are on the screen
 NUM_PIXELS = OLED_HEIGHT * OLED_WIDTH
 
+# Pre-calculate these for performance
+OLED_WIDTH_BYTES = OLED_WIDTH // 8
+if OLED_WIDTH % 8:
+    OLED_WIDTH_BYTES += 1
 
+@micropython.native
 def stdev(l):
     """Return the standard deviation of a list of values
 
@@ -44,7 +58,7 @@ def stdev(l):
     mean = sum(l)/len(l)
     return ( sum([((x - mean) ** 2) for x in l]) / len(l) )**0.5
 
-
+@micropython.native
 def bitwise_entropy(arr):
     """Calculate the entropy of the bit string in a bytearray
 
@@ -75,26 +89,21 @@ def bitwise_entropy(arr):
         ]
         return -sum([ p * math.log(p) for p in p_x]) / LOG2
 
-
+@micropython.native
 class Conway(EuroPiScript):
     def __init__(self):
         # For ease of blitting, store the field as a bit array
         # Each byte is 8 horizontally adjacent pixels, with the most significant bit
         # on the left
-        self.field = bytearray(NUM_PIXELS // 8)
-        self.next_field = bytearray(NUM_PIXELS // 8)
+        self.field = bytearray(OLED_HEIGHT * OLED_WIDTH_BYTES)
+        self.next_field = bytearray(OLED_HEIGHT * OLED_WIDTH_BYTES)
 
         # Keep 2 separate frame buffer instances so we don't need to recreate the FB objects when we draw
         self.frame = FrameBuffer(self.field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
         self.next_frame = FrameBuffer(self.next_field, OLED_WIDTH, OLED_HEIGHT, MONO_HLSB)
 
-        # summed area table
-        # used to quickly count the neighbours within a region
-        self.field_sum = []
-        for _ in range(OLED_HEIGHT):
-            self.field_sum.append([])
-            for _ in range(OLED_WIDTH):
-                self.field_sum[-1].append(0)
+        # Use 1D array for summed area table for better cache performance
+        self.field_sum = array.array('H', [0] * (OLED_HEIGHT * OLED_WIDTH))
 
         # how many cells were born this tick?
         self.num_born = 0
@@ -109,16 +118,17 @@ class Conway(EuroPiScript):
         # Set to True if we want to clear the field & respawn
         self.reset_requested = False
 
-        # statically allocated array of the indices of the cells around the one we're considering
-        # this is just an optimization to avoid re-allocating this array
-        self.neighbourhood = [0, 0, 0, 0, 0, 0, 0, 0]
-
         # keep the last few changes in population in a list to check if it's oscillating predictably
         self.population_deltas = []
         self.MAX_DELTAS = 12
 
         # statically allocated array we use to store the sums of cells when checking for statis
         self.statis_sums = [0] * self.MAX_DELTAS
+
+        # Pre-calculate neighbor offsets for faster access
+        self.neighbor_offsets = [-OLED_WIDTH-1, -OLED_WIDTH, -OLED_WIDTH+1, 
+                                -1, 1,
+                                OLED_WIDTH-1, OLED_WIDTH, OLED_WIDTH+1]
 
         @b1.handler
         def on_b1():
@@ -131,7 +141,8 @@ class Conway(EuroPiScript):
         @din.handler
         def on_din():
             self.reset_requested = True
-
+    
+    @micropython.native
     def calculate_spawn_level(self):
         """Calculate what percentage of the field should contain new cells
 
@@ -151,15 +162,16 @@ class Conway(EuroPiScript):
 
         spawn_level = clamp(base_spawn_level + cv_mod, 0, 1)
         return spawn_level
-
+    
+    @micropython.native
     def reset(self):
         """Clear the whole field and spawn random data in it
         """
-        for i in range(len(self.field)):
-            self.next_field[i] = 0x00
+        # Use experimental bitarray approach for faster clearing
+        set_all_bits(self.next_field, 0)
 
         self.num_alive = 0
-        self.population_deltas = []
+        self.population_deltas.clear()
 
         # fill the field with random cells
         fill_level = self.calculate_spawn_level()
@@ -180,61 +192,81 @@ class Conway(EuroPiScript):
         # Assume the whole field has changed
         self.num_changes = NUM_PIXELS
 
+    @micropython.viper
     def update_field_sums(self):
-        """Recalculate the summed area table
+        """Recalculate the summed area table using optimized viper code
         """
-        for i in range(OLED_HEIGHT):
-            for j in range(OLED_WIDTH):
-                if i == 0 or j == 0:
-                    a = 0
-                else:
-                    a = self.field_sum[i-1][j-1]
+        field_sum_ptr = ptr16(self.field_sum)
+        field_ptr = ptr8(self.field)
+        width = int(OLED_WIDTH)
+        height = int(OLED_WIDTH)
+        
+        # First row and column need special handling
+        # First pixel
+        bit_val = 1 if (field_ptr[0] & 0x80) else 0
+        field_sum_ptr[0] = bit_val
+        
+        # First row
+        for j in range(1, width):
+            byte_idx = j >> 3
+            bit_pos = 7 - (j & 7)
+            bit_val = 1 if (field_ptr[byte_idx] & (1 << bit_pos)) else 0
+            field_sum_ptr[j] = field_sum_ptr[j-1] + bit_val
+        
+        # First column  
+        for i in range(1, height):
+            idx = i * width
+            byte_idx = idx >> 3
+            bit_pos = 7 - (idx & 7)
+            bit_val = 1 if (field_ptr[byte_idx] & (1 << bit_pos)) else 0
+            field_sum_ptr[idx] = field_sum_ptr[idx - width] + bit_val
+        
+        # Rest of the matrix
+        for i in range(1, height):
+            for j in range(1, width):
+                idx = i * width + j
+                byte_idx = idx >> 3
+                bit_pos = 7 - (idx & 7)
+                bit_val = 1 if (field_ptr[byte_idx] & (1 << bit_pos)) else 0
+                field_sum_ptr[idx] = (bit_val + 
+                                    field_sum_ptr[idx - 1] + 
+                                    field_sum_ptr[idx - width] - 
+                                    field_sum_ptr[idx - width - 1])
 
-                if i == 0:
-                    b = 0
-                else:
-                    b = self.field_sum[i-1][j]
-
-                if j == 0:
-                    c = 0
-                else:
-                    c = self.field_sum[i][j-1]
-
-                self.field_sum[i][j] = get_bit(self.field, i * OLED_WIDTH + j) + b + c - a
-
-    def sum_cells(self, start_row, start_col, end_row, end_col):
-        """Get the sum of all cells in a given sub-matrix
-        A B C
-        D E F
-        G H I
-        If we're getting the sum of [[E F] [H I]] we return
-        I - C - G + A
+    @micropython.viper
+    def sum_cells(self, start_row: int, start_col: int, end_row: int, end_col: int) -> int:
+        """Get the sum of all cells in a given sub-matrix using optimized viper code
         """
+        field_sum_ptr = ptr16(self.field_sum)
+        width = int(OLED_WIDTH)
+        
         if start_row == 0 or start_col == 0:
             a = 0
         else:
-            a = self.field_sum[start_row - 1][start_col - 1]
+            a = field_sum_ptr[(start_row - 1) * width + (start_col - 1)]
 
         if start_row == 0:
             c = 0
         else:
-            c = self.field_sum[start_row - 1][end_col]
+            c = field_sum_ptr[(start_row - 1) * width + end_col]
 
         if start_col == 0:
             g = 0
         else:
-            g = self.field_sum[end_row][start_col - 1]
+            g = field_sum_ptr[end_row * width + (start_col - 1)]
 
-        i = self.field_sum[end_row][end_col]
+        i = field_sum_ptr[end_row * width + end_col]
 
         return i - c - g + a
 
+    @micropython.native
     def draw(self):
         """Show the current playing field on the OLED
         """
         oled.blit(self.frame, 0, 0)
         oled.show()
 
+    @micropython.native
     def tick(self):
         """Calculate the state of the next generation
 
@@ -253,17 +285,24 @@ class Conway(EuroPiScript):
 
         # iterate through every cell, calculating generational changes
         self.update_field_sums()
-        for i in range(OLED_HEIGHT):
+        
+        # Use local variables for faster access
+        field = self.field
+        next_field = self.next_field
+        width = OLED_WIDTH
+        height = OLED_HEIGHT
+        
+        for i in range(height):
             top = max(0, i-1)
-            bottom = min(OLED_HEIGHT-1, i+1)
+            bottom = min(height-1, i+1)
 
-            for j in range(OLED_WIDTH):
+            for j in range(width):
                 left = max(0, j-1)
-                right = min(OLED_WIDTH-1, j+1)
+                right = min(width-1, j+1)
 
-                bit_index = i * OLED_WIDTH + j
+                bit_index = i * width + j
 
-                cell_present = get_bit(self.field, bit_index)
+                cell_present = get_bit(field, bit_index)
 
                 num_neighbours = self.sum_cells(top, left, bottom, right)
                 if cell_present:
@@ -271,22 +310,20 @@ class Conway(EuroPiScript):
 
                 if cell_present:
                     if num_neighbours == 2 or num_neighbours == 3:  # happy cell, stays alive
-                        set_bit(self.next_field, bit_index, True)
+                        set_bit(next_field, bit_index, True)
                     else:                                           # sad cell, dies
-                        set_bit(self.next_field, bit_index, False)
+                        set_bit(next_field, bit_index, False)
                         self.num_died += 1
                         self.num_alive -= 1
-
                         self.num_changes += 1
                 else:
                     if num_neighbours == 3:                         # baby cell is born!
-                        set_bit(self.next_field, bit_index, True)
+                        set_bit(next_field, bit_index, True)
                         self.num_alive += 1
                         self.num_born += 1
-
                         self.num_changes += 1
                     else:                                           # empty space remains empty
-                        set_bit(self.next_field, bit_index, False)
+                        set_bit(next_field, bit_index, False)
 
         # swap field & next_field so we don't need to copy between arrays
         tmp = self.next_field
@@ -296,8 +333,9 @@ class Conway(EuroPiScript):
         # swap frame and next_frame for rendering
         tmp = self.next_frame
         self.next_frame = self.frame
-        self.frame = tmp
+        self.frame
 
+    @micropython.native
     def check_for_stasis(self):
         """Check the population changes over time to see if we've reached a state of stasis
         """
@@ -309,7 +347,7 @@ class Conway(EuroPiScript):
         if self.num_changes == 0 or self.num_alive == 0:
             return True
 
-        # if the population is oscillating up and down predicatbly, we've probably reached stasis
+        # if the population is oscillating up and down predicatably, we've probably reached stasis
         # check for 2, 3, and 4 step repetitions
         for pattern_length in range(2, 5):
             count = self.MAX_DELTAS // pattern_length
@@ -324,6 +362,7 @@ class Conway(EuroPiScript):
 
         return False
 
+    @micropython.native
     def main(self):
         """The main loop for the program
 
