@@ -54,7 +54,7 @@ class Life(BaseAutomata):
     
     def __init__(self, width, height, current_food_value, current_tick_limit):
         super().__init__(width, height, current_food_value, current_tick_limit)
-        self.name = "Game Of Life"
+        self.name = "Life"
         self.stasis_max_pop_delta = 16
         self.min_stasis_pattern_length = 2
         self.max_stasis_pattern_length = 6

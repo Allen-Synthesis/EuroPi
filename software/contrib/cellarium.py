@@ -98,6 +98,9 @@ class Cellarium(EuroPiScript):
     MODES_AIN = OrderedDict(((n, i) for i, n in enumerate(('OFF','FEED','TICK'))))
     MODES_CVRATIO = OrderedDict(((n, v) for n, v in (('1/1',1),('1/2',2),('1/4',4),('1/8',8),('1/16',16))))
     MODES_STASIS = OrderedDict(((n, i) for i, n in enumerate(('FEED','RESET','OFF'))))
+    
+    # Minimum time between state saves in milliseconds (5 seconds)
+    SAVE_THROTTLE_MS = 5000
 
     def __init__(self):
         self.width = W
@@ -110,6 +113,8 @@ class Cellarium(EuroPiScript):
         self._buf_lock = _thread.allocate_lock()
         self._display_ready = True
         self._display_request = False
+        # State saving
+        self._last_save = ticks_ms()
         # State
         self.num_alive = 0
         self.num_born = 0
@@ -136,8 +141,19 @@ class Cellarium(EuroPiScript):
         self._display_thread_started = False
         # automata support
         self.automata_names = get_automata_names()
-        self.automata_idx = 0
-        self.current_automata = get_automata_by_index(self.automata_idx)(W, H, self.food_value, self.tick_limit)
+        # Load last used automaton from state, or use default
+        saved_state = self.load_state_json()
+        self.automata_idx = saved_state.get("last_automaton", 0)
+        if self.automata_idx >= len(self.automata_names):
+            self.automata_idx = 0
+        
+        automaton_class = get_automata_by_index(self.automata_idx)
+        if not automaton_class:
+            # Fall back to first automaton if there's an error
+            self.automata_idx = 0
+            automaton_class = get_automata_by_index(0)
+        
+        self.current_automata = automaton_class(W, H, self.food_value, self.tick_limit)
         # INIT
         turn_off_all_cvs()
         oled.fill(0)
@@ -172,6 +188,12 @@ class Cellarium(EuroPiScript):
                 show_settings = True
             elif b2_mode == 'AUTOMATA':
                 self.automata_idx = (self.automata_idx + 1) % len(self.automata_names)
+                now = ticks_ms()
+                # Only save state if enough time has passed since last save
+                if ticks_diff(now, self._last_save) >= self.SAVE_THROTTLE_MS:
+                    self.save_state_json({"last_automaton": self.automata_idx})
+                    self._last_save = now
+                
                 with self._buf_lock:
                     gc.collect()
                     #create new automata
@@ -316,7 +338,7 @@ class Cellarium(EuroPiScript):
                     cv6.on()
                 with self._buf_lock:
                     # Get simulation metrics
-                packed = int(automata.simulate_generation(self.sim_current, self.sim_next))
+                    packed = int(automata.simulate_generation(self.sim_current, self.sim_next))
                 if self.cv_update_req:
                     cv6.off()
                 

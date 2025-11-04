@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright 2025 Allen Synthesis
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import OrderedDict
+from europi_log import log_warning
+
 """Registry system for cellular automata implementations in Cellarium.
 
 Provides a central registration and lookup system for all available
@@ -26,52 +28,40 @@ cellular automata simulations. Supports:
 @year 2025
 """
 
-# Local imports - automata implementations
-from contrib.cellarium_docs.automata.life import Life
-from contrib.cellarium_docs.automata.brians_brain import BriansBrain
-from contrib.cellarium_docs.automata.droplets import Droplets
-from contrib.cellarium_docs.automata.langtons_ant import LangtonsAnt
-from contrib.cellarium_docs.automata.rule30 import Rule30
-from contrib.cellarium_docs.automata.rule90 import Rule90
-from contrib.cellarium_docs.automata.seeds import Seeds
+# Dictionary mapping display names to fully qualified class paths
+CELLARIUM_AUTOMATA = OrderedDict([
+    ["Life",              "contrib.cellarium_docs.automata.life.Life"],
+    ["Brian's Brain",     "contrib.cellarium_docs.automata.brians_brain.BriansBrain"],
+    ["Droplets",          "contrib.cellarium_docs.automata.droplets.Droplets"],
+    ["Seeds",             "contrib.cellarium_docs.automata.seeds.Seeds"],
+    ["Langton's Ant",     "contrib.cellarium_docs.automata.langtons_ant.LangtonsAnt"],
+    ["Rule 30",           "contrib.cellarium_docs.automata.rule30.Rule30"],
+    ["Rule 90",           "contrib.cellarium_docs.automata.rule90.Rule90"],
+])
 
-# Order of list determines order of automata in selection menus
-automata_list = [
-    Life,
-    BriansBrain,
-    Droplets,
-    Seeds,
-    LangtonsAnt,
-    Rule30,
-    Rule90
-    # Add more automata classes here
-]
-
-# Dictionary for easy lookup by name
-automata_dict = {}
+def get_class_for_name(automaton_class_name: str) -> type:
+    """Get the automaton class by its fully qualified name.
+    
+    Args:
+        automaton_class_name: Fully qualified class name (e.g. "contrib.cellarium_docs.automata.life.Life")
+    
+    Returns:
+        The automaton class if found and valid, None otherwise
+    """
+    try:
+        module, clazz = automaton_class_name.rsplit(".", 1)
+        return getattr(__import__(module, None, None, [None]), clazz)
+    except Exception as e:
+        log_warning(f"Warning: Invalid automaton class name: {automaton_class_name}\n  caused by: {e}", "cellarium")
+        return None
 
 def get_automata_by_index(index):
     """Get automaton class by index"""
-    if 0 <= index < len(automata_list):
-        return automata_list[index]
-    return automata_list[0]  # Default to first automaton
+    if 0 <= index < len(CELLARIUM_AUTOMATA):
+        class_path = list(CELLARIUM_AUTOMATA.values())[index]
+        return get_class_for_name(class_path)
+    return get_class_for_name(list(CELLARIUM_AUTOMATA.values())[0])  # Default to first automaton
 
 def get_automata_names():
-    """Get list of automaton names"""
-    names = []
-    for automaton in automata_list:
-        if hasattr(automaton, 'name'):
-            names.append(automaton.name)
-        else:
-            names.append(automaton.__name__)
-    return names
-
-def initialize_registry():
-    """Initialize the automata dictionary"""
-    global automata_dict
-    for automaton in automata_list:
-        name = automaton.name if hasattr(automaton, 'name') else automaton.__name__
-        automata_dict[name] = automaton
-
-# Initialize on import
-initialize_registry()
+    """Get list of automaton display names"""
+    return list(CELLARIUM_AUTOMATA.keys())

@@ -1,43 +1,11 @@
-#!/usr/bin/env python3
-# Copyright 2025 Allen Synthesis
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""Base class for cellular automata implementations in the Cellarium framework.
-
-Provides foundational functionality and common features used by all cellular automata:
-- Input and output handling
-- Common utility methods
-
-@author Unknown
-@year 2025
-"""
-
-# Standard library imports
-import math
-from random import randint
-
-# MicroPython imports
-import micropython
-
-# EuroPi imports
 from europi import *
 from europi_script import EuroPiScript
+import math
 
-# Constants
+# Common re-used constants
 POPCOUNT = bytes([bin(i).count("1") for i in range(256)])
 LOG2 = math.log(2)
-EPSILON = 1e-10
+EPSILON = 1e-10    
 
 class BaseAutomata(EuroPiScript):
     def __init__(self, width, height, current_food_value, current_tick_limit):
@@ -113,11 +81,8 @@ class BaseAutomata(EuroPiScript):
             # Compare first half with second half of the pattern
             pattern_matches = True
             for pattern_length in range(min_pattern_length, max_pattern_length):
-                for i in range(pattern_length):
-                    if recent[i] != recent[i + pattern_length]:
-                        pattern_matches = False
-                        break
-                if not pattern_matches:
+                if recent[i] != recent[i + pattern_length]:
+                    pattern_matches = False
                     break
             
             if pattern_matches:
