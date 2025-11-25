@@ -126,6 +126,7 @@ else:
 if europi_config.PICO_MODEL == MODEL_PICO_W or europi_config.PICO_MODEL == MODEL_PICO_2W:
     try:
         from experimental.wifi import WifiConnection, WifiError
+
         oled.centre_text(
             f"""WiFi connecting
 {experimental_config.WIFI_SSID}
