@@ -1627,7 +1627,12 @@ class PamsWorkout2(EuroPiScript):
                 ssoled.notify_user_interaction()
 
             # only re-render the UI if necessary
-            if self.main_menu.ui_dirty or self.ui_dirty:
+            if self.ui_dirty and self.clock.bpm.display_override and self.main_menu.active_item == self.clock.bpm:
+                # re-draw if the external BPM needs updating, but don't suppress the screensaver
+                ssoled.fill(0)
+                self.main_menu.draw(ssoled)
+                self.ui_dirty = False
+            elif self.main_menu.ui_dirty or self.ui_dirty:
                 ssoled.notify_user_interaction()
                 ssoled.fill(0)
                 self.main_menu.draw(ssoled)
