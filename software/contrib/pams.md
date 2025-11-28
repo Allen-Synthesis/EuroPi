@@ -106,6 +106,9 @@ The submenu for the main clock has the following options:
   - `Trigger`: the clock will toggle between the running & stopped states on a rising edge
   - `Reset`: the clock will not change, but all waveforms & euclidean patterns will reset to the
     beginning
+  - `Ext. Clk`: the clock's BPM is dynamically calculated based on the input square wave. The input
+    clock is synchronized to the `x1` outputs. Rapidly changing the external clock rate may result
+    in synchronization issues.
 - `Stop-Rst` -- Stop & Reset: if true, all waves & euclidean patterns will reset when the clock
   starts. Otherwise they will continue from where they stopped
 
