@@ -457,7 +457,7 @@ class MasterClock:
     MIN_BPM = 1
 
     ## The absolute fastest the clock can go
-    MAX_BPM = 240
+    MAX_BPM = 300
 
     def __init__(self, bpm):
         """Create the main clock to run at a given bpm
