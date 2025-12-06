@@ -255,8 +255,19 @@ class OpenSoundServer:
         while True:
             try:
                 (data, connection) = self.recv_socket.recvfrom(1024)
-                packet = OpenSoundPacket(data)
-                self.recv_callback(connection=connection, data=packet)
+                address_end = data.index(b"\0", 1)
+                address = data[0:address_end].decode("utf-8")
+                if address == "#bundle":
+                    data = data[address_end+9:] # position to 1st bundle length
+                    while len(data) > 0 :
+                        elem_length = int.from_bytes(data[0:4], "big")
+                        elem = data[4:4+elem_length]
+                        packet = OpenSoundPacket(elem)
+                        self.recv_callback(connection=connection, data=packet)
+                        data = data[4+elem_length:]
+                else :
+                    packet = OpenSoundPacket(data)
+                    self.recv_callback(connection=connection, data=packet)
             except ValueError as err:
                 log_warning(f"Failed to process packet: {err}", "osc")
                 break
