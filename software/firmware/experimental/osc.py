@@ -278,10 +278,6 @@ class OpenSoundServer:
     def elements(self):
         return self._elements
 
-    @property
-    def timestamp(self):
-        return self._timestamp
-
     def receive_data(self):
         """Check if we have any new data to process, invoke data_handler as needed"""
         while True:
