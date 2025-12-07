@@ -50,6 +50,7 @@ class MusicThing8muToEuroPi:
         controls: dict[int, int],
         scale: float = 1.0,
         debug: bool = False,
+        use_bundle: bool = False,
     ):
         """
         Create the interface between 8mu and EuroPi
@@ -60,6 +61,7 @@ class MusicThing8muToEuroPi:
         @param europi_namespace  The OSC namespace that the destination EuroPi is using
         @param controls  A dict that maps MIDI controls to CV1-6
         @param debug  Enable additional debugging output
+        @param use_bundle  Enable sending data as an OSC Bundle instead of individual packets
 
         @exception ValueError if port is out of range, or IP address is invalid
         @exception FileNotFoundError if the 8mu was not found in the MIDI inputs
@@ -78,6 +80,7 @@ class MusicThing8muToEuroPi:
 
         self.scale = scale
         self.controls = controls
+        self.use_bundle = use_bundle
 
         self.midi_readings_lock = threading.Lock()
         self.midi_readings = {}
@@ -158,18 +161,28 @@ class MusicThing8muToEuroPi:
                 packets.append(self.encode_packet(address, self.midi_readings[address]))
             self.midi_readings_lock.release()
 
-            # bundle header + all-zero timestamp
-            bundle = "#bundle\0\0\0\0\0\0\0\0\0".encode("utf-8")
-            for p in packets:
-                bundle += len(p).to_bytes(length=4, byteorder="big")
-                bundle += p
+            if self.use_bundle:
+                # bundle header + all-zero timestamp
+                bundle = "#bundle\0\0\0\0\0\0\0\0\0".encode("utf-8")
+                for p in packets:
+                    bundle += len(p).to_bytes(length=4, byteorder="big")
+                    bundle += p
 
-            try:
-                if self.debug:
-                    print(f"Sending bundle {bundle}")
-                self.osc_socket.sendto(bundle, (self.europi_ip, self.osc_port))
-            except Exception as err:
-                print(err)
+                try:
+                    if self.debug:
+                        print(f"Sending bundle {bundle}")
+                    self.osc_socket.sendto(bundle, (self.europi_ip, self.osc_port))
+                except Exception as err:
+                    print(err)
+            else:
+                for p in packets:
+                    try:
+                        if self.debug:
+                            print(f"Sending packet {p}")
+                        self.osc_socket.sendto(p,  (self.europi_ip, self.osc_port))
+                    except Exception as err:
+                        print(err)
+
 
 
 def main():
@@ -204,6 +217,13 @@ def main():
         type=str,
         default="192.168.4.1",
         help="EuroPi's IP address. Default: 192.168.4.1",
+    )
+    parser.add_argument(
+        "-b",
+        "--bundle",
+        dest="bundle",
+        action="store_true",
+        help="Send data as a single OSC bundle instead of individual packets",
     )
     parser.add_argument(
         "-s",
@@ -296,6 +316,7 @@ def main():
         },
         scale=args.scale,
         debug=args.debug,
+        use_bundle=args.bundle,
     )
 
     print("Press CTRL+C to terminate")
