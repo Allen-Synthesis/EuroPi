@@ -250,32 +250,32 @@ class OpenSoundServer:
         self.recv_callback = wrapper
         return wrapper
 
-    def parse_bundle(self, data, connection):
+    def parse_bundle(self, data, packets):
         address_end = data.index(b"\0", 1)
-        data = data[address_end+9:] # position to 1st element length
-        while len(data) > 0 :
-            elem_length = int.from_bytes(data[0:4], "big")
-            elem = data[4:4+elem_length]
-            elem_address_end = elem.index(b"\0", 1)
-            elem_address = elem[0:elem_address_end].decode("utf-8")
-            if elem_address == "#bundle":
-                self.parse_bundle(elem, connection)
-            else: 
-                packet = OpenSoundPacket(elem)
-                self.recv_callback(connection=connection, data=packet)
-            data = data[4+elem_length:]
+        address = data[0:address_end].decode("utf-8")
+        if address == "#bundle":
+            data = data[address_end+9:] # position to 1st element length
+            while len(data) > 0 :
+                elem_length = int.from_bytes(data[0:4], "big")
+                elem = data[4:4+elem_length]
+                elem_address_end = elem.index(b"\0", 1)
+                elem_address = elem[0:elem_address_end].decode("utf-8")
+                if elem_address == "#bundle":
+                    self.parse_bundle(elem, packets)
+                else:
+                    packets.append(OpenSoundPacket(elem))
+                data = data[4+elem_length:]
+        else:
+            packets.append(OpenSoundPacket(data))
 
     def receive_data(self):
         """Check if we have any new data to process, invoke data_handler as needed"""
         while True:
             try:
                 (data, connection) = self.recv_socket.recvfrom(1024)
-                address_end = data.index(b"\0", 1)
-                address = data[0:address_end].decode("utf-8")
-                if address == "#bundle":
-                    self.parse_bundle(data, connection)
-                else :
-                    packet = OpenSoundPacket(data)
+                packets = []         
+                self.parse_bundle(data, packets)
+                for packet in packets:
                     self.recv_callback(connection=connection, data=packet)
             except ValueError as err:
                 log_warning(f"Failed to process packet: {err}", "osc")
