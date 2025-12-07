@@ -92,7 +92,7 @@ class OpenSoundPacket:
             t = chr(data[i])
             if t == "i":
                 types.append(int)
-                n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 1]
+                n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 3]
                 self.values.append(n)
                 d += 4
             elif t == "f":
@@ -112,7 +112,7 @@ class OpenSoundPacket:
             elif t == "b":
                 # blob; int32 -> n, followed by n bytes
                 types.append(bytearray)
-                n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 1]
+                n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 3]
                 d += 4
                 b = []
                 for i in range(n):
@@ -124,7 +124,18 @@ class OpenSoundPacket:
                 # zero-byte boolean; skip
                 pass
             elif t == "t":
-                # 8-byte timestamp; skip
+                # 8-byte timestamp; store as an 8-byte big-endian integer
+                n = (
+                    (data[d] << 56) |
+                    (data[d + 1] << 48) |
+                    (data[d + 2] << 40) |
+                    (data[d + 3] << 32) |
+                    (data[d + 4] << 24) |
+                    (data[d + 5] << 16) |
+                    (data[d + 6] << 8) |
+                    data[d + 7]
+                )
+                self.values.append(n)
                 d += 8
             elif t == "h":
                 # 64-bit signed integer
@@ -176,6 +187,75 @@ class OpenSoundPacket:
     def address(self) -> str:
         """This packet's address"""
         return self._address
+
+
+class OpenSoundBundle(OpenSoundPacket):
+    """
+    An OSC Bundle, containing multiple messages.
+
+    The messages are stored as a list of OpenSoundPacket instances.
+
+    :property elements:  The collection of messages in this bundle
+
+    :property timestamp:  The OSC time tag included in this bundle. Represented as an 8-byte, big-endian integer
+
+    :param data:  The raw byte data read from the UDP socket. The byte data consists
+        of the following data:
+        #. The string `#bundle`
+
+        #. OSC time tag (8 bytes)
+
+        #. Messages
+
+            #. The size of the first element (4 bytes)
+
+            #. The first element's contents (see OpenSoundPacket)
+
+            #. The size of the second element (4 bytes)
+
+            #. The second element's contents
+
+            #. And so on...
+
+    :raises: ValueError if the data does not begin with the string "#bundle"
+    """
+
+    def __init__(self, data):
+        header_end = data.index(b"\0", 1)
+        header = data[0:header_end].decode("utf-8")
+        if header != "#bundle":
+            raise ValueError("Bundle does not start with the string '#bundle'")
+
+        # get the timestamp
+        d = header_end + 1
+        self._timestamp = (
+            (data[d] << 56) |
+            (data[d + 1] << 48) |
+            (data[d + 2] << 40) |
+            (data[d + 3] << 32) |
+            (data[d + 4] << 24) |
+            (data[d + 5] << 16) |
+            (data[d + 6] << 8) |
+            data[d + 7]
+        )
+        d += 8
+
+        self._elements = []
+        while d < len(data):
+            element_length = (
+                (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 3]
+            )
+            self._elements.append(OpenSoundPacket(data[d + 5 : d + 5 + element_length]))
+
+            d += (5 + element_length)
+
+    @property
+    def elements(self):
+        return self._elements
+
+    @property
+    def timestamp(self):
+        return self._timestamp
 
 
 class OpenSoundServer:
@@ -255,7 +335,11 @@ class OpenSoundServer:
         while True:
             try:
                 (data, connection) = self.recv_socket.recvfrom(1024)
-                packet = OpenSoundPacket(data)
+
+                if len(data) > 8 and data[0:7].decode("utf-8") == "#bundle":
+                    packet = OpenSoundBundle(data)
+                else:
+                    packet = OpenSoundPacket(data)
                 self.recv_callback(connection=connection, data=packet)
             except ValueError as err:
                 log_warning(f"Failed to process packet: {err}", "osc")
