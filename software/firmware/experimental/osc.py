@@ -269,7 +269,7 @@ class OpenSoundServer:
                 )
                 if len(data) >= 4 + element_length:
                     self.parse_packets(data[d + 4 : d + 4 + element_length], result)
-                d += (5 + element_length)
+                d += 5 + element_length
         else:
             # we're processing a normal packet; add it to the result
             result.append(OpenSoundPacket(data))
