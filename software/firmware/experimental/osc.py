@@ -88,71 +88,76 @@ class OpenSoundPacket:
         data_start = align_next_word(data_start)
         i = type_start + 1
         d = data_start
-        while data[i] != 0x00:
-            t = chr(data[i])
-            if t == "i":
-                types.append(int)
-                n = int.from_bytes(data[d : d + 4], "big")
-                self.values.append(n)
-                d += 4
-            elif t == "f":
-                types.append(float)
-                n = struct.unpack(">f", data[d : d + 4])[0]
-                self.values.append(n)
-                d += 4
-            elif t == "s" or t == "S":  # include the alternate "S" here
-                types.append(str)
-                s = ""
-                string_end = data.index(b"\0", d)
-                for c in range(d, string_end):
-                    s += chr(data[c])
-                self.values.append(s)
-                d = string_end
-                d = align_next_word(d)
-            elif t == "b":
-                # blob; int32 -> n, followed by n bytes
-                types.append(bytearray)
-                n = int.from_bytes(data[d : d + 4], "big")
-                d += 4
-                b = []
-                for i in range(n):
-                    b.append(data[d + i])
-                d += n
-                d = align_next_word(d)
-                self.values.append(bytearray(b))
-            elif t == "T" or t == "F":
-                # zero-byte boolean; skip
-                pass
-            elif t == "t":
-                # 8-byte timestamp; skip
-                d += 8
-            elif t == "h":
-                # 64-bit signed integer
-                # treat as a normal int
-                types.append(int)
-                n = int.from_bytes(data[d : d + 8], "big")
-                self.values.append(n)
-                d += 8
-            elif t == "c":
-                # a single character; treat as a string
-                types.append(str)
-                self.values.append(
-                    data[d + 3].decode()  # data is in the 4th byte; padded with leading zeros
-                )
-                d += 4
-            elif t == "m":
-                # 4-byte midi; skip
-                d += 4
-            elif t == "N":
-                # nil; skip
-                pass
-            elif t == "I":
-                # infinity; skip
-                pass
-            else:
-                log_warning(f"Unsupported type {t}", "osc")
+        try:
+            while i < len(data) and data[i] != 0x00:
+                t = chr(data[i])
+                if t == "i":
+                    types.append(int)
+                    n = int.from_bytes(data[d : d + 4], "big")
+                    self.values.append(n)
+                    d += 4
+                elif t == "f":
+                    types.append(float)
+                    n = struct.unpack(">f", data[d : d + 4])[0]
+                    self.values.append(n)
+                    d += 4
+                elif t == "s" or t == "S":  # include the alternate "S" here
+                    types.append(str)
+                    s = ""
+                    string_end = data.index(b"\0", d)
+                    for c in range(d, string_end):
+                        s += chr(data[c])
+                    self.values.append(s)
+                    d = string_end
+                    d = align_next_word(d)
+                elif t == "b":
+                    # blob; int32 -> n, followed by n bytes
+                    types.append(bytearray)
+                    n = int.from_bytes(data[d : d + 4], "big")
+                    d += 4
+                    b = []
+                    for j in range(n):
+                        b.append(data[d + j])
+                    d += n
+                    d = align_next_word(d)
+                    self.values.append(bytearray(b))
+                elif t == "T" or t == "F":
+                    # zero-byte boolean; skip
+                    pass
+                elif t == "t":
+                    # 8-byte timestamp; skip
+                    d += 8
+                elif t == "h":
+                    # 64-bit signed integer
+                    # treat as a normal int
+                    types.append(int)
+                    n = int.from_bytes(data[d : d + 8], "big")
+                    self.values.append(n)
+                    d += 8
+                elif t == "c":
+                    # a single character; treat as a string
+                    types.append(str)
+                    self.values.append(
+                        data[d + 3].decode()  # data is in the 4th byte; padded with leading zeros
+                    )
+                    d += 4
+                elif t == "m":
+                    # 4-byte midi; skip
+                    d += 4
+                elif t == "N":
+                    # nil; skip
+                    pass
+                elif t == "I":
+                    # infinity; skip
+                    pass
+                else:
+                    log_warning(f"Unsupported type {t}", "osc")
 
-            i += 1
+                i += 1
+        except IndexError:
+            # If we fall off of the array for any reason, just keep what we have so far.
+            # This could happen if the data got corrupted in transport.
+            pass
 
     @property
     def values(self) -> list[int | float | str | bytearray]:
