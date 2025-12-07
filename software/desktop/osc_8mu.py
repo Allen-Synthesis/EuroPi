@@ -184,7 +184,6 @@ class MusicThing8muToEuroPi:
                         print(err)
 
 
-
 def main():
     parser = argparse.ArgumentParser(
         prog="osc_8mu",
