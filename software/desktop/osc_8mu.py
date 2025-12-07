@@ -159,7 +159,7 @@ class MusicThing8muToEuroPi:
             self.midi_readings_lock.release()
 
             # bundle header + all-zero timestamp
-            bundle = "#bundle\0\0\0\0\0\0\0\0\0".encode('utf-8')
+            bundle = "#bundle\0\0\0\0\0\0\0\0\0".encode("utf-8")
             for p in packets:
                 bundle += len(p).to_bytes(length=4, byteorder="big")
                 bundle += p

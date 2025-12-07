@@ -92,7 +92,7 @@ class OpenSoundPacket:
             t = chr(data[i])
             if t == "i":
                 types.append(int)
-                n = int.from_bytes(data[d:d + 4], "big")
+                n = int.from_bytes(data[d : d + 4], "big")
                 self.values.append(n)
                 d += 4
             elif t == "f":
@@ -112,7 +112,7 @@ class OpenSoundPacket:
             elif t == "b":
                 # blob; int32 -> n, followed by n bytes
                 types.append(bytearray)
-                n = int.from_bytes(data[d:d + 4], "big")
+                n = int.from_bytes(data[d : d + 4], "big")
                 d += 4
                 b = []
                 for i in range(n):
@@ -130,7 +130,7 @@ class OpenSoundPacket:
                 # 64-bit signed integer
                 # treat as a normal int
                 types.append(int)
-                n = int.from_bytes(data[d:d + 8], "big")
+                n = int.from_bytes(data[d : d + 8], "big")
                 self.values.append(n)
                 d += 8
             elif t == "c":
