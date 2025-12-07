@@ -179,7 +179,7 @@ class MusicThing8muToEuroPi:
                     try:
                         if self.debug:
                             print(f"Sending packet {p}")
-                        self.osc_socket.sendto(p,  (self.europi_ip, self.osc_port))
+                        self.osc_socket.sendto(p, (self.europi_ip, self.osc_port))
                     except Exception as err:
                         print(err)
 
