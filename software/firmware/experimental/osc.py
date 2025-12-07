@@ -177,6 +177,9 @@ class OpenSoundPacket:
         """This packet's address"""
         return self._address
 
+    def __str__(self):
+        return f"{self.address}: {self.values}"
+
 
 class OpenSoundServer:
     """
@@ -262,17 +265,23 @@ class OpenSoundServer:
             # The first 8 bytes after the header are the timestamp, which we don't support
             # so skip that and go straight to the payload
             # ['#', 'b', 'u', 'n', 'd', l', 'e', '\0', t0, t1, t2, t3, t4, t5, t6, t7]
-            d = 16
-            while d < len(data):
-                element_length = (
-                    (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 3]
-                )
-                if len(data) >= 4 + element_length:
-                    self.parse_packets(data[d + 4 : d + 4 + element_length], result)
-                d += 5 + element_length
+            try:
+                data = data[16:]
+                while len(data) > 0:
+                    element_length = int.from_bytes(data[0:4], "big")
+                    data = data[4:]
+                    self.parse_packets(data, result)
+                    data = data[element_length:]
+            except IndexError as err:
+                import sys
+                sys.print_exception(err)
+            except Exception as err:
+                import sys
+                sys.print_exception(err)
         else:
             # we're processing a normal packet; add it to the result
-            result.append(OpenSoundPacket(data))
+            packet = OpenSoundPacket(data)
+            result.append(packet)
 
     @property
     def elements(self):
