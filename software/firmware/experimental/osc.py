@@ -273,11 +273,9 @@ class OpenSoundServer:
                     self.parse_packets(data, result)
                     data = data[element_length:]
             except IndexError as err:
-                import sys
-                sys.print_exception(err)
-            except Exception as err:
-                import sys
-                sys.print_exception(err)
+                # either the length got corrupted, or the packet was partially dropped
+                # either way, just process what we can and move on
+                pass
         else:
             # we're processing a normal packet; add it to the result
             packet = OpenSoundPacket(data)
