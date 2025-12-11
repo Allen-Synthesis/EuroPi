@@ -1,3 +1,6 @@
+# EuroPi (through-hole)
+This directory contains the build instructions and production files for the 'original' EuroPi, which is the entirely through-hole build. This is the build the majority of users have.
+
 # PCB Files
 
 The PCB files are in two file types:
