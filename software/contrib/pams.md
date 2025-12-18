@@ -97,7 +97,7 @@ The vizualization does not have any submenu items and simply displays the voltag
 
 The main clock menu has the following options:
 
-- `BPM` -- the main BPM for the clock. Must be in the range `[1, 240]`.
+- `BPM` -- the main BPM for the clock. Must be in the range `[1, 300]`.
 
 The submenu for the main clock has the following options:
 
@@ -106,8 +106,23 @@ The submenu for the main clock has the following options:
   - `Trigger`: the clock will toggle between the running & stopped states on a rising edge
   - `Reset`: the clock will not change, but all waveforms & euclidean patterns will reset to the
     beginning
+  - `Ext. Clk`: the clock's BPM is dynamically calculated based on the input square wave. The input
+    clock is synchronized to the `x1` outputs.
 - `Stop-Rst` -- Stop & Reset: if true, all waves & euclidean patterns will reset when the clock
   starts. Otherwise they will continue from where they stopped
+
+### External Clocking Limitations
+
+Pam's can only be clocked within the `BPM` range described above. Any external clock signal that
+is slower than the minimum BPM (1) or faster than the maximum BPM (300 at the time of writing) will
+be clamped within this range.
+
+Pam's internal clock will be hard-sync'd with the external signal on the external signal's rising
+edge, so even at out-of-range speeds the system will make a best-effort to stay synchronized.
+
+Clocking Pam's with a highly-variable clock source may result in synchronization issues. Because of
+the hard-syncing that occurs, any `x1` outputs will remain mostly synchronized, but other outputs
+may become desynchronized if the external clock speed varies too much.
 
 ## CV Channel Options
 
@@ -375,6 +390,7 @@ least 10ms. The table below shows approximate trigger times for some common BPM 
 
 | BPM | Trigger length (ms, approx.) | PPQN pulses |
 |-----|------------------------------|-------------|
+| 300 | 12.5                         | 3           |
 | 240 | 10.4                         | 2           |
 | 120 | 10.4                         | 1           |
 | 90  | 13.9                         | 1           |
