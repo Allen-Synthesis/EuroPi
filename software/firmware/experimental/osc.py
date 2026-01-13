@@ -88,80 +88,76 @@ class OpenSoundPacket:
         data_start = align_next_word(data_start)
         i = type_start + 1
         d = data_start
-        while data[i] != 0x00:
-            t = chr(data[i])
-            if t == "i":
-                types.append(int)
-                n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 1]
-                self.values.append(n)
-                d += 4
-            elif t == "f":
-                types.append(float)
-                n = struct.unpack(">f", data[d : d + 4])[0]
-                self.values.append(n)
-                d += 4
-            elif t == "s" or t == "S":  # include the alternate "S" here
-                types.append(str)
-                s = ""
-                string_end = data.index(b"\0", d)
-                for c in range(d, string_end):
-                    s += chr(data[c])
-                self.values.append(s)
-                d = string_end
-                d = align_next_word(d)
-            elif t == "b":
-                # blob; int32 -> n, followed by n bytes
-                types.append(bytearray)
-                n = (data[d] << 24) | (data[d + 1] << 16) | (data[d + 2] << 8) | data[d + 1]
-                d += 4
-                b = []
-                for i in range(n):
-                    b.append(data[d + i])
-                d += n
-                d = align_next_word(d)
-                self.values.append(bytearray(b))
-            elif t == "T" or t == "F":
-                # zero-byte boolean; skip
-                pass
-            elif t == "t":
-                # 8-byte timestamp; skip
-                d += 8
-            elif t == "h":
-                # 64-bit signed integer
-                # treat as a normal int
-                types.append(int)
-                n = (
-                    (data[d] << 56)
-                    | (data[d + 1] << 48)
-                    | (data[d + 2] << 40)
-                    | (data[d + 3] << 32)
-                    | (data[d + 4] << 24)
-                    | (data[d + 5] << 16)
-                    | (data[d + 6] << 8)
-                    | data[d + 7]
-                )
-                self.values.append(n)
-                d += 8
-            elif t == "c":
-                # a single character; treat as a string
-                types.append(str)
-                self.values.append(
-                    data[d + 3].decode()  # data is in the 4th byte; padded with leading zeros
-                )
-                d += 4
-            elif t == "m":
-                # 4-byte midi; skip
-                d += 4
-            elif t == "N":
-                # nil; skip
-                pass
-            elif t == "I":
-                # infinity; skip
-                pass
-            else:
-                log_warning(f"Unsupported type {t}", "osc")
+        try:
+            while i < len(data) and data[i] != 0x00:
+                t = chr(data[i])
+                if t == "i":
+                    types.append(int)
+                    n = int.from_bytes(data[d : d + 4], "big")
+                    self.values.append(n)
+                    d += 4
+                elif t == "f":
+                    types.append(float)
+                    n = struct.unpack(">f", data[d : d + 4])[0]
+                    self.values.append(n)
+                    d += 4
+                elif t == "s" or t == "S":  # include the alternate "S" here
+                    types.append(str)
+                    s = ""
+                    string_end = data.index(b"\0", d)
+                    for c in range(d, string_end):
+                        s += chr(data[c])
+                    self.values.append(s)
+                    d = string_end
+                    d = align_next_word(d)
+                elif t == "b":
+                    # blob; int32 -> n, followed by n bytes
+                    types.append(bytearray)
+                    n = int.from_bytes(data[d : d + 4], "big")
+                    d += 4
+                    b = []
+                    for j in range(n):
+                        b.append(data[d + j])
+                    d += n
+                    d = align_next_word(d)
+                    self.values.append(bytearray(b))
+                elif t == "T" or t == "F":
+                    # zero-byte boolean; skip
+                    pass
+                elif t == "t":
+                    # 8-byte timestamp; skip
+                    d += 8
+                elif t == "h":
+                    # 64-bit signed integer
+                    # treat as a normal int
+                    types.append(int)
+                    n = int.from_bytes(data[d : d + 8], "big")
+                    self.values.append(n)
+                    d += 8
+                elif t == "c":
+                    # a single character; treat as a string
+                    types.append(str)
+                    self.values.append(
+                        data[d + 3].decode()  # data is in the 4th byte; padded with leading zeros
+                    )
+                    d += 4
+                elif t == "m":
+                    # 4-byte midi; skip
+                    d += 4
+                elif t == "N":
+                    # nil; skip
+                    pass
+                elif t == "I":
+                    # infinity; skip
+                    pass
+                else:
+                    log_warning(f"Unsupported type {t}", "osc")
 
-            i += 1
+                i += 1
+        except IndexError:
+            # If we fall off of the array for any reason, just keep what we have so far.
+            # This could happen if the data got corrupted in transport.
+            pass
 
     @property
     def values(self) -> list[int | float | str | bytearray]:
@@ -176,6 +172,9 @@ class OpenSoundPacket:
     def address(self) -> str:
         """This packet's address"""
         return self._address
+
+    def __str__(self):
+        return f"{self.address}: {self.values}"
 
 
 class OpenSoundServer:
@@ -250,13 +249,47 @@ class OpenSoundServer:
         self.recv_callback = wrapper
         return wrapper
 
+    def parse_packets(self, data, result):
+        """
+        Recursively process the raw data, decomposing bundles into an array of packets.
+
+        :param[in] data: The raw byte data received over the socket
+        :param[out] result: An array we can recusively append bundle data to
+        """
+        if len(data) > 8 and data[0:7].decode("utf-8") == "#bundle":
+            # We're processing a bundle
+            # The first 8 bytes after the header are the timestamp, which we don't support
+            # so skip that and go straight to the payload
+            # ['#', 'b', 'u', 'n', 'd', l', 'e', '\0', t0, t1, t2, t3, t4, t5, t6, t7]
+            try:
+                data = data[16:]
+                while len(data) > 0:
+                    element_length = int.from_bytes(data[0:4], "big")
+                    data = data[4:]
+                    self.parse_packets(data, result)
+                    data = data[element_length:]
+            except IndexError as err:
+                # either the length got corrupted, or the packet was partially dropped
+                # either way, just process what we can and move on
+                pass
+        else:
+            # we're processing a normal packet; add it to the result
+            packet = OpenSoundPacket(data)
+            result.append(packet)
+
+    @property
+    def elements(self):
+        return self._elements
+
     def receive_data(self):
         """Check if we have any new data to process, invoke data_handler as needed"""
         while True:
             try:
                 (data, connection) = self.recv_socket.recvfrom(1024)
-                packet = OpenSoundPacket(data)
-                self.recv_callback(connection=connection, data=packet)
+                packets = []
+                self.parse_packets(data, packets)
+                for packet in packets:
+                    self.recv_callback(connection=connection, data=packet)
             except ValueError as err:
                 log_warning(f"Failed to process packet: {err}", "osc")
                 break
