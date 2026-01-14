@@ -20118,6 +20118,19 @@
 			(justify right mirror)
 		)
 	)
+	(gr_text "v1.1"
+		(at 38.25 108.75 0)
+		(layer "B.SilkS")
+		(uuid "bc34bad3-a881-4933-b1fe-c6b9f00b41e9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.2)
+				(bold yes)
+			)
+			(justify mirror)
+		)
+	)
 	(gr_text "Reprogrammable Controller"
 		(at 20.3 83.1 0)
 		(layer "B.SilkS")
