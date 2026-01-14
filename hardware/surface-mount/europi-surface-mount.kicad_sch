@@ -15984,15 +15984,15 @@
 	(symbol
 		(lib_id "Amplifier_Operational:MCP6002-xSN")
 		(at 191.77 177.8 0)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "3fe90f73-27ef-45a0-a469-9d826155d8b5")
 		(property "Reference" "U5"
-			(at 191.77 167.64 0)
+			(at 191.77 187.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -16000,7 +16000,7 @@
 			)
 		)
 		(property "Value" "MCP6002-xSN"
-			(at 191.77 170.18 0)
+			(at 191.77 185.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18417,15 +18417,15 @@
 	(symbol
 		(lib_id "Amplifier_Operational:TL074")
 		(at 156.21 175.26 0)
+		(mirror x)
 		(unit 3)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "da7fb2cd-02a2-456c-872e-f8d2b6586c44")
 		(property "Reference" "U4"
-			(at 156.21 165.1 0)
+			(at 156.21 185.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18433,7 +18433,7 @@
 			)
 		)
 		(property "Value" "TL074"
-			(at 156.21 167.64 0)
+			(at 156.21 182.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18441,7 +18441,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 154.94 172.72 0)
+			(at 154.94 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18450,7 +18450,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl071.pdf"
-			(at 157.48 170.18 0)
+			(at 157.48 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
