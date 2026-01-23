@@ -10343,6 +10343,19 @@
 				)
 			)
 		)
+		(property "LCSC Part" "C5148475"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e75b4afc-4e39-4cb8-9738-859045bc00ad")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/656ed251-e9a3-4f30-bb6f-584ba2a7a886")
 		(sheetname "/")
