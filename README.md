@@ -19,14 +19,14 @@ The EuroPi is a fully user reprogrammable [Eurorack](https://en.wikipedia.org/wi
 * I²C expansion header on the rear for extra sensors or outputs
 
 ## Documentation
-**Hardware**: Details of the hardware can be found at [hardware README](hardware/EuroPi/README.md).
+**Hardware**: Details of the hardware can be found at [hardware README](hardware/README.md).
 
 **Software**: Before using any of the software, follow the instructions in [programming_instructions.md](software/programming_instructions.md) to set up and calibrate your module.
-A list of user contributed scripts and their usage can be found in [contrib/README.md](software/contrib/README.md).
+A list of user contributed scripts (along with descriptions for their usage) can be found in [contrib/README.md](software/contrib/README.md).
 
-The EuroPi firmware API documentation can be found at https://allen-synthesis.github.io/EuroPi/. This documentation will explain all of the available features of the EuroPi firmware API. It also includes some examples of how to use various features of the firmware as well as [interesting_things.md](software/interesting_things.md).
+The EuroPi firmware allows you to interact with the hardware easily using code written in MicroPython. You can read the full list of available functions in the [EuroPi API Documentation](https://allen-synthesis.github.io/EuroPi/), which also includes some examples of some of those functions can be used. Some of the less obvious but potentially useful functions are also explained in more depth in [interesting_things.md](software/interesting_things.md).
 
-If you would like to extend any of the features of the EuroPi software, you can view the firmware source code at [europi.py](software/firmware/europi.py).
+If you would like to extend any of the features of the EuroPi software, you can view the firmware source code at [europi.py](software/firmware/europi.py), and make contributions of your own after reading the [contribution guidelines](contributing.md).
 
 ## Issues
 If you find any bugs, either in the software, the hardware, or the documentation, please create an Issue by clicking the 'Issue' tab along the top.
