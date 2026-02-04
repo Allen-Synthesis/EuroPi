@@ -1,4 +1,4 @@
-[![discord members](https://discord-live-members-count-badge.vercel.app/api/discord-members?guildId=931297838804127794)](https://discord.gg/JaQwtCnBV5) ![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/europi) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Allen-Synthesis/Europi)
+[![discord members](https://discord-live-members-count-badge.vercel.app/api/discord-members?guildId=931297838804127794)](https://discord.gg/JaQwtCnBV5) [![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/europi)](https://www.reddit.com/r/EuroPi/) [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Allen-Synthesis/Europi)](https://github.com/Allen-Synthesis/EuroPi/releases)
 # EuroPi
 The EuroPi is a user reprogrammable [Eurorack](https://en.wikipedia.org/wiki/Eurorack) module developed by [Allen Synthesis](https://www.allensynthesis.co.uk) that uses the [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) to process and produce modular level signals based on code written in [MicroPython](https://micropython.org/). The entire project is open-source.
 
