@@ -22,7 +22,7 @@ If you would like to extend any of the features of the EuroPi software, you can 
 * 1 Digital input for external clocking or gate sources
 * 128x32 OLED Display
 * I²C expansion header on the rear for extra sensors or outputs
-* 
+
 ![github banner](https://user-images.githubusercontent.com/79809962/157898134-44cc0534-ac3b-4051-9773-a3be95ba4602.jpg)
 
 ## License
