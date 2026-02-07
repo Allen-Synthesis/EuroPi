@@ -42,6 +42,5 @@
 
 ## Calibration
 
-NOTE: ADD THIS TO THE TROUBLESHOOTING GUIDE
 | When in the second stage of calibration, my module never reaches 10V, what do I do? | Refer to the [troubleshooting guide](troubleshooting.md) |
 |--|--|
