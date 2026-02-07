@@ -4,7 +4,7 @@ The EuroPi is a user reprogrammable [Eurorack](https://en.wikipedia.org/wiki/Eur
 
 ## Documentation
 ### Hardware
-The hardware source files and documentation (including build guides) can be found in the [hardware overview](hardware/README.md).
+The hardware source files and documentation (including build guides) can be found in the [hardware overview](hardware/README.md), and kits can be bought directly from [Allen Synthesis](https://allensynthesis.square.site/product/europi-panel-pcb/16?cp=true&sa=true&sbp=false&q=false).
 
 ### Software
 Before using any of the software, follow the [programming_instructions](software/programming_instructions.md) to set up and calibrate your module.
