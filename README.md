@@ -26,7 +26,7 @@ If you would like to extend any of the features of the EuroPi software, you can 
 ![github banner](https://user-images.githubusercontent.com/79809962/157898134-44cc0534-ac3b-4051-9773-a3be95ba4602.jpg)
 
 ## License
-This module, and any documentation included in this repository, is entirely "free" software and hardware. The hardware is [certified by the Open Source Hardware Association].(https://certification.oshwa.org/uk000048.html)
+This module, and any documentation included in this repository, is entirely "free" software and hardware. The hardware is [certified by the Open Source Hardware Association](https://certification.oshwa.org/uk000048.html)
 
 * Software: [Apache 2.0](software/LICENSE)
 * Hardware: [CERN OHL-S v2](hardware/LICENSE)
