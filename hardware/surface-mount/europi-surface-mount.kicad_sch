@@ -5514,7 +5514,7 @@
 	)
 	(wire
 		(pts
-			(xy 254 167.64) (xy 254 173.99)
+			(xy 254 166.37) (xy 254 173.99)
 		)
 		(stroke
 			(width 0)
@@ -6071,6 +6071,16 @@
 			(type default)
 		)
 		(uuid "5698a460-6e24-4857-84d8-4a43acd2325d")
+	)
+	(wire
+		(pts
+			(xy 125.73 152.4) (xy 125.73 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "573c5ead-1d60-4757-b749-285a513bf5c1")
 	)
 	(wire
 		(pts
@@ -7424,6 +7434,16 @@
 	)
 	(wire
 		(pts
+			(xy 254 156.21) (xy 254 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4dd4649-c1a7-41e0-ae50-77d9a897e838")
+	)
+	(wire
+		(pts
 			(xy 339.09 110.49) (xy 335.28 110.49)
 		)
 		(stroke
@@ -7884,7 +7904,7 @@
 	)
 	(global_label "AIN_DETECT"
 		(shape input)
-		(at 125.73 162.56 0)
+		(at 125.73 152.4 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7894,7 +7914,7 @@
 		)
 		(uuid "3dd796f1-b426-4edd-a830-26ecb0678cab")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 139.4799 162.56 0)
+			(at 139.4799 152.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8170,7 +8190,7 @@
 	)
 	(global_label "DIN_DETECT"
 		(shape input)
-		(at 254 167.64 0)
+		(at 254 156.21 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8180,7 +8200,7 @@
 		)
 		(uuid "9e5995ce-4f20-46a5-92dc-39146b2b456f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 267.9313 167.64 0)
+			(at 267.9313 156.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15148,6 +15168,74 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 125.73 158.75 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "09dfcc1e-4768-404f-8506-cae3b3872bff")
+		(property "Reference" "R41"
+			(at 127.508 157.5816 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10K"
+			(at 127.508 159.893 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 123.952 158.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 125.73 158.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 125.73 158.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "66cda7ef-d029-44a5-938f-869ff72e3dd7")
+		)
+		(pin "2"
+			(uuid "504a0689-a3e5-4d1d-990b-ef93cf2f6292")
+		)
+		(instances
+			(project "europi-surface-mount"
+				(path "/5701b80f-f006-4814-81c9-0c7f006088a9"
+					(reference "R41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 328.93 189.23 270)
 		(unit 1)
@@ -16869,6 +16957,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part" "C5148475"
+			(at 276.86 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "4c2121e4-d932-4a7b-81bf-01328cefa69c")
 		)
@@ -16992,6 +17089,74 @@
 			(project ""
 				(path "/5701b80f-f006-4814-81c9-0c7f006088a9"
 					(reference "U4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 254 162.56 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6ad3f031-2d25-4485-b769-1959495116ee")
+		(property "Reference" "R42"
+			(at 255.778 161.3916 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10K"
+			(at 255.778 163.703 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 252.222 162.56 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 254 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 254 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "7c444f78-1ad6-4029-bbf1-ab530b846b6d")
+		)
+		(pin "2"
+			(uuid "ac3140d6-4c0d-4cd3-b88c-58ac56b576f7")
+		)
+		(instances
+			(project "europi-surface-mount"
+				(path "/5701b80f-f006-4814-81c9-0c7f006088a9"
+					(reference "R42")
 					(unit 1)
 				)
 			)
