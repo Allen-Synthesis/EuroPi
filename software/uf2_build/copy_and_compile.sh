@@ -5,10 +5,22 @@ echo "Copying EuroPi firmware and scripts to container..."
 mkdir /micropython/ports/rp2/modules/contrib
 mkdir /micropython/ports/rp2/modules/experimental
 mkdir /micropython/ports/rp2/modules/tools
-cp -r europi/software/firmware/*.py /micropython/ports/rp2/modules
-cp -r europi/software/firmware/experimental/*.py /micropython/ports/rp2/modules/experimental
-cp -r europi/software/firmware/tools/*.py /micropython/ports/rp2/modules/tools
-cp -r europi/software/contrib/*.py /micropython/ports/rp2/modules/contrib
+for pyfile in $(ls europi/software/firmware/*.py); do
+    f=$(basename $pyfile)
+    python3 /strip_python.py "$pyfile" "/micropython/ports/rp2/modules/$f"
+done
+for pyfile in $(ls europi/software/firmware/experimental/*.py); do
+    f=$(basename $pyfile)
+    python3 /strip_python.py "$pyfile" "/micropython/ports/rp2/modules/experimental/$f"
+done
+for pyfile in $(ls europi/software/firmware/tools/*.py); do
+    f=$(basename $pyfile)
+    python3 /strip_python.py "$pyfile" "/micropython/ports/rp2/modules/tools/$f"
+done
+for pyfile in $(ls europi/software/contrib/*.py); do
+    f=$(basename $pyfile)
+    python3 /strip_python.py "$pyfile" "/micropython/ports/rp2/modules/contrib/$f"
+done
 
 echo "Compiling micropython and firmware modules..."
 cd /micropython/ports/rp2
