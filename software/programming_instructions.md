@@ -237,3 +237,19 @@ As with all hardware, the EuroPi has certain limitations. Some are more obvious 
 
 Auto-generated API documentation for Europi's core firmware and the user-created `experimental` libraries
 can be found [here](https://allen-synthesis.github.io/EuroPi/).
+
+# VS Code Configuration
+
+If you use [VS Code](code.visualstudio.com) for development, you may find it helpful to create a `.vscode/settings.json` file in the root of the EuroPi repository. Copy the following into `.vscode/settings.json`:
+
+```json
+{
+    "python.analysis.extraPaths": [
+        "./software",
+        "./software/firmware",
+        "./software/tests/mocks"
+    ]
+}
+```
+
+This will allow the [Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) to properly detect the EuroPi modules and provide Intellisense completion & hints when using a native Python3 interpreter. Note that this will use the `mocks` module to provide definitions for built-in Micropython libraries that do not exist on standard Python3 installations. The code will not _run_ natively on your Windows/Mac/Linux development machine, but the VS Code IDE will at least provide appropriate code suggestions.
