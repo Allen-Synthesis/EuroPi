@@ -47,5 +47,5 @@ def process_file(infile, outfile):
         last_lineno = elineno
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     process_file(sys.argv[1], sys.argv[2])
