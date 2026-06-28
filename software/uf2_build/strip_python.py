@@ -24,12 +24,16 @@ def process_file(infile, outfile):
 
     tokgen = tokenize.generate_tokens(source.readline)
     for toktype, ttext, (slineno, scol), (elineno, ecol), ltext in tokgen:
-        if 0:   # Change to if 1 to see the tokens fly by.
-            print("%10s %-14s %-20r %r" % (
-                tokenize.tok_name.get(toktype, toktype),
-                "%d.%d-%d.%d" % (slineno, scol, elineno, ecol),
-                ttext, ltext
-                ))
+        if 0:  # Change to if 1 to see the tokens fly by.
+            print(
+                "%10s %-14s %-20r %r"
+                % (
+                    tokenize.tok_name.get(toktype, toktype),
+                    "%d.%d-%d.%d" % (slineno, scol, elineno, ecol),
+                    ttext,
+                    ltext,
+                )
+            )
         if slineno > last_lineno:
             last_col = 0
         if scol > last_col:
