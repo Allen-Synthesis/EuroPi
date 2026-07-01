@@ -126,9 +126,22 @@ _Configuring TouchOSC's networking_
 
 ### UI setup
 
-The simplest way to control EuroPi via TouchOSC is to add six sliders to your panel.
-Then edit each slider to set its name to `europi/cvN` where `N` is the number `1` to
-`6`.
+#### Sample Setup
+
+A [sample configuration file](/software/desktop/touch_osc/europi.tosc) is provided
+in the `software/desktop` directory. Copy this file onto your device and import it into
+TouchOSC. This will automatically add the following controls:
+
+![TouchOSC Sample Config](./osc_control-docs/touchosc_sample_cfg.png)
+
+- 6 red sliders to control EuroPi's outputs
+- green indicators for the values of `din` and `ain`
+- blue indicators for the values of `k1`, `k2`, `b1`, and `b2`
+
+#### Manual Setup
+
+To manuyally set up TouchOSC to control EuroPi, add six sliders to your panel. Then edit each
+slider to set its name to `europi/cvN` where `N` is the number `1` to `6`.
 
 ![TouchOSC Setup](./osc_control-docs/touchosc-setup.png)
 
@@ -155,6 +168,6 @@ _EuroPi's OLED showing the same slider levels as TouchOSC_
 If you have a [Music Thing Modular 8mu](https://www.musicthing.co.uk/8mu_page/)
 you can use it to control EuroPi via OSC.
 
-Refer to the [OSC 8mu interface](/software/desktop/osc_8mu.md) for details on
+Refer to the [OSC 8mu interface](/software/desktop/osc_8mu/README.md.md) for details on
 how to set up your computer to read 8mu's sliders and convert them to OSC
 messages for EuroPi.
