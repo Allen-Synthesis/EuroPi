@@ -5,21 +5,29 @@ echo "Copying EuroPi firmware and scripts to container..."
 mkdir /micropython/ports/rp2/modules/contrib
 mkdir /micropython/ports/rp2/modules/experimental
 mkdir /micropython/ports/rp2/modules/tools
-for pyfile in $(ls europi/software/firmware/*.py); do
-    f=$(basename $pyfile)
-    python3 /strip_python.py "$pyfile" "/micropython/ports/rp2/modules/$f"
-done
-for pyfile in $(ls europi/software/firmware/experimental/*.py); do
-    f=$(basename $pyfile)
-    python3 /strip_python.py "$pyfile" "/micropython/ports/rp2/modules/experimental/$f"
-done
-for pyfile in $(ls europi/software/firmware/tools/*.py); do
-    f=$(basename $pyfile)
-    python3 /strip_python.py "$pyfile" "/micropython/ports/rp2/modules/tools/$f"
-done
-for pyfile in $(ls europi/software/contrib/*.py); do
-    f=$(basename $pyfile)
-    python3 /strip_python.py "$pyfile" "/micropython/ports/rp2/modules/contrib/$f"
+
+# Directories we copy stripped Python files _from_
+SRC_DIRS=(europi/software/firmware
+europi/software/firmware/experimental
+europi/software/firmware/tools
+europi/software/contrib)
+
+# Directories we copy stripped Python files _to_
+# Order must match SRC_DIRS
+DST_DIRS=(/micropython/ports/rp2/modules
+/micropython/ports/rp2/modules/experimental
+/micropython/ports/rp2/modules/tools
+/micropython/ports/rp2/modules/contrib)
+
+for i in ${!SRC_DIRS[@]}; do
+    src_dir=${SRC_DIRS[i]}
+    dst_dir=${DST_DIRS[i]}
+
+    for pyfile in $(ls ${src_dir}/*.py); do
+        f=$(basename $pyfile)
+        echo "Stripping $pyfile -> $dst_dir"
+        python3 /strip_python.py $pyfile ${dst_dir}/$f
+    done
 done
 
 echo "Compiling micropython and firmware modules..."

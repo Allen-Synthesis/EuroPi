@@ -29,4 +29,4 @@ COPY software/uf2_build/strip_python.py /
 
 WORKDIR /
 
-ENTRYPOINT [ "sh", "copy_and_compile.sh" ]
+ENTRYPOINT [ "bash", "copy_and_compile.sh" ]
