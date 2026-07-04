@@ -349,6 +349,13 @@ A 2-6 output sequential switch.  The analogue input is mirrored to one of the ou
 <i>Author: [chrisib](https://github.com/chrisib)</i>
 <br><i>Labels: random, sequential switch</i>
 
+### Set Timer \[ [documentation](/software/contrib/set_timer.md) | [script](/software/contrib/set_timer.py) \]
+
+A manual or CV-controlled stopwatch that displays elapsed & split time. Useful for timing your set or recording.
+
+<i>Author: [chrisib](https://github.com/chrisib)</i>
+<br><i>Labels: timer, gate, trigger</i>
+
 ### Sigma \[ [documentation](/software/contrib/sigma.md) | [script](/software/contrib/sigma.py) \]
 
 Random CV, optionally quantized, voltages based on controllable normal distributions. Inspired by Magnetic Freak's Gaussian module.
