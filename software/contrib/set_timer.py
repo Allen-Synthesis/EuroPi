@@ -16,6 +16,9 @@
 Set Timer
 
 Acts as a simple stopwatch/timer module to help manage recording durations, set timing, etc...
+
+@author Chris Iverach-Brereton <ve4cib@gmail.com>
+@year   2026
 """
 
 from europi import *
@@ -94,6 +97,7 @@ class SetTimer(EuroPiScript):
         def ain_rise():
             self.split()
 
+        # We use AIN as a second digital input
         self.din2 = AnalogReaderDigitalWrapper(ain, cb_rising=ain_rise)
 
     @classmethod
@@ -141,10 +145,15 @@ class SetTimer(EuroPiScript):
         if self.is_running:
             delta = time.ticks_diff(now, self.last_tick_at)
 
+            # Note: this _could_ cause some wind-up error over time.
+            # A more accurate way would be to record the start time of the main & split time
+            # but that wouldn't handle start/stop cycles gracefully.
+            # For the purposes of this program, I'm willing to accept some clock drift
+            # in order to keep the code simpler.
             self.elapsed_time += delta
             self.split_time += delta
 
-            if self.split_time < TRIGGER_DURATION_MS:
+            if self.split_time <= TRIGGER_DURATION_MS:
                 cv2.on()
             else:
                 cv2.off()

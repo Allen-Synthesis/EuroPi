@@ -5,14 +5,14 @@ playing or recording.
 
 ## Inputs & Outputs
 
-- `din`: Start/stop input. See configuration, below
+- `din`: Start/stop input. See configuration, below.
 - `ain`: Split trigger.
-- `b1`: Start/stop button
+- `b1`: Start/stop button.
 - `b2`: Split/reset button. Will reset when stopped, or start a new split timer when running.
-- `k1-6`: Unused
-- `cv1`: High when the timer is running, low when stopped
-- `cv2`: Outputs a 10ms trigger every time a new split timer starts
-- `cv3-6`: Unused
+- `k1-2`: Unused.
+- `cv1`: High when the timer is running, low when stopped.
+- `cv2`: Outputs a 10ms trigger every time a new split timer starts.
+- `cv3-6`: Unused.
 
 ## Configuration
 
