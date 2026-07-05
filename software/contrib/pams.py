@@ -1213,87 +1213,97 @@ class PamsOutput:
             # reset waves are always low; the clock's stop() function handles triggering them
             out_volts = 0.0
         else:
-            if self.wave_counter % 2 == 0:
-                # first half of the swing; if swing < 50% this is short, otherwise long
-                swing_amt = self.swing.value / 100.0
-            else:
-                # second half of the swing; if swing < 50% this is long, otherwise short
-                swing_amt = (100 - self.swing.value) / 100.0
-            ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod * swing_amt)
-            if ticks_per_note == 0:
-                # we're swinging SO HARD that one beat is squashed out of existence!
-                # move immediately to the other beat
-                self.e_position = self.e_position + 1
-                if self.e_position >= len(self.e_pattern):
-                    self.e_position = 0
-                ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod)
-
-            e_step = self.e_pattern[self.e_position]
-            wave_position = self.clock.elapsed_pulses % ticks_per_note
-            # are we starting a new repeat of the pattern?
-            rising_edge = (wave_position == int(self.phase.value * ticks_per_note / 100.0)) and e_step
-            # determine if we should skip this sample playback
-            if rising_edge:
-                self.skip_this_step = random.randint(0, 100) < self.skip.value
-                self.wave_counter += 1
-
-            wave_sample = int(e_step) * int (not self.skip_this_step)
-            if self.wave_shape.value == WAVE_RANDOM:
-                if rising_edge and not self.skip_this_step:
-                    wave_sample = random.random() * (self.amplitude.value / 100.0) + (self.width.value / 100.0)
-                else:
-                    wave_sample = self.previous_wave_sample
-            elif self.wave_shape.value == WAVE_AIN:
-                if rising_edge and not self.skip_this_step:
-                    wave_sample = CV_INS["AIN"].percent() * self.amplitude.value / 100.0
-                else:
-                    wave_sample = self.previous_wave_sample
-            elif self.wave_shape.value == WAVE_KNOB:
-                if rising_edge and not self.skip_this_step:
-                    wave_sample = CV_INS["KNOB"].percent() * self.amplitude.value / 100.0
-                else:
-                    wave_sample = self.previous_wave_sample
-            elif self.wave_shape.value == WAVE_SQUARE:
-                wave_sample = wave_sample * self.square_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
-            elif self.wave_shape.value == WAVE_TRIANGLE:
-                wave_sample = wave_sample * self.triangle_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
-            elif self.wave_shape.value == WAVE_SIN:
-                wave_sample = wave_sample * self.sine_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
-            elif self.wave_shape.value == WAVE_ADSR:
-                wave_sample = wave_sample * self.adsr_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
-            elif self.wave_shape.value == WAVE_TURING:
-                wave_sample = self.turing_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
-            else:
-                wave_sample = 0.0
-
-            self.previous_wave_sample = wave_sample
-            out_volts = wave_sample * MAX_OUTPUT_VOLTAGE
-
-            if self.quantizer.mapped_value is not None:
-                (out_volts, note) = self.quantizer.mapped_value.quantize(out_volts, self.root.value)
-
-            if wave_position == ticks_per_note - 1:
-                if self.next_e_pattern:
-                    # if we just finished a waveform and we have a new euclidean pattern, start it
-                    # this will always line up with the current beat, but may be rotated relative to
-                    # other patterns currently playing.
-                    # rather than do a lot of math, treat this as a feature that if you change patterns
-                    # while playing, the new pattern starts right away instead of waiting for for the
-                    # end of (a potentially long, slow) pattern to finish
-                    self.e_position = 0
-                    self.e_pattern = self.next_e_pattern
-                    self.next_e_pattern = None
-                else:
-                    # if we've reached end of the euclidean pattern start it again
-                    self.e_position = self.e_position + 1
-                    if self.e_position >= len(self.e_pattern):
-                        self.e_position = 0
+            out_volts = self.wave_gen()
 
         # If the clock modifier was changed, apply the new value now
         if self.clock_mod_dirty:
             self.change_clock_mod()
 
         self.out_volts = out_volts
+
+    @micropython.native
+    def wave_gen(self):
+        """Calculates the output voltage for the output channel.
+
+        @return The desired output voltage to be applied
+        """
+        if self.wave_counter % 2 == 0:
+            # first half of the swing; if swing < 50% this is short, otherwise long
+            swing_amt = self.swing.value / 100.0
+        else:
+            # second half of the swing; if swing < 50% this is long, otherwise short
+            swing_amt = (100 - self.swing.value) / 100.0
+        ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod * swing_amt)
+        if ticks_per_note == 0:
+            # we're swinging SO HARD that one beat is squashed out of existence!
+            # move immediately to the other beat
+            self.e_position = self.e_position + 1
+            if self.e_position >= len(self.e_pattern):
+                self.e_position = 0
+            ticks_per_note = round(2 * MasterClock.PPQN / self.real_clock_mod)
+
+        e_step = self.e_pattern[self.e_position]
+        wave_position = self.clock.elapsed_pulses % ticks_per_note
+        # are we starting a new repeat of the pattern?
+        rising_edge = (wave_position == int(self.phase.value * ticks_per_note / 100.0)) and e_step
+        # determine if we should skip this sample playback
+        if rising_edge:
+            self.skip_this_step = random.randint(0, 100) < self.skip.value
+            self.wave_counter += 1
+
+        wave_sample = int(e_step) * int (not self.skip_this_step)
+        if self.wave_shape.value == WAVE_RANDOM:
+            if rising_edge and not self.skip_this_step:
+                wave_sample = random.random() * (self.amplitude.value / 100.0) + (self.width.value / 100.0)
+            else:
+                wave_sample = self.previous_wave_sample
+        elif self.wave_shape.value == WAVE_AIN:
+            if rising_edge and not self.skip_this_step:
+                wave_sample = CV_INS["AIN"].percent() * self.amplitude.value / 100.0
+            else:
+                wave_sample = self.previous_wave_sample
+        elif self.wave_shape.value == WAVE_KNOB:
+            if rising_edge and not self.skip_this_step:
+                wave_sample = CV_INS["KNOB"].percent() * self.amplitude.value / 100.0
+            else:
+                wave_sample = self.previous_wave_sample
+        elif self.wave_shape.value == WAVE_SQUARE:
+            wave_sample = wave_sample * self.square_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
+        elif self.wave_shape.value == WAVE_TRIANGLE:
+            wave_sample = wave_sample * self.triangle_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
+        elif self.wave_shape.value == WAVE_SIN:
+            wave_sample = wave_sample * self.sine_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
+        elif self.wave_shape.value == WAVE_ADSR:
+            wave_sample = wave_sample * self.adsr_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
+        elif self.wave_shape.value == WAVE_TURING:
+            wave_sample = self.turing_wave(wave_position, ticks_per_note) * (self.amplitude.value / 100.0)
+        else:
+            wave_sample = 0.0
+
+        self.previous_wave_sample = wave_sample
+        out_volts = wave_sample * MAX_OUTPUT_VOLTAGE
+
+        if self.quantizer.mapped_value is not None:
+            (out_volts, note) = self.quantizer.mapped_value.quantize(out_volts, self.root.value)
+
+        if wave_position == ticks_per_note - 1:
+            if self.next_e_pattern:
+                # if we just finished a waveform and we have a new euclidean pattern, start it
+                # this will always line up with the current beat, but may be rotated relative to
+                # other patterns currently playing.
+                # rather than do a lot of math, treat this as a feature that if you change patterns
+                # while playing, the new pattern starts right away instead of waiting for for the
+                # end of (a potentially long, slow) pattern to finish
+                self.e_position = 0
+                self.e_pattern = self.next_e_pattern
+                self.next_e_pattern = None
+            else:
+                # if we've reached end of the euclidean pattern start it again
+                self.e_position = self.e_position + 1
+                if self.e_position >= len(self.e_pattern):
+                    self.e_position = 0
+
+        return out_volts
 
     @micropython.native
     def apply(self):
