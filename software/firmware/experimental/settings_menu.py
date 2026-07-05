@@ -37,6 +37,8 @@ from configuration import *
 from experimental.knobs import KnobBank, LockableKnob
 from framebuf import FrameBuffer, MONO_HLSB
 from machine import Timer
+
+import gc
 import os
 import time
 
@@ -389,7 +391,7 @@ class SettingMenuItem(ChoiceMenuItem):
             # add the autoselect items, if needed
             if self.autoselect_knob:
                 choices.append(AUTOSELECT_KNOB)
-            if self.autoselect_knob:
+            if self.autoselect_cv:
                 choices.append(AUTOSELECT_AIN)
 
         self.config_point.choices = choices
@@ -448,7 +450,7 @@ class SettingMenuItem(ChoiceMenuItem):
         # Add the autoselect inputs, if needed
         if self.autoselect_knob:
             items.append(AUTOSELECT_KNOB)
-        if self.autoselect_knob:
+        if self.autoselect_cv:
             items.append(AUTOSELECT_AIN)
 
         return items
@@ -769,6 +771,11 @@ class SettingsMenu:
 
         :param settings_file: The path to the JSON file to generate
         """
+        # free up any fragmented memory before the dict-building + JSON
+        # serialization below, which can be a meaningful allocation on
+        # memory-constrained boards (e.g. the original RP2040 Pico)
+        gc.collect()
+
         data = {}
         for item in self.menu_items_by_name.values():
             data[item.config_point.name] = item.value_choice
