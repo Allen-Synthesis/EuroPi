@@ -28,7 +28,7 @@ Will set the CV output 3 to a voltage of 4.5V.
 
 import sys
 
-from version import __version__
+from europi_version import __version__
 
 from configuration import ConfigSettings
 from framebuf import FrameBuffer, MONO_HLSB

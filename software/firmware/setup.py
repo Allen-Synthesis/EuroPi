@@ -14,7 +14,7 @@
 from setuptools import setup
 
 __version__ = ""
-exec(open("./version.py").read())
+exec(open("./europi_version.py").read())
 
 
 def build_firmware_module_list():

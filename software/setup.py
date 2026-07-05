@@ -14,7 +14,7 @@
 from setuptools import setup
 
 __version__ = ""
-exec(open("./firmware/version.py").read())
+exec(open("./firmware/europi_version.py").read())
 
 setup(
     name="micropython-europi-contrib",
