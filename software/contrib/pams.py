@@ -1652,7 +1652,7 @@ class PamsWorkout2(EuroPiScript):
                 self.main_menu.save(self._state_filename)
 
             prev_k1 = current_k1
-            prev_k2 = prev_k2
+            prev_k2 = current_k2
 
 if __name__=="__main__":
     PamsWorkout2().main()
