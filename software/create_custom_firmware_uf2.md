@@ -69,8 +69,9 @@ the structure of the modules dir should look like this:
 micropython/ports/rp2/modules/
 ├── _boot_fat.py
 ├── bootloader.py
+├── bootloader_mode.py
 ├── _boot.py
-├── calibrate.py
+├── configuration.py
 ├── contrib
 │   ├── bernoulli_gates.py
 │   ├── coin_toss.py
@@ -80,16 +81,61 @@ micropython/ports/rp2/modules/
 │   ├── hamlet.py
 │   └── ...
 ├── europi.py
+├── europi_config.py
+├── europi_display.py
+├── europi_hardware.py
+├── europi_log.py
 ├── europi_script.py
+├── europi_version.py
 ├── experimental
 │   ├── __init__.py
-│   └── knobs.py
+│   ├── a_to_d.py
+│   ├── bisect.py
+│   ├── bitarray.py
+│   ├── clocks
+│   |   ├── __init__.py
+│   |   ├── clock_source.py
+│   |   ├── ds1307.py
+│   |   ├── ds3231.py
+│   |   ├── ntp.py
+│   |   └── null_clock.py
+│   ├── custom_font.py
+│   ├── fonts
+│   |   ├── __init__.py
+│   |   ├── freesans14.py
+│   |   ├── freesans17.py
+│   |   ├── freesans20.py
+│   |   ├── freesans24.py
+│   |   ├── ubuntumono14.py
+│   |   ├── ubuntumono17.py
+│   |   ├── ubuntumono20.py
+│   |   └── ubuntumono24.py
+│   ├── euclid.py
+│   ├── experimental_config.py
+│   ├── http_server.py
+│   ├── knobs.py
+│   ├── math_extras.py
+│   ├── osc.py
+│   ├── quantizer.py
+│   ├── random_extras.py
+│   ├── rtc.py
+│   ├── screensaver.py
+│   ├── settings_menu.py
+│   ├── thread.py
+│   └── wifi.py
+├── file_utils.py
 ├── main.py (optional)
 ├── rp2.py
 ├── setup.py
 ├── ssd1306.py
-├── ui.py
-└── version.py
+├── tools
+│   ├── __init__.py
+│   ├── about.py
+│   ├── calibrate.py
+│   ├── conf_edit.py
+│   ├── diagnostic.py
+│   └── experimental_conf_edit.py
+└── ui.py
 ```
 _boot.py should be modified to look like this: (increase progsize)
 ``` Python
