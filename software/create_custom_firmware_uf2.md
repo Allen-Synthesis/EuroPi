@@ -98,7 +98,7 @@ micropython/ports/rp2/modules/
 │   |   ├── ds1307.py
 │   |   ├── ds3231.py
 │   |   ├── ntp.py
-│   |   ├── null_clock.py
+│   |   └── null_clock.py
 │   ├── custom_font.py
 │   ├── fonts
 │   |   ├── __init__.py
@@ -109,7 +109,7 @@ micropython/ports/rp2/modules/
 │   |   ├── ubuntumono14.py
 │   |   ├── ubuntumono17.py
 │   |   ├── ubuntumono20.py
-│   |   ├── ubuntumono24.py
+│   |   └── ubuntumono24.py
 │   ├── euclid.py
 │   ├── experimental_config.py
 │   ├── http_server.py
