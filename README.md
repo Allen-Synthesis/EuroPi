@@ -14,6 +14,16 @@ The EuroPi firmware allows you to interact with the hardware easily using code w
 
 If you would like to extend any of the features of the EuroPi software, you can view the [firmware source code](software/firmware/europi.py), and make contributions of your own after reading the [contribution guidelines](contributing.md).
 
+### Issues
+If you find any bugs, either in the software, the hardware, or the documentation, please [create a GitHub issue](https://github.com/Allen-Synthesis/EuroPi/issues/new/choose) so it can be fixed by one of the maintainers. There are issue templates available, so please choose whichever is most relevant.
+
+### AI Policy <img width="20px" src="https://allensynthesis.co.uk/images/No_AI_art_white.svg">
+This is a project that is both explicitly aware of, and reliant on, its social context; the module's licenses are deliberately 'free' and open-source, and that fact is what has allowed its community to develop itself, and consequently develop the EuroPi module.
+To paraphrase [Dan McQuillan](https://www.youtube.com/watch?v=mh0U2o5Ysms), "AI removes the cultural context that underpins our social relations" - A tool which produces an output without regard for social context cannot be used to meaningfully contribute to any project that specifically aims to analyse and engage with that context.
+
+We are not able to know with certainty that any contribution is AI-free, however any pull requests which have clearly relied on it will be rejected. For the reasons described above we hope that you will choose to develop without it, not just to ensure a quick merge, but for the benefit of the open-source community and society as a whole.
+All of the core components of the EuroPi (the firmware and hardware) are entirely AI-free.
+
 ## Specification
 * 6 0-10V Control Voltage outputs, each with indicator LED
 * 2 Knobs with 12 bit resolution
@@ -37,18 +47,7 @@ The only thing I would ask is that you refrain from using the brand name 'Allen 
 
 If you have a bug fix or improvement that you think is worth sharing, then feel free to send over any pictures or documentation and it can be merged with the main project!
 
-## Issues
-If you find any bugs, either in the software, the hardware, or the documentation, please [create a GitHub issue](https://github.com/Allen-Synthesis/EuroPi/issues/new/choose) so it can be fixed by one of the maintainers. There are issue templates available, so please choose whichever is most relevant.
-
-## AI Policy <img width="20px" src="https://upload.wikimedia.org/wikipedia/commons/f/f1/No_AI_art.svg">
-This is a project that is both explicitly aware of, and reliant on, its social context; the module's licenses are deliberately 'free' and open-source, and that fact is what has allowed its community to develop itself, and consequently develop the EuroPi module.
-To paraphrase [Dan McQuillan](https://www.youtube.com/watch?v=mh0U2o5Ysms), "AI removes the cultural context that underpins our social relations" - A tool which produces an output without regard for social context cannot be used to meaningfully contribute to any project that specifically aims to analyse and engage with that context.
-
-We are not able to know with certainty that any contribution is AI-free, however any pull requests which have clearly relied on it will be rejected. For the reasons described above we hope that you will choose to develop without it, not just to ensure a quick merge, but for the benefit of the open-source community and society as a whole.
-All of the core components of the EuroPi (the firmware and hardware) are entirely AI-free.
-
-### Disclaimer
+## Disclaimer
 Recreate any of the files found in this repository at your own risk; I will attempt to solve any issues that you might have with my designs, but I can't guarantee that there are not minor bugs in any of the documents, both hardware and software. If you want a module or kit that you know will work and will have customer support, you can order one directly from [Allen Synthesis](https://allensynthesis.co.uk/).
 
-### EuroPi Prototype
-This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The repository for this (now deprecated) module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
+**NOTE:** This repository relates to the EuroPi module, however some users may be expecting to see what is now referred to as the 'EuroPi Prototype'. The repository for this (now deprecated) module [can be found here](https://github.com/roryjamesallen/EuroPi-Prototype)
