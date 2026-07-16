@@ -572,6 +572,121 @@ class MasterClock:
             self.timer.init(freq=self.tick_hz, mode=Timer.PERIODIC, callback=self.on_tick)
 
 
+def _make_euclid_pattern_draw(item, owner):
+    """Build a draw function for the EStep/ETrig menu items
+
+    Returns a closure that renders the standard menu item display
+    (title/prefix/numeric value) and then overlays a visualization of the
+    channel's Euclidean pattern immediately to the right of the numeric
+    value, stretched to use all remaining width and the full row height.
+    The currently-playing step is boxed.
+
+    While the item is being edited (knob turned but not yet confirmed with
+    a button press), the pattern preview is recalculated live from the
+    in-progress knob position, so it updates as the numbers change rather
+    than only after confirming.
+
+    This is attached directly as an instance attribute (e.g. ``self.e_step.draw =
+    _make_euclid_pattern_draw(self.e_step, self)``), so it must accept exactly
+    the same arguments the caller uses (just ``oled``) -- MicroPython's plain
+    functions don't support the ``__get__`` descriptor trick CPython allows,
+    so we can't rebind this as a method; a closure sidesteps that entirely.
+
+    @param item   The SettingMenuItem this will be attached to (self.e_step or self.e_trig)
+    @param owner  The owning PamsOutput, so we can read its e_step/e_trig/e_rot/e_position
+    """
+    def _numeric_value(setting_item, live_choice=None):
+        # e_step/e_trig can be set to "Knob"/"AIN" autoselect mode, in which case
+        # value_choice (or a live in-progress knob choice) is a non-numeric
+        # sentinel string rather than an int. Fall back to .value (the actual
+        # last-resolved numeric value) whenever that happens.
+        val = live_choice if live_choice is not None else setting_item.value_choice
+        if not isinstance(val, int):
+            val = setting_item.value
+        return val
+
+    # cache of the last (step, trig, rot) we generated a pattern for, so we don't
+    # re-run generate_euclidean_pattern() (and allocate a new list) on every single
+    # draw frame -- only when the values actually changed since the last draw. This
+    # matters on memory-constrained boards (e.g. the original RP2040 Pico), where
+    # needless per-frame allocation churn can contribute to running out of memory.
+    cache = {"key": None, "pattern": [1]}
+
+    def _draw(oled):
+        # draw the normal title/prefix/numeric value first
+        item.original_draw(oled)
+
+        live_choice = item.menu.knob.choice(item.choices) if item.is_editable else None
+
+        if item is owner.e_step:
+            step_val = _numeric_value(owner.e_step, live_choice)
+            trig_val = _numeric_value(owner.e_trig)
+        else:
+            step_val = _numeric_value(owner.e_step)
+            trig_val = _numeric_value(owner.e_trig, live_choice)
+        rot_val = _numeric_value(owner.e_rot)
+
+        if step_val <= 0:
+            pattern = [1]
+        else:
+            # clamp defensively -- while editing, trig/rot may briefly exceed
+            # the live step value before the menu has a chance to re-sync them
+            trig_val = min(trig_val, step_val)
+            rot_val = min(rot_val, step_val)
+            key = (step_val, trig_val, rot_val)
+            if key == cache["key"]:
+                pattern = cache["pattern"]
+            else:
+                pattern = generate_euclidean_pattern(step_val, trig_val, rot_val)
+                cache["key"] = key
+                cache["pattern"] = pattern
+
+        # keep at least this much clearance to the right of the numeric value
+        value_width = len(str(live_choice if live_choice is not None else item.value_choice)) * CHAR_WIDTH
+        min_start_x = value_width + 6
+
+        row_top = ChoiceMenuItem.SELECT_OPTION_Y
+        row_bottom = OLED_HEIGHT - 1
+        box_h = row_bottom - row_top
+
+        avail_width = OLED_WIDTH - min_start_x - 1
+        if avail_width <= 0:
+            return
+
+        length = min(len(pattern), avail_width)
+        if length <= 0:
+            return
+
+        # stretch the boxes to fill all the available width, however long the pattern is
+        cell_w = avail_width // length
+        if cell_w < 2:
+            # too many steps to show individually at a readable size; show as
+            # many as will fit at a minimum readable width instead of shrinking further
+            cell_w = 2
+            length = max(1, avail_width // cell_w)
+
+        box_w = max(1, cell_w - 1)
+        position = owner.e_position % length
+
+        # right-justify: any leftover slack from the division above goes into the
+        # gap after the number, not into a gap on the right, so the grid's right
+        # edge stays put whether the value is showing 1 or 2 digits
+        start_x = OLED_WIDTH - 1 - (length * cell_w)
+
+        for i in range(length):
+            x = start_x + i * cell_w
+            if pattern[i]:
+                oled.fill_rect(x, row_top, box_w, box_h, 1)
+            else:
+                oled.hline(x, row_top + box_h // 2, box_w, 1)
+
+            if i == position:
+                center_x = x + box_w // 2
+                oled.vline(center_x, row_top - 1, box_h + 2, 1)
+
+    return _draw
+
+
 class PamsOutput:
     """Controls a single output jack
     """
@@ -722,17 +837,17 @@ class PamsOutput:
 
         ## Euclidean -- number of steps in the pattern (0 = disabled)
         self.e_step = SettingMenuItem(
-            config_point = IntegerConfigPoint(
+            config_point=IntegerConfigPoint(
                 f"cv{n}_e_step",
                 0,
                 self.MAX_EUCLID_LENGTH,
                 0
             ),
-            prefix = f"CV{n}",
-            title = "EStep",
-            callback = self.change_e_length,
-            autoselect_knob = True,
-            autoselect_cv = True,
+            prefix=f"CV{n}",
+            title="EStep",
+            callback=self.change_e_length,
+            autoselect_knob=True,
+            autoselect_cv=True,
         )
 
         ## Euclidean -- number of triggers in the pattern
@@ -897,7 +1012,6 @@ class PamsOutput:
             title = "TMode",
             labels = TURING_MODE_LABELS,
         )
-
         ## All settings in an array so we can iterate through them in reset_settings(self)
         self.all_settings = [
             self.quantizer,
@@ -949,6 +1063,11 @@ class PamsOutput:
 
         self.update_menu_visibility()
 
+        # attach the Euclidean pattern visualizer to the EStep/ETrig menu items
+        for menu_item in (self.e_step, self.e_trig):
+            menu_item.original_draw = menu_item.draw
+            menu_item.draw = _make_euclid_pattern_draw(menu_item, self)
+
     def __str__(self):
         return f"out_cv{self.cv_n}"
 
@@ -986,6 +1105,10 @@ class PamsOutput:
         self.e_trig.modify_choices(list(range(self.e_step.value+1)), self.e_step.value)
         self.e_rot.modify_choices(list(range(self.e_step.value+1)), self.e_step.value)
         self.recalculate_e_pattern()
+        # editing EStep is the one action that rebuilds two full choice lists
+        # (ETrig and ERot) in addition to the pattern itself -- reclaim that
+        # garbage now rather than letting it linger until the next save()
+        gc.collect()
 
     @micropython.native
     def recalculate_e_pattern(self, new_value=None, old_value=None, config_point=None, arg=None):
@@ -1649,6 +1772,7 @@ class PamsWorkout2(EuroPiScript):
             ssoled.show()
 
             if self.main_menu.settings_dirty:
+                gc.collect()
                 self.main_menu.save(self._state_filename)
 
             prev_k1 = current_k1
