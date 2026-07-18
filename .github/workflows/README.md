@@ -34,7 +34,7 @@ Pushes to the main [pypi.org](https://pypi.org/project/micropython-europi/#histo
 ## Release process
 
 1. Decide which version number to release.
-1. Update [`software/firmware/europi_version.py`](/software/firmware/europi_version.py) with the new version number.
+1. Update [`software/firmware/version.py`](/software/firmware/version.py) with the new version number.
 1. Commit and push to `main`.
 1. Verify that the new release was pushed to [test.pypi.org](https://test.pypi.org/project/micropython-europi/#history). If it was not, look for errors associated with the commit on the [actions tab](https://github.com/Allen-Synthesis/EuroPi/actions). Commit new changes until a successful release is created.
 1. Tag the release locally using `git tag -a v<version_number> -m 'message'`, for example `git tag -a v0.0.1 -m 'release v0.0.1'`

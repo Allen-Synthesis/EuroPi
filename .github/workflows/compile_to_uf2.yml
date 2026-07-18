@@ -84,7 +84,7 @@ jobs:
       - name: create release asset version
         id: release-asset-version
         run: |
-          VERSION=`grep -oP '(?<=")[\d\.]+(?=")' micropython/ports/rp2/modules/europi_version.py`
+          VERSION=`grep -oP '(?<=")[\d\.]+(?=")' micropython/ports/rp2/modules/version.py`
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: rename firmware file for RPI_PICO with version info

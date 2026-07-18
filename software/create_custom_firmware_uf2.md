@@ -86,7 +86,6 @@ micropython/ports/rp2/modules/
 ├── europi_hardware.py
 ├── europi_log.py
 ├── europi_script.py
-├── europi_version.py
 ├── experimental
 │   ├── __init__.py
 │   ├── a_to_d.py
@@ -135,7 +134,8 @@ micropython/ports/rp2/modules/
 │   ├── conf_edit.py
 │   ├── diagnostic.py
 │   └── experimental_conf_edit.py
-└── ui.py
+├── ui.py
+└── version.py
 ```
 _boot.py should be modified to look like this: (increase progsize)
 ``` Python

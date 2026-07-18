@@ -14,7 +14,7 @@
 from europi import *
 from europi_script import EuroPiScript
 from time import sleep
-from europi_version import __version__
+from version import __version__
 
 
 class About(EuroPiScript):
