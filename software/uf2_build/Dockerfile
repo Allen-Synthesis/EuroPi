@@ -3,11 +3,11 @@ FROM ubuntu:22.04
 ENV TERM=xterm DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt install -y \
-    cmake git-core gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential wget python3
+    cmake git-core gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential wget python3 sed
 
 WORKDIR /
 
-RUN git clone -b v1.25.0 --depth=1 --recursive https://github.com/micropython/micropython.git
+RUN git clone -b v1.28.0 --depth=1 --recursive https://github.com/micropython/micropython.git
 
 WORKDIR micropython
 
@@ -25,7 +25,8 @@ BootloaderMenu(EUROPI_SCRIPTS).main()\n\
 ' > ports/rp2/modules/main.py
 
 COPY software/uf2_build/copy_and_compile.sh /
+COPY software/uf2_build/strip_python.py /
 
 WORKDIR /
 
-ENTRYPOINT [ "sh", "copy_and_compile.sh" ]
+ENTRYPOINT [ "bash", "copy_and_compile.sh" ]
