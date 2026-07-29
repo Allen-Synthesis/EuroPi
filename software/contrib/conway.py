@@ -16,7 +16,7 @@
 
 Outputs 1-3 are 0-10V control voltages, outputs 4-6 are 5V gates
 
-@author Chris I-B <ve4cib@gmail.com>
+@author Chris Iverach-Brereton <ve4cib@gmail.com>
 @year   2023
 """
 

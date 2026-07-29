@@ -25,9 +25,9 @@ If you want to build this version of the EuroPi, you can buy the PCB directly fr
 1. Now it's time to solder the OLED, which is easily the most difficult part of this build. You need to apply a small amount of solder to each of the pins while holding the OLED in place with your other hand, so it can help to use some kind of desk clamp. Run the soldering iron over each of the 4 pins quickly enough that the solder on all of them stays molten, and use your other hand to make sure the display is straight while the solder cools. The pins should only just be flush with the back of the PCB, so I find it easier to solder from the top (but make sure none of the pins are bridged together).
 
     ![IMG_4560](https://github.com/user-attachments/assets/07483aa2-d90e-465d-aa1f-b427b1db0e30)
-1. Solder the Eurorack power header and (optional) I2C header by fitting them and turning the board over to solder from the other side. If they're a bit loose you might need to use an elastic band to hold them in place while you solder one pin, then remove and solder the rest.
+1. Solder the Eurorack power header, (optional) I2C header, and (optional) GPIO expansion headers by fitting them and turning the board over to solder from the other side. Note: If these photos don't match your module, you likely have an older revision which does not have the GPIO expansion header and only requires a 1x4 2.54mm male header for the I2C port. The module will work identically but doesn't require the extra JST-PH headers.
 
-    ![IMG_4564](https://github.com/user-attachments/assets/11308b06-3f1b-49c0-9650-565ddf0fca48)
+    ![EuroPi-Back](https://allensynthesis.co.uk/images/europi/assembled/Allen-Synthesis-EuroPi-Back.png)
 1. Follow the [programming instructions](/software/programming_instructions.md) to set the module up for however you want to use it, calibrate it if you want higher accuracy, and have fun!
 
     ![IMG_4566](https://github.com/user-attachments/assets/aed31128-227d-4bcb-9529-86b588602962)
