@@ -11939,7 +11939,7 @@
 				)
 			)
 		)
-		(property "Value" "4K7"
+		(property "Value" "5K1"
 			(at 157.8864 50.8 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12098,7 +12098,7 @@
 				)
 			)
 		)
-		(property "Value" "4K7"
+		(property "Value" "5K1"
 			(at 251.8664 50.8 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12257,7 +12257,7 @@
 				)
 			)
 		)
-		(property "Value" "4K7"
+		(property "Value" "5K1"
 			(at 347.1164 50.8 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12416,7 +12416,7 @@
 				)
 			)
 		)
-		(property "Value" "4K7"
+		(property "Value" "5K1"
 			(at 157.8864 106.68 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12575,7 +12575,7 @@
 				)
 			)
 		)
-		(property "Value" "4K7"
+		(property "Value" "5K1"
 			(at 251.8664 106.68 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12734,7 +12734,7 @@
 				)
 			)
 		)
-		(property "Value" "4K7"
+		(property "Value" "5K1"
 			(at 347.1164 106.68 90)
 			(show_name no)
 			(do_not_autoplace no)
