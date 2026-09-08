@@ -250,7 +250,7 @@ class HttpServer:
                 # Priority: u=0, i
 
                 request = conn.recv(1024)
-                request = request.decode("UTF-8")
+                request = request.decode("utf-8")
 
                 if request.startswith("GET"):
                     self.get_callback(request=request, connection=conn)
@@ -391,5 +391,5 @@ class HttpServer:
             for k in headers.keys():
                 header = f"{header}\r\n{k}={headers[k]}"
 
-        connection.send(f"{header}\r\n\r\n".encode("UTF-8"))
-        connection.send(response.encode("UTF-8"))
+        connection.send(f"{header}\r\n\r\n".encode("utf-8"))
+        connection.send(response.encode("utf-8"))
